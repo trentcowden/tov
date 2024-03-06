@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "properties": {
+    "bookId": {
+      "pattern": "^[A-Z0-9]{1}[A-Z]{2}$",
+      "type": "string"
+    },
+    "englishDivision": {
+      "enum": [
+        "pentateuch",
+        "historical",
+        "wisdom",
+        "majorProphets",
+        "minorProphets",
+        "gospels",
+        "acts",
+        "epistles",
+        "revelation"
+      ]
+    },
+    "hebrewDivision": {
+      "enum": [
+        "torah",
+        "nevi'im",
+        "ketuvim",
+        null
+      ]
+    },
+    "testament": {
+      "enum": [
+        "old",
+        "new"
+      ]
+    }
+  }
+}
