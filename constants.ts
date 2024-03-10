@@ -1,18 +1,13 @@
 import { Dimensions } from 'react-native'
 
 export const colors = {
-  bg1: '#363636',
-  bg2: '#4D4D4D',
-  bg3: '#616161',
-  bg4: '#737373',
-  fg1: '#F1F2EB',
-  fg2: '#D7D9CD',
-  fg3: '#AFB0A4',
-  p1: '#4A543E',
-  p2: '#5F6B4F',
-  p3: '#859571',
-  s: '#88A5AB',
-  e: '#B56363',
+  bg1: '#1b1b1b',
+  bg2: '#282828',
+  bg3: '#393939',
+  fg1: '#efefef',
+  fg2: '#d8d8d8',
+  fg3: '#9b9b9b',
+  p1: '#283618',
 }
 
 export const gutterSize = 16
@@ -52,5 +47,6 @@ export const type = (
     fontSize: size,
     textAlign: alignments[align],
     color: color,
+    fontWeight: weight === 'r' ? '400' : '600',
   }
 }
