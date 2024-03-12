@@ -1,16 +1,14 @@
 import { Ionicons } from '@expo/vector-icons'
-import { useFuzzySearchList } from '@nozbe/microfuzz/react'
 import { FlashList } from '@shopify/flash-list'
 import { impactAsync } from 'expo-haptics'
+import { StatusBar } from 'expo-status-bar'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import {
-  ActivityIndicator,
   Dimensions,
   NativeScrollEvent,
   NativeSyntheticEvent,
   ScrollView,
   Text,
-  TouchableOpacity,
   View,
 } from 'react-native'
 import {
@@ -34,15 +32,23 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Spacer from './Spacer'
 import bible from './bible.json'
 import { Bible, Chapter } from './bibleTypes'
-import { colors, gutterSize, screenHeight, type } from './constants'
-import chapters from './data/chapters.json'
+import ChapterOverlay from './components/ChapterOverlay'
+import History from './components/History'
+import Navigator from './components/Navigator'
+import {
+  chapterChangeDuration,
+  colors,
+  gutterSize,
+  horizTransReq,
+  horizVelocReq,
+  overScrollReq,
+  screenHeight,
+  type,
+  zoomOutReq,
+} from './constants'
 import { renderFirstLevelText } from './functions/renderBible'
 
-const chapterChangeDuration = 300
-const overScrollReq = 100
-const zoomOutReq = 0.4
-const horizReq = Dimensions.get('window').width * 0.6
-interface SearchItem {
+export interface NavigatorChapterItem {
   item: { item: string | Chapter }
 }
 
@@ -52,28 +58,36 @@ export default function BibleView() {
     index: number
     id: string
   }>({ index: 0, going: 'forward', id: 'GEN.1' })
+  const insets = useSafeAreaInsets()
+  /**
+   * Component refs.
+   */
   const searchRef = useRef<TextInput>(null)
   const scrollViewRef = useRef<ScrollView>(null)
-  const searchListRef = useRef<FlashList<SearchItem>>(null)
-  const chapterTransition = useSharedValue(0)
-  const showPrevIndicator = useSharedValue(0)
-  const showNextIndicator = useSharedValue(0)
+  const searchListRef = useRef<FlashList<NavigatorChapterItem>>(null)
+
+  const textTranslateY = useSharedValue(0)
+  const textTranslateX = useSharedValue(0)
+  const savedTextTranslateX = useSharedValue(0)
+
+  const textPinch = useSharedValue(1)
+  const savedTextPinch = useSharedValue(1)
+  const textPinchHaptic = useSharedValue(0)
+
   const goPrev = useSharedValue(0)
   const goNext = useSharedValue(0)
+
   const [searchText, setSearchText] = useState('')
-  const insets = useSafeAreaInsets()
+
   const prevIndicatorY = useSharedValue(0)
   const nextIndicatorY = useSharedValue(0)
   const prevIndicatorOpacity = useSharedValue(0)
   const nextIndicatorOpacity = useSharedValue(0)
   const prevIndicatorScale = useSharedValue(0)
   const nextIndicatorScale = useSharedValue(0)
-  const scale = useSharedValue(1)
-  const savedScale = useSharedValue(1)
-  const offset = useSharedValue(0)
-  const saved = useSharedValue(0)
+  const [isStatusBarHidden, setIsStatusBarHidden] = useState(false)
 
-  const filteredChapters: Chapter[] = useMemo(() => {
+  const chapters: Chapter[] = useMemo(() => {
     const nivBible = bible as Bible
 
     return nivBible.chapters.filter(
@@ -81,103 +95,117 @@ export default function BibleView() {
     )
   }, [])
 
-  const bookIndices = useMemo(() => {
-    return [
-      0,
-      ...chapters.map((chapter, index) =>
-        chapters
-          .slice(0, index + 1)
-          .reduce((a, b) => a + b.chapters.length + 1, 0)
-      ),
-    ]
-  }, [])
-
-  const chapterList = useMemo(() => {
-    const chapterList = []
-
-    for (const chapter of filteredChapters) {
-      if (chapter.number === '1')
-        chapterList.push(chapter.reference.split(' ').slice(0, -1).join(' '))
-
-      chapterList.push(chapter)
-    }
-
-    return chapterList
-  }, [filteredChapters])
-
-  /**
-   * Whether or not new search results should be calculated. We disable it as
-   * the user is typing to prevent lag.
-   */
-  const [shouldSearch, setShouldSearch] = useState(true)
-
-  /** A timer used to reset `shouldSearch` back to true when it's been disabled. */
-  const timer = useRef<NodeJS.Timer>()
-
-  /** An array of the results from a specific search. Starts off as undefined. */
-  // const [searchResults, setSearchResults] = useState<
-  //   Array<FuseResult<Chapter>>
-  // >([])
-
-  /** Used to store the fuse.js object. */
-  const searchResults = useFuzzySearchList({
-    list: chapterList,
-    // If `queryText` is blank, `list` is returned in whole
-    queryText: searchText,
-    // optional `getText` or `key`, same as with `createFuzzySearch`
-    getText: (item) => [typeof item === 'object' ? item.reference : ''],
-    // arbitrary mapping function, takes `FuzzyResult<T>` as input
-    mapResultItem: ({ item, score, matches: [highlightRanges] }) => ({
-      item,
-      highlightRanges,
-    }),
-  })
-
   function focusSearch() {
-    console.log('beep 2')
     searchRef.current?.focus()
   }
 
-  const pinch = Gesture.Pinch()
+  const pinchGesture = Gesture.Pinch()
     .onUpdate((e) => {
-      scale.value = savedScale.value * e.scale
+      if (textPinch.value === zoomOutReq) return
+
+      textPinch.value = savedTextPinch.value * e.scale
+
+      if (textPinch.value < zoomOutReq) {
+        if (textPinchHaptic.value === 0) {
+          textPinchHaptic.value = 1
+          runOnJS(impactAsync)()
+        }
+      } else {
+        textPinchHaptic.value = 0
+      }
     })
     .onEnd((e) => {
+      if (textPinch.value === zoomOutReq) return
+
       if (e.scale <= zoomOutReq) {
-        savedScale.value = zoomOutReq
-        scale.value = withSpring(zoomOutReq)
-        console.log('beep')
+        savedTextPinch.value = zoomOutReq
+        textPinch.value = withSpring(zoomOutReq)
         runOnJS(focusSearch)()
       } else {
-        savedScale.value = 1
-        scale.value = withSpring(1)
+        savedTextPinch.value = 1
+        textPinch.value = withSpring(1)
       }
     })
 
-  const drawerConfig = { mass: 1.2, damping: 20, stiffness: 160 }
+  const panActivateConfig = { mass: 0.5, damping: 20, stiffness: 140 }
 
-  const drawer = Gesture.Pan()
+  function showStatusBar() {
+    setIsStatusBarHidden(false)
+  }
+  function hideStatusBar() {
+    setIsStatusBarHidden(true)
+  }
+
+  const panGesture = Gesture.Pan()
     .onChange((event) => {
-      if (scale.value !== 1) return
+      if (textPinch.value !== 1) return
 
-      offset.value = saved.value + event.translationX
+      textTranslateX.value = savedTextTranslateX.value + event.translationX
     })
     .onFinalize((e) => {
-      if (scale.value !== 1) return
+      if (textPinch.value !== 1) return
 
-      if (offset.value < -horizReq) {
-        saved.value = -horizReq
-        offset.value = withSpring(-horizReq, drawerConfig)
-      } else if (offset.value > horizReq) {
-        saved.value = horizReq
-        offset.value = withSpring(horizReq, drawerConfig)
-      } else {
-        saved.value = 0
-        offset.value = withSpring(0, drawerConfig)
+      const comingFrom =
+        savedTextTranslateX.value === 0
+          ? 'center'
+          : savedTextTranslateX.value > 0
+            ? 'left'
+            : 'right'
+
+      switch (comingFrom) {
+        case 'center':
+          if (
+            textTranslateX.value < -horizTransReq / 2 ||
+            e.velocityX < -horizVelocReq
+          ) {
+            runOnJS(impactAsync)()
+            runOnJS(showStatusBar)()
+            savedTextTranslateX.value = -horizTransReq
+            textTranslateX.value = withSpring(-horizTransReq, panActivateConfig)
+          } else if (
+            textTranslateX.value > horizTransReq / 2 ||
+            e.velocityX > horizVelocReq
+          ) {
+            runOnJS(impactAsync)()
+            runOnJS(showStatusBar)()
+            savedTextTranslateX.value = horizTransReq
+            textTranslateX.value = withSpring(horizTransReq, panActivateConfig)
+          } else {
+            savedTextTranslateX.value = 0
+            textTranslateX.value = withSpring(0, panActivateConfig)
+          }
+          break
+        case 'right':
+          if (
+            textTranslateX.value > -horizTransReq / 2 ||
+            e.velocityX > horizVelocReq
+          ) {
+            runOnJS(impactAsync)()
+            runOnJS(hideStatusBar)()
+            savedTextTranslateX.value = 0
+            textTranslateX.value = withSpring(0, panActivateConfig)
+          } else {
+            savedTextTranslateX.value = -horizTransReq
+            textTranslateX.value = withSpring(-horizTransReq, panActivateConfig)
+          }
+          break
+        case 'left':
+          if (
+            textTranslateX.value < horizTransReq / 2 ||
+            e.velocityX < -horizVelocReq
+          ) {
+            runOnJS(impactAsync)()
+            runOnJS(hideStatusBar)()
+            savedTextTranslateX.value = 0
+            textTranslateX.value = withSpring(0, panActivateConfig)
+          } else {
+            savedTextTranslateX.value = horizTransReq
+            textTranslateX.value = withSpring(horizTransReq, panActivateConfig)
+          }
       }
     })
 
-  const composedGestures = Gesture.Simultaneous(pinch, drawer)
+  const composedGestures = Gesture.Simultaneous(pinchGesture, panGesture)
 
   useEffect(() => {
     if (activeChapter.going === 'forward') {
@@ -191,43 +219,30 @@ export default function BibleView() {
       scrollViewRef.current?.scrollTo({ y: 0, animated: false })
     }
 
-    chapterTransition.value = withDelay(
-      50,
+    textTranslateY.value = withDelay(
+      75,
       withSpring(0, { damping: 20, stiffness: 120 })
     )
   }, [activeChapter])
 
-  function handleDragEnd(event: NativeSyntheticEvent<NativeScrollEvent>) {
-    const offset = event.nativeEvent.contentOffset.y
-    const window = event.nativeEvent.layoutMeasurement.height
-    const contentHeight = event.nativeEvent.contentSize.height
-
-    if (offset <= -overScrollReq && activeChapter.index !== 0) goPrev.value = 1
-    else if (
-      offset + window > contentHeight + overScrollReq &&
-      activeChapter.index !== filteredChapters.length - 1
-    )
-      goNext.value = 1
-  }
-
   function goToNextChapter() {
     setActiveChapter((current) => ({
       going: 'forward',
-      id: filteredChapters[current.index + 1].id,
+      id: chapters[current.index + 1].id,
       index: current.index + 1,
     }))
   }
   function goToPreviousChapter() {
     setActiveChapter((current) => ({
       going: 'back',
-      id: filteredChapters[current.index - 1].id,
+      id: chapters[current.index - 1].id,
       index: current.index - 1,
     }))
   }
 
   useDerivedValue(() => {
     if (goPrev.value === 1) {
-      chapterTransition.value = withSequence(
+      textTranslateY.value = withSequence(
         withTiming(screenHeight, { duration: chapterChangeDuration }),
         withTiming(-screenHeight, { duration: 0 }, runOnJS(goToPreviousChapter))
       )
@@ -238,7 +253,7 @@ export default function BibleView() {
 
   useDerivedValue(() => {
     if (goNext.value === 1) {
-      chapterTransition.value = withSequence(
+      textTranslateY.value = withSequence(
         withTiming(-screenHeight, {
           duration: chapterChangeDuration,
         }),
@@ -301,8 +316,21 @@ export default function BibleView() {
     }
   }
 
+  function handleDragEnd(event: NativeSyntheticEvent<NativeScrollEvent>) {
+    const offset = event.nativeEvent.contentOffset.y
+    const window = event.nativeEvent.layoutMeasurement.height
+    const contentHeight = event.nativeEvent.contentSize.height
+
+    if (offset <= -overScrollReq && activeChapter.index !== 0) goPrev.value = 1
+    else if (
+      offset + window > contentHeight + overScrollReq &&
+      activeChapter.index !== chapters.length - 1
+    )
+      goNext.value = 1
+  }
+
   useDerivedValue(() => {
-    if (showPrevIndicator.value === 1 || showNextIndicator.value === 1) {
+    if (prevIndicatorOpacity.value === 1 || nextIndicatorOpacity.value === 1) {
       runOnJS(impactAsync)()
     }
   }, [])
@@ -310,26 +338,40 @@ export default function BibleView() {
   const chapterAStyles = useAnimatedStyle(() => {
     return {
       transform: [
-        { translateY: chapterTransition.value },
-        { translateX: offset.value },
+        { translateY: textTranslateY.value },
+        { translateX: textTranslateX.value },
         {
-          scale: interpolate(scale.value, [0, 1], [0.9, 1], {
+          scale: interpolate(textPinch.value, [0, 1], [0.8, 1], {
             extrapolateLeft: Extrapolation.CLAMP,
             extrapolateRight: Extrapolation.CLAMP,
           }),
         },
       ],
-      opacity: scale.value,
+
+      opacity:
+        textPinch.value !== 1
+          ? textPinch.value
+          : interpolate(
+              textTranslateX.value,
+              [-horizTransReq, 0, horizTransReq],
+              [0.5, 1, 0.5]
+            ),
     }
   })
 
   const showPrevAnimatedStyles = useAnimatedStyle(() => {
     return {
       backgroundColor:
-        prevIndicatorOpacity.value === 1 ? colors.p1 : colors.bg2,
+        prevIndicatorOpacity.value === 1 ? colors.fg2 : colors.bg2,
       opacity: prevIndicatorOpacity.value,
       transform: [
-        { translateY: -prevIndicatorY.value },
+        {
+          translateY: interpolate(
+            -prevIndicatorY.value,
+            [0, overScrollReq, overScrollReq * 2],
+            [0, overScrollReq, overScrollReq * 1.4]
+          ),
+        },
         { scale: prevIndicatorScale.value },
       ],
     }
@@ -338,76 +380,26 @@ export default function BibleView() {
   const showNextAnimatedStyles = useAnimatedStyle(() => {
     return {
       backgroundColor:
-        nextIndicatorOpacity.value === 1 ? colors.p1 : colors.bg2,
+        nextIndicatorOpacity.value === 1 ? colors.fg2 : colors.bg2,
       opacity: nextIndicatorOpacity.value,
       transform: [
-        { translateY: -nextIndicatorY.value },
+        {
+          translateY: interpolate(
+            -nextIndicatorY.value,
+            [-overScrollReq * 2, -overScrollReq, 0],
+            [-overScrollReq * 1.4, -overScrollReq, 0]
+          ),
+        },
         { scale: nextIndicatorScale.value },
       ],
     }
   })
 
-  const navigatorAnimatedStyles = useAnimatedStyle(() => {
-    return {
-      opacity: interpolate(scale.value, [zoomOutReq, 1], [1, 0]),
-      zIndex: scale.value !== 1 ? 2 : -1,
-    }
-  })
-
-  const historyAnimatedStyles = useAnimatedStyle(() => {
-    return {
-      transform: [{ translateX: offset.value }],
-    }
-  })
-
   const extrasAnimatedStyles = useAnimatedStyle(() => {
     return {
-      transform: [{ translateX: offset.value }],
+      transform: [{ translateX: textTranslateX.value }],
     }
   })
-
-  function renderSearchItem({ item: { item } }: SearchItem) {
-    const isBook = typeof item === 'string'
-    const chapterIndex = isBook
-      ? -1
-      : filteredChapters.findIndex((chapter) => chapter.id === item.id)
-
-    return (
-      <TouchableOpacity
-        disabled={isBook}
-        style={{
-          justifyContent: 'center',
-          width: '100%',
-          height: isBook ? 48 : 32,
-          paddingHorizontal: gutterSize,
-          borderBottomWidth: isBook ? 1 : 0,
-          backgroundColor: colors.bg2,
-          marginBottom: isBook ? 8 : 0,
-          borderColor: colors.bg3,
-        }}
-        onPress={() => {
-          setActiveChapter({
-            going: 'forward',
-            id: filteredChapters[chapterIndex].id,
-            index: chapterIndex,
-          })
-          searchRef.current?.blur()
-          scale.value = withSpring(1)
-          savedScale.value = 1
-        }}
-      >
-        <Text
-          style={type(isBook ? 24 : 18, isBook ? 'b' : 'r', 'l', colors.fg1)}
-        >
-          {isBook
-            ? item
-            : searchText === ''
-              ? `Chapter ${item.number}`
-              : item.reference}
-        </Text>
-      </TouchableOpacity>
-    )
-  }
 
   return (
     <GestureDetector gesture={composedGestures}>
@@ -437,9 +429,9 @@ export default function BibleView() {
                 marginBottom: gutterSize,
               }}
             >
-              {filteredChapters[activeChapter.index].reference}
+              {chapters[activeChapter.index].reference}
             </Text>
-            {filteredChapters[activeChapter.index].data.map((paragraph) =>
+            {chapters[activeChapter.index].data.map((paragraph) =>
               renderFirstLevelText(20, paragraph)
             )}
             {/* <View style={styles.dotContainer}>
@@ -448,6 +440,11 @@ export default function BibleView() {
             <Spacer units={24} additional={insets.bottom} />
           </ScrollView>
         </Animated.View>
+        <ChapterOverlay
+          activeChapter={activeChapter}
+          chapters={chapters}
+          isStatusBarHidden={isStatusBarHidden}
+        />
         <View
           style={{
             width: '100%',
@@ -494,120 +491,17 @@ export default function BibleView() {
             <Ionicons name="arrow-down" size={32} color={colors.fg1} />
           </Animated.View>
         </View>
-        <Animated.View
-          style={[
-            {
-              width: Dimensions.get('window').width,
-              height: Dimensions.get('window').height,
-              position: 'absolute',
-              alignItems: 'center',
-              paddingTop: insets.top + gutterSize,
-            },
-            navigatorAnimatedStyles,
-          ]}
-        >
-          <View
-            style={{
-              width: Dimensions.get('window').width - gutterSize * 2,
-              backgroundColor: colors.bg2,
-              borderRadius: 16,
-              overflow: 'hidden',
-            }}
-          >
-            <View
-              style={{
-                width: '100%',
-                flexDirection: 'row',
-                marginTop: gutterSize,
-              }}
-            >
-              <Spacer units={4} />
-              <TextInput
-                placeholder='Quick find; try "Ex 34"'
-                placeholderTextColor={colors.fg3}
-                ref={searchRef}
-                clearButtonMode="always"
-                cursorColor={colors.fg1}
-                selectionColor={colors.fg1}
-                onChangeText={(text) => setSearchText(text)}
-                autoCorrect={false}
-                style={{
-                  flex: 1,
-                  paddingHorizontal: gutterSize,
-                  paddingVertical: gutterSize / 2,
-                  backgroundColor: colors.bg3,
-                  borderRadius: 12,
-                  ...type(18, 'b', 'l', colors.fg1),
-                }}
-              />
-              <TouchableOpacity
-                onPress={() => {
-                  scale.value = withSpring(1)
-                  savedScale.value = 1
-                  searchRef.current?.blur()
-                }}
-                style={{
-                  paddingHorizontal: gutterSize,
-                  paddingVertical: gutterSize / 2,
-                  top: 0,
-                  right: 0,
-                  zIndex: 4,
-                }}
-              >
-                <Ionicons name="close-circle" size={32} color={colors.fg1} />
-              </TouchableOpacity>
-            </View>
-            <View
-              style={{
-                height: 300,
-                width: '100%',
-                justifyContent: 'center',
-                marginTop: gutterSize,
-              }}
-            >
-              {!shouldSearch ? (
-                <ActivityIndicator size="large" color={colors.fg2} />
-              ) : (
-                <FlashList
-                  ref={searchListRef}
-                  keyboardShouldPersistTaps="always"
-                  stickyHeaderIndices={
-                    searchText === '' ? bookIndices : undefined
-                  }
-                  estimatedItemSize={25}
-                  renderItem={renderSearchItem}
-                  data={searchResults}
-                />
-              )}
-            </View>
-          </View>
-          <TouchableOpacity
-            onPress={() => {
-              scale.value = withSpring(1)
-              savedScale.value = 1
-              searchRef.current?.blur()
-            }}
-            style={{ flex: 1, width: '100%' }}
-          />
-        </Animated.View>
-        <Animated.View
-          style={[
-            {
-              width: Dimensions.get('window').width * 2,
-              height: Dimensions.get('window').height,
-              backgroundColor: colors.bg2,
-              position: 'absolute',
-              right: -Dimensions.get('window').width * 2,
-              zIndex: 2,
-              paddingTop: insets.top + gutterSize,
-              paddingHorizontal: gutterSize,
-              paddingRight: Dimensions.get('window').width * 1.4 + gutterSize,
-            },
-            historyAnimatedStyles,
-          ]}
-        >
-          <Text style={type(24, 'b', 'l', colors.fg1)}>Recents</Text>
-        </Animated.View>
+        <Navigator
+          chapterListRef={searchListRef}
+          chapters={chapters}
+          textPinch={textPinch}
+          savedTextPinch={savedTextPinch}
+          searchRef={searchRef}
+          searchText={searchText}
+          setSearchText={setSearchText}
+          setActiveChapter={setActiveChapter}
+        />
+        <History textTranslationX={textTranslateX} />
         <Animated.View
           style={[
             {
@@ -619,13 +513,23 @@ export default function BibleView() {
               zIndex: 2,
               paddingTop: insets.top + gutterSize,
               paddingHorizontal: gutterSize,
-              paddingLeft: Dimensions.get('window').width * 1.4 + gutterSize,
+              paddingLeft: Dimensions.get('window').width * 1.2 + gutterSize,
             },
             extrasAnimatedStyles,
           ]}
         >
-          <Text style={type(24, 'b', 'l', colors.fg1)}>Settings</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+            <Ionicons name="settings-outline" size={20} color={colors.fg2} />
+            <Text style={type(24, 'b', 'l', colors.fg1)}>Settings</Text>
+          </View>
         </Animated.View>
+        <StatusBar
+          hidden={isStatusBarHidden}
+          backgroundColor={colors.bg2}
+          translucent={false}
+          animated
+          style="light"
+        />
       </View>
     </GestureDetector>
   )

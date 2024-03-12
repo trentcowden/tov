@@ -18,6 +18,12 @@ export const screenHeight = Dimensions.get('window').height
 export const largeButtonSize = 80
 export const smallButtonSize = 48
 
+export const chapterChangeDuration = 300
+export const overScrollReq = 100
+export const zoomOutReq = 0.6
+export const horizTransReq = Dimensions.get('window').width * 0.8
+export const horizVelocReq = 600
+
 import { TextStyle } from 'react-native'
 
 /**
