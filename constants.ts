@@ -1,16 +1,17 @@
 import { Dimensions } from 'react-native'
 
 export const colors = {
-  bg1: '#1b1b1b',
-  bg2: '#282828',
-  bg3: '#393939',
+  bg1: '#292521',
+  bg2: '#332E28',
+  bg3: '#403931',
   fg1: '#efefef',
   fg2: '#d8d8d8',
   fg3: '#9b9b9b',
   p1: '#283618',
+  b: 'rgba(164, 152, 142, 0.15)',
 }
 
-export const gutterSize = 16
+export const gutterSize = 20
 
 export const screenWidth = Dimensions.get('window').width
 export const screenHeight = Dimensions.get('window').height
@@ -31,7 +32,7 @@ import { TextStyle } from 'react-native'
  */
 export const type = (
   size: number,
-  weight: 'r' | 'b' | 'i' | 'bi',
+  weight: 'r' | 'b' | 'i' | 'bi' | 'uir' | 'uib',
   align: 'l' | 'c',
   color: string
 ): TextStyle => {
@@ -54,5 +55,19 @@ export const type = (
     textAlign: alignments[align],
     color: color,
     fontWeight: weight === 'r' ? '400' : '600',
+    fontFamily:
+      weight === 'uir'
+        ? 'UIRegular'
+        : weight === 'uib'
+          ? 'UIBold'
+          : weight === 'r'
+            ? 'Regular'
+            : weight === 'i'
+              ? 'Regular-Italic'
+              : weight === 'b'
+                ? 'Bold'
+                : 'Bold-Italic',
   }
 }
+
+export const panActivateConfig = { mass: 0.5, damping: 20, stiffness: 140 }

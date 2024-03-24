@@ -2,20 +2,20 @@ import { Ionicons } from '@expo/vector-icons'
 import { FlashList } from '@shopify/flash-list'
 import { impactAsync } from 'expo-haptics'
 import { StatusBar } from 'expo-status-bar'
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react'
 import {
-  Dimensions,
   NativeScrollEvent,
   NativeSyntheticEvent,
-  ScrollView,
   Text,
+  TextInput,
   View,
 } from 'react-native'
 import {
   Gesture,
   GestureDetector,
-  TextInput,
+  ScrollView,
 } from 'react-native-gesture-handler'
+import Markdown, { ASTNode } from 'react-native-markdown-display'
 import Animated, {
   Extrapolation,
   interpolate,
@@ -30,11 +30,10 @@ import Animated, {
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Spacer from './Spacer'
-import bible from './bible.json'
-import { Bible, Chapter } from './bibleTypes'
 import ChapterOverlay from './components/ChapterOverlay'
 import History from './components/History'
 import Navigator from './components/Navigator'
+import VerseInfo from './components/VerseInfo'
 import {
   chapterChangeDuration,
   colors,
@@ -42,23 +41,42 @@ import {
   horizTransReq,
   horizVelocReq,
   overScrollReq,
+  panActivateConfig,
   screenHeight,
   type,
   zoomOutReq,
 } from './constants'
-import { renderFirstLevelText } from './functions/renderBible'
+import chaptersJson from './data/chapters.json'
+import { Books } from './data/types/books'
+import { Chapters } from './data/types/chapters'
+import { getBook, getReference } from './functions/bible'
+import { ActiveChapterIndex } from './types/bible'
 
 export interface NavigatorChapterItem {
-  item: { item: string | Chapter }
+  item:
+    | { item: Chapters[number] }
+    | Books[number]
+    | { sectionName: Books[number]['englishDivision'] }
+  index: number
 }
 
 export default function BibleView() {
-  const [activeChapter, setActiveChapter] = useState<{
-    going: 'forward' | 'back'
-    index: number
-    id: string
-  }>({ index: 0, going: 'forward', id: 'GEN.1' })
+  const [activeChapterIndex, setActiveChapterIndex] =
+    useState<ActiveChapterIndex>({ index: 0, going: 'forward' })
+
+  const activeChapter = useMemo(() => {
+    return (chaptersJson as Chapters)[activeChapterIndex.index]
+  }, [activeChapterIndex])
+
+  const activeBook = useMemo(
+    () => getBook(activeChapter.chapterId),
+    [activeChapter]
+  )
+
   const insets = useSafeAreaInsets()
+
+  const overlayOpacity = useSharedValue(0)
+
   /**
    * Component refs.
    */
@@ -85,18 +103,17 @@ export default function BibleView() {
   const nextIndicatorOpacity = useSharedValue(0)
   const prevIndicatorScale = useSharedValue(0)
   const nextIndicatorScale = useSharedValue(0)
-  const [isStatusBarHidden, setIsStatusBarHidden] = useState(false)
-
-  const chapters: Chapter[] = useMemo(() => {
-    const nivBible = bible as Bible
-
-    return nivBible.chapters.filter(
-      (chapter: Chapter) => chapter.number !== 'intro'
-    )
-  }, [])
+  const [isStatusBarHidden, setIsStatusBarHidden] = useState(true)
+  const [pastOverlayOffset, setPastOverlayOffset] = useState(false)
 
   function focusSearch() {
     searchRef.current?.focus()
+  }
+
+  const onLinkPress = (url: string) => {
+    console.log(url)
+    // some custom logic
+    return false
   }
 
   const pinchGesture = Gesture.Pinch()
@@ -121,13 +138,12 @@ export default function BibleView() {
         savedTextPinch.value = zoomOutReq
         textPinch.value = withSpring(zoomOutReq)
         runOnJS(focusSearch)()
+        runOnJS(showStatusBar)()
       } else {
         savedTextPinch.value = 1
         textPinch.value = withSpring(1)
       }
     })
-
-  const panActivateConfig = { mass: 0.5, damping: 20, stiffness: 140 }
 
   function showStatusBar() {
     setIsStatusBarHidden(false)
@@ -135,6 +151,8 @@ export default function BibleView() {
   function hideStatusBar() {
     setIsStatusBarHidden(true)
   }
+
+  function openHistory() {}
 
   const panGesture = Gesture.Pan()
     .onChange((event) => {
@@ -205,12 +223,26 @@ export default function BibleView() {
       }
     })
 
-  const composedGestures = Gesture.Simultaneous(pinchGesture, panGesture)
+  const tapGesture = Gesture.Tap()
+    .maxDuration(250)
+    .numberOfTaps(2)
+    .onStart(() => {
+      savedTextPinch.value = zoomOutReq
+      textPinch.value = withSpring(zoomOutReq)
+      runOnJS(focusSearch)()
+      runOnJS(showStatusBar)()
+    })
+
+  const composedGestures = Gesture.Simultaneous(
+    pinchGesture,
+    panGesture,
+    tapGesture
+  )
 
   useEffect(() => {
-    if (activeChapter.going === 'forward') {
+    if (activeChapterIndex.going === 'forward') {
       scrollViewRef.current?.scrollTo({ y: 0, animated: false })
-    } else if (activeChapter.going === 'back') {
+    } else if (activeChapterIndex.going === 'back') {
       setTimeout(
         () => scrollViewRef.current?.scrollToEnd({ animated: false }),
         50
@@ -223,19 +255,17 @@ export default function BibleView() {
       75,
       withSpring(0, { damping: 20, stiffness: 120 })
     )
-  }, [activeChapter])
+  }, [activeChapterIndex])
 
   function goToNextChapter() {
-    setActiveChapter((current) => ({
+    setActiveChapterIndex((current) => ({
       going: 'forward',
-      id: chapters[current.index + 1].id,
       index: current.index + 1,
     }))
   }
   function goToPreviousChapter() {
-    setActiveChapter((current) => ({
+    setActiveChapterIndex((current) => ({
       going: 'back',
-      id: chapters[current.index - 1].id,
       index: current.index - 1,
     }))
   }
@@ -268,6 +298,14 @@ export default function BibleView() {
     const offset = event.nativeEvent.contentOffset.y
     const contentHeight = event.nativeEvent.contentSize.height
 
+    // Fade in and out the chapter overlay.
+    if (offset > 80) {
+      setPastOverlayOffset(true)
+    } else {
+      setPastOverlayOffset(false)
+    }
+
+    // Animate the prev/next chapter arrows.
     if (offset < 0) {
       prevIndicatorY.value = offset
 
@@ -321,10 +359,11 @@ export default function BibleView() {
     const window = event.nativeEvent.layoutMeasurement.height
     const contentHeight = event.nativeEvent.contentSize.height
 
-    if (offset <= -overScrollReq && activeChapter.index !== 0) goPrev.value = 1
+    if (offset <= -overScrollReq && activeChapterIndex.index !== 0)
+      goPrev.value = 1
     else if (
       offset + window > contentHeight + overScrollReq &&
-      activeChapter.index !== chapters.length - 1
+      activeChapterIndex.index !== (chaptersJson as Chapters).length - 1
     )
       goNext.value = 1
   }
@@ -395,11 +434,30 @@ export default function BibleView() {
     }
   })
 
-  const extrasAnimatedStyles = useAnimatedStyle(() => {
+  const linkAnimatedStyles = useAnimatedStyle(() => {
     return {
       transform: [{ translateX: textTranslateX.value }],
     }
   })
+
+  const rules = {
+    link: (node: ASTNode, children: ReactNode) => {
+      return (
+        <Text
+          style={{
+            // backgroundColor: colors.bg2,
+            textDecorationLine: 'underline',
+            lineHeight: 34,
+          }}
+          onPress={() => onLinkPress(node.attributes.href)}
+        >
+          <Text style={{ color: colors.fg3 }}>{' '}</Text>
+          {children}
+          <Text style={{ color: colors.fg3 }}>{' '}</Text>
+        </Text>
+      )
+    },
+  }
 
   return (
     <GestureDetector gesture={composedGestures}>
@@ -429,11 +487,32 @@ export default function BibleView() {
                 marginBottom: gutterSize,
               }}
             >
-              {chapters[activeChapter.index].reference}
+              {getReference(activeChapter.chapterId)}
             </Text>
-            {chapters[activeChapter.index].data.map((paragraph) =>
-              renderFirstLevelText(20, paragraph)
-            )}
+            <Markdown
+              mergeStyle={false}
+              style={{
+                body: {
+                  ...type(18, 'r', 'l', colors.fg1),
+                  lineHeight: 36,
+                  textAlignVertical: 'center',
+                },
+                link: {
+                  color: colors.fg3,
+                  fontSize: 18,
+                  fontFamily: 'Bold',
+                },
+                em: {
+                  fontFamily: 'Regular-Italic',
+                },
+                strong: {
+                  fontFamily: 'Bold',
+                },
+              }}
+              rules={rules}
+            >
+              {activeChapter.md}
+            </Markdown>
             {/* <View style={styles.dotContainer}>
             <View style={styles.dot} />
           </View> */}
@@ -441,9 +520,11 @@ export default function BibleView() {
           </ScrollView>
         </Animated.View>
         <ChapterOverlay
+          overlayOpacity={overlayOpacity}
           activeChapter={activeChapter}
-          chapters={chapters}
+          activeBook={activeBook}
           isStatusBarHidden={isStatusBarHidden}
+          pastOverlayOffset={pastOverlayOffset}
         />
         <View
           style={{
@@ -493,36 +574,33 @@ export default function BibleView() {
         </View>
         <Navigator
           chapterListRef={searchListRef}
-          chapters={chapters}
           textPinch={textPinch}
           savedTextPinch={savedTextPinch}
           searchRef={searchRef}
           searchText={searchText}
           setSearchText={setSearchText}
-          setActiveChapter={setActiveChapter}
+          setActiveChapterIndex={setActiveChapterIndex}
+          activeChapter={activeChapter}
+          setIsStatusBarHidden={setIsStatusBarHidden}
         />
-        <History textTranslationX={textTranslateX} />
-        <Animated.View
-          style={[
-            {
-              width: Dimensions.get('window').width * 2,
-              height: Dimensions.get('window').height,
-              backgroundColor: colors.bg2,
-              position: 'absolute',
-              left: -Dimensions.get('window').width * 2,
-              zIndex: 2,
-              paddingTop: insets.top + gutterSize,
-              paddingHorizontal: gutterSize,
-              paddingLeft: Dimensions.get('window').width * 1.2 + gutterSize,
-            },
-            extrasAnimatedStyles,
-          ]}
-        >
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-            <Ionicons name="settings-outline" size={20} color={colors.fg2} />
-            <Text style={type(24, 'b', 'l', colors.fg1)}>Settings</Text>
-          </View>
-        </Animated.View>
+        <VerseInfo textTranslationX={textTranslateX} />
+        <History
+          activeChapterIndex={activeChapterIndex}
+          savedTextTranslateX={savedTextTranslateX}
+          textTranslationX={textTranslateX}
+          setActiveChapterIndex={setActiveChapterIndex}
+          openHistory={() => {
+            runOnJS(impactAsync)()
+            runOnJS(showStatusBar)()
+            savedTextTranslateX.value = -horizTransReq
+            textTranslateX.value = withSpring(-horizTransReq, panActivateConfig)
+          }}
+          activeChapter={activeChapter}
+          closeHistory={() => {
+            textTranslateX.value = withSpring(0, panActivateConfig)
+            savedTextTranslateX.value = 0
+          }}
+        />
         <StatusBar
           hidden={isStatusBarHidden}
           backgroundColor={colors.bg2}

@@ -1,44 +1,71 @@
+import { Ionicons } from '@expo/vector-icons'
 import { useFuzzySearchList } from '@nozbe/microfuzz/react'
 import { FlashList } from '@shopify/flash-list'
 import {
   Dispatch,
   RefObject,
   SetStateAction,
+  useEffect,
   useMemo,
-  useRef,
   useState,
 } from 'react'
 import {
-  ActivityIndicator,
   Dimensions,
+  KeyboardAvoidingView,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from 'react-native'
+import {
+  FlatList,
+  Gesture,
+  GestureDetector,
+} from 'react-native-gesture-handler'
 import Animated, {
+  FadeInRight,
+  FadeOut,
   SharedValue,
   interpolate,
+  runOnJS,
   useAnimatedStyle,
+  useSharedValue,
   withSpring,
+  withTiming,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { NavigatorChapterItem } from '../Bible'
 import Spacer from '../Spacer'
-import { ActiveChapter, Chapter } from '../bibleTypes'
-import { colors, gutterSize, type, zoomOutReq } from '../constants'
+import {
+  colors,
+  gutterSize,
+  horizVelocReq,
+  type,
+  zoomOutReq,
+} from '../constants'
 import books from '../data/books.json'
+import chapters from '../data/chapters.json'
+import { Books } from '../data/types/books'
+import { Chapters } from '../data/types/chapters'
+import { getBook, getReference } from '../functions/bible'
+import { addToHistory } from '../redux/history'
+import { useAppDispatch } from '../redux/hooks'
+import { ActiveChapterIndex } from '../types/bible'
+import Fade from './Fade'
 
 interface Props {
   searchRef: RefObject<TextInput>
   searchText: string
   chapterListRef: RefObject<FlashList<NavigatorChapterItem>>
   setSearchText: Dispatch<SetStateAction<string>>
-  setActiveChapter: Dispatch<SetStateAction<ActiveChapter>>
+  setActiveChapterIndex: Dispatch<SetStateAction<ActiveChapterIndex>>
   textPinch: SharedValue<number>
   savedTextPinch: SharedValue<number>
-  chapters: Chapter[]
+  activeChapter: Chapters[number]
+  setIsStatusBarHidden: Dispatch<SetStateAction<boolean>>
 }
+
+const numColumns = 5
 
 export default function Navigator({
   searchRef,
@@ -47,26 +74,50 @@ export default function Navigator({
   textPinch,
   savedTextPinch,
   chapterListRef,
-  chapters,
-  setActiveChapter,
+  setActiveChapterIndex,
+  activeChapter,
+  setIsStatusBarHidden,
 }: Props) {
   const insets = useSafeAreaInsets()
-
+  const dispatch = useAppDispatch()
   /**
    * Whether or not new search results should be calculated. We disable it as
    * the user is typing to prevent lag.
    */
-  const [shouldSearch, setShouldSearch] = useState(true)
+  const chapterTransition = useSharedValue(0)
 
-  /** A timer used to reset `shouldSearch` back to true when it's been disabled. */
-  const timer = useRef<NodeJS.Timer>()
+  const [keyboardHeight, setKeyboardHeight] = useState(0)
+  const [navigatorBook, setNavigatorBook] = useState<Books[number]>()
+
+  const booksWithSections = useMemo<
+    Array<Books[number] | { sectionName: Books[number]['englishDivision'] }>
+  >(() => {
+    const booksWithSections: Array<
+      { sectionName: Books[number]['englishDivision'] } | Books[number]
+    > = []
+    let prevSection = ''
+
+    ;(books as Books).forEach((book) => {
+      if (prevSection !== book.englishDivision) {
+        booksWithSections.push({
+          sectionName: book.englishDivision as Books[number]['englishDivision'],
+        })
+        prevSection = book.englishDivision
+      }
+
+      booksWithSections.push(book as Books[number])
+    })
+
+    return booksWithSections
+  }, [])
 
   const chaptersWithBooks = useMemo(() => {
     const chapterList = []
 
-    for (const chapter of chapters) {
-      if (chapter.number === '1')
-        chapterList.push(chapter.reference.split(' ').slice(0, -1).join(' '))
+    for (const chapter of chapters as Chapters) {
+      const [bookId, chapterNumber] = chapter.chapterId.split('.')
+      if (chapterNumber === '1')
+        chapterList.push(getBook(chapter.chapterId).name)
 
       chapterList.push(chapter)
     }
@@ -74,13 +125,19 @@ export default function Navigator({
     return chapterList
   }, [chapters])
 
+  useEffect(() => {
+    chapterListRef.current?.scrollToOffset({ animated: false, offset: 0 })
+  }, [searchText])
+
   const bookIndices = useMemo(() => {
-    return [
-      0,
-      ...books.map((book, index) =>
-        books.slice(0, index + 1).reduce((a, b) => a + b.chapters.length + 1, 0)
-      ),
-    ]
+    const indices: number[] = []
+
+    booksWithSections.forEach((bookOrSection, index) => {
+      if ('sectionName' in bookOrSection) {
+        indices.push(index)
+      }
+    })
+    return indices
   }, [])
 
   /** Used to store the fuse.js object. */
@@ -89,7 +146,9 @@ export default function Navigator({
     // If `queryText` is blank, `list` is returned in whole
     queryText: searchText,
     // optional `getText` or `key`, same as with `createFuzzySearch`
-    getText: (item) => [typeof item === 'object' ? item.reference : ''],
+    getText: (item) => [
+      typeof item === 'object' ? getReference(item.chapterId) : '',
+    ],
     // arbitrary mapping function, takes `FuzzyResult<T>` as input
     mapResultItem: ({ item, score, matches: [highlightRanges] }) => ({
       item,
@@ -97,47 +156,139 @@ export default function Navigator({
     }),
   })
 
-  function renderSearchItem({ item: { item } }: NavigatorChapterItem) {
-    const isBook = typeof item === 'string'
-    const chapterIndex = isBook
-      ? -1
-      : chapters.findIndex((chapter) => chapter.id === item.id)
+  function closeNavigator() {
+    searchRef.current?.blur()
+    textPinch.value = withSpring(1)
+    savedTextPinch.value = 1
+    setIsStatusBarHidden(true)
+    chapterTransition.value = withTiming(0)
+    setTimeout(() => setNavigatorBook(undefined), 500)
+  }
 
-    return (
-      <TouchableOpacity
-        disabled={isBook}
-        style={{
-          justifyContent: 'center',
-          width: '100%',
-          height: isBook ? 54 : 48,
-          paddingHorizontal: gutterSize,
-          borderBottomWidth: isBook ? 1 : 0,
-          backgroundColor: colors.bg2,
-          marginBottom: isBook ? 8 : 0,
-          borderColor: colors.bg3,
-        }}
-        onPress={() => {
-          setActiveChapter({
-            going: 'forward',
-            id: chapters[chapterIndex].id,
-            index: chapterIndex,
-          })
-          searchRef.current?.blur()
-          textPinch.value = withSpring(1)
-          savedTextPinch.value = 1
-        }}
-      >
-        <Text
-          style={type(isBook ? 26 : 20, isBook ? 'b' : 'r', 'l', colors.fg1)}
-        >
-          {isBook
-            ? item
-            : searchText === ''
-              ? `Chapter ${item.number}`
-              : item.reference}
-        </Text>
-      </TouchableOpacity>
+  function goToChapter(chapterId: Chapters[number]['chapterId']) {
+    const chapterIndex = (chapters as Chapters).findIndex(
+      (chapter) => chapter.chapterId === chapterId
     )
+
+    dispatch(
+      addToHistory({
+        chapterId: activeChapter.chapterId,
+        date: Date.now(),
+      })
+    )
+    setActiveChapterIndex({
+      going: 'forward',
+      index: chapterIndex,
+    })
+    closeNavigator()
+  }
+
+  const sectionNames: Record<Books[number]['englishDivision'], string> = {
+    acts: 'Acts',
+    epistles: 'Epistles',
+    gospels: 'Gospels',
+    historical: 'Historical',
+    majorProphets: 'Major Prophets',
+    minorProphets: 'Minor Prophets',
+    pentateuch: 'Pentateuch',
+    revelation: 'Revelation',
+    wisdom: 'Wisdom',
+  }
+
+  function renderMainNavigatorItem({ item, index }: NavigatorChapterItem) {
+    const highlight =
+      index === 0 && searchResults.length > 0 && searchText !== ''
+
+    if ('item' in item)
+      return (
+        <TouchableOpacity
+          style={{
+            alignItems: 'center',
+            width: '100%',
+            height: 48,
+            paddingHorizontal: gutterSize,
+            borderBottomWidth: 0,
+            backgroundColor: highlight ? colors.bg3 : colors.bg2,
+            marginBottom: 0,
+            borderColor: colors.bg3,
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+          }}
+          onPress={() => {
+            goToChapter(item.item.chapterId)
+          }}
+        >
+          <Text style={type(20, 'uir', 'l', colors.fg1)}>
+            {getReference(item.item.chapterId)}
+          </Text>
+          {highlight ? (
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 4,
+                borderWidth: 1,
+                borderColor: colors.fg3,
+                borderRadius: 8,
+                padding: 8,
+              }}
+            >
+              <Ionicons name="arrow-forward" size={16} color={colors.fg2} />
+            </View>
+          ) : null}
+        </TouchableOpacity>
+      )
+    else if ('sectionName' in item)
+      return (
+        <View
+          key={item.sectionName}
+          style={{
+            width: '100%',
+            paddingHorizontal: gutterSize,
+            // marginTop: index === 0 ? 0 : gutterSize * 1.5,
+            marginBottom: 4,
+            backgroundColor: colors.bg2,
+          }}
+        >
+          <Text style={type(15, 'uir', 'l', colors.fg3)}>
+            {sectionNames[item.sectionName]}
+          </Text>
+          <Spacer units={2} />
+          <View
+            style={{ width: '100%', height: 1, backgroundColor: colors.bg3 }}
+          />
+        </View>
+      )
+    else
+      return (
+        <TouchableOpacity
+          key={item.bookId}
+          style={{
+            alignItems: 'center',
+            width: '100%',
+            // height: 32,
+            marginBottom:
+              index === booksWithSections.length - 1
+                ? 0
+                : 'sectionName' in booksWithSections[index + 1]
+                  ? gutterSize * 1.5
+                  : 0,
+            paddingVertical: 6,
+            paddingHorizontal: gutterSize,
+            backgroundColor:
+              navigatorBook?.bookId === item.bookId ? colors.bg3 : undefined,
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+          }}
+          onPress={() => {
+            chapterTransition.value = withTiming(1)
+            setNavigatorBook(item)
+            searchRef.current?.blur()
+          }}
+        >
+          <Text style={type(20, 'uir', 'l', colors.fg1)}>{item.name}</Text>
+        </TouchableOpacity>
+      )
   }
 
   const navigatorAnimatedStyles = useAnimatedStyle(() => {
@@ -147,102 +298,302 @@ export default function Navigator({
     }
   })
 
-  return (
-    <Animated.View
-      style={[
-        {
-          width: Dimensions.get('window').width,
-          height: Dimensions.get('window').height,
-          position: 'absolute',
-          alignItems: 'center',
-          paddingTop: insets.top + gutterSize,
-        },
-        navigatorAnimatedStyles,
-      ]}
-    >
-      <View
+  const chapterBoxesAnimatedStyles = useAnimatedStyle(() => {
+    return {
+      opacity: chapterTransition.value,
+      zIndex: chapterTransition.value !== 0 ? 4 : -1,
+      transform: [
+        { translateX: interpolate(chapterTransition.value, [0, 1], [200, 0]) },
+      ],
+    }
+  })
+
+  const navigatorHeight =
+    Dimensions.get('window').height -
+    insets.top -
+    insets.bottom -
+    gutterSize * 2
+
+  function renderChapterBox({
+    item,
+    index,
+  }: {
+    item: Chapters[number]
+    index: number
+  }) {
+    // const availableWidth =
+    return (
+      <Animated.View
+        entering={FadeInRight.duration(200).delay(index * 5)}
+        exiting={FadeOut}
         style={{
-          width: Dimensions.get('window').width - gutterSize * 2,
-          backgroundColor: colors.bg2,
+          flex: 1,
+          aspectRatio: 1,
+          backgroundColor: colors.bg3,
+          marginHorizontal: gutterSize / 4,
           borderRadius: 16,
-          overflow: 'hidden',
         }}
       >
-        <View
+        <TouchableOpacity
           style={{
             width: '100%',
-            flexDirection: 'row',
-            marginTop: gutterSize,
+            height: '100%',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+          onPress={() => goToChapter(item.chapterId)}
+        >
+          <Text style={type(18, 'uib', 'c', colors.fg1)}>
+            {item.chapterId.split('.')[1]}
+          </Text>
+        </TouchableOpacity>
+      </Animated.View>
+    )
+  }
+  const panActivateConfig = { mass: 0.5, damping: 20, stiffness: 140 }
+
+  const panGesture = Gesture.Pan()
+    .onChange((event) => {
+      console.log(event.translationX)
+      if (chapterTransition.value === 0) return
+
+      chapterTransition.value = interpolate(
+        event.translationX,
+        [0, 200],
+        [1, 0]
+      )
+    })
+    .onFinalize((e) => {
+      if (chapterTransition.value === 0) return
+
+      if (
+        (chapterTransition.value < 0.5 || e.velocityX > horizVelocReq) &&
+        e.velocityX > 0
+      ) {
+        console.log('beep')
+        chapterTransition.value = withSpring(
+          0,
+          panActivateConfig,
+          runOnJS(resetNavigatorBook)
+        )
+      } else {
+        chapterTransition.value = withSpring(1, panActivateConfig)
+      }
+    })
+
+  function resetNavigatorBook() {
+    setNavigatorBook(undefined)
+  }
+
+  const searchAnimatedStyles = useAnimatedStyle(() => ({
+    transform: [
+      { translateY: interpolate(chapterTransition.value, [0, 1], [0, -50]) },
+    ],
+    opacity: interpolate(chapterTransition.value, [0, 0.5], [1, 0]),
+  }))
+
+  const bookNameAnimatedStyles = useAnimatedStyle(() => ({
+    transform: [
+      { translateY: interpolate(chapterTransition.value, [0, 1], [50, 0]) },
+    ],
+    opacity: interpolate(chapterTransition.value, [1, 0.5], [1, 0]),
+  }))
+
+  return (
+    <GestureDetector gesture={panGesture}>
+      <Animated.View
+        style={[
+          {
+            width: Dimensions.get('window').width,
+            height: Dimensions.get('window').height,
+            position: 'absolute',
+            alignItems: 'center',
+            paddingTop: insets.top + gutterSize,
+            justifyContent: 'flex-start',
+          },
+          navigatorAnimatedStyles,
+        ]}
+      >
+        <TouchableOpacity
+          onPress={closeNavigator}
+          style={{
+            position: 'absolute',
+            height: Dimensions.get('window').height,
+            width: '100%',
+          }}
+        />
+        <KeyboardAvoidingView
+          behavior="height"
+          style={{
+            width: Dimensions.get('window').width - gutterSize * 2,
+            height: navigatorHeight,
           }}
         >
-          <Spacer units={4} />
-          <TextInput
-            placeholder='Quick find; try "Ex 34"'
-            placeholderTextColor={colors.fg3}
-            ref={searchRef}
-            clearButtonMode="always"
-            cursorColor={colors.fg1}
-            selectionColor={colors.fg1}
-            onChangeText={(text) => setSearchText(text)}
-            autoCorrect={false}
+          <View
             style={{
+              width: Dimensions.get('window').width - gutterSize * 2,
+              backgroundColor: colors.bg2,
+              borderRadius: 16,
               flex: 1,
-              paddingHorizontal: gutterSize,
-              paddingVertical: gutterSize / 2,
-              backgroundColor: colors.bg3,
-              borderRadius: 12,
-              ...type(18, 'b', 'l', colors.fg1),
-            }}
-          />
-          <TouchableOpacity
-            onPress={() => {
-              textPinch.value = withSpring(1)
-              savedTextPinch.value = 1
-              searchRef.current?.blur()
-            }}
-            style={{
-              paddingLeft: gutterSize,
-              paddingRight: gutterSize * 1.5,
-              paddingVertical: gutterSize / 2,
-              top: 0,
-              right: 0,
-              zIndex: 4,
+              // height: '100%',
+              overflow: 'hidden',
             }}
           >
-            <Text style={type(16, 'r', 'c', colors.fg2)}>Close</Text>
-            {/* <Ionicons name="close-circle" size={32} color={colors.fg1} /> */}
-          </TouchableOpacity>
-        </View>
-        <View
-          style={{
-            height: 300,
-            width: '100%',
-            justifyContent: 'center',
-            marginTop: gutterSize,
-          }}
-        >
-          {!shouldSearch ? (
-            <ActivityIndicator size="large" color={colors.fg2} />
-          ) : (
-            <FlashList
-              ref={chapterListRef}
-              keyboardShouldPersistTaps="always"
-              stickyHeaderIndices={searchText === '' ? bookIndices : undefined}
-              estimatedItemSize={25}
-              renderItem={renderSearchItem}
-              data={searchResults}
-            />
-          )}
-        </View>
-      </View>
-      <TouchableOpacity
-        onPress={() => {
-          textPinch.value = withSpring(1)
-          savedTextPinch.value = 1
-          searchRef.current?.blur()
-        }}
-        style={{ flex: 1, width: '100%' }}
-      />
-    </Animated.View>
+            <View
+              style={{
+                width: '100%',
+                flexDirection: 'row',
+                height: 50,
+                alignItems: 'center',
+                marginTop: gutterSize,
+                zIndex: 5,
+              }}
+            >
+              <View style={{ flex: 1, height: '100%' }}>
+                <Animated.View
+                  style={[
+                    {
+                      width: '100%',
+                      position: 'absolute',
+                      top: 0,
+                      height: 50,
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                    },
+                    bookNameAnimatedStyles,
+                  ]}
+                >
+                  <TouchableOpacity
+                    onPress={() => {
+                      chapterTransition.value = withTiming(0)
+                      setNavigatorBook(undefined)
+                    }}
+                    style={{
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      height: '100%',
+                      paddingHorizontal: gutterSize,
+                    }}
+                  >
+                    <Ionicons name="arrow-back" size={32} color={colors.fg2} />
+                  </TouchableOpacity>
+                  <Text
+                    adjustsFontSizeToFit
+                    numberOfLines={1}
+                    style={type(22, 'uib', 'l', colors.fg2)}
+                  >
+                    {navigatorBook?.name}
+                  </Text>
+                </Animated.View>
+                <Animated.View
+                  style={[
+                    {
+                      position: 'absolute',
+                      top: 0,
+                      width: '100%',
+                      paddingLeft: gutterSize,
+                    },
+                    searchAnimatedStyles,
+                  ]}
+                >
+                  <TextInput
+                    placeholder="Quick find"
+                    placeholderTextColor={colors.fg3}
+                    ref={searchRef}
+                    clearButtonMode="always"
+                    cursorColor={colors.fg1}
+                    selectionColor={colors.fg1}
+                    onChangeText={(text) => setSearchText(text)}
+                    autoCorrect={false}
+                    style={{
+                      flex: 1,
+                      paddingHorizontal: gutterSize / 1.5,
+                      backgroundColor: colors.bg3,
+                      borderRadius: 12,
+                      ...type(18, 'uib', 'l', colors.fg1),
+                      height: 50,
+                    }}
+                    returnKeyType={'go'}
+                    onSubmitEditing={() => {
+                      if (
+                        searchResults.length > 0 &&
+                        typeof searchResults[0].item !== 'string'
+                      ) {
+                        goToChapter(searchResults[0].item.chapterId)
+                      }
+                    }}
+                  />
+                </Animated.View>
+              </View>
+              <TouchableOpacity
+                onPress={closeNavigator}
+                style={{
+                  paddingLeft: gutterSize,
+                  paddingRight: gutterSize * 1.5,
+                  paddingVertical: gutterSize / 2,
+                  top: 0,
+                  right: 0,
+                  zIndex: 4,
+                }}
+              >
+                <Text style={type(16, 'uir', 'c', colors.fg2)}>Close</Text>
+              </TouchableOpacity>
+            </View>
+            <View
+              style={{
+                // height: navigatorHeight - 50 - gutterSize,
+                flex: 1,
+                width: Dimensions.get('window').width - gutterSize * 2,
+                justifyContent: 'center',
+                paddingTop: gutterSize,
+              }}
+            >
+              <FlatList
+                ref={chapterListRef as any}
+                keyboardShouldPersistTaps="always"
+                estimatedItemSize={25}
+                stickyHeaderIndices={
+                  searchText === '' ? bookIndices : undefined
+                }
+                renderItem={renderMainNavigatorItem}
+                ListFooterComponent={<Spacer units={4} />}
+                data={searchText !== '' ? searchResults : booksWithSections}
+              />
+              <Animated.View
+                style={[
+                  {
+                    height: navigatorHeight - 50 - gutterSize,
+                    width: '100%',
+                    position: 'absolute',
+                    backgroundColor: colors.bg2,
+                  },
+                  chapterBoxesAnimatedStyles,
+                ]}
+              >
+                <FlashList
+                  estimatedItemSize={64}
+                  keyboardShouldPersistTaps="always"
+                  numColumns={5}
+                  renderItem={renderChapterBox}
+                  data={(chapters as Chapters).filter(
+                    (chapter) =>
+                      getBook(chapter.chapterId).bookId ===
+                      navigatorBook?.bookId
+                  )}
+                  ListHeaderComponent={<Spacer units={3} />}
+                  contentContainerStyle={{
+                    paddingHorizontal: (gutterSize * 3) / 4,
+                  }}
+                  ItemSeparatorComponent={() => <Spacer units={3} />}
+                  ListFooterComponent={<Spacer units={4} />}
+                />
+                <Fade place="top" color={colors.bg2} />
+              </Animated.View>
+            </View>
+          </View>
+          <Spacer units={4} />
+        </KeyboardAvoidingView>
+      </Animated.View>
+    </GestureDetector>
   )
 }
