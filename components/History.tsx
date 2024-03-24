@@ -64,7 +64,7 @@ export default function History({
           onPress={() => {
             dispatch(
               addToHistory({
-                chapterId: item.chapterId,
+                chapterId: activeChapter.chapterId,
                 date: Date.now(),
               })
             )
@@ -75,10 +75,6 @@ export default function History({
             closeHistory()
           }}
           style={{
-            width: '100%',
-            borderLeftWidth: 4,
-            // paddingHorizontal: gutterSize,
-            marginLeft: gutterSize,
             borderColor: colors.bg3,
             paddingVertical: 12,
             backgroundColor:
@@ -89,23 +85,15 @@ export default function History({
               chapterIndex === activeChapterIndex.index ? 12 : 0,
             borderBottomRightRadius:
               chapterIndex === activeChapterIndex.index ? 12 : 0,
-            // borderRadius: chapterIndex === activeChapterIndex.index ? 12 : 0,
+            borderRadius: 12,
             alignItems: 'center',
             flexDirection: 'row',
+            paddingHorizontal:
+              chapterIndex === activeChapterIndex.index
+                ? gutterSize / 2
+                : gutterSize / 2,
           }}
         >
-          {chapterIndex === activeChapterIndex.index ? null : (
-            <View
-              style={{
-                width: 12,
-                height: 12,
-                borderRadius: 6,
-                backgroundColor: colors.bg3,
-                position: 'absolute',
-                left: -8,
-              }}
-            />
-          )}
           <Text style={[type(18, 'uir', 'l', colors.fg2), { flex: 1 }]}>
             {getReference(item.chapterId)}
           </Text>
@@ -133,7 +121,6 @@ export default function History({
           left: -Dimensions.get('window').width * 2,
           zIndex: 2,
           paddingTop: insets.top + gutterSize,
-          paddingHorizontal: gutterSize,
           paddingLeft: Dimensions.get('window').width * 1.2,
         },
         historyAnimatedStyles,
@@ -144,7 +131,7 @@ export default function History({
           flexDirection: 'row',
           alignItems: 'center',
           gap: gutterSize,
-          paddingStart: gutterSize,
+          paddingHorizontal: gutterSize,
         }}
       >
         {/* <TouchableOpacity
@@ -189,6 +176,7 @@ export default function History({
           data={history.filter(
             (item) => item.chapterId !== activeChapter.chapterId
           )}
+          contentContainerStyle={{ paddingHorizontal: gutterSize / 2 }}
           renderItem={renderHistoryItem}
           estimatedItemSize={28}
           ListHeaderComponent={
