@@ -4,5 +4,9 @@
       "fileMatch": ["/data/chapters.json"],
       "url": "/data/schemas/chapters.json"
     },
-  ],
+    {
+      "fileMatch": ["/data/books.json"],
+      "url": "/data/schemas/books.json"
+    }
+  ]
 }

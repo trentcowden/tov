@@ -3,46 +3,14 @@
   "items": {
     "additionalProperties": false,
     "properties": {
-      "bookId": {
-        "$ref": "./ids.json#/properties/bookId"
+      "chapterId": {
+        "$ref": "./ids.json#/properties/chapterId"
       },
-      "chapters": {
-        "items": {
-          "type": "string"
-        }
-      },
-      "englishDivision": {
-        "$ref": "./ids.json#/properties/englishDivision"
-      },
-      "hebrewDivision": {
-        "$ref": "./ids.json#/properties/hebrewDivision"
-      },
-      "hebrewOrder": {
-        "type": [
-          "number",
-          "null"
-        ]
-      },
-      "name": {
+      "md": {
         "type": "string"
-      },
-      "order": {
-        "type": "number"
-      },
-      "testament": {
-        "$ref": "./ids.json#/properties/testament"
       }
     },
-    "required": [
-      "bookId",
-      "chapters",
-      "englishDivision",
-      "hebrewDivision",
-      "hebrewOrder",
-      "name",
-      "order",
-      "testament"
-    ]
+    "required": ["chapterId", "md"]
   },
   "type": "array"
 }

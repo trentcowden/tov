@@ -5,6 +5,10 @@
       "pattern": "^[A-Z0-9]{1}[A-Z]{2}$",
       "type": "string"
     },
+    "chapterId": {
+      "pattern": "^[A-Z0-9]{1}[A-Z]{2}\\.[0-9]+$",
+      "type": "string"
+    },
     "englishDivision": {
       "enum": [
         "pentateuch",
@@ -19,18 +23,10 @@
       ]
     },
     "hebrewDivision": {
-      "enum": [
-        "torah",
-        "nevi'im",
-        "ketuvim",
-        null
-      ]
+      "enum": ["torah", "nevi'im", "ketuvim", null]
     },
     "testament": {
-      "enum": [
-        "old",
-        "new"
-      ]
+      "enum": ["old", "new"]
     }
   }
 }
