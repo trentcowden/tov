@@ -1,4 +1,4 @@
-import { Ionicons } from '@expo/vector-icons'
+import { Octicons } from '@expo/vector-icons'
 import { FlashList } from '@shopify/flash-list'
 import { impactAsync } from 'expo-haptics'
 import { StatusBar } from 'expo-status-bar'
@@ -227,6 +227,9 @@ export default function BibleView() {
     .maxDuration(250)
     .numberOfTaps(2)
     .onStart(() => {
+      console.log(textTranslateX.value)
+      if (Math.abs(textTranslateX.value) > 10) return
+
       savedTextPinch.value = zoomOutReq
       textPinch.value = withSpring(zoomOutReq)
       runOnJS(focusSearch)()
@@ -401,7 +404,7 @@ export default function BibleView() {
   const showPrevAnimatedStyles = useAnimatedStyle(() => {
     return {
       backgroundColor:
-        prevIndicatorOpacity.value === 1 ? colors.fg2 : colors.bg2,
+        prevIndicatorOpacity.value === 1 ? colors.bg2 : 'transparent',
       opacity: prevIndicatorOpacity.value,
       transform: [
         {
@@ -419,7 +422,7 @@ export default function BibleView() {
   const showNextAnimatedStyles = useAnimatedStyle(() => {
     return {
       backgroundColor:
-        nextIndicatorOpacity.value === 1 ? colors.fg2 : colors.bg2,
+        nextIndicatorOpacity.value === 1 ? colors.bg2 : 'transparent',
       opacity: nextIndicatorOpacity.value,
       transform: [
         {
@@ -446,14 +449,14 @@ export default function BibleView() {
         <Text
           style={{
             // backgroundColor: colors.bg2,
-            textDecorationLine: 'underline',
+            // textDecorationLine: 'underline',
             lineHeight: 34,
           }}
-          onPress={() => onLinkPress(node.attributes.href)}
+          // onPress={() => onLinkPress(node.attributes.href)}
         >
-          <Text style={{ color: colors.fg3 }}>{' '}</Text>
+          {/* <Text style={{ color: colors.fg3 }}>{' '}</Text> */}
           {children}
-          <Text style={{ color: colors.fg3 }}>{' '}</Text>
+          {/* <Text style={{ color: colors.fg3 }}>{' '}</Text> */}
         </Text>
       )
     },
@@ -542,11 +545,13 @@ export default function BibleView() {
                 height: 64,
                 alignItems: 'center',
                 justifyContent: 'center',
+                borderWidth: 1,
+                borderColor: colors.b,
               },
               showPrevAnimatedStyles,
             ]}
           >
-            <Ionicons name="arrow-up" size={32} color={colors.fg1} />
+            <Octicons name="arrow-up" size={32} color={colors.fg1} />
           </Animated.View>
         </View>
         <View
@@ -565,11 +570,13 @@ export default function BibleView() {
                 height: 64,
                 alignItems: 'center',
                 justifyContent: 'center',
+                borderWidth: 1,
+                borderColor: colors.b,
               },
               showNextAnimatedStyles,
             ]}
           >
-            <Ionicons name="arrow-down" size={32} color={colors.fg1} />
+            <Octicons name="arrow-down" size={32} color={colors.fg1} />
           </Animated.View>
         </View>
         <Navigator
