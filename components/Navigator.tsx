@@ -161,6 +161,8 @@ export default function Navigator({
     textPinch.value = withSpring(1)
     savedTextPinch.value = 1
     setIsStatusBarHidden(true)
+    searchRef.current?.clear()
+    setSearchText('')
     chapterTransition.value = withTiming(0)
     setTimeout(() => setNavigatorBook(undefined), 500)
   }
@@ -204,9 +206,10 @@ export default function Navigator({
         <TouchableOpacity
           style={{
             alignItems: 'center',
-            width: '100%',
+            marginHorizontal: gutterSize / 2,
+            borderRadius: 12,
             height: 48,
-            paddingHorizontal: gutterSize,
+            paddingHorizontal: gutterSize / 2,
             borderBottomWidth: 0,
             backgroundColor: highlight ? colors.bg3 : colors.bg2,
             marginBottom: 0,
@@ -265,7 +268,7 @@ export default function Navigator({
           key={item.bookId}
           style={{
             alignItems: 'center',
-            width: '100%',
+            // width: '100%',
             // height: 32,
             marginBottom:
               index === booksWithSections.length - 1
@@ -274,10 +277,12 @@ export default function Navigator({
                   ? gutterSize * 1.5
                   : 0,
             paddingVertical: 6,
-            paddingHorizontal: gutterSize,
+            paddingHorizontal: gutterSize / 2,
             backgroundColor:
               navigatorBook?.bookId === item.bookId ? colors.bg3 : undefined,
             flexDirection: 'row',
+            borderRadius: 12,
+            marginHorizontal: gutterSize / 2,
             justifyContent: 'space-between',
           }}
           onPress={() => {
@@ -307,6 +312,24 @@ export default function Navigator({
       ],
     }
   })
+
+  const closeButton = (
+    <TouchableOpacity
+      onPress={closeNavigator}
+      style={{
+        paddingLeft: gutterSize,
+        paddingRight: gutterSize * 1.5,
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100%',
+        top: 0,
+        right: 0,
+        zIndex: 4,
+      }}
+    >
+      <Text style={type(16, 'uir', 'c', colors.fg2)}>Close</Text>
+    </TouchableOpacity>
+  )
 
   const navigatorHeight =
     Dimensions.get('window').height -
@@ -447,97 +470,39 @@ export default function Navigator({
                 alignItems: 'center',
                 marginTop: gutterSize,
                 zIndex: 5,
+                paddingLeft: gutterSize,
               }}
             >
               <View style={{ flex: 1, height: '100%' }}>
-                <Animated.View
-                  style={[
-                    {
-                      width: '100%',
-                      position: 'absolute',
-                      top: 0,
-                      height: 50,
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                    },
-                    bookNameAnimatedStyles,
-                  ]}
-                >
-                  <TouchableOpacity
-                    onPress={() => {
-                      chapterTransition.value = withTiming(0)
-                      setNavigatorBook(undefined)
-                    }}
-                    style={{
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      height: '100%',
-                      paddingHorizontal: gutterSize,
-                    }}
-                  >
-                    <Ionicons name="arrow-back" size={32} color={colors.fg2} />
-                  </TouchableOpacity>
-                  <Text
-                    adjustsFontSizeToFit
-                    numberOfLines={1}
-                    style={type(22, 'uib', 'l', colors.fg2)}
-                  >
-                    {navigatorBook?.name}
-                  </Text>
-                </Animated.View>
-                <Animated.View
-                  style={[
-                    {
-                      position: 'absolute',
-                      top: 0,
-                      width: '100%',
-                      paddingLeft: gutterSize,
-                    },
-                    searchAnimatedStyles,
-                  ]}
-                >
-                  <TextInput
-                    placeholder="Quick find"
-                    placeholderTextColor={colors.fg3}
-                    ref={searchRef}
-                    clearButtonMode="always"
-                    cursorColor={colors.fg1}
-                    selectionColor={colors.fg1}
-                    onChangeText={(text) => setSearchText(text)}
-                    autoCorrect={false}
-                    style={{
-                      flex: 1,
-                      paddingHorizontal: gutterSize / 1.5,
-                      backgroundColor: colors.bg3,
-                      borderRadius: 12,
-                      ...type(18, 'uib', 'l', colors.fg1),
-                      height: 50,
-                    }}
-                    returnKeyType={'go'}
-                    onSubmitEditing={() => {
-                      if (
-                        searchResults.length > 0 &&
-                        typeof searchResults[0].item !== 'string'
-                      ) {
-                        goToChapter(searchResults[0].item.chapterId)
-                      }
-                    }}
-                  />
-                </Animated.View>
+                <TextInput
+                  placeholder="Quick find"
+                  placeholderTextColor={colors.fg3}
+                  ref={searchRef}
+                  clearButtonMode="always"
+                  cursorColor={colors.fg1}
+                  selectionColor={colors.fg1}
+                  onChangeText={(text) => setSearchText(text)}
+                  autoCorrect={false}
+                  style={{
+                    flex: 1,
+                    paddingHorizontal: gutterSize / 1.5,
+                    backgroundColor: colors.bg3,
+                    borderRadius: 12,
+                    ...type(18, 'uib', 'l', colors.fg1),
+                    height: 50,
+                  }}
+                  returnKeyType={'go'}
+                  onSubmitEditing={() => {
+                    if (
+                      searchResults.length > 0 &&
+                      typeof searchResults[0].item !== 'string'
+                    ) {
+                      goToChapter(searchResults[0].item.chapterId)
+                    }
+                  }}
+                />
               </View>
-              <TouchableOpacity
-                onPress={closeNavigator}
-                style={{
-                  paddingLeft: gutterSize,
-                  paddingRight: gutterSize * 1.5,
-                  paddingVertical: gutterSize / 2,
-                  top: 0,
-                  right: 0,
-                  zIndex: 4,
-                }}
-              >
-                <Text style={type(16, 'uir', 'c', colors.fg2)}>Close</Text>
-              </TouchableOpacity>
+              {closeButton}
             </View>
             <View
               style={{
@@ -549,6 +514,7 @@ export default function Navigator({
               }}
             >
               <FlatList
+                // contentContainerStyle={{ paddingHorizontal: gutterSize / 2 }}
                 ref={chapterListRef as any}
                 keyboardShouldPersistTaps="always"
                 estimatedItemSize={25}
@@ -559,40 +525,79 @@ export default function Navigator({
                 ListFooterComponent={<Spacer units={4} />}
                 data={searchText !== '' ? searchResults : booksWithSections}
               />
-              <Animated.View
-                style={[
-                  {
-                    height: navigatorHeight - 50 - gutterSize,
-                    width: '100%',
-                    position: 'absolute',
-                    backgroundColor: colors.bg2,
-                  },
-                  chapterBoxesAnimatedStyles,
-                ]}
-              >
-                <FlashList
-                  estimatedItemSize={64}
-                  keyboardShouldPersistTaps="always"
-                  numColumns={5}
-                  renderItem={renderChapterBox}
-                  data={(chapters as Chapters).filter(
-                    (chapter) =>
-                      getBook(chapter.chapterId).bookId ===
-                      navigatorBook?.bookId
-                  )}
-                  ListHeaderComponent={<Spacer units={3} />}
-                  contentContainerStyle={{
-                    paddingHorizontal: (gutterSize * 3) / 4,
-                  }}
-                  ItemSeparatorComponent={() => <Spacer units={3} />}
-                  ListFooterComponent={<Spacer units={4} />}
-                />
-                <Fade place="top" color={colors.bg2} />
-              </Animated.View>
             </View>
           </View>
           <Spacer units={4} />
         </KeyboardAvoidingView>
+        <Animated.View
+          style={[
+            {
+              top: insets.top + gutterSize,
+              height: navigatorHeight - gutterSize,
+              width: Dimensions.get('window').width - gutterSize * 2,
+              borderRadius: 16,
+              position: 'absolute',
+              paddingTop: gutterSize,
+              backgroundColor: colors.bg2,
+              overflow: 'hidden',
+            },
+            chapterBoxesAnimatedStyles,
+          ]}
+        >
+          <View
+            style={[
+              {
+                width: '100%',
+                height: 50,
+                flexDirection: 'row',
+                alignItems: 'center',
+              },
+            ]}
+          >
+            <TouchableOpacity
+              onPress={() => {
+                chapterTransition.value = withTiming(0)
+                setNavigatorBook(undefined)
+              }}
+              style={{
+                alignItems: 'center',
+                justifyContent: 'center',
+                height: '100%',
+                paddingLeft: gutterSize,
+                paddingRight: gutterSize / 2,
+              }}
+            >
+              <Ionicons name="arrow-back" size={32} color={colors.fg2} />
+            </TouchableOpacity>
+            <Text
+              adjustsFontSizeToFit
+              numberOfLines={1}
+              style={[type(22, 'uib', 'l', colors.fg2), { flex: 1 }]}
+            >
+              {navigatorBook?.name}
+            </Text>
+            {closeButton}
+          </View>
+          <View style={{ height: navigatorHeight - gutterSize * 2 - 50 }}>
+            <FlashList
+              estimatedItemSize={64}
+              keyboardShouldPersistTaps="always"
+              numColumns={5}
+              renderItem={renderChapterBox}
+              data={(chapters as Chapters).filter(
+                (chapter) =>
+                  getBook(chapter.chapterId).bookId === navigatorBook?.bookId
+              )}
+              ListHeaderComponent={<Spacer units={3} />}
+              contentContainerStyle={{
+                paddingHorizontal: (gutterSize * 3) / 4,
+              }}
+              ItemSeparatorComponent={() => <Spacer units={3} />}
+              ListFooterComponent={<Spacer units={4} />}
+            />
+            <Fade place="top" color={colors.bg2} />
+          </View>
+        </Animated.View>
       </Animated.View>
     </GestureDetector>
   )
