@@ -200,8 +200,10 @@ export default function BibleView() {
 
   useEffect(() => {
     if (activeChapterIndex.going === 'forward') {
+      setPastOverlayOffset(false)
       scrollViewRef.current?.scrollTo({ y: 0, animated: false })
     } else if (activeChapterIndex.going === 'back') {
+      setPastOverlayOffset(true)
       setTimeout(
         () => scrollViewRef.current?.scrollToEnd({ animated: false }),
         50
@@ -217,10 +219,15 @@ export default function BibleView() {
   }, [activeChapterIndex])
 
   function handleScroll(event: NativeSyntheticEvent<NativeScrollEvent>) {
-    if (!fingerDown.current) return
-
     const offset = event.nativeEvent.contentOffset.y
     const contentHeight = event.nativeEvent.contentSize.height
+
+    if (textTranslateY.value === 0) {
+      if (offset > 80) setPastOverlayOffset(true)
+      else setPastOverlayOffset(false)
+    }
+
+    if (!fingerDown.current) return
 
     // If we meet the requirements for going to the next or previous chapter while we
     // are still scrolling, give some haptic feedback to indicate to the user that if
@@ -389,6 +396,7 @@ export default function BibleView() {
           activeBook={activeBook}
           isStatusBarHidden={isStatusBarHidden}
           pastOverlayOffset={pastOverlayOffset}
+          textTranslationY={textTranslateY}
         />
         <Navigator
           chapterListRef={searchListRef}
