@@ -5,7 +5,6 @@ import {
   Dimensions,
   NativeScrollEvent,
   NativeSyntheticEvent,
-  Pressable,
   Text,
   TextInput,
   View,
@@ -14,6 +13,7 @@ import {
   Gesture,
   GestureDetector,
   ScrollView,
+  TouchableWithoutFeedback,
 } from 'react-native-gesture-handler'
 import Markdown from 'react-native-markdown-display'
 import Animated, {
@@ -479,7 +479,7 @@ export default function BibleView() {
             returnTapStyles,
           ]}
         >
-          <Pressable
+          <TouchableWithoutFeedback
             onPress={() => {
               runOnJS(impactAsync)()
               textTranslateX.value = withSpring(0, panActivateConfig)

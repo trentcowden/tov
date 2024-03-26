@@ -1,4 +1,4 @@
-import { Ionicons } from '@expo/vector-icons'
+import { FontAwesome5 } from '@expo/vector-icons'
 import { HighlightRanges } from '@nozbe/microfuzz'
 import { useFuzzySearchList } from '@nozbe/microfuzz/react'
 import { FlashList } from '@shopify/flash-list'
@@ -7,6 +7,7 @@ import { Dispatch, RefObject, SetStateAction, useEffect, useState } from 'react'
 import {
   Dimensions,
   KeyboardAvoidingView,
+  Pressable,
   Text,
   TextInput,
   TouchableOpacity,
@@ -154,7 +155,7 @@ export default function Navigator({
       onPress={closeNavigator}
       style={{
         paddingLeft: gutterSize,
-        paddingRight: gutterSize * 1.5,
+        paddingRight: gutterSize,
         alignItems: 'center',
         justifyContent: 'center',
         height: '100%',
@@ -163,7 +164,7 @@ export default function Navigator({
         zIndex: 4,
       }}
     >
-      <Text style={type(16, 'uir', 'c', colors.fg2)}>Close</Text>
+      <Text style={type(15, 'uir', 'c', colors.fg2)}>Close</Text>
     </TouchableOpacity>
   )
 
@@ -251,6 +252,8 @@ export default function Navigator({
                 paddingLeft: gutterSize,
               }}
             >
+              <FontAwesome5 name="search" size={20} color={colors.fg3} />
+              <Spacer units={2} />
               <View style={{ flex: 1, height: '100%' }}>
                 <TextInput
                   placeholder="Quick find"
@@ -272,6 +275,7 @@ export default function Navigator({
                   returnKeyType={'go'}
                   onSubmitEditing={() => {
                     if (
+                      searchText !== '' &&
                       searchResults.length > 0 &&
                       typeof searchResults[0].item !== 'string'
                     ) {
@@ -305,7 +309,10 @@ export default function Navigator({
               )}
             </View>
           </View>
-          <Spacer units={4} />
+          <Pressable
+            style={{ height: gutterSize, width: '100%' }}
+            onPress={closeNavigator}
+          />
         </KeyboardAvoidingView>
         <Animated.View
           style={[
@@ -345,7 +352,7 @@ export default function Navigator({
                 paddingRight: gutterSize / 2,
               }}
             >
-              <Ionicons name="arrow-back" size={32} color={colors.fg2} />
+              <FontAwesome5 name="arrow-left" size={24} color={colors.fg2} />
             </TouchableOpacity>
             <Text
               adjustsFontSizeToFit
