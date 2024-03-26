@@ -46,7 +46,7 @@ export default function ChapterOverlay({
     else runOnJS(setNavigatorOpen)(true)
   })
   useDerivedValue(() => {
-    if (textTranslateY.value === 0) runOnJS(setChapterChanging)(false)
+    if (Math.abs(textTranslateY.value) < 10) runOnJS(setChapterChanging)(false)
     else runOnJS(setChapterChanging)(true)
   })
   useDerivedValue(() => {
@@ -61,7 +61,7 @@ export default function ChapterOverlay({
       overlayOpacity.value = withTiming(0)
     else if (isStatusBarHidden && pastOverlayOffset)
       overlayOpacity.value = withTiming(1)
-  }, [isStatusBarHidden, pastOverlayOffset, navigatorOpen])
+  }, [isStatusBarHidden, pastOverlayOffset, navigatorOpen, chapterChanging])
 
   const overlayAnimatedStyles = useAnimatedStyle(() => ({
     opacity: overlayOpacity.value,
