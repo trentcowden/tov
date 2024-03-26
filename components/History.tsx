@@ -1,4 +1,4 @@
-import { Octicons } from '@expo/vector-icons'
+import { FontAwesome5, Octicons } from '@expo/vector-icons'
 import { FlashList } from '@shopify/flash-list'
 import React from 'react'
 import { Dimensions, Text, TouchableOpacity, View } from 'react-native'
@@ -76,9 +76,14 @@ export default function History({
               chapterIndex === activeChapterIndex.index
                 ? gutterSize / 2
                 : gutterSize / 2,
+            gap: gutterSize / 2,
           }}
         >
-          <Text style={[type(18, 'uir', 'l', colors.fg2), { flex: 1 }]}>
+          <Text
+            numberOfLines={1}
+            adjustsFontSizeToFit
+            style={[type(18, 'uir', 'l', colors.fg2), { flex: 1 }]}
+          >
             {getReference(item.chapterId)}
           </Text>
           {chapterIndex === activeChapterIndex.index ? (
@@ -113,15 +118,25 @@ export default function History({
           paddingHorizontal: gutterSize,
         }}
       >
-        <Text style={[type(28, 'uib', 'l', colors.fg1), { flex: 1 }]}>
-          History
-        </Text>
+        <View
+          style={{
+            flex: 1,
+            alignItems: 'center',
+            flexDirection: 'row',
+            gap: gutterSize / 3,
+          }}
+        >
+          <FontAwesome5 name="history" size={20} color={colors.fg2} />
+          <Text style={[type(28, 'uib', 'l', colors.fg1), { flex: 1 }]}>
+            History
+          </Text>
+        </View>
         <TouchableOpacity
           onPress={() => dispatch(clearHistory())}
           style={{
-            paddingHorizontal: gutterSize / 1.5,
-            paddingVertical: gutterSize / 2,
-            gap: 8,
+            paddingHorizontal: gutterSize / 2,
+            paddingVertical: gutterSize / 2.5,
+            gap: 5,
             flexDirection: 'row',
             alignItems: 'center',
             borderWidth: 1,
@@ -129,8 +144,8 @@ export default function History({
             borderRadius: 8,
           }}
         >
-          <Octicons name="trash" color={colors.fg3} size={16} />
-          <Text style={type(14, 'uir', 'c', colors.fg3)}>Clear</Text>
+          <Octicons name="trash" color={colors.fg3} size={14} />
+          <Text style={type(13, 'uir', 'c', colors.fg3)}>Clear</Text>
         </TouchableOpacity>
       </View>
       <View style={{ flex: 1 }}>
@@ -140,6 +155,7 @@ export default function History({
           )}
           contentContainerStyle={{ paddingHorizontal: gutterSize / 2 }}
           renderItem={renderHistoryItem}
+          showsVerticalScrollIndicator={false}
           estimatedItemSize={28}
           ListHeaderComponent={
             <>
