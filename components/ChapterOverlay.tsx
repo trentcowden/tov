@@ -50,7 +50,7 @@ export default function ChapterOverlay({
     else runOnJS(setChapterChanging)(true)
   })
   useDerivedValue(() => {
-    if (textTranslateX.value > 20) runOnJS(setIsStatusBarHidden)(false)
+    if (textTranslateX.value > 25) runOnJS(setIsStatusBarHidden)(false)
     else runOnJS(setIsStatusBarHidden)(true)
   })
 
