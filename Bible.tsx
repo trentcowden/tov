@@ -6,6 +6,7 @@ import {
   Dimensions,
   NativeScrollEvent,
   NativeSyntheticEvent,
+  Pressable,
   Text,
   TextInput,
   View,
@@ -14,7 +15,6 @@ import {
   Gesture,
   GestureDetector,
   ScrollView,
-  TouchableOpacity,
 } from 'react-native-gesture-handler'
 import Markdown from 'react-native-markdown-display'
 import Animated, {
@@ -103,13 +103,6 @@ export default function BibleView() {
     searchRef.current?.focus()
   }
 
-  function showStatusBar() {
-    setIsStatusBarHidden(false)
-  }
-  function hideStatusBar() {
-    setIsStatusBarHidden(true)
-  }
-
   const panGesture = Gesture.Pan()
     .onChange((event) => {
       if (navigatorTransition.value !== 1) return
@@ -142,7 +135,7 @@ export default function BibleView() {
             e.velocityX > horizVelocReq
           ) {
             runOnJS(impactAsync)()
-            runOnJS(showStatusBar)()
+            runOnJS(setIsStatusBarHidden)(false)
             savedTextTranslateX.value = horizTransReq
             textTranslateX.value = withSpring(horizTransReq, panActivateConfig)
           } else {
@@ -156,7 +149,7 @@ export default function BibleView() {
             e.velocityX > horizVelocReq
           ) {
             runOnJS(impactAsync)()
-            runOnJS(hideStatusBar)()
+            runOnJS(setIsStatusBarHidden)(true)
             savedTextTranslateX.value = 0
             textTranslateX.value = withSpring(0, panActivateConfig)
           } else {
@@ -170,7 +163,7 @@ export default function BibleView() {
             e.velocityX < -horizVelocReq
           ) {
             runOnJS(impactAsync)()
-            runOnJS(hideStatusBar)()
+            runOnJS(setIsStatusBarHidden)(true)
             savedTextTranslateX.value = 0
             textTranslateX.value = withSpring(0, panActivateConfig)
           } else {
@@ -349,6 +342,11 @@ export default function BibleView() {
             onScroll={handleScroll}
             alwaysBounceVertical
             scrollEventThrottle={100}
+            contentContainerStyle={{
+              // Set this so that chapters that are shorter than the screen height don't
+              // bug out.
+              minHeight: Dimensions.get('window').height,
+            }}
             onScrollBeginDrag={() => {
               alreadyHaptic.current = false
               fingerDown.current = true
@@ -409,11 +407,11 @@ export default function BibleView() {
         />
         {/* <VerseInfo textTranslationX={textTranslateX} /> */}
         <History
-          savedTextTranslateX={savedTextTranslateX}
           textTranslationX={textTranslateX}
-          openHistory={() => {}}
           activeChapter={activeChapter}
           closeHistory={() => {
+            runOnJS(impactAsync)()
+            runOnJS(setIsStatusBarHidden)(true)
             textTranslateX.value = withSpring(0, panActivateConfig)
             savedTextTranslateX.value = 0
           }}
@@ -453,10 +451,12 @@ export default function BibleView() {
             tapToReturnAnimatedStyles,
           ]}
         >
-          <TouchableOpacity
+          <Pressable
             onPress={() => {
-              savedTextTranslateX.value = 0
+              runOnJS(impactAsync)()
+              runOnJS(setIsStatusBarHidden)(true)
               textTranslateX.value = withSpring(0, panActivateConfig)
+              savedTextTranslateX.value = 0
             }}
             style={{
               ...Dimensions.get('window'),

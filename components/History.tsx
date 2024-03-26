@@ -22,9 +22,7 @@ import Fade from './Fade'
 
 interface Props {
   activeChapter: Chapters[number]
-  savedTextTranslateX: SharedValue<number>
   textTranslationX: SharedValue<number>
-  openHistory: () => void
   closeHistory: () => void
 }
 
