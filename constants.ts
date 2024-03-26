@@ -19,8 +19,8 @@ export const screenHeight = Dimensions.get('window').height
 export const largeButtonSize = 80
 export const smallButtonSize = 48
 
-export const chapterChangeDuration = 300
-export const overScrollReq = 100
+export const chapterChangeDuration = 250
+export const overScrollReq = 50
 export const zoomOutReq = 0.3
 export const horizTransReq = Dimensions.get('window').width * 0.75
 export const horizVelocReq = 600

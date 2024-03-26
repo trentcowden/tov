@@ -1,8 +1,7 @@
-import { Octicons } from '@expo/vector-icons'
 import { FlashList } from '@shopify/flash-list'
-import { impactAsync } from 'expo-haptics'
+import { ImpactFeedbackStyle, impactAsync } from 'expo-haptics'
 import { StatusBar } from 'expo-status-bar'
-import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import {
   Dimensions,
   NativeScrollEvent,
@@ -17,13 +16,11 @@ import {
   ScrollView,
   TouchableOpacity,
 } from 'react-native-gesture-handler'
-import Markdown, { ASTNode } from 'react-native-markdown-display'
+import Markdown from 'react-native-markdown-display'
 import Animated, {
-  Extrapolation,
   interpolate,
   runOnJS,
   useAnimatedStyle,
-  useDerivedValue,
   useSharedValue,
   withDelay,
   withSequence,
@@ -86,66 +83,25 @@ export default function BibleView() {
   const scrollViewRef = useRef<ScrollView>(null)
   const searchListRef = useRef<FlashList<NavigatorChapterItem>>(null)
 
+  // Animating the main text area.
   const textTranslateY = useSharedValue(0)
   const textTranslateX = useSharedValue(0)
   const savedTextTranslateX = useSharedValue(0)
 
-  const textPinch = useSharedValue(1)
-  const savedTextPinch = useSharedValue(1)
-  const textPinchHaptic = useSharedValue(0)
+  const navigatorTransition = useSharedValue(1)
+  const savedNavigatorTransition = useSharedValue(1)
 
-  const goPrev = useSharedValue(0)
-  const goNext = useSharedValue(0)
-
+  const fingerDown = useRef(false)
   const [searchText, setSearchText] = useState('')
 
-  const prevIndicatorY = useSharedValue(0)
-  const nextIndicatorY = useSharedValue(0)
-  const prevIndicatorOpacity = useSharedValue(0)
-  const nextIndicatorOpacity = useSharedValue(0)
-  const prevIndicatorScale = useSharedValue(0)
-  const nextIndicatorScale = useSharedValue(0)
   const [isStatusBarHidden, setIsStatusBarHidden] = useState(true)
   const [pastOverlayOffset, setPastOverlayOffset] = useState(false)
+
+  const alreadyHaptic = useRef(false)
 
   function focusSearch() {
     searchRef.current?.focus()
   }
-
-  const onLinkPress = (url: string) => {
-    console.log(url)
-    // some custom logic
-    return false
-  }
-
-  // const pinchGesture = Gesture.Pinch()
-  //   .onUpdate((e) => {
-  //     if (textPinch.value === zoomOutReq) return
-
-  //     textPinch.value = savedTextPinch.value * e.scale
-
-  //     if (textPinch.value < zoomOutReq) {
-  //       if (textPinchHaptic.value === 0) {
-  //         textPinchHaptic.value = 1
-  //         runOnJS(impactAsync)()
-  //       }
-  //     } else {
-  //       textPinchHaptic.value = 0
-  //     }
-  //   })
-  //   .onEnd((e) => {
-  //     if (textPinch.value === zoomOutReq) return
-
-  //     if (e.scale <= zoomOutReq) {
-  //       savedTextPinch.value = zoomOutReq
-  //       textPinch.value = withSpring(zoomOutReq)
-  //       runOnJS(focusSearch)()
-  //       runOnJS(showStatusBar)()
-  //     } else {
-  //       savedTextPinch.value = 1
-  //       textPinch.value = withSpring(1)
-  //     }
-  //   })
 
   function showStatusBar() {
     setIsStatusBarHidden(false)
@@ -156,12 +112,12 @@ export default function BibleView() {
 
   const panGesture = Gesture.Pan()
     .onChange((event) => {
-      if (textPinch.value !== 1) return
+      if (navigatorTransition.value !== 1) return
 
       textTranslateX.value = savedTextTranslateX.value + event.translationX
     })
     .onFinalize((e) => {
-      if (textPinch.value !== 1) return
+      if (navigatorTransition.value !== 1) return
 
       const comingFrom =
         savedTextTranslateX.value === 0
@@ -228,21 +184,19 @@ export default function BibleView() {
     .maxDuration(250)
     .numberOfTaps(2)
     .onStart(() => {
+      // If we are viewing history/verse info, ignore taps.
       if (Math.abs(textTranslateX.value) > 10) return
+      // If the navigator is already open, ignore taps.
+      else if (navigatorTransition.value !== 1) return
 
-      savedTextPinch.value = zoomOutReq
-      textPinch.value = withSpring(zoomOutReq)
-      // if (overlayOpacity.value != 0) overlayOpacity.value = withTiming(0.75)
-      // runOnJS(setPastOverlayOffset)(true)
+      savedNavigatorTransition.value = zoomOutReq
+      navigatorTransition.value = withSpring(zoomOutReq)
+
       runOnJS(focusSearch)()
-      runOnJS(impactAsync)()
+      runOnJS(impactAsync)(ImpactFeedbackStyle.Heavy)
     })
 
-  const composedGestures = Gesture.Simultaneous(
-    // pinchGesture,
-    panGesture,
-    tapGesture
-  )
+  const composedGestures = Gesture.Simultaneous(panGesture, tapGesture)
 
   useEffect(() => {
     if (activeChapterIndex.going === 'forward') {
@@ -262,132 +216,99 @@ export default function BibleView() {
     )
   }, [activeChapterIndex])
 
-  function next() {
-    dispatch(goToNextChapter())
-  }
-  function prev() {
-    dispatch(goToPreviousChapter())
-  }
-
-  useDerivedValue(() => {
-    if (goPrev.value === 1) {
-      textTranslateY.value = withSequence(
-        withTiming(screenHeight, { duration: chapterChangeDuration }),
-        withTiming(-screenHeight, { duration: 0 }, runOnJS(prev))
-      )
-
-      goPrev.value = 0
-    }
-  }, [screenHeight])
-
-  useDerivedValue(() => {
-    if (goNext.value === 1) {
-      textTranslateY.value = withSequence(
-        withTiming(-screenHeight, {
-          duration: chapterChangeDuration,
-        }),
-        withTiming(screenHeight, { duration: 0 }, runOnJS(next))
-      )
-
-      goNext.value = 0
-    }
-  }, [screenHeight])
-
   function handleScroll(event: NativeSyntheticEvent<NativeScrollEvent>) {
+    if (!fingerDown.current) return
+
     const offset = event.nativeEvent.contentOffset.y
     const contentHeight = event.nativeEvent.contentSize.height
 
-    // Fade in and out the chapter overlay.
-    if (offset > 80) {
-      setPastOverlayOffset(true)
-    } else {
-      setPastOverlayOffset(false)
-    }
-
-    // Animate the prev/next chapter arrows.
-    if (offset < 0) {
-      prevIndicatorY.value = offset
-
-      prevIndicatorOpacity.value = interpolate(
-        offset,
-        [-overScrollReq, 0],
-        [1, 0],
-        {
-          extrapolateLeft: Extrapolation.CLAMP,
-          extrapolateRight: Extrapolation.CLAMP,
-        }
-      )
-
-      prevIndicatorScale.value = interpolate(
-        offset,
-        [-overScrollReq * 2, -overScrollReq, 0],
-        [1.2, 1, 0.5]
-      )
-    } else if (offset > contentHeight - screenHeight) {
-      const relativeValue = offset - contentHeight + screenHeight
-
-      nextIndicatorY.value = relativeValue
-
-      nextIndicatorOpacity.value = interpolate(
-        relativeValue,
-        [0, overScrollReq],
-        [0, 1],
-        {
-          extrapolateLeft: Extrapolation.CLAMP,
-          extrapolateRight: Extrapolation.CLAMP,
-        }
-      )
-
-      nextIndicatorScale.value = interpolate(
-        relativeValue,
-        [0, overScrollReq, overScrollReq * 2],
-        [0.5, 1, 1.2]
-      )
-    } else {
-      prevIndicatorY.value = withTiming(0)
-      prevIndicatorOpacity.value = withTiming(0)
-      prevIndicatorScale.value = withTiming(0)
-      nextIndicatorY.value = withTiming(0)
-      nextIndicatorOpacity.value = withTiming(0)
-      nextIndicatorScale.value = withTiming(0)
+    // If we meet the requirements for going to the next or previous chapter while we
+    // are still scrolling, give some haptic feedback to indicate to the user that if
+    // they release their finger, they will go to the next/previous chapter.
+    if (offset < -overScrollReq && !alreadyHaptic.current) {
+      impactAsync(ImpactFeedbackStyle.Heavy)
+      alreadyHaptic.current = true
+    } else if (
+      offset > contentHeight - screenHeight + overScrollReq &&
+      !alreadyHaptic.current
+    ) {
+      impactAsync(ImpactFeedbackStyle.Heavy)
+      alreadyHaptic.current = true
+      // If we were previously eligible to go to the next/previous chapter but aren't
+      // anymore, give a lighter haptic feedback to indicate that the chapter won't
+      // change on release.
+    } else if (
+      textTranslateY.value === 0 &&
+      offset < 0 &&
+      offset > -overScrollReq &&
+      alreadyHaptic.current === true
+    ) {
+      impactAsync(ImpactFeedbackStyle.Light)
+      alreadyHaptic.current = false
+    } else if (
+      textTranslateY.value === 0 &&
+      offset > contentHeight - screenHeight &&
+      offset < contentHeight - screenHeight + overScrollReq &&
+      alreadyHaptic.current === true
+    ) {
+      impactAsync(ImpactFeedbackStyle.Light)
+      alreadyHaptic.current = false
     }
   }
 
   function handleDragEnd(event: NativeSyntheticEvent<NativeScrollEvent>) {
+    fingerDown.current = false
+
     const offset = event.nativeEvent.contentOffset.y
-    const window = event.nativeEvent.layoutMeasurement.height
+    const screenHeight = event.nativeEvent.layoutMeasurement.height
     const contentHeight = event.nativeEvent.contentSize.height
+    const velocity = event.nativeEvent.velocity
+    const y = velocity?.y ?? 0
 
-    if (offset <= -overScrollReq && activeChapterIndex.index !== 0)
-      goPrev.value = 1
-    else if (
-      offset + window > contentHeight + overScrollReq &&
+    /**
+     * Whether or not this drag meets the requirements to begin considering going to the previous chapter.
+     */
+    const goingPrev = y < 0 && offset < 0 && activeChapterIndex.index !== 0
+
+    /**
+     * Whether or not this drag meets the requirements to begin considering going to the next chapter.
+     */
+    const goingNext =
+      y > 0 &&
+      offset > contentHeight - screenHeight &&
       activeChapterIndex.index !== (chaptersJson as Chapters).length - 1
-    )
-      goNext.value = 1
-  }
 
-  useDerivedValue(() => {
-    if (prevIndicatorOpacity.value === 1 || nextIndicatorOpacity.value === 1) {
-      runOnJS(impactAsync)()
-    }
-  }, [])
+    if (goingPrev && (offset <= -overScrollReq || y < -1)) {
+      if (!alreadyHaptic.current) impactAsync(ImpactFeedbackStyle.Heavy)
+      textTranslateY.value = withSequence(
+        withTiming(screenHeight, { duration: chapterChangeDuration }),
+        withTiming(-screenHeight, { duration: 0 })
+      )
+      setTimeout(() => dispatch(goToPreviousChapter()), chapterChangeDuration)
+    } else if (
+      goingNext &&
+      (offset > contentHeight - screenHeight + overScrollReq || y > 1)
+    ) {
+      if (!alreadyHaptic.current) impactAsync(ImpactFeedbackStyle.Heavy)
+      textTranslateY.value = withSequence(
+        withTiming(-screenHeight, {
+          duration: chapterChangeDuration,
+        }),
+        withTiming(screenHeight, { duration: 0 })
+      )
+      setTimeout(() => dispatch(goToNextChapter()), chapterChangeDuration)
+    } else if (alreadyHaptic.current) impactAsync(ImpactFeedbackStyle.Light)
+  }
 
   const chapterAStyles = useAnimatedStyle(() => {
     return {
       transform: [
         { translateY: textTranslateY.value },
         { translateX: textTranslateX.value },
-        // {
-        //   scale: interpolate(textPinch.value, [0, 1], [0.8, 1], {
-        //     extrapolateLeft: Extrapolation.CLAMP,
-        //     extrapolateRight: Extrapolation.CLAMP,
-        //   }),
-        // },
       ],
       opacity:
-        textPinch.value !== 1
-          ? textPinch.value
+        navigatorTransition.value !== 1
+          ? navigatorTransition.value
           : interpolate(
               textTranslateX.value,
               [-horizTransReq, 0, horizTransReq],
@@ -395,67 +316,6 @@ export default function BibleView() {
             ),
     }
   })
-
-  const showPrevAnimatedStyles = useAnimatedStyle(() => {
-    return {
-      backgroundColor:
-        prevIndicatorOpacity.value === 1 ? colors.bg2 : 'transparent',
-      opacity: prevIndicatorOpacity.value,
-      transform: [
-        {
-          translateY: interpolate(
-            -prevIndicatorY.value,
-            [0, overScrollReq, overScrollReq * 2],
-            [0, overScrollReq, overScrollReq * 1.4]
-          ),
-        },
-        { scale: prevIndicatorScale.value },
-      ],
-    }
-  })
-
-  const showNextAnimatedStyles = useAnimatedStyle(() => {
-    return {
-      backgroundColor:
-        nextIndicatorOpacity.value === 1 ? colors.bg2 : 'transparent',
-      opacity: nextIndicatorOpacity.value,
-      transform: [
-        {
-          translateY: interpolate(
-            -nextIndicatorY.value,
-            [-overScrollReq * 2, -overScrollReq, 0],
-            [-overScrollReq * 1.4, -overScrollReq, 0]
-          ),
-        },
-        { scale: nextIndicatorScale.value },
-      ],
-    }
-  })
-
-  const linkAnimatedStyles = useAnimatedStyle(() => {
-    return {
-      transform: [{ translateX: textTranslateX.value }],
-    }
-  })
-
-  const rules = {
-    link: (node: ASTNode, children: ReactNode) => {
-      return (
-        <Text
-          style={{
-            // backgroundColor: colors.bg2,
-            // textDecorationLine: 'underline',
-            lineHeight: 34,
-          }}
-          // onPress={() => onLinkPress(node.attributes.href)}
-        >
-          {/* <Text style={{ color: colors.fg3 }}>{' '}</Text> */}
-          {children}
-          {/* <Text style={{ color: colors.fg3 }}>{' '}</Text> */}
-        </Text>
-      )
-    },
-  }
 
   const tapToReturnAnimatedStyles = useAnimatedStyle(() => ({
     zIndex: Math.abs(textTranslateX.value) < 10 ? -1 : 1,
@@ -475,14 +335,19 @@ export default function BibleView() {
           style={[{ flex: 1, backgroundColor: colors.bg1 }, chapterAStyles]}
         >
           <ScrollView
+            showsVerticalScrollIndicator={false}
             style={{ paddingHorizontal: gutterSize, flex: 1 }}
             ref={scrollViewRef}
             onScrollEndDrag={handleDragEnd}
             onScroll={handleScroll}
             alwaysBounceVertical
-            scrollEventThrottle={16}
+            scrollEventThrottle={100}
+            onScrollBeginDrag={() => {
+              alreadyHaptic.current = false
+              fingerDown.current = true
+            }}
           >
-            <Spacer units={4} additional={insets.top + gutterSize} />
+            <Spacer units={8} additional={insets.top} />
             <Text
               style={{
                 ...type(32, 'b', 'c', colors.fg1),
@@ -515,10 +380,7 @@ export default function BibleView() {
             >
               {activeChapter.md}
             </Markdown>
-            {/* <View style={styles.dotContainer}>
-            <View style={styles.dot} />
-          </View> */}
-            <Spacer units={24} additional={insets.bottom} />
+            <Spacer units={8} additional={insets.bottom} />
           </ScrollView>
         </Animated.View>
         <ChapterOverlay
@@ -528,66 +390,14 @@ export default function BibleView() {
           isStatusBarHidden={isStatusBarHidden}
           pastOverlayOffset={pastOverlayOffset}
         />
-        <View
-          style={{
-            width: '100%',
-            position: 'absolute',
-            top: insets.top - 64,
-            alignItems: 'center',
-          }}
-        >
-          <Animated.View
-            style={[
-              {
-                borderRadius: 9999,
-                width: 64,
-                height: 64,
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderWidth: 1,
-                borderColor: colors.b,
-              },
-              showPrevAnimatedStyles,
-            ]}
-          >
-            <Octicons name="arrow-up" size={32} color={colors.fg1} />
-          </Animated.View>
-        </View>
-        <View
-          style={{
-            width: '100%',
-            position: 'absolute',
-            bottom: insets.bottom,
-            alignItems: 'center',
-          }}
-        >
-          <Animated.View
-            style={[
-              {
-                borderRadius: 9999,
-                width: 64,
-                height: 64,
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderWidth: 1,
-                borderColor: colors.b,
-              },
-              showNextAnimatedStyles,
-            ]}
-          >
-            <Octicons name="arrow-down" size={32} color={colors.fg1} />
-          </Animated.View>
-        </View>
         <Navigator
           chapterListRef={searchListRef}
-          textPinch={textPinch}
-          savedTextPinch={savedTextPinch}
+          textPinch={navigatorTransition}
+          savedTextPinch={savedNavigatorTransition}
           searchRef={searchRef}
           searchText={searchText}
           setSearchText={setSearchText}
           activeChapter={activeChapter}
-          // overlayOpacity={overlayOpacity}
-          // setPastOverlayOffset={setPastOverlayOffset}
         />
         {/* <VerseInfo textTranslationX={textTranslateX} /> */}
         <History
