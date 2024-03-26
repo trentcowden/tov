@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "menuha",
-    "slug": "menuha",
+    "name": "tov",
+    "slug": "tov",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -9,32 +9,33 @@
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#292521"
     },
     "assetBundlePatterns": [
       "**/*"
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.kingdomstrategies.menuha"
+      "bundleIdentifier": "com.kingdomstrategies.tov"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.kingdomstrategies.menuha"
+      "package": "com.kingdomstrategies.tov"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "extra": {
-      "eas": {
-        "projectId": "dd2f5c22-fd40-4866-b705-bbc9bce64cc5"
-      }
-    },
     "plugins": [
       "expo-font"
-    ]
+    ],
+    "owner": "tcowden",
+    "extra": {
+      "eas": {
+        "projectId": "ee4f9362-12bc-414d-b37e-0c8ec4af6705"
+      }
+    }
   }
 }
