@@ -1,9 +1,9 @@
 import { Octicons } from '@expo/vector-icons'
 import { FlashList } from '@shopify/flash-list'
-import React, { Dispatch, SetStateAction, useState } from 'react'
+import React, { useState } from 'react'
 import { Dimensions, Text, TouchableOpacity, View } from 'react-native'
 import Animated, {
-  FadeOutRight,
+  FadeOutLeft,
   SharedValue,
   runOnJS,
   useAnimatedStyle,
@@ -15,14 +15,12 @@ import { colors, gutterSize, type } from '../constants'
 import chapters from '../data/chapters.json'
 import { Chapters } from '../data/types/chapters'
 import { getReference } from '../functions/bible'
+import { setActiveChapterIndex } from '../redux/activeChapter'
 import { HistoryItem, addToHistory, clearHistory } from '../redux/history'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
-import { ActiveChapterIndex } from '../types/bible'
 import Fade from './Fade'
 
 interface Props {
-  activeChapterIndex: ActiveChapterIndex
-  setActiveChapterIndex: Dispatch<SetStateAction<ActiveChapterIndex>>
   activeChapter: Chapters[number]
   savedTextTranslateX: SharedValue<number>
   textTranslationX: SharedValue<number>
@@ -31,18 +29,16 @@ interface Props {
 }
 
 export default function History({
-  activeChapterIndex,
   textTranslationX,
-  setActiveChapterIndex,
   closeHistory,
   activeChapter,
 }: Props) {
+  const activeChapterIndex = useAppSelector((state) => state.activeChapterIndex)
   const history = useAppSelector((state) => state.history)
   const insets = useSafeAreaInsets()
   const dispatch = useAppDispatch()
   const [historyOpen, setHistoryOpen] = useState(false)
   const historyAnimatedStyles = useAnimatedStyle(() => {
-    console.log(textTranslationX.value)
     return {
       transform: [{ translateX: textTranslationX.value }],
     }
@@ -59,7 +55,7 @@ export default function History({
       (chapter) => chapter.chapterId === item.chapterId
     )
     return (
-      <Animated.View exiting={FadeOutRight.duration(100).delay(index * 25)}>
+      <Animated.View exiting={FadeOutLeft.duration(100).delay(index * 25)}>
         <TouchableOpacity
           onPress={() => {
             dispatch(
@@ -68,10 +64,12 @@ export default function History({
                 date: Date.now(),
               })
             )
-            setActiveChapterIndex({
-              going: 'forward',
-              index: chapterIndex,
-            })
+            dispatch(
+              setActiveChapterIndex({
+                going: 'forward',
+                index: chapterIndex,
+              })
+            )
             closeHistory()
           }}
           style={{
@@ -119,9 +117,9 @@ export default function History({
           backgroundColor: colors.bg2,
           position: 'absolute',
           left: -Dimensions.get('window').width * 2,
-          zIndex: 2,
+          zIndex: 3,
           paddingTop: insets.top + gutterSize,
-          paddingLeft: Dimensions.get('window').width * 1.2,
+          paddingLeft: Dimensions.get('window').width * 1.25,
         },
         historyAnimatedStyles,
       ]}

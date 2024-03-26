@@ -10,10 +10,12 @@ import {
   persistStore,
 } from 'redux-persist'
 import ExpoFileSystemStorage from 'redux-persist-expo-filesystem'
+import activeChapterIndex from './activeChapter'
 import history from './history'
 
 const rootReducer = combineReducers({
   history,
+  activeChapterIndex,
 })
 
 const persistedReducer = persistReducer(

@@ -48,9 +48,9 @@ import chapters from '../data/chapters.json'
 import { Books } from '../data/types/books'
 import { Chapters } from '../data/types/chapters'
 import { getBook, getReference } from '../functions/bible'
+import { setActiveChapterIndex } from '../redux/activeChapter'
 import { addToHistory } from '../redux/history'
 import { useAppDispatch } from '../redux/hooks'
-import { ActiveChapterIndex } from '../types/bible'
 import Fade from './Fade'
 
 interface Props {
@@ -58,11 +58,9 @@ interface Props {
   searchText: string
   chapterListRef: RefObject<FlashList<NavigatorChapterItem>>
   setSearchText: Dispatch<SetStateAction<string>>
-  setActiveChapterIndex: Dispatch<SetStateAction<ActiveChapterIndex>>
   textPinch: SharedValue<number>
   savedTextPinch: SharedValue<number>
   activeChapter: Chapters[number]
-  setIsStatusBarHidden: Dispatch<SetStateAction<boolean>>
 }
 
 const numColumns = 5
@@ -74,9 +72,7 @@ export default function Navigator({
   textPinch,
   savedTextPinch,
   chapterListRef,
-  setActiveChapterIndex,
   activeChapter,
-  setIsStatusBarHidden,
 }: Props) {
   const insets = useSafeAreaInsets()
   const dispatch = useAppDispatch()
@@ -160,9 +156,10 @@ export default function Navigator({
     searchRef.current?.blur()
     textPinch.value = withSpring(1)
     savedTextPinch.value = 1
-    setIsStatusBarHidden(true)
     searchRef.current?.clear()
     setSearchText('')
+    // runOnJS(setPastOverlayOffset)(false)
+    // if (overlayOpacity.value !== 0) overlayOpacity.value = withTiming(1)
     chapterTransition.value = withTiming(0)
     setTimeout(() => setNavigatorBook(undefined), 500)
   }
@@ -178,10 +175,12 @@ export default function Navigator({
         date: Date.now(),
       })
     )
-    setActiveChapterIndex({
-      going: 'forward',
-      index: chapterIndex,
-    })
+    dispatch(
+      setActiveChapterIndex({
+        going: 'forward',
+        index: chapterIndex,
+      })
+    )
     closeNavigator()
   }
 
@@ -377,7 +376,6 @@ export default function Navigator({
 
   const panGesture = Gesture.Pan()
     .onChange((event) => {
-      console.log(event.translationX)
       if (chapterTransition.value === 0) return
 
       chapterTransition.value = interpolate(
@@ -393,7 +391,6 @@ export default function Navigator({
         (chapterTransition.value < 0.5 || e.velocityX > horizVelocReq) &&
         e.velocityX > 0
       ) {
-        console.log('beep')
         chapterTransition.value = withSpring(
           0,
           panActivateConfig,

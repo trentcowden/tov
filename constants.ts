@@ -7,7 +7,7 @@ export const colors = {
   fg1: '#efefef',
   fg2: '#d8d8d8',
   fg3: '#9b9b9b',
-  p1: '#283618',
+  p1: '#2d2118',
   b: 'rgba(164, 152, 142, 0.15)',
 }
 
@@ -21,8 +21,8 @@ export const smallButtonSize = 48
 
 export const chapterChangeDuration = 300
 export const overScrollReq = 100
-export const zoomOutReq = 0.6
-export const horizTransReq = Dimensions.get('window').width * 0.8
+export const zoomOutReq = 0.3
+export const horizTransReq = Dimensions.get('window').width * 0.75
 export const horizVelocReq = 600
 
 import { TextStyle } from 'react-native'

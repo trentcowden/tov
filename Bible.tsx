@@ -4,6 +4,7 @@ import { impactAsync } from 'expo-haptics'
 import { StatusBar } from 'expo-status-bar'
 import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react'
 import {
+  Dimensions,
   NativeScrollEvent,
   NativeSyntheticEvent,
   Text,
@@ -14,6 +15,7 @@ import {
   Gesture,
   GestureDetector,
   ScrollView,
+  TouchableOpacity,
 } from 'react-native-gesture-handler'
 import Markdown, { ASTNode } from 'react-native-markdown-display'
 import Animated, {
@@ -33,7 +35,6 @@ import Spacer from './Spacer'
 import ChapterOverlay from './components/ChapterOverlay'
 import History from './components/History'
 import Navigator from './components/Navigator'
-import VerseInfo from './components/VerseInfo'
 import {
   chapterChangeDuration,
   colors,
@@ -50,7 +51,8 @@ import chaptersJson from './data/chapters.json'
 import { Books } from './data/types/books'
 import { Chapters } from './data/types/chapters'
 import { getBook, getReference } from './functions/bible'
-import { ActiveChapterIndex } from './types/bible'
+import { goToNextChapter, goToPreviousChapter } from './redux/activeChapter'
+import { useAppDispatch, useAppSelector } from './redux/hooks'
 
 export interface NavigatorChapterItem {
   item:
@@ -61,8 +63,7 @@ export interface NavigatorChapterItem {
 }
 
 export default function BibleView() {
-  const [activeChapterIndex, setActiveChapterIndex] =
-    useState<ActiveChapterIndex>({ index: 0, going: 'forward' })
+  const activeChapterIndex = useAppSelector((state) => state.activeChapterIndex)
 
   const activeChapter = useMemo(() => {
     return (chaptersJson as Chapters)[activeChapterIndex.index]
@@ -74,6 +75,7 @@ export default function BibleView() {
   )
 
   const insets = useSafeAreaInsets()
+  const dispatch = useAppDispatch()
 
   const overlayOpacity = useSharedValue(0)
 
@@ -116,34 +118,34 @@ export default function BibleView() {
     return false
   }
 
-  const pinchGesture = Gesture.Pinch()
-    .onUpdate((e) => {
-      if (textPinch.value === zoomOutReq) return
+  // const pinchGesture = Gesture.Pinch()
+  //   .onUpdate((e) => {
+  //     if (textPinch.value === zoomOutReq) return
 
-      textPinch.value = savedTextPinch.value * e.scale
+  //     textPinch.value = savedTextPinch.value * e.scale
 
-      if (textPinch.value < zoomOutReq) {
-        if (textPinchHaptic.value === 0) {
-          textPinchHaptic.value = 1
-          runOnJS(impactAsync)()
-        }
-      } else {
-        textPinchHaptic.value = 0
-      }
-    })
-    .onEnd((e) => {
-      if (textPinch.value === zoomOutReq) return
+  //     if (textPinch.value < zoomOutReq) {
+  //       if (textPinchHaptic.value === 0) {
+  //         textPinchHaptic.value = 1
+  //         runOnJS(impactAsync)()
+  //       }
+  //     } else {
+  //       textPinchHaptic.value = 0
+  //     }
+  //   })
+  //   .onEnd((e) => {
+  //     if (textPinch.value === zoomOutReq) return
 
-      if (e.scale <= zoomOutReq) {
-        savedTextPinch.value = zoomOutReq
-        textPinch.value = withSpring(zoomOutReq)
-        runOnJS(focusSearch)()
-        runOnJS(showStatusBar)()
-      } else {
-        savedTextPinch.value = 1
-        textPinch.value = withSpring(1)
-      }
-    })
+  //     if (e.scale <= zoomOutReq) {
+  //       savedTextPinch.value = zoomOutReq
+  //       textPinch.value = withSpring(zoomOutReq)
+  //       runOnJS(focusSearch)()
+  //       runOnJS(showStatusBar)()
+  //     } else {
+  //       savedTextPinch.value = 1
+  //       textPinch.value = withSpring(1)
+  //     }
+  //   })
 
   function showStatusBar() {
     setIsStatusBarHidden(false)
@@ -151,8 +153,6 @@ export default function BibleView() {
   function hideStatusBar() {
     setIsStatusBarHidden(true)
   }
-
-  function openHistory() {}
 
   const panGesture = Gesture.Pan()
     .onChange((event) => {
@@ -172,15 +172,16 @@ export default function BibleView() {
 
       switch (comingFrom) {
         case 'center':
+          // if (
+          //   textTranslateX.value < -horizTransReq / 2 ||
+          //   e.velocityX < -horizVelocReq
+          // ) {
+          //   runOnJS(impactAsync)()
+          //   runOnJS(showStatusBar)()
+          //   savedTextTranslateX.value = -horizTransReq
+          //   textTranslateX.value = withSpring(-horizTransReq, panActivateConfig)
+          // } else
           if (
-            textTranslateX.value < -horizTransReq / 2 ||
-            e.velocityX < -horizVelocReq
-          ) {
-            runOnJS(impactAsync)()
-            runOnJS(showStatusBar)()
-            savedTextTranslateX.value = -horizTransReq
-            textTranslateX.value = withSpring(-horizTransReq, panActivateConfig)
-          } else if (
             textTranslateX.value > horizTransReq / 2 ||
             e.velocityX > horizVelocReq
           ) {
@@ -227,17 +228,18 @@ export default function BibleView() {
     .maxDuration(250)
     .numberOfTaps(2)
     .onStart(() => {
-      console.log(textTranslateX.value)
       if (Math.abs(textTranslateX.value) > 10) return
 
       savedTextPinch.value = zoomOutReq
       textPinch.value = withSpring(zoomOutReq)
+      // if (overlayOpacity.value != 0) overlayOpacity.value = withTiming(0.75)
+      // runOnJS(setPastOverlayOffset)(true)
       runOnJS(focusSearch)()
-      runOnJS(showStatusBar)()
+      runOnJS(impactAsync)()
     })
 
   const composedGestures = Gesture.Simultaneous(
-    pinchGesture,
+    // pinchGesture,
     panGesture,
     tapGesture
   )
@@ -260,24 +262,18 @@ export default function BibleView() {
     )
   }, [activeChapterIndex])
 
-  function goToNextChapter() {
-    setActiveChapterIndex((current) => ({
-      going: 'forward',
-      index: current.index + 1,
-    }))
+  function next() {
+    dispatch(goToNextChapter())
   }
-  function goToPreviousChapter() {
-    setActiveChapterIndex((current) => ({
-      going: 'back',
-      index: current.index - 1,
-    }))
+  function prev() {
+    dispatch(goToPreviousChapter())
   }
 
   useDerivedValue(() => {
     if (goPrev.value === 1) {
       textTranslateY.value = withSequence(
         withTiming(screenHeight, { duration: chapterChangeDuration }),
-        withTiming(-screenHeight, { duration: 0 }, runOnJS(goToPreviousChapter))
+        withTiming(-screenHeight, { duration: 0 }, runOnJS(prev))
       )
 
       goPrev.value = 0
@@ -290,7 +286,7 @@ export default function BibleView() {
         withTiming(-screenHeight, {
           duration: chapterChangeDuration,
         }),
-        withTiming(screenHeight, { duration: 0 }, runOnJS(goToNextChapter))
+        withTiming(screenHeight, { duration: 0 }, runOnJS(next))
       )
 
       goNext.value = 0
@@ -382,21 +378,20 @@ export default function BibleView() {
       transform: [
         { translateY: textTranslateY.value },
         { translateX: textTranslateX.value },
-        {
-          scale: interpolate(textPinch.value, [0, 1], [0.8, 1], {
-            extrapolateLeft: Extrapolation.CLAMP,
-            extrapolateRight: Extrapolation.CLAMP,
-          }),
-        },
+        // {
+        //   scale: interpolate(textPinch.value, [0, 1], [0.8, 1], {
+        //     extrapolateLeft: Extrapolation.CLAMP,
+        //     extrapolateRight: Extrapolation.CLAMP,
+        //   }),
+        // },
       ],
-
       opacity:
         textPinch.value !== 1
           ? textPinch.value
           : interpolate(
               textTranslateX.value,
               [-horizTransReq, 0, horizTransReq],
-              [0.5, 1, 0.5]
+              [0.3, 1, 0.3]
             ),
     }
   })
@@ -462,6 +457,10 @@ export default function BibleView() {
     },
   }
 
+  const tapToReturnAnimatedStyles = useAnimatedStyle(() => ({
+    zIndex: Math.abs(textTranslateX.value) < 10 ? -1 : 1,
+  }))
+
   return (
     <GestureDetector gesture={composedGestures}>
       <View
@@ -512,7 +511,7 @@ export default function BibleView() {
                   fontFamily: 'Bold',
                 },
               }}
-              rules={rules}
+              // rules={rules}
             >
               {activeChapter.md}
             </Markdown>
@@ -586,22 +585,15 @@ export default function BibleView() {
           searchRef={searchRef}
           searchText={searchText}
           setSearchText={setSearchText}
-          setActiveChapterIndex={setActiveChapterIndex}
           activeChapter={activeChapter}
-          setIsStatusBarHidden={setIsStatusBarHidden}
+          // overlayOpacity={overlayOpacity}
+          // setPastOverlayOffset={setPastOverlayOffset}
         />
-        <VerseInfo textTranslationX={textTranslateX} />
+        {/* <VerseInfo textTranslationX={textTranslateX} /> */}
         <History
-          activeChapterIndex={activeChapterIndex}
           savedTextTranslateX={savedTextTranslateX}
           textTranslationX={textTranslateX}
-          setActiveChapterIndex={setActiveChapterIndex}
-          openHistory={() => {
-            runOnJS(impactAsync)()
-            runOnJS(showStatusBar)()
-            savedTextTranslateX.value = -horizTransReq
-            textTranslateX.value = withSpring(-horizTransReq, panActivateConfig)
-          }}
+          openHistory={() => {}}
           activeChapter={activeChapter}
           closeHistory={() => {
             textTranslateX.value = withSpring(0, panActivateConfig)
@@ -615,6 +607,44 @@ export default function BibleView() {
           animated
           style="light"
         />
+        {/* <FloatingButtons
+          textTranslationX={textTranslateX}
+          openHistory={() => {
+            savedTextTranslateX.value = horizTransReq
+            textTranslateX.value = withSpring(horizTransReq, panActivateConfig)
+            runOnJS(impactAsync)()
+            runOnJS(showStatusBar)()
+          }}
+          textPinch={textPinch}
+          openNavigator={() => {
+            if (Math.abs(textTranslateX.value) > 10) return
+
+            savedTextPinch.value = zoomOutReq
+            textPinch.value = withSpring(zoomOutReq)
+            runOnJS(focusSearch)()
+            runOnJS(impactAsync)()
+            runOnJS(showStatusBar)()
+          }}
+        /> */}
+        <Animated.View
+          style={[
+            {
+              ...Dimensions.get('window'),
+              position: 'absolute',
+            },
+            tapToReturnAnimatedStyles,
+          ]}
+        >
+          <TouchableOpacity
+            onPress={() => {
+              savedTextTranslateX.value = 0
+              textTranslateX.value = withSpring(0, panActivateConfig)
+            }}
+            style={{
+              ...Dimensions.get('window'),
+            }}
+          />
+        </Animated.View>
       </View>
     </GestureDetector>
   )
