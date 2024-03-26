@@ -1,5 +1,6 @@
 import { BlurView } from '@react-native-community/blur'
-import React, { useEffect, useState } from 'react'
+import { StatusBar } from 'expo-status-bar'
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import { Dimensions, Text, View } from 'react-native'
 import Animated, {
   SharedValue,
@@ -16,10 +17,13 @@ import { Chapters } from '../data/types/chapters'
 interface Props {
   activeChapter: Chapters[number]
   activeBook: Books[number]
+  setIsStatusBarHidden: Dispatch<SetStateAction<boolean>>
   isStatusBarHidden: boolean
   overlayOpacity: SharedValue<number>
   pastOverlayOffset: boolean
   navigatorTransition: SharedValue<number>
+  textTranslateY: SharedValue<number>
+  textTranslateX: SharedValue<number>
 }
 
 export default function ChapterOverlay({
@@ -29,17 +33,30 @@ export default function ChapterOverlay({
   overlayOpacity,
   pastOverlayOffset,
   navigatorTransition,
+  textTranslateY,
+  setIsStatusBarHidden,
+  textTranslateX,
 }: Props) {
   const insets = useSafeAreaInsets()
   const [navigatorOpen, setNavigatorOpen] = useState(false)
+  const [chapterChanging, setChapterChanging] = useState(false)
 
   useDerivedValue(() => {
     if (navigatorTransition.value === 1) runOnJS(setNavigatorOpen)(false)
     else runOnJS(setNavigatorOpen)(true)
   })
+  useDerivedValue(() => {
+    if (textTranslateY.value === 0) runOnJS(setChapterChanging)(false)
+    else runOnJS(setChapterChanging)(true)
+  })
+  useDerivedValue(() => {
+    if (textTranslateX.value > 20) runOnJS(setIsStatusBarHidden)(false)
+    else runOnJS(setIsStatusBarHidden)(true)
+  })
 
   useEffect(() => {
-    if (navigatorOpen) overlayOpacity.value = withTiming(0)
+    if (chapterChanging) overlayOpacity.value = withTiming(0)
+    else if (navigatorOpen) overlayOpacity.value = withTiming(0)
     else if (!isStatusBarHidden || !pastOverlayOffset)
       overlayOpacity.value = withTiming(0)
     else if (isStatusBarHidden && pastOverlayOffset)
@@ -57,7 +74,7 @@ export default function ChapterOverlay({
           position: 'absolute',
           top: 0,
           // borderRadius: 99,
-          zIndex: 2,
+          zIndex: 5,
         },
         overlayAnimatedStyles,
       ]}
@@ -106,6 +123,13 @@ export default function ChapterOverlay({
       </TouchableOpacity> */}
         </View>
       </BlurView>
+      <StatusBar
+        hidden={isStatusBarHidden}
+        backgroundColor={colors.bg2}
+        translucent={false}
+        animated
+        style="light"
+      />
     </Animated.View>
   )
 }

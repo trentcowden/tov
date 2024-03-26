@@ -1,6 +1,5 @@
 import { FlashList } from '@shopify/flash-list'
 import { ImpactFeedbackStyle, impactAsync } from 'expo-haptics'
-import { StatusBar } from 'expo-status-bar'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import {
   Dimensions,
@@ -138,7 +137,6 @@ export default function BibleView() {
             e.velocityX > horizVelocReq
           ) {
             runOnJS(impactAsync)()
-            runOnJS(setIsStatusBarHidden)(false)
             savedTextTranslateX.value = horizTransReq
             textTranslateX.value = withSpring(horizTransReq, panActivateConfig)
           } else {
@@ -152,7 +150,6 @@ export default function BibleView() {
             e.velocityX > horizVelocReq
           ) {
             runOnJS(impactAsync)()
-            runOnJS(setIsStatusBarHidden)(true)
             savedTextTranslateX.value = 0
             textTranslateX.value = withSpring(0, panActivateConfig)
           } else {
@@ -166,7 +163,6 @@ export default function BibleView() {
             e.velocityX < -horizVelocReq
           ) {
             runOnJS(impactAsync)()
-            runOnJS(setIsStatusBarHidden)(true)
             savedTextTranslateX.value = 0
             textTranslateX.value = withSpring(0, panActivateConfig)
           } else {
@@ -428,6 +424,9 @@ export default function BibleView() {
           isStatusBarHidden={isStatusBarHidden}
           pastOverlayOffset={pastOverlayOffset}
           navigatorTransition={navigatorTransition}
+          textTranslateY={textTranslateY}
+          setIsStatusBarHidden={setIsStatusBarHidden}
+          textTranslateX={textTranslateX}
         />
         <Navigator
           chapterListRef={searchListRef}
@@ -446,19 +445,12 @@ export default function BibleView() {
           activeChapter={activeChapter}
           closeHistory={() => {
             runOnJS(impactAsync)()
-            runOnJS(setIsStatusBarHidden)(true)
             textTranslateX.value = withSpring(0, panActivateConfig)
             savedTextTranslateX.value = 0
           }}
           goToChapter={goToChapter}
         />
-        <StatusBar
-          hidden={isStatusBarHidden}
-          backgroundColor={colors.bg2}
-          translucent={false}
-          animated
-          style="light"
-        />
+
         {/* <FloatingButtons
           textTranslationX={textTranslateX}
           openHistory={() => {
@@ -490,7 +482,6 @@ export default function BibleView() {
           <Pressable
             onPress={() => {
               runOnJS(impactAsync)()
-              runOnJS(setIsStatusBarHidden)(true)
               textTranslateX.value = withSpring(0, panActivateConfig)
               savedTextTranslateX.value = 0
             }}
