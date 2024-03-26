@@ -102,7 +102,7 @@ export default function BooksList({ navigatorBook, goToBook }: Props) {
       renderItem={renderBookItem}
       renderSectionHeader={renderSectionHeader}
       renderSectionFooter={() => <Spacer units={4} />}
-      keyboardShouldPersistTaps
+      keyboardShouldPersistTaps="always"
     />
   )
 }
