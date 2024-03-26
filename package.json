@@ -1,5 +1,5 @@
 {
-  "name": "menuha",
+  "name": "tov",
   "version": "1.0.0",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
@@ -20,6 +20,7 @@
     "expo-font": "~11.10.3",
     "expo-haptics": "~12.8.1",
     "expo-linear-gradient": "^12.7.2",
+    "expo-splash-screen": "~0.26.4",
     "expo-status-bar": "~1.11.1",
     "fuse.js": "^7.0.0",
     "json-schema-to-typescript": "^13.1.2",
