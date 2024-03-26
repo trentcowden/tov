@@ -1,13 +1,11 @@
 import { Octicons } from '@expo/vector-icons'
 import { FlashList } from '@shopify/flash-list'
-import React, { useState } from 'react'
+import React from 'react'
 import { Dimensions, Text, TouchableOpacity, View } from 'react-native'
 import Animated, {
   FadeOutLeft,
   SharedValue,
-  runOnJS,
   useAnimatedStyle,
-  useDerivedValue,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Spacer from '../Spacer'
@@ -15,8 +13,7 @@ import { colors, gutterSize, type } from '../constants'
 import chapters from '../data/chapters.json'
 import { Chapters } from '../data/types/chapters'
 import { getReference } from '../functions/bible'
-import { setActiveChapterIndex } from '../redux/activeChapter'
-import { HistoryItem, addToHistory, clearHistory } from '../redux/history'
+import { HistoryItem, clearHistory } from '../redux/history'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
 import Fade from './Fade'
 
@@ -24,18 +21,19 @@ interface Props {
   activeChapter: Chapters[number]
   textTranslationX: SharedValue<number>
   closeHistory: () => void
+  goToChapter: (chapterId: Chapters[number]['chapterId']) => void
 }
 
 export default function History({
   textTranslationX,
   closeHistory,
   activeChapter,
+  goToChapter,
 }: Props) {
   const activeChapterIndex = useAppSelector((state) => state.activeChapterIndex)
   const history = useAppSelector((state) => state.history)
   const insets = useSafeAreaInsets()
   const dispatch = useAppDispatch()
-  const [historyOpen, setHistoryOpen] = useState(false)
   const historyAnimatedStyles = useAnimatedStyle(() => {
     return {
       transform: [{ translateX: textTranslationX.value }],
@@ -56,18 +54,8 @@ export default function History({
       <Animated.View exiting={FadeOutLeft.duration(100).delay(index * 25)}>
         <TouchableOpacity
           onPress={() => {
-            dispatch(
-              addToHistory({
-                chapterId: activeChapter.chapterId,
-                date: Date.now(),
-              })
-            )
-            dispatch(
-              setActiveChapterIndex({
-                going: 'forward',
-                index: chapterIndex,
-              })
-            )
+            goToChapter(item.chapterId)
+
             closeHistory()
           }}
           style={{
@@ -101,11 +89,6 @@ export default function History({
     )
   }
 
-  useDerivedValue(() => {
-    if (textTranslationX.value > -10) runOnJS(setHistoryOpen)(false)
-    else runOnJS(setHistoryOpen)(true)
-  })
-
   return (
     <Animated.View
       style={[
@@ -130,23 +113,6 @@ export default function History({
           paddingHorizontal: gutterSize,
         }}
       >
-        {/* <TouchableOpacity
-      onPress={historyOpen ? closeHistory : openHistory}
-      style={{
-        position: 'absolute',
-        width: 48,
-        height: 48,
-        borderTopLeftRadius: 8,
-        borderBottomLeftRadius: 8,
-        left: -48,
-        bottom: 0,
-        backgroundColor: colors.bg2,
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-    >
-      <Octicons name="history" size={20} color={colors.fg3} />
-    </TouchableOpacity> */}
         <Text style={[type(28, 'uib', 'l', colors.fg1), { flex: 1 }]}>
           History
         </Text>

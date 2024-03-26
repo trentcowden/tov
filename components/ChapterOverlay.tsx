@@ -1,9 +1,11 @@
 import { BlurView } from '@react-native-community/blur'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Dimensions, Text, View } from 'react-native'
 import Animated, {
   SharedValue,
+  runOnJS,
   useAnimatedStyle,
+  useDerivedValue,
   withTiming,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -17,6 +19,7 @@ interface Props {
   isStatusBarHidden: boolean
   overlayOpacity: SharedValue<number>
   pastOverlayOffset: boolean
+  navigatorTransition: SharedValue<number>
 }
 
 export default function ChapterOverlay({
@@ -25,15 +28,23 @@ export default function ChapterOverlay({
   isStatusBarHidden,
   overlayOpacity,
   pastOverlayOffset,
+  navigatorTransition,
 }: Props) {
   const insets = useSafeAreaInsets()
+  const [navigatorOpen, setNavigatorOpen] = useState(false)
+
+  useDerivedValue(() => {
+    if (navigatorTransition.value === 1) runOnJS(setNavigatorOpen)(false)
+    else runOnJS(setNavigatorOpen)(true)
+  })
 
   useEffect(() => {
-    if (!isStatusBarHidden || !pastOverlayOffset)
+    if (navigatorOpen) overlayOpacity.value = withTiming(0)
+    else if (!isStatusBarHidden || !pastOverlayOffset)
       overlayOpacity.value = withTiming(0)
     else if (isStatusBarHidden && pastOverlayOffset)
       overlayOpacity.value = withTiming(1)
-  }, [isStatusBarHidden, pastOverlayOffset])
+  }, [isStatusBarHidden, pastOverlayOffset, navigatorOpen])
 
   const overlayAnimatedStyles = useAnimatedStyle(() => ({
     opacity: overlayOpacity.value,

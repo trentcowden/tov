@@ -15,12 +15,14 @@ interface Props {
   searchText: string
   chapterListRef: RefObject<FlashList<NavigatorChapterItem>>
   goToChapter: (chapterId: Chapters[number]['chapterId']) => void
+  closeNavigator: () => void
 }
 
 export default function SearchResults({
   searchText,
   chapterListRef,
   goToChapter,
+  closeNavigator,
   searchResults,
 }: Props) {
   function renderSearchResultItem({
@@ -50,6 +52,7 @@ export default function SearchResults({
         }}
         onPress={() => {
           goToChapter(item.item.chapterId)
+          closeNavigator()
         }}
       >
         <Text style={type(20, 'uir', 'l', colors.fg1)}>

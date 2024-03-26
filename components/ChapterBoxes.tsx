@@ -11,10 +11,15 @@ import { getBook } from '../functions/bible'
 
 interface Props {
   goToChapter: (chapterId: Chapters[number]['chapterId']) => void
+  closeNavigator: () => void
   navigatorBook: Books[number] | undefined
 }
 
-export default function ChapterBoxes({ goToChapter, navigatorBook }: Props) {
+export default function ChapterBoxes({
+  goToChapter,
+  navigatorBook,
+  closeNavigator,
+}: Props) {
   const thisBookChapters = useMemo(
     () =>
       (chapters as Chapters).filter(
@@ -50,7 +55,10 @@ export default function ChapterBoxes({ goToChapter, navigatorBook }: Props) {
             alignItems: 'center',
             justifyContent: 'center',
           }}
-          onPress={() => goToChapter(item.chapterId)}
+          onPress={() => {
+            goToChapter(item.chapterId)
+            closeNavigator()
+          }}
         >
           <Text style={type(18, 'uib', 'c', colors.fg1)}>
             {item.chapterId.split('.')[1]}

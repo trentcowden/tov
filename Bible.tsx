@@ -22,7 +22,6 @@ import Animated, {
   runOnJS,
   useAnimatedStyle,
   useSharedValue,
-  withDelay,
   withSequence,
   withSpring,
   withTiming,
@@ -44,11 +43,19 @@ import {
   type,
   zoomOutReq,
 } from './constants'
-import chaptersJson from './data/chapters.json'
+import {
+  default as chapters,
+  default as chaptersJson,
+} from './data/chapters.json'
 import { Books } from './data/types/books'
 import { Chapters } from './data/types/chapters'
 import { getBook, getReference } from './functions/bible'
-import { goToNextChapter, goToPreviousChapter } from './redux/activeChapter'
+import {
+  goToNextChapter,
+  goToPreviousChapter,
+  setActiveChapterIndex,
+} from './redux/activeChapter'
+import { addToHistory } from './redux/history'
 import { useAppDispatch, useAppSelector } from './redux/hooks'
 
 export interface NavigatorChapterItem {
@@ -98,10 +105,6 @@ export default function BibleView() {
   const [pastOverlayOffset, setPastOverlayOffset] = useState(false)
 
   const alreadyHaptic = useRef(false)
-
-  function focusSearch() {
-    searchRef.current?.focus()
-  }
 
   const panGesture = Gesture.Pan()
     .onChange((event) => {
@@ -183,11 +186,15 @@ export default function BibleView() {
       else if (navigatorTransition.value !== 1) return
 
       savedNavigatorTransition.value = zoomOutReq
-      navigatorTransition.value = withSpring(zoomOutReq)
+      navigatorTransition.value = withTiming(zoomOutReq)
 
       runOnJS(focusSearch)()
       runOnJS(impactAsync)(ImpactFeedbackStyle.Heavy)
     })
+
+  function focusSearch() {
+    searchRef.current?.focus()
+  }
 
   const composedGestures = Gesture.Simultaneous(panGesture, tapGesture)
 
@@ -205,11 +212,37 @@ export default function BibleView() {
       scrollViewRef.current?.scrollTo({ y: 0, animated: false })
     }
 
-    textTranslateY.value = withDelay(
-      75,
-      withSpring(0, { damping: 20, stiffness: 120 })
-    )
+    textTranslateY.value = withSpring(0, { damping: 20, stiffness: 120 })
   }, [activeChapterIndex])
+
+  function goToChapter(chapterId: Chapters[number]['chapterId']) {
+    const chapterIndex = (chapters as Chapters).findIndex(
+      (chapter) => chapter.chapterId === chapterId
+    )
+
+    textTranslateY.value = withSequence(
+      withTiming(-screenHeight, { duration: chapterChangeDuration }),
+      withTiming(screenHeight, { duration: 0 })
+    )
+
+    setTimeout(
+      () =>
+        dispatch(
+          setActiveChapterIndex({
+            going: 'forward',
+            index: chapterIndex,
+          })
+        ),
+      chapterChangeDuration
+    )
+
+    dispatch(
+      addToHistory({
+        chapterId: activeChapter.chapterId,
+        date: Date.now(),
+      })
+    )
+  }
 
   function handleScroll(event: NativeSyntheticEvent<NativeScrollEvent>) {
     const offset = event.nativeEvent.contentOffset.y
@@ -279,28 +312,28 @@ export default function BibleView() {
       activeChapterIndex.index !== (chaptersJson as Chapters).length - 1
 
     if (goingPrev && (offset <= -overScrollReq || y < -1)) {
-      if (!alreadyHaptic.current) impactAsync(ImpactFeedbackStyle.Heavy)
       textTranslateY.value = withSequence(
         withTiming(screenHeight, { duration: chapterChangeDuration }),
         withTiming(-screenHeight, { duration: 0 })
       )
+      if (!alreadyHaptic.current) impactAsync(ImpactFeedbackStyle.Heavy)
       setTimeout(() => dispatch(goToPreviousChapter()), chapterChangeDuration)
     } else if (
       goingNext &&
       (offset > contentHeight - screenHeight + overScrollReq || y > 1)
     ) {
-      if (!alreadyHaptic.current) impactAsync(ImpactFeedbackStyle.Heavy)
       textTranslateY.value = withSequence(
         withTiming(-screenHeight, {
           duration: chapterChangeDuration,
         }),
         withTiming(screenHeight, { duration: 0 })
       )
+      if (!alreadyHaptic.current) impactAsync(ImpactFeedbackStyle.Heavy)
       setTimeout(() => dispatch(goToNextChapter()), chapterChangeDuration)
     } else if (alreadyHaptic.current) impactAsync(ImpactFeedbackStyle.Light)
   }
 
-  const chapterAStyles = useAnimatedStyle(() => {
+  const textStyles = useAnimatedStyle(() => {
     return {
       transform: [
         { translateY: textTranslateY.value },
@@ -317,7 +350,7 @@ export default function BibleView() {
     }
   })
 
-  const tapToReturnAnimatedStyles = useAnimatedStyle(() => ({
+  const returnTapStyles = useAnimatedStyle(() => ({
     zIndex: Math.abs(textTranslateX.value) < 10 ? -1 : 1,
   }))
 
@@ -332,7 +365,7 @@ export default function BibleView() {
         }}
       >
         <Animated.View
-          style={[{ flex: 1, backgroundColor: colors.bg1 }, chapterAStyles]}
+          style={[{ flex: 1, backgroundColor: colors.bg1 }, textStyles]}
         >
           <ScrollView
             showsVerticalScrollIndicator={false}
@@ -394,7 +427,7 @@ export default function BibleView() {
           activeBook={activeBook}
           isStatusBarHidden={isStatusBarHidden}
           pastOverlayOffset={pastOverlayOffset}
-          textTranslationY={textTranslateY}
+          navigatorTransition={navigatorTransition}
         />
         <Navigator
           chapterListRef={searchListRef}
@@ -404,6 +437,8 @@ export default function BibleView() {
           searchText={searchText}
           setSearchText={setSearchText}
           activeChapter={activeChapter}
+          textTranslateY={textTranslateY}
+          goToChapter={goToChapter}
         />
         {/* <VerseInfo textTranslationX={textTranslateX} /> */}
         <History
@@ -415,6 +450,7 @@ export default function BibleView() {
             textTranslateX.value = withSpring(0, panActivateConfig)
             savedTextTranslateX.value = 0
           }}
+          goToChapter={goToChapter}
         />
         <StatusBar
           hidden={isStatusBarHidden}
@@ -448,7 +484,7 @@ export default function BibleView() {
               ...Dimensions.get('window'),
               position: 'absolute',
             },
-            tapToReturnAnimatedStyles,
+            returnTapStyles,
           ]}
         >
           <Pressable

@@ -37,8 +37,6 @@ import chapters from '../data/chapters.json'
 import { Books } from '../data/types/books'
 import { Chapters } from '../data/types/chapters'
 import { getReference } from '../functions/bible'
-import { setActiveChapterIndex } from '../redux/activeChapter'
-import { addToHistory } from '../redux/history'
 import { useAppDispatch } from '../redux/hooks'
 import BooksList from './BooksList'
 import ChapterBoxes from './ChapterBoxes'
@@ -53,6 +51,8 @@ interface Props {
   textPinch: SharedValue<number>
   savedTextPinch: SharedValue<number>
   activeChapter: Chapters[number]
+  textTranslateY: SharedValue<number>
+  goToChapter: (chapterId: Chapters[number]['chapterId']) => void
 }
 
 export interface SearchResult {
@@ -71,6 +71,8 @@ export default function Navigator({
   savedTextPinch,
   chapterListRef,
   activeChapter,
+  goToChapter,
+  textTranslateY,
 }: Props) {
   const insets = useSafeAreaInsets()
   const dispatch = useAppDispatch()
@@ -107,8 +109,6 @@ export default function Navigator({
   function closeNavigator() {
     impactAsync(ImpactFeedbackStyle.Light)
     searchRef.current?.blur()
-    searchRef.current?.clear()
-    setSearchText('')
     textPinch.value = withTiming(
       1,
       { duration: 200 },
@@ -117,7 +117,11 @@ export default function Navigator({
 
     savedTextPinch.value = 1
 
-    setTimeout(resetNavigatorBook, 500)
+    setTimeout(() => {
+      resetNavigatorBook()
+      searchRef.current?.clear()
+      setSearchText('')
+    }, 200)
 
     // if (overlayOpacity.value !== 0) overlayOpacity.value = withTiming(1)
   }
@@ -126,26 +130,6 @@ export default function Navigator({
     chapterTransition.value = withTiming(1)
     setNavigatorBook(book)
     searchRef.current?.blur()
-  }
-
-  function goToChapter(chapterId: Chapters[number]['chapterId']) {
-    const chapterIndex = (chapters as Chapters).findIndex(
-      (chapter) => chapter.chapterId === chapterId
-    )
-
-    dispatch(
-      addToHistory({
-        chapterId: activeChapter.chapterId,
-        date: Date.now(),
-      })
-    )
-    dispatch(
-      setActiveChapterIndex({
-        going: 'forward',
-        index: chapterIndex,
-      })
-    )
-    closeNavigator()
   }
 
   const navigatorStyles = useAnimatedStyle(() => {
@@ -292,6 +276,7 @@ export default function Navigator({
                       typeof searchResults[0].item !== 'string'
                     ) {
                       goToChapter(searchResults[0].item.chapterId)
+                      closeNavigator()
                     }
                   }}
                 />
@@ -315,6 +300,7 @@ export default function Navigator({
                   searchText={searchText}
                   chapterListRef={chapterListRef}
                   searchResults={searchResults}
+                  closeNavigator={closeNavigator}
                 />
               )}
             </View>
@@ -374,6 +360,7 @@ export default function Navigator({
             <ChapterBoxes
               goToChapter={goToChapter}
               navigatorBook={navigatorBook}
+              closeNavigator={closeNavigator}
             />
             <Fade place="top" color={colors.bg2} />
           </View>
