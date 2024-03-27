@@ -24,7 +24,6 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { NavigatorChapterItem } from '../Bible'
 import Spacer from '../Spacer'
 import {
   colors,
@@ -47,7 +46,7 @@ import SearchResults from './SearchResults'
 interface Props {
   searchRef: RefObject<TextInput>
   searchText: string
-  chapterListRef: RefObject<FlashList<NavigatorChapterItem>>
+  searchResultsRef: RefObject<FlashList<Chapters[number]>>
   setSearchText: Dispatch<SetStateAction<string>>
   textPinch: SharedValue<number>
   savedTextPinch: SharedValue<number>
@@ -70,7 +69,7 @@ export default function Navigator({
   setSearchText,
   textPinch,
   savedTextPinch,
-  chapterListRef,
+  searchResultsRef,
   activeChapter,
   goToChapter,
   textTranslateY,
@@ -100,7 +99,7 @@ export default function Navigator({
   })
 
   useEffect(() => {
-    chapterListRef.current?.scrollToOffset({ animated: false, offset: 0 })
+    searchResultsRef.current?.scrollToOffset({ animated: false, offset: 0 })
   }, [searchText])
 
   function resetNavigatorBook() {
@@ -302,7 +301,7 @@ export default function Navigator({
                 <SearchResults
                   goToChapter={goToChapter}
                   searchText={searchText}
-                  chapterListRef={chapterListRef}
+                  searchResultsRef={searchResultsRef}
                   searchResults={searchResults}
                   closeNavigator={closeNavigator}
                 />

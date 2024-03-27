@@ -46,7 +46,6 @@ import {
   default as chapters,
   default as chaptersJson,
 } from './data/chapters.json'
-import { Books } from './data/types/books'
 import { Chapters } from './data/types/chapters'
 import { getBook, getReference } from './functions/bible'
 import {
@@ -56,14 +55,6 @@ import {
 } from './redux/activeChapter'
 import { addToHistory } from './redux/history'
 import { useAppDispatch, useAppSelector } from './redux/hooks'
-
-export interface NavigatorChapterItem {
-  item:
-    | { item: Chapters[number] }
-    | Books[number]
-    | { sectionName: Books[number]['englishDivision'] }
-  index: number
-}
 
 export default function BibleView() {
   const activeChapterIndex = useAppSelector((state) => state.activeChapterIndex)
@@ -82,17 +73,16 @@ export default function BibleView() {
 
   const overlayOpacity = useSharedValue(0)
 
-  /**
-   * Component refs.
-   */
   const searchRef = useRef<TextInput>(null)
   const scrollViewRef = useRef<ScrollView>(null)
-  const searchListRef = useRef<FlashList<NavigatorChapterItem>>(null)
+  const searchListRef = useRef<FlashList<Chapters[number]>>(null)
 
   // Animating the main text area.
   const textTranslateY = useSharedValue(0)
   const textTranslateX = useSharedValue(0)
   const savedTextTranslateX = useSharedValue(0)
+
+  const verseOffsets
 
   const navigatorTransition = useSharedValue(1)
   const savedNavigatorTransition = useSharedValue(1)
@@ -429,7 +419,7 @@ export default function BibleView() {
           textTranslateX={textTranslateX}
         />
         <Navigator
-          chapterListRef={searchListRef}
+          searchResultsRef={searchListRef}
           textPinch={navigatorTransition}
           savedTextPinch={savedNavigatorTransition}
           searchRef={searchRef}
@@ -450,26 +440,6 @@ export default function BibleView() {
           }}
           goToChapter={goToChapter}
         />
-
-        {/* <FloatingButtons
-          textTranslationX={textTranslateX}
-          openHistory={() => {
-            savedTextTranslateX.value = horizTransReq
-            textTranslateX.value = withSpring(horizTransReq, panActivateConfig)
-            runOnJS(impactAsync)()
-            runOnJS(showStatusBar)()
-          }}
-          textPinch={textPinch}
-          openNavigator={() => {
-            if (Math.abs(textTranslateX.value) > 10) return
-
-            savedTextPinch.value = zoomOutReq
-            textPinch.value = withSpring(zoomOutReq)
-            runOnJS(focusSearch)()
-            runOnJS(impactAsync)()
-            runOnJS(showStatusBar)()
-          }}
-        /> */}
         <Animated.View
           style={[
             {

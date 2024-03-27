@@ -3,7 +3,6 @@ import { FlashList } from '@shopify/flash-list'
 import { RefObject } from 'react'
 import { Text, TouchableOpacity, View } from 'react-native'
 import { FlatList } from 'react-native-gesture-handler'
-import { NavigatorChapterItem } from '../Bible'
 import Spacer from '../Spacer'
 import { colors, gutterSize, type } from '../constants'
 import { Chapters } from '../data/types/chapters'
@@ -13,14 +12,14 @@ import { SearchResult } from './Navigator'
 interface Props {
   searchResults: SearchResult[]
   searchText: string
-  chapterListRef: RefObject<FlashList<NavigatorChapterItem>>
+  searchResultsRef: RefObject<FlashList<Chapters[number]>>
   goToChapter: (chapterId: Chapters[number]['chapterId']) => void
   closeNavigator: () => void
 }
 
 export default function SearchResults({
   searchText,
-  chapterListRef,
+  searchResultsRef,
   goToChapter,
   closeNavigator,
   searchResults,
@@ -79,7 +78,7 @@ export default function SearchResults({
 
   return (
     <FlatList
-      ref={chapterListRef as any}
+      ref={searchResultsRef as any}
       keyboardShouldPersistTaps="always"
       keyExtractor={(item) => JSON.stringify(item)}
       renderItem={renderSearchResultItem}
