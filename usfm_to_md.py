@@ -20,7 +20,7 @@ def usfm_to_markdown(book: str, chapter: int, usfm_text: str):
     usfm_text = re.sub(r"\\q\d+", "", usfm_text)
 
     # Convert verses
-    usfm_text = re.sub(r"\n\\v (\d+) *", rf"[\1]({book}.{chapter}.\1) ", usfm_text)
+    usfm_text = re.sub(r"\n\\v (\d+) *", r"[\1] ", usfm_text)
     usfm_text = re.sub(r"\\p", "\n", usfm_text)
 
     # TODO: add footnote support

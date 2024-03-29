@@ -9,12 +9,13 @@ export const colors = {
   fg3: '#9b9b9b',
   p1: '#2d2118',
   b: 'rgba(164, 152, 142, 0.15)',
+  v: '#cca98f',
 }
 
 export const gutterSize = 20
 
-export const screenWidth = Dimensions.get('window').width
-export const screenHeight = Dimensions.get('window').height
+export const screenWidth = Dimensions.get('screen').width
+export const screenHeight = Dimensions.get('screen').height
 
 export const largeButtonSize = 80
 export const smallButtonSize = 48

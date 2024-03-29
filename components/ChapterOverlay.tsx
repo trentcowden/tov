@@ -1,13 +1,9 @@
-import { BlurView } from '@react-native-community/blur'
 import { StatusBar } from 'expo-status-bar'
-import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
-import { Dimensions, Text, View } from 'react-native'
+import React, { Dispatch, SetStateAction, useState } from 'react'
+import { Text, View } from 'react-native'
 import Animated, {
   SharedValue,
-  runOnJS,
   useAnimatedStyle,
-  useDerivedValue,
-  withTiming,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { colors, gutterSize, type } from '../constants'
@@ -41,30 +37,31 @@ export default function ChapterOverlay({
   const [navigatorOpen, setNavigatorOpen] = useState(false)
   const [chapterChanging, setChapterChanging] = useState(false)
 
-  useDerivedValue(() => {
-    if (navigatorTransition.value === 1) runOnJS(setNavigatorOpen)(false)
-    else runOnJS(setNavigatorOpen)(true)
-  })
-  useDerivedValue(() => {
-    if (Math.abs(textTranslateY.value) < 10) runOnJS(setChapterChanging)(false)
-    else runOnJS(setChapterChanging)(true)
-  })
-  useDerivedValue(() => {
-    if (textTranslateX.value > 25) runOnJS(setIsStatusBarHidden)(false)
-    else runOnJS(setIsStatusBarHidden)(true)
-  })
+  // useDerivedValue(() => {
+  //   if (navigatorTransition.value === 1) runOnJS(setNavigatorOpen)(false)
+  //   else runOnJS(setNavigatorOpen)(true)
+  // })
+  // useDerivedValue(() => {
+  //   if (Math.abs(textTranslateY.value) < 10) runOnJS(setChapterChanging)(false)
+  //   else runOnJS(setChapterChanging)(true)
+  // })
+  // useDerivedValue(() => {
+  //   if (textTranslateX.value > 25) runOnJS(setIsStatusBarHidden)(false)
+  //   else runOnJS(setIsStatusBarHidden)(true)
+  // })
 
-  useEffect(() => {
-    if (chapterChanging) overlayOpacity.value = withTiming(0)
-    else if (navigatorOpen) overlayOpacity.value = withTiming(0)
-    else if (!isStatusBarHidden || !pastOverlayOffset)
-      overlayOpacity.value = withTiming(0)
-    else if (isStatusBarHidden && pastOverlayOffset)
-      overlayOpacity.value = withTiming(1)
-  }, [isStatusBarHidden, pastOverlayOffset, navigatorOpen, chapterChanging])
+  // useEffect(() => {
+  //   if (chapterChanging) overlayOpacity.value = withTiming(0)
+  //   else if (navigatorOpen) overlayOpacity.value = withTiming(0)
+  //   else if (!isStatusBarHidden || !pastOverlayOffset)
+  //     overlayOpacity.value = withTiming(0)
+  //   else if (isStatusBarHidden && pastOverlayOffset)
+  //     overlayOpacity.value = withTiming(1)
+  // }, [isStatusBarHidden, pastOverlayOffset, navigatorOpen, chapterChanging])
 
   const overlayAnimatedStyles = useAnimatedStyle(() => ({
-    opacity: overlayOpacity.value,
+    // opacity: overlayOpacity.value,
+    opacity: 1,
   }))
 
   return (
@@ -72,57 +69,49 @@ export default function ChapterOverlay({
       style={[
         {
           position: 'absolute',
-          top: 0,
+          top: gutterSize,
+          left: gutterSize,
           // borderRadius: 99,
           zIndex: 5,
         },
         overlayAnimatedStyles,
       ]}
     >
-      <BlurView blurType="dark" style={[]}>
-        <View
-          style={[
-            {
-              flexDirection: 'row',
-              justifyContent: 'flex-start',
-              alignItems: 'center',
-              gap: 8,
-              paddingHorizontal: gutterSize * 2,
-              width: Dimensions.get('window').width,
-              height: insets.top,
-            },
-          ]}
-        >
-          {/* <TouchableOpacity style={{ paddingHorizontal: gutterSize }}>
+      {/* <BlurView blurType="dark" style={[]}> */}
+      <View
+        style={[
+          {
+            flexDirection: 'row',
+            justifyContent: 'flex-start',
+            alignItems: 'center',
+            gap: 8,
+            borderRadius: 8,
+            paddingHorizontal: gutterSize,
+            paddingVertical: gutterSize / 2,
+            // height: insets.top,
+            backgroundColor: colors.bg3,
+          },
+        ]}
+      >
+        {/* <TouchableOpacity style={{ paddingHorizontal: gutterSize }}>
         <Ionicons name="settings-outline" size={20} color={colors.fg3} />
       </TouchableOpacity> */}
-          <Text
-            numberOfLines={1}
-            adjustsFontSizeToFit
-            maxFontSizeMultiplier={1}
-            style={{
-              ...type(11, 'i', 'l', colors.fg2),
-            }}
-          >
-            {activeBook.name}
-          </Text>
-          <View style={{ flex: 1 }} />
-          <Text
-            numberOfLines={1}
-            adjustsFontSizeToFit
-            maxFontSizeMultiplier={1}
-            style={{
-              ...type(11, 'i', 'l', colors.fg2),
-              textAlign: 'right',
-            }}
-          >
-            Chapter {activeChapter.chapterId.split('.')[1]}
-          </Text>
-          {/* <TouchableOpacity style={{ paddingHorizontal: gutterSize }}>
+        <Text
+          numberOfLines={1}
+          adjustsFontSizeToFit
+          maxFontSizeMultiplier={1}
+          style={{
+            ...type(12, 'bi', 'l', colors.fg2),
+          }}
+        >
+          {activeBook.name.replace(' ', '').slice(0, 3)}{' '}
+          {activeChapter.chapterId.split('.')[1]}
+        </Text>
+        {/* <TouchableOpacity style={{ paddingHorizontal: gutterSize }}>
         <FontAwesome5 name="history" size={20} color={colors.fg3} />
       </TouchableOpacity> */}
-        </View>
-      </BlurView>
+      </View>
+      {/* </BlurView> */}
       <StatusBar
         hidden={isStatusBarHidden}
         backgroundColor={colors.bg2}
