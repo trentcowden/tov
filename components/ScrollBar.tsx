@@ -1,3 +1,4 @@
+import { FontAwesome5 } from '@expo/vector-icons'
 import React, { RefObject, useEffect, useMemo } from 'react'
 import { Text, View } from 'react-native'
 import {
@@ -27,6 +28,8 @@ interface Props {
   textTranslateY: SharedValue<number>
   scrollBarPosition: SharedValue<number>
 }
+
+const activeScrollBarWidth = gutterSize * 6
 
 export default function ScrollBar({
   verseOffsets,
@@ -117,7 +120,7 @@ export default function ScrollBar({
         translateX: interpolate(
           scrollBarActivate.value,
           [0, 1],
-          [0, -gutterSize * 4]
+          [0, -activeScrollBarWidth]
         ),
       },
     ],
@@ -142,7 +145,7 @@ export default function ScrollBar({
           translateX: interpolate(
             scrollBarActivate.value,
             [0, 1],
-            [gutterSize * 4, 0]
+            [activeScrollBarWidth, 0]
           ),
         },
       ],
@@ -194,15 +197,19 @@ export default function ScrollBar({
           {
             position: 'absolute',
             right: 0,
-            width: gutterSize * 4,
+            width: activeScrollBarWidth,
             height: scrollBarHeight,
             zIndex: 20,
             backgroundColor: colors.fg1,
-            borderRadius: gutterSize,
+            borderRadius: 16,
+            justifyContent: 'center',
+            paddingLeft: 4,
           },
           scrollBarActiveStyles,
         ]}
-      />
+      >
+        <FontAwesome5 name="long-arrow-alt-left" size={16} color={colors.bg3} />
+      </Animated.View>
       <Animated.View
         style={[
           {
