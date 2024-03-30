@@ -1,4 +1,3 @@
-import { FontAwesome5 } from '@expo/vector-icons'
 import React, { RefObject, useEffect, useMemo } from 'react'
 import { Text, View } from 'react-native'
 import {
@@ -65,7 +64,7 @@ export default function ScrollBar({
   const verseNumberColumns = verseOffsets
     ? Math.ceil(verseOffsets.length / 25)
     : 0
-  const verseColumnWidth = 24
+  const verseColumnWidth = activeScrollBarWidth / 4
 
   const scrollPanGesture = Gesture.Pan()
     .onBegin((event) => {
@@ -115,15 +114,15 @@ export default function ScrollBar({
 
   const verseNumberStyles = useAnimatedStyle(() => ({
     opacity: scrollBarActivate.value,
-    transform: [
-      {
-        translateX: interpolate(
-          scrollBarActivate.value,
-          [0, 1],
-          [0, -activeScrollBarWidth]
-        ),
-      },
-    ],
+    // transform: [
+    //   {
+    //     translateX: interpolate(
+    //       scrollBarActivate.value,
+    //       [0, 1],
+    //       [0, -activeScrollBarWidth]
+    //     ),
+    //   },
+    // ],
   }))
 
   const scrollBarStyles = useAnimatedStyle(() => ({
@@ -149,7 +148,7 @@ export default function ScrollBar({
           ),
         },
       ],
-      opacity: scrollBarActivate.value,
+      opacity: interpolate(scrollBarActivate.value, [0, 1], [0, 0.5]),
     }
   })
 
@@ -177,7 +176,7 @@ export default function ScrollBar({
             style={[
               {
                 // width: gutterSize,
-                width: 4,
+                width: gutterSize / 2,
                 borderRadius: 2,
                 height: scrollBarHeight,
                 backgroundColor: colors.fg1,
@@ -201,14 +200,14 @@ export default function ScrollBar({
             height: scrollBarHeight,
             zIndex: 20,
             backgroundColor: colors.fg1,
-            borderRadius: 16,
+            borderRadius: 8,
             justifyContent: 'center',
             paddingLeft: 4,
           },
           scrollBarActiveStyles,
         ]}
       >
-        <FontAwesome5 name="long-arrow-alt-left" size={16} color={colors.bg3} />
+        {/* <FontAwesome5 name="long-arrow-alt-left" size={16} color={colors.bg3} /> */}
       </Animated.View>
       <Animated.View
         style={[
@@ -218,8 +217,8 @@ export default function ScrollBar({
             top: insets.top,
             height: screenHeight - insets.top - insets.bottom,
             zIndex: 10,
-            width: verseColumnWidth * verseNumberColumns,
-            borderRadius: 16,
+            width: activeScrollBarWidth,
+            borderRadius: 8,
             backgroundColor: colors.bg2,
             // alignItems: 'center',
           },
@@ -235,7 +234,7 @@ export default function ScrollBar({
                 width: verseColumnWidth,
                 position: 'absolute',
                 top: offset,
-                left: (index % verseNumberColumns) * verseColumnWidth,
+                left: (index % 2) * verseColumnWidth,
                 // justifyContent: 'center',
                 // alignItems: 'center',
               }}
