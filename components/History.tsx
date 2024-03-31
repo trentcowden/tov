@@ -21,7 +21,10 @@ interface Props {
   activeChapter: Chapters[number]
   textTranslationX: SharedValue<number>
   closeHistory: () => void
-  goToChapter: (chapterId: Chapters[number]['chapterId']) => void
+  goToChapter: (
+    chapterId: Chapters[number]['chapterId'],
+    verseNumber?: number
+  ) => void
 }
 
 export default function History({
@@ -54,7 +57,7 @@ export default function History({
       <Animated.View exiting={FadeOutLeft.duration(100).delay(index * 25)}>
         <TouchableOpacity
           onPress={() => {
-            goToChapter(item.chapterId)
+            goToChapter(item.chapterId, item.verseIndex)
 
             closeHistory()
           }}
@@ -84,7 +87,7 @@ export default function History({
             adjustsFontSizeToFit
             style={[type(18, 'uir', 'l', colors.fg2), { flex: 1 }]}
           >
-            {getReference(item.chapterId)}
+            {getReference(item.chapterId)}:{item.verseIndex + 1}
           </Text>
           {chapterIndex === activeChapterIndex.index ? (
             <Text style={type(12, 'uir', 'c', colors.fg3)}>Current</Text>
@@ -157,15 +160,16 @@ export default function History({
           renderItem={renderHistoryItem}
           showsVerticalScrollIndicator={false}
           estimatedItemSize={28}
-          ListHeaderComponent={
-            <>
-              <Spacer units={4} />
-              {renderHistoryItem({
-                item: { chapterId: activeChapter.chapterId, date: 0 },
-                index: -1,
-              })}
-            </>
-          }
+          // ListHeaderComponent={
+          //   <>
+          //     <Spacer units={4} />
+          //     {renderHistoryItem({
+          //       item: { chapterId: activeChapter.chapterId, date: 0 },
+          //       index: -1,
+          //     })}
+          //   </>
+          // }
+          ListHeaderComponent={<Spacer units={2} />}
           ListFooterComponent={<Spacer units={4} additional={insets.bottom} />}
         />
         <Fade place="top" color={colors.bg2} />

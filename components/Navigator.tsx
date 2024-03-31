@@ -226,13 +226,13 @@ export default function Navigator({
         <KeyboardAvoidingView
           behavior="height"
           style={{
-            width: Dimensions.get('window').width - gutterSize * 2,
+            width: Dimensions.get('window').width - gutterSize * 3,
             height: navigatorHeight,
           }}
         >
           <View
             style={{
-              width: Dimensions.get('window').width - gutterSize * 2,
+              width: Dimensions.get('window').width - gutterSize * 3,
               backgroundColor: colors.bg2,
               borderRadius: 16,
               flex: 1,

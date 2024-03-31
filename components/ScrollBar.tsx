@@ -130,6 +130,9 @@ export default function ScrollBar({
       {
         translateY: scrollBarPosition.value,
       },
+      {
+        translateX: textTranslateX.value,
+      },
     ],
     opacity: interpolate(scrollBarActivate.value, [-1, 0, 1], [0, 0.25, 0]),
   }))

@@ -1,6 +1,5 @@
 import { FlashList } from '@shopify/flash-list'
 import { ImpactFeedbackStyle, impactAsync } from 'expo-haptics'
-import { StatusBar } from 'expo-status-bar'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import {
   Dimensions,
@@ -29,6 +28,7 @@ import Animated, {
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Spacer from './Spacer'
+import ChapterOverlay from './components/ChapterOverlay'
 import History from './components/History'
 import Navigator from './components/Navigator'
 import ScrollBar from './components/ScrollBar'
@@ -55,11 +55,11 @@ import {
   goToPreviousChapter,
   setActiveChapterIndex,
 } from './redux/activeChapter'
-import { addToHistory } from './redux/history'
+import { addToHistory, removeFromHistory } from './redux/history'
 import { useAppDispatch, useAppSelector } from './redux/hooks'
 
 const lineHeight = 36
-const headerHeight = 40
+const headerHeight = 48
 
 export default function BibleView() {
   const activeChapterIndex = useAppSelector((state) => state.activeChapterIndex)
@@ -86,15 +86,18 @@ export default function BibleView() {
   const textTranslateY = useSharedValue(0)
   const textTranslateX = useSharedValue(0)
   const savedTextTranslateX = useSharedValue(0)
+  const textFadeOut = useSharedValue(0)
 
   const [verseOffsets, setVerseOffsets] = useState<number[]>()
-
+  const currentVerseReq = insets.top + gutterSize * 3 + headerHeight
   const currentVerseIndex = useRef(0)
 
   const navigatorTransition = useSharedValue(1)
   const savedNavigatorTransition = useSharedValue(1)
 
   const scrollBarActivate = useSharedValue(0)
+
+  const [textRendered, setTextRendered] = useState(false)
 
   const fingerDown = useRef(false)
   const [searchText, setSearchText] = useState('')
@@ -196,50 +199,88 @@ export default function BibleView() {
   const composedGestures = Gesture.Simultaneous(panGesture, tapGesture)
 
   useEffect(() => {
+    if (!textRendered) return
+
+    dispatch(removeFromHistory(activeChapter.chapterId))
+
     if (activeChapterIndex.going === 'forward') {
       setPastOverlayOffset(false)
       scrollViewRef.current?.scrollTo({ y: 0, animated: false })
-      dispatch(
-        setActiveChapterIndex({
-          going: undefined,
-          index: activeChapterIndex.index,
-        })
-      )
-    } else if (activeChapterIndex.going === 'back') {
-      setPastOverlayOffset(true)
-      setTimeout(
-        () => scrollViewRef.current?.scrollToEnd({ animated: false }),
-        50
-      )
-      dispatch(
-        setActiveChapterIndex({
-          going: undefined,
-          index: activeChapterIndex.index,
-        })
-      )
-    }
-    // else {
-    //   scrollViewRef.current?.scrollTo({ y: 0, animated: false })
-    // }
-    textTranslateY.value = withSpring(0, { damping: 20, stiffness: 120 })
-  }, [activeChapterIndex])
 
-  function goToChapter(chapterId: Chapters[number]['chapterId']) {
+      dispatch(
+        setActiveChapterIndex({
+          going: undefined,
+          index: activeChapterIndex.index,
+          verseIndex: undefined,
+        })
+      )
+      textTranslateY.value = withSpring(0, { damping: 20, stiffness: 120 })
+    } else if (activeChapterIndex.going === 'back') {
+      // setPastOverlayOffset(true)
+      // setTimeout(
+      //   () =>
+      scrollViewRef.current?.scrollToEnd({ animated: false }),
+        //   50
+        // )
+        dispatch(
+          setActiveChapterIndex({
+            going: undefined,
+            index: activeChapterIndex.index,
+            verseIndex: undefined,
+          })
+        )
+      textTranslateY.value = withSpring(0, { damping: 20, stiffness: 120 })
+    } else {
+      if (activeChapterIndex.verseIndex !== undefined) {
+        scrollViewRef.current?.scrollTo({
+          y: verseOffsets
+            ? verseOffsets[activeChapterIndex.verseIndex] - currentVerseReq
+            : 0,
+          animated: false,
+        })
+        // textFadeOut.value = withTiming(0, { duration: 250 })
+      } else {
+        scrollViewRef.current?.scrollTo({
+          y: 0,
+          animated: false,
+        })
+      }
+      // dispatch(
+      //   setActiveChapterIndex({
+      //     going: undefined,
+      //     index: activeChapterIndex.index,
+      //     verseIndex: undefined,
+      //   })
+      // )
+      textFadeOut.value = withSpring(0, { damping: 20, stiffness: 120 })
+    }
+    scrollBarActivate.value = withTiming(0)
+  }, [activeChapterIndex, textRendered])
+
+  function goToChapter(
+    chapterId: Chapters[number]['chapterId'],
+    verseNumber?: number
+  ) {
+    scrollBarActivate.value = withTiming(-1, { duration: 200 })
+    setTextRendered(false)
     const chapterIndex = (chapters as Chapters).findIndex(
       (chapter) => chapter.chapterId === chapterId
     )
 
-    textTranslateY.value = withSequence(
-      withTiming(-screenHeight, { duration: chapterChangeDuration }),
-      withTiming(screenHeight, { duration: 0 })
-    )
+    // textTranslateY.value = withSequence(
+    //   withTiming(-screenHeight, { duration: chapterChangeDuration }),
+    //   withTiming(screenHeight, { duration: 0 })
+    // )
+    textFadeOut.value = 0.7
+    textFadeOut.value = withTiming(1, { duration: chapterChangeDuration })
 
     setTimeout(
       () =>
         dispatch(
           setActiveChapterIndex({
-            going: 'forward',
+            going: undefined,
             index: chapterIndex,
+            verseIndex: verseNumber,
           })
         ),
       chapterChangeDuration
@@ -249,6 +290,7 @@ export default function BibleView() {
       addToHistory({
         chapterId: activeChapter.chapterId,
         date: Date.now(),
+        verseIndex: currentVerseIndex.current,
       })
     )
   }
@@ -292,8 +334,9 @@ export default function BibleView() {
 
   function handleScrollOverlayOffset(offset: number) {
     if (textTranslateY.value === 0) {
-      if (offset > 80) setPastOverlayOffset(true)
-      else setPastOverlayOffset(false)
+      if (offset > gutterSize * 2 + headerHeight)
+        overlayOpacity.value = withTiming(1)
+      else overlayOpacity.value = withTiming(0)
     }
   }
 
@@ -303,7 +346,8 @@ export default function BibleView() {
     let low = 0
     let high = verseOffsets.length - 1
     let result = -1
-    const target = offset + insets.top + lineHeight / 2
+    const target = offset + currentVerseReq
+    // + insets.top + lineHeight / 2
     // console.log(target)
 
     while (low <= high) {
@@ -343,9 +387,10 @@ export default function BibleView() {
     const contentHeight = event.nativeEvent.contentSize.height
 
     handleScrollBarUpdate(offset)
-    // handleScrollOverlayOffset(offset)
+    handleScrollOverlayOffset(offset)
     handleScrollVersePosition(offset)
     handleScrollHaptics(offset, contentHeight)
+    // console.log(currentVerseIndex.current)
   }
 
   function handleDragEnd(event: NativeSyntheticEvent<NativeScrollEvent>) {
@@ -371,6 +416,7 @@ export default function BibleView() {
       activeChapterIndex.index !== (chaptersJson as Chapters).length - 1
 
     if (goingPrev && (offset <= -overScrollReq || y < -1)) {
+      // setTextRendered(false)
       scrollBarActivate.value = withTiming(-1, { duration: 200 })
 
       textTranslateY.value = withSequence(
@@ -383,6 +429,7 @@ export default function BibleView() {
       goingNext &&
       (offset > contentHeight - screenHeight + overScrollReq || y > 1)
     ) {
+      // setTextRendered(false)
       scrollBarActivate.value = withTiming(-1, { duration: 200 })
 
       textTranslateY.value = withSequence(
@@ -397,21 +444,28 @@ export default function BibleView() {
   }
 
   const textStyles = useAnimatedStyle(() => {
+    console.log(
+      textFadeOut.value,
+      scrollBarActivate.value,
+      navigatorTransition.value
+    )
     return {
       transform: [
         { translateY: textTranslateY.value },
         { translateX: textTranslateX.value },
       ],
       opacity:
-        scrollBarActivate.value !== 0
-          ? interpolate(scrollBarActivate.value, [0, 1], [1, 0.5])
-          : navigatorTransition.value !== 1
-            ? navigatorTransition.value
-            : interpolate(
-                textTranslateX.value,
-                [-horizTransReq, 0, horizTransReq],
-                [0.3, 1, 0.3]
-              ),
+        textFadeOut.value !== 0
+          ? interpolate(textFadeOut.value, [0, 1], [1, 0])
+          : scrollBarActivate.value > 0
+            ? interpolate(scrollBarActivate.value, [0, 1], [1, 0.5])
+            : navigatorTransition.value !== 1
+              ? navigatorTransition.value
+              : interpolate(
+                  textTranslateX.value,
+                  [-horizTransReq, 0, horizTransReq],
+                  [0.3, 1, 0.3]
+                ),
     }
   })
 
@@ -424,7 +478,8 @@ export default function BibleView() {
     const spaceAfterTextEnds = insets.bottom + gutterSize * 2
     const verseOffsets: number[] = []
     event.nativeEvent.lines.forEach((line) => {
-      if (/\[[0-9]{1,3}\]/.test(line.text)) {
+      // if (/\[[0-9]{1,3}\]/.test(line.text)) {
+      if (/[0-9]{1,3}\.\.\./.test(line.text)) {
         // Set the offset relative to the very top of the scrollview.
         verseOffsets.push(spaceBeforeTextStarts + line.y)
       }
@@ -440,7 +495,11 @@ export default function BibleView() {
   }
 
   function renderVerseNumber(text: string) {
-    return text
+    return text.replace('[', '').replace(']', '') + '...'
+  }
+
+  function renderBoltAndItalicText(text: string) {
+    return text.replace(/\*/g, '')
   }
 
   return (
@@ -485,9 +544,7 @@ export default function BibleView() {
                   borderColor: 'green',
                 }}
               >
-                <Text style={{ color: 'green', fontSize: 20 }}>
-                  {index + 1}
-                </Text>
+                <Text style={{ color: 'green', fontSize: 20 }}>{index}</Text>
               </View>
             ))} */}
             <Spacer units={8} additional={insets.top} />
@@ -500,7 +557,12 @@ export default function BibleView() {
             >
               {getReference(activeChapter.chapterId)}
             </Text>
-            <Text onTextLayout={onTextLayout}>
+            <Text
+              onTextLayout={onTextLayout}
+              onLayout={() => {
+                setTextRendered(true)
+              }}
+            >
               <ParsedText
                 parse={[
                   {
@@ -508,10 +570,24 @@ export default function BibleView() {
                     style: {
                       fontFamily: 'Bold',
                       color: colors.v,
-                      // fontSize: 20,
+                      fontSize: 16,
                       // backgroundColor: colors.bg2,
                     },
                     renderText: renderVerseNumber,
+                  },
+                  {
+                    pattern: /\*\*.+\*\*/,
+                    style: {
+                      fontFamily: 'Bold',
+                    },
+                    renderText: renderBoltAndItalicText,
+                  },
+                  {
+                    pattern: /\*.+\*/,
+                    style: {
+                      fontFamily: 'Regular-Italic',
+                    },
+                    renderText: renderBoltAndItalicText,
                   },
                 ]}
                 style={{
@@ -526,7 +602,7 @@ export default function BibleView() {
             <Spacer units={8} additional={insets.bottom} />
           </ScrollView>
         </Animated.View>
-        {/* <ChapterOverlay
+        <ChapterOverlay
           overlayOpacity={overlayOpacity}
           activeChapter={activeChapter}
           activeBook={activeBook}
@@ -536,7 +612,7 @@ export default function BibleView() {
           textTranslateY={textTranslateY}
           setIsStatusBarHidden={setIsStatusBarHidden}
           textTranslateX={textTranslateX}
-        /> */}
+        />
         <Navigator
           searchResultsRef={searchListRef}
           textPinch={navigatorTransition}
@@ -588,7 +664,6 @@ export default function BibleView() {
           verseOffsets={verseOffsets}
           scrollBarPosition={scrollBarPosition}
         />
-        <StatusBar hidden />
         {/* <View
           style={{
             position: 'absolute',
@@ -597,14 +672,23 @@ export default function BibleView() {
             height: 1,
             backgroundColor: 'green',
           }}
-        />
-        <View
+        /> */}
+        {/* <View
           style={{
             position: 'absolute',
             top: insets.top - 1,
             width: '100%',
             height: 1,
             backgroundColor: 'green',
+          }}
+        /> */}
+        {/* <View
+          style={{
+            position: 'absolute',
+            top: currentVerseReq,
+            width: '100%',
+            height: 1,
+            backgroundColor: 'blue',
           }}
         /> */}
       </View>
