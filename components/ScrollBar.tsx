@@ -1,4 +1,4 @@
-import { ImpactFeedbackStyle, impactAsync, selectionAsync } from 'expo-haptics'
+import { ImpactFeedbackStyle, impactAsync } from 'expo-haptics'
 import React, { RefObject, useEffect, useMemo, useRef } from 'react'
 import { Text, View } from 'react-native'
 import {
@@ -88,7 +88,7 @@ export default function ScrollBar({
       if (verseOffsets && verseOffsets[verseOffsets.length - 1] < screenHeight)
         return
 
-      runOnJS(selectionAsync)()
+      // runOnJS(selectionAsync)()
 
       if (event.absoluteY - startingOffset.value < insets.top)
         scrollBarPosition.value = insets.top
@@ -146,7 +146,7 @@ export default function ScrollBar({
         translateX: textTranslateX.value,
       },
     ],
-    opacity: interpolate(scrollBarActivate.value, [-1, 0, 1], [0, 0.25, 0]),
+    opacity: interpolate(scrollBarActivate.value, [-1, 0, 1], [0, 1, 0]),
   }))
 
   const scrollBarActiveStyles = useAnimatedStyle(() => {
@@ -192,9 +192,9 @@ export default function ScrollBar({
               {
                 // width: gutterSize,
                 width: gutterSize / 2,
-                borderRadius: 2,
+                borderRadius: 99,
                 height: scrollBarHeight,
-                backgroundColor: colors.fg1,
+                backgroundColor: colors.bg3,
                 zIndex: 5,
                 display:
                   verseOffsets &&
@@ -214,8 +214,8 @@ export default function ScrollBar({
             width: activeScrollBarWidth,
             height: scrollBarHeight,
             zIndex: 20,
-            backgroundColor: colors.fg1,
-            borderRadius: 8,
+            backgroundColor: colors.fg3,
+            // borderRadius: 8,
             justifyContent: 'center',
             paddingLeft: 4,
           },

@@ -209,13 +209,8 @@ export default function BibleView() {
       scrollViewRef.current?.scrollTo({ y: 0, animated: false })
       textTranslateY.value = withSpring(0, { damping: 20, stiffness: 120 })
     } else if (activeChapterIndex.transition === 'back') {
-      // Timeout is needed, otherwise text doesn't actually scroll to end.
-      // setTimeout(
-      //   () =>
-      scrollViewRef.current?.scrollToEnd({ animated: false }),
-        // 50
-        // )
-        (textTranslateY.value = withSpring(0, { damping: 20, stiffness: 120 }))
+      scrollViewRef.current?.scrollToEnd({ animated: false })
+      textTranslateY.value = withSpring(0, { damping: 20, stiffness: 120 })
     } else if (activeChapterIndex.transition === 'fade') {
       if (activeChapterIndex.verseIndex !== undefined) {
         scrollViewRef.current?.scrollTo({
@@ -231,13 +226,6 @@ export default function BibleView() {
           animated: false,
         })
       }
-      // dispatch(
-      //   setActiveChapterIndex({
-      //     going: undefined,
-      //     index: activeChapterIndex.index,
-      //     verseIndex: undefined,
-      //   })
-      // )
       textFadeOut.value = withSpring(0, { damping: 20, stiffness: 120 })
     }
     scrollBarActivate.value = withTiming(0)
@@ -439,7 +427,7 @@ export default function BibleView() {
         textFadeOut.value !== 0
           ? interpolate(textFadeOut.value, [0, 1], [1, 0])
           : scrollBarActivate.value > 0
-            ? interpolate(scrollBarActivate.value, [0, 1], [1, 0.5])
+            ? interpolate(scrollBarActivate.value, [0, 1], [1, 0.3])
             : navigatorTransition.value !== 1
               ? navigatorTransition.value
               : interpolate(
