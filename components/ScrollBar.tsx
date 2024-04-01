@@ -1,4 +1,5 @@
-import React, { RefObject, useEffect, useMemo } from 'react'
+import { ImpactFeedbackStyle, impactAsync, selectionAsync } from 'expo-haptics'
+import React, { RefObject, useEffect, useMemo, useRef } from 'react'
 import { Text, View } from 'react-native'
 import {
   Gesture,
@@ -28,7 +29,8 @@ interface Props {
   scrollBarPosition: SharedValue<number>
 }
 
-const activeScrollBarWidth = gutterSize * 6
+const activeScrollBarWidth = gutterSize * 5
+const verseHeight = 24
 
 export default function ScrollBar({
   verseOffsets,
@@ -40,8 +42,9 @@ export default function ScrollBar({
 }: Props) {
   const insets = useSafeAreaInsets()
   const startingOffset = useSharedValue(0)
-  const going = useAppSelector((state) => state.activeChapterIndex.going)
+  const going = useAppSelector((state) => state.activeChapterIndex.transition)
   const usableHeight = screenHeight - insets.top - insets.bottom
+  const recentOffset = useRef<number>()
 
   const relativeVerseOffsets = useMemo<number[] | undefined>(() => {
     if (!verseOffsets) return undefined
@@ -61,6 +64,10 @@ export default function ScrollBar({
     return usableHeight * (usableHeight / textHeight)
   }, [verseOffsets])
 
+  // useEffect(() => {
+  //   recentOffset.current = undefined
+  // }, [relativeVerseOffsets])
+
   const verseNumberColumns = verseOffsets
     ? Math.ceil(verseOffsets.length / 25)
     : 0
@@ -71,6 +78,8 @@ export default function ScrollBar({
       if (verseOffsets && verseOffsets[verseOffsets.length - 1] < screenHeight)
         return
 
+      runOnJS(impactAsync)(ImpactFeedbackStyle.Heavy)
+
       scrollBarActivate.value = withTiming(1)
       startingOffset.value = event.y
       scrollBarPosition.value = event.absoluteY - startingOffset.value
@@ -78,6 +87,8 @@ export default function ScrollBar({
     .onChange((event) => {
       if (verseOffsets && verseOffsets[verseOffsets.length - 1] < screenHeight)
         return
+
+      runOnJS(selectionAsync)()
 
       if (event.absoluteY - startingOffset.value < insets.top)
         scrollBarPosition.value = insets.top
@@ -91,6 +102,7 @@ export default function ScrollBar({
     .onFinalize((event) => {
       if (verseOffsets && verseOffsets[verseOffsets.length - 1] < screenHeight)
         return
+      runOnJS(impactAsync)(ImpactFeedbackStyle.Light)
 
       scrollBarActivate.value = withTiming(0)
     })
@@ -217,42 +229,62 @@ export default function ScrollBar({
           {
             position: 'absolute',
             right: 0,
-            top: insets.top,
-            height: screenHeight - insets.top - insets.bottom,
-            zIndex: 10,
+            // top: insets.top,
+            top: 0,
+            // height: screenHeight - insets.top - insets.bottom,
+            height: screenHeight,
+            zIndex: 2,
             width: activeScrollBarWidth,
-            borderRadius: 8,
+            // borderRadius: 8,
             backgroundColor: colors.bg2,
+            paddingTop: insets.top,
+            paddingBottom: insets.bottom,
             // alignItems: 'center',
           },
           verseNumberStyles,
         ]}
         pointerEvents={'none'}
       >
-        {relativeVerseOffsets?.slice(0, -1).map((offset, index) => {
-          return (
-            <View
-              key={offset}
-              style={{
-                width: verseColumnWidth,
-                position: 'absolute',
-                top: offset,
-                left: (index % 2) * verseColumnWidth,
-                // justifyContent: 'center',
-                // alignItems: 'center',
-              }}
-            >
-              <Text
-                numberOfLines={1}
-                adjustsFontSizeToFit
+        <View style={{ height: '100%' }}>
+          {relativeVerseOffsets?.slice(0, -1).map((offset, index) => {
+            if (index === 0) {
+              recentOffset.current = undefined
+            }
+
+            if (
+              recentOffset.current &&
+              offset - recentOffset.current < verseHeight
+            ) {
+              return null
+            }
+
+            recentOffset.current = offset
+
+            return (
+              <View
+                key={offset}
                 style={{
-                  ...type(12, 'uib', 'c', colors.fg2),
-                  // width: verseColumnWidth,
+                  width: verseColumnWidth,
+                  height: verseHeight,
+                  position: 'absolute',
+                  top: offset,
+                  // borderTopWidth: 1,
+                  // left: (index % 2) * verseColumnWidth,
+                  // justifyContent: 'center',
+                  // alignItems: 'center',
                 }}
               >
-                {index + 1}
-              </Text>
-              {/* <View
+                <Text
+                  numberOfLines={1}
+                  adjustsFontSizeToFit
+                  style={{
+                    ...type(12, 'uib', 'c', colors.fg2),
+                    // width: verseColumnWidth,
+                  }}
+                >
+                  {index + 1}
+                </Text>
+                {/* <View
                 style={{
                   position: 'absolute',
                   width: 4,
@@ -261,9 +293,10 @@ export default function ScrollBar({
                   backgroundColor: colors.bg3,
                 }}
               /> */}
-            </View>
-          )
-        })}
+              </View>
+            )
+          })}
+        </View>
         {/* <View
           style={{
             position: 'absolute',

@@ -1,13 +1,13 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit'
 
-export interface ActiveChapterIndex {
-  going: 'forward' | 'back' | undefined
+export interface ActiveChapterState {
+  transition: 'forward' | 'back' | 'fade'
   index: number
   verseIndex: number | undefined
 }
 
-const initialState: ActiveChapterIndex = {
-  going: undefined,
+const initialState: ActiveChapterState = {
+  transition: 'fade',
   index: 0,
   verseIndex: undefined,
 }
@@ -18,20 +18,20 @@ export const activeChapterIndex = createSlice({
   reducers: {
     setActiveChapterIndex: (
       state,
-      action: PayloadAction<ActiveChapterIndex>
+      action: PayloadAction<ActiveChapterState>
     ) => {
       return action.payload
     },
     goToNextChapter: (state) => {
       return {
-        going: 'forward',
+        transition: 'forward',
         index: state.index + 1,
         verseIndex: undefined,
       }
     },
     goToPreviousChapter: (state) => {
       return {
-        going: 'back',
+        transition: 'back',
         index: state.index - 1,
         verseIndex: undefined,
       }

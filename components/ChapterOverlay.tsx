@@ -1,4 +1,3 @@
-import { BlurView } from '@react-native-community/blur'
 import { StatusBar } from 'expo-status-bar'
 import React, { Dispatch, SetStateAction, useState } from 'react'
 import { Text, View } from 'react-native'
@@ -61,8 +60,8 @@ export default function ChapterOverlay({
   // }, [isStatusBarHidden, pastOverlayOffset, navigatorOpen, chapterChanging])
 
   const overlayAnimatedStyles = useAnimatedStyle(() => ({
-    opacity: overlayOpacity.value,
-    // opacity: 1,
+    // opacity: overlayOpacity.value,
+    opacity: 1,
   }))
 
   return (
@@ -79,43 +78,64 @@ export default function ChapterOverlay({
         overlayAnimatedStyles,
       ]}
     >
-      <BlurView blurType="dark" style={[]}>
-        <View
-          style={[
-            {
-              flexDirection: 'row',
-              justifyContent: 'flex-start',
-              alignItems: 'center',
-              width: '100%',
-              gap: 8,
-              borderRadius: 99,
-              paddingHorizontal: gutterSize * 2,
-              // paddingVertical: gutterSize / 2,
-              height: insets.top,
-              // backgroundColor: colors.bg3,
-            },
-          ]}
-        >
-          {/* <TouchableOpacity style={{ paddingHorizontal: gutterSize }}>
+      {/* <BlurView blurType="dark" style={[]}> */}
+      <View
+        style={[
+          {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            width: '100%',
+            gap: 8,
+            // borderRadius: 16,
+            borderRadius: 99,
+            paddingHorizontal: gutterSize * 1.5,
+            // paddingVertical: gutterSize / 2,
+            height: insets.top,
+            backgroundColor: colors.bg2,
+          },
+        ]}
+      >
+        {/* <TouchableOpacity style={{ paddingHorizontal: gutterSize }}>
         <Ionicons name="settings-outline" size={20} color={colors.fg3} />
       </TouchableOpacity> */}
-          <Text
-            numberOfLines={1}
-            adjustsFontSizeToFit
-            maxFontSizeMultiplier={1}
-            style={{
-              ...type(12, 'uib', 'l', colors.fg2),
-            }}
-          >
-            {activeBook.name.replace(' ', '').slice(0, 3)}
-            {'. '}
-            {activeChapter.chapterId.split('.')[1]}
-          </Text>
-          {/* <TouchableOpacity style={{ paddingHorizontal: gutterSize }}>
+        {/* <Text
+          numberOfLines={1}
+          adjustsFontSizeToFit
+          maxFontSizeMultiplier={1}
+          style={{
+            ...type(12, 'uib', 'l', colors.fg2),
+          }}
+        >
+          {activeBook.name.replace(' ', '').slice(0, 3)}
+          {'. '}
+          {activeChapter.chapterId.split('.')[1]}
+        </Text> */}
+        <Text
+          numberOfLines={1}
+          adjustsFontSizeToFit
+          maxFontSizeMultiplier={1}
+          style={{
+            ...type(12, 'uib', 'l', colors.fg2),
+          }}
+        >
+          {activeBook.name}
+        </Text>
+        <Text
+          numberOfLines={1}
+          adjustsFontSizeToFit
+          maxFontSizeMultiplier={1}
+          style={{
+            ...type(12, 'uib', 'l', colors.fg2),
+          }}
+        >
+          Chapter {activeChapter.chapterId.split('.')[1]}
+        </Text>
+        {/* <TouchableOpacity style={{ paddingHorizontal: gutterSize }}>
         <FontAwesome5 name="history" size={20} color={colors.fg3} />
       </TouchableOpacity> */}
-        </View>
-      </BlurView>
+      </View>
+      {/* </BlurView> */}
       <StatusBar
         hidden={isStatusBarHidden}
         backgroundColor={colors.bg2}
