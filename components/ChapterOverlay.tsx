@@ -98,7 +98,7 @@ export default function ChapterOverlay({
             paddingHorizontal: gutterSize * 1.5,
             // paddingVertical: gutterSize / 2,
             height: insets.top,
-            backgroundColor: colors.bg2,
+            backgroundColor: colors.bg3,
           },
         ]}
       >

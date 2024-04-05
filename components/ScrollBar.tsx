@@ -202,7 +202,7 @@ export default function ScrollBar({
                 width: gutterSize / 2,
                 borderRadius: 99,
                 height: scrollBarHeight,
-                backgroundColor: colors.bg3,
+                backgroundColor: colors.bg2,
                 zIndex: 5,
                 display:
                   verseOffsets &&
