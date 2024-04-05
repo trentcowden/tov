@@ -27,6 +27,7 @@ interface Props {
   textTranslateX: SharedValue<number>
   textTranslateY: SharedValue<number>
   scrollBarPosition: SharedValue<number>
+  overScrollAmount: SharedValue<number>
 }
 
 const activeScrollBarWidth = gutterSize * 5
@@ -38,6 +39,7 @@ export default function ScrollBar({
   scrollViewRef,
   textTranslateX,
   textTranslateY,
+  overScrollAmount,
   scrollBarPosition,
 }: Props) {
   const insets = useSafeAreaInsets()
@@ -71,7 +73,8 @@ export default function ScrollBar({
   const verseNumberColumns = verseOffsets
     ? Math.ceil(verseOffsets.length / 25)
     : 0
-  const verseColumnWidth = activeScrollBarWidth / 4
+  // const verseColumnWidth = activeScrollBarWidth / 4
+  const verseColumnWidth = gutterSize * 1.5
 
   const scrollPanGesture = Gesture.Pan()
     .onBegin((event) => {
@@ -131,7 +134,7 @@ export default function ScrollBar({
     //     translateX: interpolate(
     //       scrollBarActivate.value,
     //       [0, 1],
-    //       [0, -activeScrollBarWidth]
+    //       [verseColumnWidth, 0]
     //     ),
     //   },
     // ],
@@ -147,6 +150,11 @@ export default function ScrollBar({
       },
     ],
     opacity: interpolate(scrollBarActivate.value, [-1, 0, 1], [0, 1, 0]),
+    // backgroundColor: interpolateColor(
+    //   overScrollAmount.value,
+    //   [-overScrollReq, -overScrollReq + 1, 0, overScrollReq - 1, overScrollReq],
+    //   [colors.v, colors.bg2, colors.bg3, colors.bg2, colors.v]
+    // ),
   }))
 
   const scrollBarActiveStyles = useAnimatedStyle(() => {
@@ -155,15 +163,15 @@ export default function ScrollBar({
         {
           translateY: scrollBarPosition.value,
         },
-        {
-          translateX: interpolate(
-            scrollBarActivate.value,
-            [0, 1],
-            [activeScrollBarWidth, 0]
-          ),
-        },
+        // {
+        //   translateX: interpolate(
+        //     scrollBarActivate.value,
+        //     [0, 1],
+        //     [activeScrollBarWidth / 2, 0]
+        //   ),
+        // },
       ],
-      opacity: interpolate(scrollBarActivate.value, [0, 1], [0, 0.5]),
+      opacity: interpolate(scrollBarActivate.value, [0, 1], [0, 1]),
     }
   })
 
@@ -211,16 +219,17 @@ export default function ScrollBar({
           {
             position: 'absolute',
             right: 0,
-            width: activeScrollBarWidth,
+            width: verseColumnWidth * 2,
             height: scrollBarHeight,
             zIndex: 20,
             backgroundColor: colors.fg3,
-            // borderRadius: 8,
+            borderRadius: 99,
             justifyContent: 'center',
             paddingLeft: 4,
           },
           scrollBarActiveStyles,
         ]}
+        pointerEvents={'none'}
       >
         {/* <FontAwesome5 name="long-arrow-alt-left" size={16} color={colors.bg3} /> */}
       </Animated.View>
@@ -228,13 +237,14 @@ export default function ScrollBar({
         style={[
           {
             position: 'absolute',
-            right: 0,
+            right: verseColumnWidth * 2,
             // top: insets.top,
             top: 0,
             // height: screenHeight - insets.top - insets.bottom,
             height: screenHeight,
             zIndex: 2,
-            width: activeScrollBarWidth,
+            // width: activeScrollBarWidth,
+            width: verseColumnWidth,
             // borderRadius: 8,
             backgroundColor: colors.bg2,
             paddingTop: insets.top,
@@ -278,7 +288,7 @@ export default function ScrollBar({
                   numberOfLines={1}
                   adjustsFontSizeToFit
                   style={{
-                    ...type(12, 'uib', 'c', colors.fg2),
+                    ...type(12, 'uib', 'c', colors.fg3),
                     // width: verseColumnWidth,
                   }}
                 >
