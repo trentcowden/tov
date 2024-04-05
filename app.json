@@ -11,26 +11,22 @@
       "resizeMode": "contain",
       "backgroundColor": "#292521"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.kingdomstrategies.tov"
+      "bundleIdentifier": "com.trentcowden.tov"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.kingdomstrategies.tov"
+      "package": "com.trentcowden.tov"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": [
-      "expo-font"
-    ],
+    "plugins": ["expo-font"],
     "owner": "tcowden",
     "extra": {
       "eas": {
