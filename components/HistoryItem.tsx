@@ -52,6 +52,7 @@ export default function HistoryListItem({
   }
 
   const panGesture = Gesture.Pan()
+    .activeOffsetX(5)
     .onChange((event) => {
       itemTranslateX.value = event.translationX
 

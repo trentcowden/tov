@@ -1,7 +1,7 @@
 import { FontAwesome5 } from '@expo/vector-icons'
-import { FlashList } from '@shopify/flash-list'
 import React from 'react'
 import { Dimensions, Text, View } from 'react-native'
+import { FlatList } from 'react-native-gesture-handler'
 import Animated, {
   SharedValue,
   useAnimatedStyle,
@@ -114,7 +114,7 @@ export default function History({
         </TouchableOpacity> */}
       </View>
       <View style={{ flex: 1 }}>
-        <FlashList
+        <FlatList
           data={history.filter(
             (item) => item.chapterId !== activeChapter.chapterId
           )}
@@ -122,7 +122,7 @@ export default function History({
           renderItem={renderHistoryItem}
           keyExtractor={(item) => item.chapterId}
           showsVerticalScrollIndicator={false}
-          estimatedItemSize={28}
+          // estimatedItemSize={28}
           ListEmptyComponent={
             <View style={{ paddingHorizontal: gutterSize / 2 }}>
               <Text style={type(16, 'uir', 'l', colors.fg3)}>
