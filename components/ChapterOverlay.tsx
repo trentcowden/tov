@@ -1,9 +1,11 @@
 import { StatusBar } from 'expo-status-bar'
-import React, { Dispatch, SetStateAction, useState } from 'react'
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import { Text, View } from 'react-native'
 import Animated, {
   SharedValue,
   useAnimatedStyle,
+  useSharedValue,
+  withTiming,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { colors, gutterSize, type } from '../constants'
@@ -26,7 +28,6 @@ export default function ChapterOverlay({
   activeChapter,
   activeBook,
   isStatusBarHidden,
-  overlayOpacity,
   pastOverlayOffset,
   navigatorTransition,
   textTranslateY,
@@ -36,6 +37,7 @@ export default function ChapterOverlay({
   const insets = useSafeAreaInsets()
   const [navigatorOpen, setNavigatorOpen] = useState(false)
   const [chapterChanging, setChapterChanging] = useState(false)
+  const overlayOpacity = useSharedValue(0)
 
   // useDerivedValue(() => {
   //   if (navigatorTransition.value === 1) runOnJS(setNavigatorOpen)(false)
@@ -50,6 +52,10 @@ export default function ChapterOverlay({
   //   else runOnJS(setIsStatusBarHidden)(true)
   // })
 
+  useEffect(() => {
+    overlayOpacity.value = withTiming(1)
+  }, [])
+
   // useEffect(() => {
   //   if (chapterChanging) overlayOpacity.value = withTiming(0)
   //   else if (navigatorOpen) overlayOpacity.value = withTiming(0)
@@ -61,7 +67,7 @@ export default function ChapterOverlay({
 
   const overlayAnimatedStyles = useAnimatedStyle(() => ({
     // opacity: overlayOpacity.value,
-    opacity: 1,
+    opacity: overlayOpacity.value,
   }))
 
   return (
