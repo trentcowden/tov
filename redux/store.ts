@@ -10,21 +10,30 @@ import {
   persistStore,
 } from 'redux-persist'
 import ExpoFileSystemStorage from 'redux-persist-expo-filesystem'
-import activeChapterIndex from './activeChapter'
+import activeChapterIndex from './activeChapterIndex'
 import history from './history'
+
+const rootPersistConfig = {
+  key: 'root',
+  storage: ExpoFileSystemStorage,
+  blacklist: ['activeChapterIndex'],
+}
+
+const activeChapterPersistConfig = {
+  key: 'activeChapterIndex',
+  storage: ExpoFileSystemStorage,
+  blacklist: ['transition', 'verseIndex'],
+}
 
 const rootReducer = combineReducers({
   history,
-  activeChapterIndex,
+  activeChapterIndex: persistReducer(
+    activeChapterPersistConfig,
+    activeChapterIndex
+  ),
 })
 
-const persistedReducer = persistReducer(
-  {
-    key: 'root',
-    storage: ExpoFileSystemStorage,
-  },
-  rootReducer
-)
+const persistedReducer = persistReducer(rootPersistConfig, rootReducer)
 
 export const store = configureStore({
   reducer: persistedReducer,
