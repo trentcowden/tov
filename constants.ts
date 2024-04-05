@@ -12,7 +12,7 @@ export const colors = {
   v: '#cca98f',
 }
 
-export const gutterSize = 20
+export const gutterSize = 24
 
 export const screenWidth = Dimensions.get('screen').width
 export const screenHeight = Dimensions.get('screen').height
