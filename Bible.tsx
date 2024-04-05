@@ -23,6 +23,7 @@ import Animated, {
   runOnJS,
   useAnimatedStyle,
   useSharedValue,
+  withDelay,
   withSequence,
   withSpring,
   withTiming,
@@ -55,7 +56,7 @@ import {
   goToNextChapter,
   goToPreviousChapter,
   setActiveChapterIndex,
-} from './redux/activeChapter'
+} from './redux/activeChapterIndex'
 import { addToHistory, removeFromHistory } from './redux/history'
 import { useAppDispatch, useAppSelector } from './redux/hooks'
 
@@ -83,20 +84,22 @@ export default function BibleView() {
   const scrollViewRef = useRef<ScrollView>(null)
   const searchListRef = useRef<FlashList<Chapters[number]>>(null)
 
+  const overScrollAmount = useSharedValue(0)
+
   // Animating the main text area.
   const textTranslateY = useSharedValue(0)
   const textTranslateX = useSharedValue(0)
   const savedTextTranslateX = useSharedValue(0)
-  const textFadeOut = useSharedValue(0)
+  const textFadeOut = useSharedValue(1)
 
   const [verseOffsets, setVerseOffsets] = useState<number[]>()
-  const currentVerseReq = insets.top + gutterSize * 2 + headerHeight
+  const currentVerseReq = insets.top + gutterSize * 6 + headerHeight
   const currentVerseIndex = useRef(0)
 
   const navigatorTransition = useSharedValue(1)
   const savedNavigatorTransition = useSharedValue(1)
 
-  const scrollBarActivate = useSharedValue(0)
+  const scrollBarActivate = useSharedValue(-1)
 
   const [textRendered, setTextRendered] = useState(false)
 
@@ -141,7 +144,7 @@ export default function BibleView() {
             textTranslateX.value > horizTransReq / 2 ||
             e.velocityX > horizVelocReq
           ) {
-            runOnJS(impactAsync)()
+            runOnJS(impactAsync)(ImpactFeedbackStyle.Heavy)
             savedTextTranslateX.value = horizTransReq
             textTranslateX.value = withSpring(horizTransReq, panActivateConfig)
           } else {
@@ -154,7 +157,7 @@ export default function BibleView() {
             textTranslateX.value > -horizTransReq / 2 ||
             e.velocityX > horizVelocReq
           ) {
-            runOnJS(impactAsync)()
+            runOnJS(impactAsync)(ImpactFeedbackStyle.Light)
             savedTextTranslateX.value = 0
             textTranslateX.value = withSpring(0, panActivateConfig)
           } else {
@@ -167,7 +170,7 @@ export default function BibleView() {
             textTranslateX.value < horizTransReq / 2 ||
             e.velocityX < -horizVelocReq
           ) {
-            runOnJS(impactAsync)()
+            runOnJS(impactAsync)(ImpactFeedbackStyle.Light)
             savedTextTranslateX.value = 0
             textTranslateX.value = withSpring(0, panActivateConfig)
           } else {
@@ -212,7 +215,10 @@ export default function BibleView() {
       scrollViewRef.current?.scrollToEnd({ animated: false })
       textTranslateY.value = withSpring(0, { damping: 20, stiffness: 120 })
     } else if (activeChapterIndex.transition === 'fade') {
-      if (activeChapterIndex.verseIndex !== undefined) {
+      if (
+        activeChapterIndex.verseIndex !== undefined &&
+        activeChapterIndex.verseIndex !== 0
+      ) {
         scrollViewRef.current?.scrollTo({
           y: verseOffsets
             ? verseOffsets[activeChapterIndex.verseIndex] - currentVerseReq
@@ -228,7 +234,10 @@ export default function BibleView() {
       }
       textFadeOut.value = withSpring(0, { damping: 20, stiffness: 120 })
     }
-    scrollBarActivate.value = withTiming(0)
+    scrollBarActivate.value = withDelay(
+      activeChapterIndex.transition === 'fade' ? 0 : chapterChangeDuration,
+      withTiming(0)
+    )
   }, [activeChapterIndex.index, textRendered])
 
   function goToChapter(
@@ -321,8 +330,6 @@ export default function BibleView() {
     let high = verseOffsets.length - 1
     let result = -1
     const target = offset + currentVerseReq
-    // + insets.top + lineHeight / 2
-    // console.log(target)
 
     while (low <= high) {
       let mid = Math.floor((low + high) / 2)
@@ -356,6 +363,13 @@ export default function BibleView() {
     if (result >= 0) currentVerseIndex.current = result
   }
 
+  function handleOverScrollAmount(offset: number, contentHeight: number) {
+    if (offset < 0) overScrollAmount.value = offset
+    else if (offset > contentHeight - screenHeight)
+      overScrollAmount.value = Math.abs(contentHeight - screenHeight - offset)
+    else overScrollAmount.value = 0
+  }
+
   function onScroll(event: NativeSyntheticEvent<NativeScrollEvent>) {
     const offset = event.nativeEvent.contentOffset.y
     const contentHeight = event.nativeEvent.contentSize.height
@@ -364,7 +378,7 @@ export default function BibleView() {
     handleScrollOverlayOffset(offset)
     handleScrollVersePosition(offset)
     handleScrollHaptics(offset, contentHeight)
-    // console.log(currentVerseIndex.current)
+    handleOverScrollAmount(offset, contentHeight)
   }
 
   function handleDragEnd(event: NativeSyntheticEvent<NativeScrollEvent>) {
@@ -450,9 +464,7 @@ export default function BibleView() {
       // if (/\[[0-9]{1,3}\]/.test(line.text)) {
       // const matches = /[0-9]{1,3} /g.exec(line.text)
       const matches = line.text.match(/[0-9]{1,3} /g)
-      if (matches && matches.length > 1) {
-        console.log(matches?.length)
-      }
+
       matches?.forEach(() => {
         verseOffsets.push(spaceBeforeTextStarts + line.y)
       })
@@ -642,6 +654,7 @@ export default function BibleView() {
           textTranslateY={textTranslateY}
           verseOffsets={verseOffsets}
           scrollBarPosition={scrollBarPosition}
+          overScrollAmount={overScrollAmount}
         />
         {/* <View
           style={{
