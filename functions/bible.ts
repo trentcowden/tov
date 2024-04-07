@@ -14,8 +14,16 @@ export function getBook(
   return activeBook ?? (books as Books)[0]
 }
 
-export function getReference(chapterId: Chapters[number]['chapterId']): string {
+export function getChapterReference(
+  chapterId: Chapters[number]['chapterId']
+): string {
   const book = getBook(chapterId)
   const [_, chapterNumber] = chapterId.split('.')
   return `${book.name} ${chapterNumber}`
+}
+export function getVerseReference(verseId: string): string {
+  const [bookId, chapterNumber, verseNumber] = verseId.split('.')
+  const book = getBook(`${bookId}.${chapterNumber}`)
+
+  return `${book.name} ${chapterNumber}:${verseNumber}`
 }

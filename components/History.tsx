@@ -1,10 +1,11 @@
-import { FontAwesome5 } from '@expo/vector-icons'
+import { FontAwesome5, Octicons } from '@expo/vector-icons'
+import { FlashList } from '@shopify/flash-list'
 import React from 'react'
-import { Dimensions, Text, View } from 'react-native'
-import { FlatList } from 'react-native-gesture-handler'
+import { Dimensions, Text, TouchableOpacity, View } from 'react-native'
 import Animated, {
   SharedValue,
   useAnimatedStyle,
+  withTiming,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Spacer from '../Spacer'
@@ -23,6 +24,7 @@ interface Props {
     chapterId: Chapters[number]['chapterId'],
     verseNumber?: number
   ) => void
+  openSettings: SharedValue<number>
 }
 
 export default function History({
@@ -30,6 +32,7 @@ export default function History({
   closeHistory,
   activeChapter,
   goToChapter,
+  openSettings,
 }: Props) {
   const activeChapterIndex = useAppSelector((state) => state.activeChapterIndex)
   const history = useAppSelector((state) => state.history)
@@ -58,6 +61,11 @@ export default function History({
       />
     )
   }
+  const navigatorHeight =
+    Dimensions.get('window').height -
+    insets.top -
+    insets.bottom -
+    gutterSize * 2
 
   return (
     <Animated.View
@@ -114,7 +122,7 @@ export default function History({
         </TouchableOpacity> */}
       </View>
       <View style={{ flex: 1 }}>
-        <FlatList
+        <FlashList
           data={history.filter(
             (item) => item.chapterId !== activeChapter.chapterId
           )}
@@ -144,6 +152,30 @@ export default function History({
           ListFooterComponent={<Spacer units={4} additional={insets.bottom} />}
         />
         <Fade place="top" color={colors.bg2} />
+        <View
+          style={{
+            position: 'absolute',
+            bottom: insets.bottom + gutterSize,
+            width: '100%',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <TouchableOpacity
+            style={{
+              paddingHorizontal: gutterSize * 2,
+              paddingVertical: gutterSize / 2,
+              flexDirection: 'row',
+              gap: 8,
+            }}
+            onPress={() => {
+              openSettings.value = withTiming(1)
+            }}
+          >
+            <Octicons name="gear" size={16} color={colors.b} />
+            <Text style={type(15, 'uir', 'c', colors.fg3)}>Settings</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </Animated.View>
   )

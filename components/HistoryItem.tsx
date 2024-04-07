@@ -14,7 +14,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { colors, gutterSize, type } from '../constants'
 import chapters from '../data/chapters.json'
 import { Chapters } from '../data/types/chapters'
-import { getReference } from '../functions/bible'
+import { getVerseReference } from '../functions/bible'
 import { HistoryItem, removeFromHistory } from '../redux/history'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
 
@@ -107,7 +107,6 @@ export default function HistoryListItem({
             //     duration: 100,
             //   })
             // )
-            impactAsync(ImpactFeedbackStyle.Medium)
             goToChapter(item.chapterId, item.verseIndex)
 
             closeHistory()
@@ -134,7 +133,7 @@ export default function HistoryListItem({
             adjustsFontSizeToFit
             style={[type(18, 'uir', 'l', colors.fg2), textStyles]}
           >
-            {getReference(item.chapterId)}:{item.verseIndex + 1}
+            {getVerseReference(`${item.chapterId}.${item.verseIndex + 1}`)}
           </Animated.Text>
           {chapterIndex === activeChapterIndex.index ? (
             <Text style={type(12, 'uir', 'c', colors.fg3)}>Current</Text>

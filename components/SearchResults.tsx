@@ -6,7 +6,7 @@ import { FlatList } from 'react-native-gesture-handler'
 import Spacer from '../Spacer'
 import { colors, gutterSize, type } from '../constants'
 import { Chapters } from '../data/types/chapters'
-import { getReference } from '../functions/bible'
+import { getChapterReference } from '../functions/bible'
 import { SearchResult } from './Navigator'
 
 interface Props {
@@ -55,7 +55,7 @@ export default function SearchResults({
         }}
       >
         <Text style={type(20, 'uir', 'l', colors.fg1)}>
-          {getReference(item.item.chapterId)}
+          {getChapterReference(item.item.chapterId)}
         </Text>
         {highlight ? (
           <View

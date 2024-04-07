@@ -13,34 +13,22 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
-import { Gesture, GestureDetector } from 'react-native-gesture-handler'
-import Animated, {
+import {
   SharedValue,
-  interpolate,
-  runOnJS,
-  useAnimatedStyle,
   useSharedValue,
-  withSpring,
   withTiming,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import Spacer from '../Spacer'
-import {
-  colors,
-  gutterSize,
-  horizVelocReq,
-  panActivateConfig,
-  type,
-  zoomOutReq,
-} from '../constants'
+import { colors, gutterSize, type } from '../constants'
 import chapters from '../data/chapters.json'
 import { Books } from '../data/types/books'
 import { Chapters } from '../data/types/chapters'
-import { getReference } from '../functions/bible'
-import { useAppDispatch } from '../redux/hooks'
+import { getChapterReference } from '../functions/bible'
 import BooksList from './BooksList'
 import ChapterBoxes from './ChapterBoxes'
 import Fade from './Fade'
+import ModalScreen from './ModalScreen'
+import ModalScreenHeader from './ModalScreenHeader'
 import SearchResults from './SearchResults'
 
 interface Props {
@@ -50,8 +38,6 @@ interface Props {
   setSearchText: Dispatch<SetStateAction<string>>
   textPinch: SharedValue<number>
   savedTextPinch: SharedValue<number>
-  activeChapter: Chapters[number]
-  textTranslateY: SharedValue<number>
   goToChapter: (chapterId: Chapters[number]['chapterId']) => void
 }
 
@@ -70,12 +56,9 @@ export default function Navigator({
   textPinch,
   savedTextPinch,
   searchResultsRef,
-  activeChapter,
   goToChapter,
-  textTranslateY,
 }: Props) {
   const insets = useSafeAreaInsets()
-  const dispatch = useAppDispatch()
   /**
    * Whether or not new search results should be calculated. We disable it as
    * the user is typing to prevent lag.
@@ -90,7 +73,7 @@ export default function Navigator({
     // If `queryText` is blank, `list` is returned in whole
     queryText: searchText,
     // optional `getText` or `key`, same as with `createFuzzySearch`
-    getText: (item) => [getReference(item.chapterId)],
+    getText: (item) => [getChapterReference(item.chapterId)],
     // arbitrary mapping function, takes `FuzzyResult<T>` as input
     mapResultItem: ({ item, score, matches: [highlightRanges] }) => ({
       item,
@@ -110,12 +93,12 @@ export default function Navigator({
     impactAsync(ImpactFeedbackStyle.Light)
     searchRef.current?.blur()
     textPinch.value = withTiming(
-      1,
+      0,
       { duration: 200 },
       () => (chapterTransition.value = 0)
     )
 
-    savedTextPinch.value = 1
+    savedTextPinch.value = 0
 
     setTimeout(() => {
       resetNavigatorBook()
@@ -131,23 +114,6 @@ export default function Navigator({
     setNavigatorBook(book)
     searchRef.current?.blur()
   }
-
-  const navigatorStyles = useAnimatedStyle(() => {
-    return {
-      opacity: interpolate(textPinch.value, [zoomOutReq, 1], [1, 0]),
-      zIndex: textPinch.value !== 1 ? 2 : -1,
-    }
-  })
-
-  const selectedBookStyles = useAnimatedStyle(() => {
-    return {
-      opacity: chapterTransition.value,
-      zIndex: chapterTransition.value !== 0 ? 4 : -1,
-      transform: [
-        { translateX: interpolate(chapterTransition.value, [0, 1], [200, 0]) },
-      ],
-    }
-  })
 
   const closeButton = (
     <TouchableOpacity
@@ -173,195 +139,34 @@ export default function Navigator({
     insets.bottom -
     gutterSize * 2
 
-  const panGesture = Gesture.Pan()
-    .onChange((event) => {
-      if (chapterTransition.value === 0) return
-
-      chapterTransition.value = interpolate(
-        event.translationX,
-        [0, 200],
-        [1, 0]
-      )
-    })
-    .onFinalize((e) => {
-      if (chapterTransition.value === 0) return
-
-      if (
-        (chapterTransition.value < 0.5 || e.velocityX > horizVelocReq) &&
-        e.velocityX > 0
-      ) {
-        chapterTransition.value = withSpring(
-          0,
-          panActivateConfig,
-          runOnJS(resetNavigatorBook)
-        )
-      } else {
-        chapterTransition.value = withSpring(1, panActivateConfig)
-      }
-    })
-
   return (
-    <GestureDetector gesture={panGesture}>
-      <Animated.View
-        style={[
-          {
-            width: Dimensions.get('window').width,
-            height: Dimensions.get('window').height,
-            position: 'absolute',
-            alignItems: 'center',
-            paddingTop: insets.top + gutterSize,
-            justifyContent: 'flex-start',
-          },
-          navigatorStyles,
-        ]}
-      >
-        <TouchableOpacity
-          onPress={closeNavigator}
-          style={{
-            position: 'absolute',
-            height: Dimensions.get('window').height,
-            width: '100%',
-          }}
-        />
-        <KeyboardAvoidingView
-          behavior="height"
-          style={{
-            width: Dimensions.get('window').width - gutterSize * 2,
-            height: navigatorHeight,
-          }}
-        >
-          <View
-            style={{
-              width: Dimensions.get('window').width - gutterSize * 2,
-              backgroundColor: colors.bg2,
-              borderRadius: 16,
-              flex: 1,
-              // height: '100%',
-              overflow: 'hidden',
-            }}
+    <ModalScreen
+      onBack={resetNavigatorBook}
+      nestedScreen={
+        <>
+          <ModalScreenHeader
+            paddingLeft={0}
+            icon={
+              <TouchableOpacity
+                onPress={() => {
+                  chapterTransition.value = withTiming(0)
+                  setNavigatorBook(undefined)
+                }}
+                style={{
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  height: '100%',
+                  paddingLeft: gutterSize,
+                  // paddingRight: gutterSize / 2,
+                }}
+              >
+                <FontAwesome5 name="arrow-left" size={24} color={colors.fg3} />
+              </TouchableOpacity>
+            }
+            close={closeNavigator}
           >
-            <View
-              style={{
-                width: '100%',
-                flexDirection: 'row',
-                height: 50,
-                alignItems: 'center',
-                marginTop: gutterSize,
-                zIndex: 5,
-                paddingLeft: gutterSize,
-              }}
-            >
-              <FontAwesome5 name="search" size={20} color={colors.fg3} />
-              <Spacer units={2} />
-              <View style={{ flex: 1, height: '100%' }}>
-                <TextInput
-                  placeholder="Quick find"
-                  placeholderTextColor={colors.fg3}
-                  ref={searchRef}
-                  clearButtonMode="always"
-                  cursorColor={colors.fg1}
-                  selectionColor={colors.fg1}
-                  onChangeText={(text) => setSearchText(text)}
-                  autoCorrect={false}
-                  style={{
-                    flex: 1,
-                    paddingHorizontal: gutterSize / 1.5,
-                    backgroundColor: colors.bg3,
-                    borderRadius: 12,
-                    ...type(18, 'uib', 'l', colors.fg1),
-                    height: 50,
-                  }}
-                  returnKeyType={'go'}
-                  onSubmitEditing={() => {
-                    if (
-                      searchText !== '' &&
-                      searchResults.length > 0 &&
-                      typeof searchResults[0].item !== 'string'
-                    ) {
-                      goToChapter(searchResults[0].item.chapterId)
-                      closeNavigator()
-                    }
-                  }}
-                />
-              </View>
-              {closeButton}
-            </View>
-            <View
-              style={{
-                // height: navigatorHeight - 50 - gutterSize,
-                flex: 1,
-                width: Dimensions.get('window').width - gutterSize * 2,
-                justifyContent: 'center',
-                paddingTop: gutterSize,
-              }}
-            >
-              {searchText === '' ? (
-                <BooksList navigatorBook={navigatorBook} goToBook={goToBook} />
-              ) : (
-                <SearchResults
-                  goToChapter={goToChapter}
-                  searchText={searchText}
-                  searchResultsRef={searchResultsRef}
-                  searchResults={searchResults}
-                  closeNavigator={closeNavigator}
-                />
-              )}
-            </View>
-          </View>
-          <Pressable
-            style={{ height: gutterSize, width: '100%' }}
-            onPress={closeNavigator}
-          />
-        </KeyboardAvoidingView>
-        <Animated.View
-          style={[
-            {
-              top: insets.top + gutterSize,
-              height: navigatorHeight - gutterSize,
-              width: Dimensions.get('window').width - gutterSize * 2,
-              borderRadius: 16,
-              position: 'absolute',
-              paddingTop: gutterSize,
-              backgroundColor: colors.bg2,
-              overflow: 'hidden',
-            },
-            selectedBookStyles,
-          ]}
-        >
-          <View
-            style={[
-              {
-                width: '100%',
-                height: 50,
-                flexDirection: 'row',
-                alignItems: 'center',
-              },
-            ]}
-          >
-            <TouchableOpacity
-              onPress={() => {
-                chapterTransition.value = withTiming(0)
-                setNavigatorBook(undefined)
-              }}
-              style={{
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: '100%',
-                paddingLeft: gutterSize,
-                paddingRight: gutterSize / 2,
-              }}
-            >
-              <FontAwesome5 name="arrow-left" size={24} color={colors.fg2} />
-            </TouchableOpacity>
-            <Text
-              adjustsFontSizeToFit
-              numberOfLines={1}
-              style={[type(22, 'uib', 'l', colors.fg2), { flex: 1 }]}
-            >
-              {navigatorBook?.name}
-            </Text>
-            {closeButton}
-          </View>
+            {navigatorBook?.name}
+          </ModalScreenHeader>
           <View style={{ height: navigatorHeight - gutterSize * 2 - 50 }}>
             <ChapterBoxes
               goToChapter={goToChapter}
@@ -370,8 +175,137 @@ export default function Navigator({
             />
             <Fade place="top" color={colors.bg2} />
           </View>
-        </Animated.View>
-      </Animated.View>
-    </GestureDetector>
+        </>
+      }
+      close={closeNavigator}
+      openModal={textPinch}
+      openNested={chapterTransition}
+    >
+      <KeyboardAvoidingView
+        behavior="height"
+        style={{
+          width: Dimensions.get('window').width - gutterSize * 2,
+          height: navigatorHeight,
+        }}
+      >
+        <View
+          style={{
+            width: Dimensions.get('window').width - gutterSize * 2,
+            backgroundColor: colors.bg2,
+            borderRadius: 16,
+            flex: 1,
+            // height: '100%',
+            overflow: 'hidden',
+            paddingTop: gutterSize,
+          }}
+        >
+          <ModalScreenHeader
+            close={closeNavigator}
+            icon={<FontAwesome5 name="search" size={20} color={colors.fg3} />}
+          >
+            <TextInput
+              placeholder="Quick find"
+              placeholderTextColor={colors.fg3}
+              ref={searchRef}
+              clearButtonMode="always"
+              cursorColor={colors.fg1}
+              selectionColor={colors.fg1}
+              onChangeText={(text) => setSearchText(text)}
+              autoCorrect={false}
+              style={{
+                flex: 1,
+                paddingHorizontal: gutterSize / 1.5,
+                backgroundColor: colors.bg3,
+                borderRadius: 12,
+                ...type(18, 'uib', 'l', colors.fg1),
+                height: 50,
+              }}
+              returnKeyType={'go'}
+              onSubmitEditing={() => {
+                if (
+                  searchText !== '' &&
+                  searchResults.length > 0 &&
+                  typeof searchResults[0].item !== 'string'
+                ) {
+                  goToChapter(searchResults[0].item.chapterId)
+                  closeNavigator()
+                }
+              }}
+            />
+          </ModalScreenHeader>
+          {/* <View
+            style={{
+              width: '100%',
+              flexDirection: 'row',
+              height: 50,
+              alignItems: 'center',
+
+              zIndex: 5,
+              paddingLeft: gutterSize,
+            }}
+          >
+            <FontAwesome5 name="search" size={20} color={colors.fg3} />
+            <Spacer units={2} />
+            <View style={{ flex: 1, height: '100%' }}>
+              <TextInput
+                placeholder="Quick find"
+                placeholderTextColor={colors.fg3}
+                ref={searchRef}
+                clearButtonMode="always"
+                cursorColor={colors.fg1}
+                selectionColor={colors.fg1}
+                onChangeText={(text) => setSearchText(text)}
+                autoCorrect={false}
+                style={{
+                  flex: 1,
+                  paddingHorizontal: gutterSize / 1.5,
+                  backgroundColor: colors.bg3,
+                  borderRadius: 12,
+                  ...type(18, 'uib', 'l', colors.fg1),
+                  height: 50,
+                }}
+                returnKeyType={'go'}
+                onSubmitEditing={() => {
+                  if (
+                    searchText !== '' &&
+                    searchResults.length > 0 &&
+                    typeof searchResults[0].item !== 'string'
+                  ) {
+                    goToChapter(searchResults[0].item.chapterId)
+                    closeNavigator()
+                  }
+                }}
+              />
+            </View>
+            {closeButton}
+          </View> */}
+          <View
+            style={{
+              // height: navigatorHeight - 50 - gutterSize,
+              flex: 1,
+              width: Dimensions.get('window').width - gutterSize * 2,
+              justifyContent: 'center',
+              paddingTop: gutterSize,
+            }}
+          >
+            {searchText === '' ? (
+              <BooksList navigatorBook={navigatorBook} goToBook={goToBook} />
+            ) : (
+              <SearchResults
+                goToChapter={goToChapter}
+                searchText={searchText}
+                searchResultsRef={searchResultsRef}
+                searchResults={searchResults}
+                closeNavigator={closeNavigator}
+              />
+            )}
+          </View>
+        </View>
+        <Pressable
+          style={{ height: gutterSize, width: '100%' }}
+          onPress={closeNavigator}
+        />
+      </KeyboardAvoidingView>
+    </ModalScreen>
   )
 }
