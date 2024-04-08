@@ -4,7 +4,7 @@ import { RefObject } from 'react'
 import { Text, TouchableOpacity, View } from 'react-native'
 import { FlatList } from 'react-native-gesture-handler'
 import Spacer from '../Spacer'
-import { colors, gutterSize, type } from '../constants'
+import { colors, gutterSize, typography } from '../constants'
 import { Chapters } from '../data/types/chapters'
 import { getChapterReference } from '../functions/bible'
 import { SearchResult } from './Navigator'
@@ -54,7 +54,7 @@ export default function SearchResults({
           closeNavigator()
         }}
       >
-        <Text style={type(20, 'uir', 'l', colors.fg1)}>
+        <Text style={typography(20, 'uir', 'l', colors.fg1)}>
           {getChapterReference(item.item.chapterId)}
         </Text>
         {highlight ? (

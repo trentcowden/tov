@@ -1,7 +1,7 @@
 import { ReactNode } from 'react'
 import { Text, TouchableOpacity, View } from 'react-native'
 import Spacer from '../Spacer'
-import { colors, gutterSize, type } from '../constants'
+import { colors, gutterSize, typography } from '../constants'
 
 interface Props {
   children: ReactNode
@@ -30,7 +30,7 @@ export default function ModalScreenHeader({
         zIndex: 4,
       }}
     >
-      <Text style={type(15, 'uir', 'c', colors.fg2)}>Close</Text>
+      <Text style={typography(13, 'uir', 'c', colors.fg3)}>Close</Text>
     </TouchableOpacity>
   )
 
@@ -54,11 +54,11 @@ export default function ModalScreenHeader({
           justifyContent: 'center',
         }}
       >
-        {typeof children === 'string' || typeof children === 'object' ? (
+        {typeof children === 'string' ? (
           <Text
             adjustsFontSizeToFit
             numberOfLines={2}
-            style={[type(22, 'uib', 'l', colors.fg2)]}
+            style={[typography(22, 'uib', 'l', colors.fg1)]}
           >
             {children}
           </Text>

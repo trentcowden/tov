@@ -1,4 +1,3 @@
-import { FontAwesome5 } from '@expo/vector-icons'
 import { HighlightRanges } from '@nozbe/microfuzz'
 import { useFuzzySearchList } from '@nozbe/microfuzz/react'
 import { FlashList } from '@shopify/flash-list'
@@ -19,7 +18,7 @@ import {
   withTiming,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { colors, gutterSize, type } from '../constants'
+import { colors, gutterSize, iconSize, typography } from '../constants'
 import chapters from '../data/chapters.json'
 import { Books } from '../data/types/books'
 import { Chapters } from '../data/types/chapters'
@@ -29,6 +28,7 @@ import ChapterBoxes from './ChapterBoxes'
 import Fade from './Fade'
 import ModalScreen from './ModalScreen'
 import ModalScreenHeader from './ModalScreenHeader'
+import TovIcon from './SVG'
 import SearchResults from './SearchResults'
 
 interface Props {
@@ -129,7 +129,7 @@ export default function Navigator({
         zIndex: 4,
       }}
     >
-      <Text style={type(15, 'uir', 'c', colors.fg2)}>Close</Text>
+      <Text style={typography(15, 'uir', 'c', colors.fg2)}>Close</Text>
     </TouchableOpacity>
   )
 
@@ -160,7 +160,7 @@ export default function Navigator({
                   // paddingRight: gutterSize / 2,
                 }}
               >
-                <FontAwesome5 name="arrow-left" size={24} color={colors.fg3} />
+                <TovIcon name="arrowLeft" size={iconSize} />
               </TouchableOpacity>
             }
             close={closeNavigator}
@@ -201,7 +201,7 @@ export default function Navigator({
         >
           <ModalScreenHeader
             close={closeNavigator}
-            icon={<FontAwesome5 name="search" size={20} color={colors.fg3} />}
+            icon={<TovIcon name="search" size={iconSize} />}
           >
             <TextInput
               placeholder="Quick find"
@@ -217,7 +217,7 @@ export default function Navigator({
                 paddingHorizontal: gutterSize / 1.5,
                 backgroundColor: colors.bg3,
                 borderRadius: 12,
-                ...type(18, 'uib', 'l', colors.fg1),
+                ...typography(18, 'uib', 'l', colors.fg1),
                 height: 50,
               }}
               returnKeyType={'go'}

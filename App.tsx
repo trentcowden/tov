@@ -19,8 +19,8 @@ export default function App() {
     'Regular-Italic': require('./assets/fonts/Lora-Italic.ttf'),
     Bold: require('./assets/fonts/Lora-Bold.ttf'),
     'Bold-Italic': require('./assets/fonts/Lora-BoldItalic.ttf'),
-    UIRegular: require('./assets/fonts/Ubuntu-Regular.ttf'),
-    UIBold: require('./assets/fonts/Ubuntu-Bold.ttf'),
+    UIRegular: require('./assets/fonts/DMSans_18pt-Regular.ttf'),
+    UIBold: require('./assets/fonts/DMSans_18pt-Bold.ttf'),
   })
 
   useEffect(() => {

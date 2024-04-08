@@ -3,13 +3,13 @@ import { Dimensions } from 'react-native'
 export const colors = {
   bg1: '#292521',
   bg2: '#332E28',
-  bg3: '#403931',
+  bg3: '#3E3830',
   fg1: '#efefef',
   fg2: '#d8d8d8',
   fg3: '#9b9b9b',
-  p1: '#2d2118',
   b: 'rgba(164, 152, 142, 0.15)',
-  v: '#cca98f',
+  p1: '#ba9a82',
+  p2: '#9F8471',
 }
 
 export const gutterSize = 24
@@ -17,8 +17,8 @@ export const gutterSize = 24
 export const screenWidth = Dimensions.get('screen').width
 export const screenHeight = Dimensions.get('screen').height
 
-export const largeButtonSize = 80
-export const smallButtonSize = 48
+export const iconSize = 28
+export const smallIconSize = 48
 
 export const chapterChangeDuration = 250
 export const overScrollReq = 75
@@ -31,7 +31,7 @@ import { TextStyle } from 'react-native'
 /**
  * Takes in some text style settings and returns a filled out text style object. This is used simply to save space in components and simplify things overall. Used within the style prop of a text component.
  */
-export const type = (
+export const typography = (
   size: number,
   weight: 'r' | 'b' | 'i' | 'bi' | 'uir' | 'uib',
   align: 'l' | 'c',

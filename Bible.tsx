@@ -1,4 +1,3 @@
-import { Octicons } from '@expo/vector-icons'
 import { FlashList } from '@shopify/flash-list'
 import { ImpactFeedbackStyle, impactAsync } from 'expo-haptics'
 import { useKeepAwake } from 'expo-keep-awake'
@@ -10,11 +9,9 @@ import {
   Text,
   TextInput,
   TextLayoutEventData,
-  TouchableOpacity,
   View,
 } from 'react-native'
 import {
-  FlatList,
   Gesture,
   GestureDetector,
   ScrollView,
@@ -34,11 +31,10 @@ import Animated, {
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Spacer from './Spacer'
 import ChapterOverlay from './components/ChapterOverlay'
-import Fade from './components/Fade'
 import History from './components/History'
 import ModalScreen from './components/ModalScreen'
-import ModalScreenHeader from './components/ModalScreenHeader'
 import Navigator from './components/Navigator'
+import ReferencesModal from './components/ReferencesModal'
 import ScrollBar from './components/ScrollBar'
 import {
   chapterChangeDuration,
@@ -49,7 +45,8 @@ import {
   overScrollReq,
   panActivateConfig,
   screenHeight,
-  type,
+  screenWidth,
+  typography,
 } from './constants'
 import {
   default as chapters,
@@ -58,7 +55,7 @@ import {
 import references from './data/references.json'
 import { Chapters } from './data/types/chapters'
 import { References } from './data/types/references'
-import { getBook, getVerseReference } from './functions/bible'
+import { getBook, getChapterReference } from './functions/bible'
 import {
   goToNextChapter,
   goToPreviousChapter,
@@ -68,7 +65,7 @@ import { addToHistory, removeFromHistory } from './redux/history'
 import { useAppDispatch, useAppSelector } from './redux/hooks'
 
 const lineHeight = 36
-const headerHeight = 0
+const headerHeight = 32
 
 export default function BibleView() {
   const activeChapterIndex = useAppSelector((state) => state.activeChapterIndex)
@@ -100,7 +97,7 @@ export default function BibleView() {
   const textFadeOut = useSharedValue(1)
 
   const [verseOffsets, setVerseOffsets] = useState<number[]>()
-  const currentVerseReq = insets.top + gutterSize * 6 + headerHeight
+  const currentVerseReq = insets.top + gutterSize * 4 + headerHeight
   const currentVerseIndex = useRef(0)
 
   const navigatorTransition = useSharedValue(0)
@@ -457,11 +454,13 @@ export default function BibleView() {
             ? interpolate(scrollBarActivate.value, [0, 1], [1, 0.3])
             : navigatorTransition.value !== 0
               ? interpolate(navigatorTransition.value, [0, 1], [1, 0.7])
-              : interpolate(
-                  textTranslateX.value,
-                  [-horizTransReq, 0, horizTransReq],
-                  [0.3, 1, 0.3]
-                ),
+              : openReferences.value !== 0
+                ? interpolate(openReferences.value, [0, 1], [1, 0.7])
+                : interpolate(
+                    textTranslateX.value,
+                    [-horizTransReq, 0, horizTransReq],
+                    [0.3, 1, 0.3]
+                  ),
     }
   })
 
@@ -531,24 +530,6 @@ export default function BibleView() {
     insets.bottom -
     gutterSize * 2
 
-  const closeButton = (
-    <TouchableOpacity
-      onPress={() => {}}
-      style={{
-        paddingLeft: gutterSize,
-        paddingRight: gutterSize,
-        alignItems: 'center',
-        justifyContent: 'center',
-        height: '100%',
-        top: 0,
-        right: 0,
-        zIndex: 4,
-      }}
-    >
-      <Text style={type(15, 'uir', 'c', colors.fg2)}>Close</Text>
-    </TouchableOpacity>
-  )
-
   return (
     <GestureDetector gesture={composedGestures}>
       <View
@@ -560,7 +541,10 @@ export default function BibleView() {
         }}
       >
         <Animated.View
-          style={[{ flex: 1, backgroundColor: colors.bg1 }, textStyles]}
+          style={[
+            { flex: 1, backgroundColor: colors.bg1, width: screenWidth },
+            textStyles,
+          ]}
         >
           <ScrollView
             showsVerticalScrollIndicator={false}
@@ -595,15 +579,15 @@ export default function BibleView() {
               </View>
             ))} */}
             <Spacer units={8} additional={insets.top} />
-            {/* <Text
+            <Text
               style={{
-                ...type(32, 'b', 'c', colors.fg1),
+                ...typography(28, 'b', 'c', colors.fg1),
                 height: headerHeight,
                 marginBottom: gutterSize,
               }}
             >
-              {getReference(activeChapter.chapterId)}
-            </Text> */}
+              {getChapterReference(activeChapter.chapterId)}
+            </Text>
             <Text
               onTextLayout={onTextLayout}
               onLayout={() => {
@@ -616,7 +600,7 @@ export default function BibleView() {
                     pattern: /\[([0-9]{1,3})\]/,
                     style: {
                       fontFamily: 'Bold',
-                      color: colors.v,
+                      color: colors.p1,
                       fontSize: 16,
                       // backgroundColor: colors.bg2,
                     },
@@ -638,7 +622,7 @@ export default function BibleView() {
                   },
                 ]}
                 style={{
-                  ...type(18, 'r', 'l', colors.fg1),
+                  ...typography(18, 'r', 'l', colors.fg1),
                   lineHeight: lineHeight,
                 }}
                 onTextLayout={onTextLayout}
@@ -731,63 +715,13 @@ export default function BibleView() {
             <Text>Settings</Text>
           </View>
         </ModalScreen>
-        <ModalScreen
-          openModal={openReferences}
-          openNested={openReferencesNested}
-          close={() => {
-            openReferences.value = withTiming(0)
-          }}
-          nestedScreen={<></>}
-          onBack={() => {}}
-        >
-          <View
-            style={{
-              width: Dimensions.get('window').width - gutterSize * 2,
-              height: navigatorHeight,
-              backgroundColor: colors.bg2,
-              borderRadius: 16,
-              paddingTop: gutterSize,
-            }}
-          >
-            <ModalScreenHeader
-              close={() => {
-                openReferences.value = withTiming(0)
-              }}
-              icon={
-                <Octicons name="arrow-switch" size={20} color={colors.fg3} />
-              }
-            >
-              Cross References for{' '}
-              {referenceVerse ? getVerseReference(referenceVerse) : ''}
-            </ModalScreenHeader>
-            <View style={{ flex: 1 }}>
-              <FlatList
-                data={
-                  referenceVerse
-                    ? (references as References)[referenceVerse]
-                    : []
-                }
-                ListHeaderComponent={<Spacer units={4} />}
-                ListFooterComponent={<Spacer units={4} />}
-                renderItem={(item) => (
-                  <TouchableOpacity
-                    style={{
-                      width: '100%',
-                      paddingHorizontal: gutterSize,
-                      paddingVertical: 12,
-                    }}
-                    onPress={() => goToChapter(item.item[0].split('.'))}
-                  >
-                    <Text style={type(18, 'uir', 'l', colors.fg2)}>
-                      {getVerseReference(item.item[0])}
-                    </Text>
-                  </TouchableOpacity>
-                )}
-              />
-              <Fade place="top" color={colors.bg2} />
-            </View>
-          </View>
-        </ModalScreen>
+        <ReferencesModal
+          goToChapter={goToChapter}
+          openReferences={openReferences}
+          openReferencesNested={openReferencesNested}
+          referenceVerse={referenceVerse}
+          currentVerseIndex={currentVerseIndex}
+        />
         {/* <View
           style={{
             position: 'absolute',

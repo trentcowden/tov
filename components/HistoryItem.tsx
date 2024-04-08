@@ -11,7 +11,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { colors, gutterSize, type } from '../constants'
+import { colors, gutterSize, typography } from '../constants'
 import chapters from '../data/chapters.json'
 import { Chapters } from '../data/types/chapters'
 import { getVerseReference } from '../functions/bible'
@@ -131,12 +131,12 @@ export default function HistoryListItem({
           <Animated.Text
             numberOfLines={1}
             adjustsFontSizeToFit
-            style={[type(18, 'uir', 'l', colors.fg2), textStyles]}
+            style={[typography(18, 'uir', 'l', colors.fg2), textStyles]}
           >
             {getVerseReference(`${item.chapterId}.${item.verseIndex + 1}`)}
           </Animated.Text>
           {chapterIndex === activeChapterIndex.index ? (
-            <Text style={type(12, 'uir', 'c', colors.fg3)}>Current</Text>
+            <Text style={typography(12, 'uir', 'c', colors.fg3)}>Current</Text>
           ) : null}
         </Pressable>
       </Animated.View>

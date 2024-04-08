@@ -9,6 +9,7 @@ import {
 import Animated, {
   SharedValue,
   interpolate,
+  interpolateColor,
   runOnJS,
   useAnimatedStyle,
   useDerivedValue,
@@ -17,8 +18,9 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { colors, gutterSize, screenHeight, type } from '../constants'
+import { colors, gutterSize, screenHeight, typography } from '../constants'
 import { useAppSelector } from '../redux/hooks'
+import TovIcon from './SVG'
 
 interface Props {
   verseOffsets: number[] | undefined
@@ -83,7 +85,7 @@ export default function ScrollBar({
 
       runOnJS(impactAsync)(ImpactFeedbackStyle.Heavy)
 
-      scrollBarActivate.value = withTiming(1)
+      scrollBarActivate.value = withTiming(1, { duration: 150 })
       startingOffset.value = event.y
       scrollBarPosition.value = event.absoluteY - startingOffset.value
     })
@@ -107,7 +109,7 @@ export default function ScrollBar({
         return
       runOnJS(impactAsync)(ImpactFeedbackStyle.Light)
 
-      scrollBarActivate.value = withTiming(0)
+      scrollBarActivate.value = withTiming(0, { duration: 150 })
     })
 
   function scrollTo(offset: number) {
@@ -140,21 +142,46 @@ export default function ScrollBar({
     // ],
   }))
 
-  const scrollBarStyles = useAnimatedStyle(() => ({
+  const scrollBarAreaStyles = useAnimatedStyle(() => ({
     transform: [
       {
         translateY: scrollBarPosition.value,
       },
+    ],
+  }))
+
+  const scrollBarStyles = useAnimatedStyle(() => ({
+    opacity: interpolate(scrollBarActivate.value, [-1, 0], [0, 1]),
+    backgroundColor: interpolateColor(
+      scrollBarActivate.value,
+      [0, 1],
+      [colors.bg2, colors.fg3]
+    ),
+    // transform: [
+    //   { scaleX: interpolate(scrollBarActivate.value, [0, 1], [1, 6]) },
+    //   {
+    //     translateX:
+    //       scrollBarActivate.value !== 0
+    //         ? interpolate(
+    //             scrollBarActivate.value,
+    //             [0, 1],
+    //             [0, -gutterSize / 4.75]
+    //           )
+    //         : textTranslateX.value,
+    //   },
+    // ],
+  }))
+
+  const scrollIconStyles = useAnimatedStyle(() => ({
+    opacity: scrollBarActivate.value,
+    transform: [
       {
-        translateX: textTranslateX.value,
+        translateX:
+          scrollBarActivate.value !== 0
+            ? interpolate(scrollBarActivate.value, [0, 1], [0, -gutterSize])
+            : textTranslateX.value,
       },
     ],
-    opacity: interpolate(scrollBarActivate.value, [-1, 0, 1], [0, 1, 0]),
-    // backgroundColor: interpolateColor(
-    //   overScrollAmount.value,
-    //   [-overScrollReq, -overScrollReq + 1, 0, overScrollReq - 1, overScrollReq],
-    //   [colors.v, colors.bg2, colors.bg3, colors.bg2, colors.v]
-    // ),
   }))
 
   const scrollBarActiveStyles = useAnimatedStyle(() => {
@@ -190,19 +217,18 @@ export default function ScrollBar({
               right: 0,
               width: gutterSize * 1.5,
               alignItems: 'flex-end',
-              borderColor: 'green',
+              justifyContent: 'center',
             },
-            scrollBarStyles,
+            scrollBarAreaStyles,
           ]}
         >
-          <View
+          <Animated.View
             style={[
               {
                 // width: gutterSize,
                 width: gutterSize / 2,
                 borderRadius: 99,
                 height: scrollBarHeight,
-                backgroundColor: colors.bg2,
                 zIndex: 5,
                 display:
                   verseOffsets &&
@@ -210,11 +236,26 @@ export default function ScrollBar({
                     ? 'none'
                     : 'flex',
               },
+              scrollBarStyles,
             ]}
-          />
+          ></Animated.View>
+          <Animated.View
+            style={[
+              {
+                alignSelf: 'center',
+                position: 'absolute',
+                width: '100%',
+                alignItems: 'center',
+                justifyContent: 'center',
+              },
+              scrollIconStyles,
+            ]}
+          >
+            <TovIcon name="scroll" size={64} />
+          </Animated.View>
         </Animated.View>
       </GestureDetector>
-      <Animated.View
+      {/* <Animated.View
         style={[
           {
             position: 'absolute',
@@ -231,30 +272,39 @@ export default function ScrollBar({
         ]}
         pointerEvents={'none'}
       >
-        {/* <FontAwesome5 name="long-arrow-alt-left" size={16} color={colors.bg3} /> */}
-      </Animated.View>
+      </Animated.View> */}
       <Animated.View
         style={[
           {
             position: 'absolute',
             right: verseColumnWidth * 2,
             // top: insets.top,
-            top: 0,
-            // height: screenHeight - insets.top - insets.bottom,
-            height: screenHeight,
+            top: insets.top,
+            height: screenHeight - insets.bottom - insets.top - gutterSize / 2,
+            // height: screenHeight,
             zIndex: 2,
             // width: activeScrollBarWidth,
             width: verseColumnWidth,
-            // borderRadius: 8,
-            backgroundColor: colors.bg2,
-            paddingTop: insets.top,
-            paddingBottom: insets.bottom,
+            // backgroundColor: colors.bg2,
+            // paddingTop: insets.top,
+            // paddingBottom: insets.bottom,
             // alignItems: 'center',
+            overflow: 'hidden',
           },
           verseNumberStyles,
         ]}
         pointerEvents={'none'}
       >
+        <View
+          style={{
+            position: 'absolute',
+            backgroundColor: colors.bg2,
+            top: gutterSize / 2,
+            width: verseColumnWidth,
+            borderRadius: 99,
+            height: screenHeight - insets.bottom - insets.top - gutterSize,
+          }}
+        />
         <View style={{ height: '100%' }}>
           {relativeVerseOffsets?.slice(0, -1).map((offset, index) => {
             if (index === 0) {
@@ -288,7 +338,7 @@ export default function ScrollBar({
                   numberOfLines={1}
                   adjustsFontSizeToFit
                   style={{
-                    ...type(12, 'uib', 'c', colors.fg3),
+                    ...typography(12, 'uib', 'c', colors.p1),
                     // width: verseColumnWidth,
                   }}
                 >

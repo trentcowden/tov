@@ -8,9 +8,10 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { colors, gutterSize, type } from '../constants'
+import { colors, gutterSize, typography } from '../constants'
 import { Books } from '../data/types/books'
 import { Chapters } from '../data/types/chapters'
+import TovIcon from './SVG'
 
 interface Props {
   activeChapter: Chapters[number]
@@ -95,7 +96,7 @@ export default function ChapterOverlay({
             gap: 8,
             // borderRadius: 16,
             borderRadius: 99,
-            paddingHorizontal: gutterSize * 1.5,
+            paddingHorizontal: gutterSize,
             // paddingVertical: gutterSize / 2,
             height: insets.top,
             backgroundColor: colors.bg3,
@@ -105,38 +106,61 @@ export default function ChapterOverlay({
         {/* <TouchableOpacity style={{ paddingHorizontal: gutterSize }}>
         <Ionicons name="settings-outline" size={20} color={colors.fg3} />
       </TouchableOpacity> */}
-        {/* <Text
-          numberOfLines={1}
-          adjustsFontSizeToFit
-          maxFontSizeMultiplier={1}
+
+        <View
           style={{
-            ...type(12, 'uib', 'l', colors.fg2),
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 6,
+            width: 100,
           }}
         >
-          {activeBook.name.replace(' ', '').slice(0, 3)}
-          {'. '}
-          {activeChapter.chapterId.split('.')[1]}
-        </Text> */}
-        <Text
-          numberOfLines={1}
-          adjustsFontSizeToFit
-          maxFontSizeMultiplier={1}
+          <TovIcon name="book" size={14} />
+          {/* <Text
+            numberOfLines={1}
+            adjustsFontSizeToFit
+            maxFontSizeMultiplier={1}
+            style={{
+              ...typography(12, 'uib', 'l', colors.fg2),
+            }}
+          >
+            {activeBook.name.replace(' ', '').slice(0, 3)}
+            {'. '}
+            {activeChapter.chapterId.split('.')[1]}
+          </Text> */}
+          <Text
+            numberOfLines={1}
+            adjustsFontSizeToFit
+            maxFontSizeMultiplier={1}
+            style={{
+              ...typography(11, 'uib', 'l', colors.fg2),
+              flex: 1,
+            }}
+          >
+            {activeBook.name}
+          </Text>
+        </View>
+        <View
           style={{
-            ...type(12, 'uib', 'l', colors.fg2),
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 8,
+            width: 100,
           }}
         >
-          {activeBook.name}
-        </Text>
-        <Text
-          numberOfLines={1}
-          adjustsFontSizeToFit
-          maxFontSizeMultiplier={1}
-          style={{
-            ...type(12, 'uib', 'l', colors.fg2),
-          }}
-        >
-          Chapter {activeChapter.chapterId.split('.')[1]}
-        </Text>
+          <Text
+            numberOfLines={1}
+            adjustsFontSizeToFit
+            maxFontSizeMultiplier={1}
+            style={{
+              ...typography(10, 'uib', 'l', colors.fg2),
+              textAlign: 'right',
+              flex: 1,
+            }}
+          >
+            Ch. {activeChapter.chapterId.split('.')[1]}
+          </Text>
+        </View>
         {/* <TouchableOpacity style={{ paddingHorizontal: gutterSize }}>
         <FontAwesome5 name="history" size={20} color={colors.fg3} />
       </TouchableOpacity> */}

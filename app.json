@@ -14,7 +14,13 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.trentcowden.tov"
+      "bundleIdentifier": "com.trentcowden.tov",
+      "infoPlist": {
+        "CFBundleAllowMixedLocalizations": true
+      }
+    },
+    "locales": {
+      "en": "./storeData.json"
     },
     "android": {
       "adaptiveIcon": {
@@ -22,9 +28,6 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.trentcowden.tov"
-    },
-    "web": {
-      "favicon": "./assets/favicon.png"
     },
     "plugins": ["expo-font"],
     "owner": "tcowden",

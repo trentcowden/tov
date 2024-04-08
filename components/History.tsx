@@ -1,20 +1,19 @@
-import { FontAwesome5, Octicons } from '@expo/vector-icons'
 import { FlashList } from '@shopify/flash-list'
 import React from 'react'
-import { Dimensions, Text, TouchableOpacity, View } from 'react-native'
+import { Dimensions, Text, View } from 'react-native'
 import Animated, {
   SharedValue,
   useAnimatedStyle,
-  withTiming,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Spacer from '../Spacer'
-import { colors, gutterSize, type } from '../constants'
+import { colors, gutterSize, iconSize, typography } from '../constants'
 import { Chapters } from '../data/types/chapters'
 import { HistoryItem } from '../redux/history'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
 import Fade from './Fade'
 import HistoryListItem from './HistoryItem'
+import TovIcon from './SVG'
 
 interface Props {
   activeChapter: Chapters[number]
@@ -96,11 +95,11 @@ export default function History({
             flex: 1,
             alignItems: 'center',
             flexDirection: 'row',
-            gap: gutterSize / 3,
+            gap: 12,
           }}
         >
-          <FontAwesome5 name="history" size={20} color={colors.fg2} />
-          <Text style={[type(28, 'uib', 'l', colors.fg1), { flex: 1 }]}>
+          <TovIcon name="history" size={iconSize} />
+          <Text style={[typography(24, 'uib', 'l', colors.fg1), { flex: 1 }]}>
             History
           </Text>
         </View>
@@ -133,7 +132,7 @@ export default function History({
           // estimatedItemSize={28}
           ListEmptyComponent={
             <View style={{ paddingHorizontal: gutterSize / 2 }}>
-              <Text style={type(16, 'uir', 'l', colors.fg3)}>
+              <Text style={typography(16, 'uir', 'l', colors.fg3)}>
                 Come back here to return to chapters you were previously
                 reading.
               </Text>
@@ -148,11 +147,11 @@ export default function History({
           //     })}
           //   </>
           // }
-          ListHeaderComponent={<Spacer units={4} />}
+          ListHeaderComponent={<Spacer units={2} />}
           ListFooterComponent={<Spacer units={4} additional={insets.bottom} />}
         />
         <Fade place="top" color={colors.bg2} />
-        <View
+        {/* <View
           style={{
             position: 'absolute',
             bottom: insets.bottom + gutterSize,
@@ -173,9 +172,9 @@ export default function History({
             }}
           >
             <Octicons name="gear" size={16} color={colors.b} />
-            <Text style={type(15, 'uir', 'c', colors.fg3)}>Settings</Text>
+            <Text style={typography(15, 'uir', 'c', colors.fg3)}>Settings</Text>
           </TouchableOpacity>
-        </View>
+        </View> */}
       </View>
     </Animated.View>
   )

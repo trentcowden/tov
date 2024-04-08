@@ -3,7 +3,7 @@ import { useMemo } from 'react'
 import { Text, TouchableOpacity } from 'react-native'
 import Animated, { FadeInRight, FadeOut } from 'react-native-reanimated'
 import Spacer from '../Spacer'
-import { colors, gutterSize, type } from '../constants'
+import { colors, gutterSize, typography } from '../constants'
 import chapters from '../data/chapters.json'
 import { Books } from '../data/types/books'
 import { Chapters } from '../data/types/chapters'
@@ -44,7 +44,7 @@ export default function ChapterBoxes({
           flex: 1,
           aspectRatio: 1,
           backgroundColor: colors.bg3,
-          marginHorizontal: gutterSize / 4,
+          marginHorizontal: gutterSize / 5,
           borderRadius: 16,
         }}
       >
@@ -60,7 +60,7 @@ export default function ChapterBoxes({
             closeNavigator()
           }}
         >
-          <Text style={type(18, 'uib', 'c', colors.fg1)}>
+          <Text style={typography(18, 'uib', 'c', colors.fg1)}>
             {item.chapterId.split('.')[1]}
           </Text>
         </TouchableOpacity>
@@ -79,7 +79,7 @@ export default function ChapterBoxes({
       contentContainerStyle={{
         paddingHorizontal: (gutterSize * 3) / 4,
       }}
-      ItemSeparatorComponent={() => <Spacer units={3} />}
+      ItemSeparatorComponent={() => <Spacer units={2} />}
       ListFooterComponent={<Spacer units={4} />}
     />
   )

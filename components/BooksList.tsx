@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { SectionList, Text, TouchableOpacity, View } from 'react-native'
 import Spacer from '../Spacer'
-import { colors, gutterSize, type } from '../constants'
+import { colors, gutterSize, typography } from '../constants'
 import books from '../data/books.json'
 import { Books } from '../data/types/books'
 
@@ -60,7 +60,7 @@ export default function BooksList({ navigatorBook, goToBook }: Props) {
           backgroundColor: colors.bg2,
         }}
       >
-        <Text style={type(15, 'uir', 'l', colors.fg3)}>
+        <Text style={typography(15, 'uir', 'l', colors.fg3)}>
           {sectionNames[section.sectionName]}
         </Text>
         <Spacer units={2} />
@@ -90,7 +90,7 @@ export default function BooksList({ navigatorBook, goToBook }: Props) {
           goToBook(item)
         }}
       >
-        <Text style={type(20, 'uir', 'l', colors.fg1)}>{item.name}</Text>
+        <Text style={typography(20, 'uir', 'l', colors.fg1)}>{item.name}</Text>
       </TouchableOpacity>
     )
   }

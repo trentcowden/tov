@@ -27,3 +27,27 @@ export function getVerseReference(verseId: string): string {
 
   return `${book.name} ${chapterNumber}:${verseNumber}`
 }
+
+export function isPassageAfter(p1: string, p2: string) {
+  const [p1BookStr, p1chapterStr, p1VerseStr] = p1.split('.')
+  const [p2BookStr, p2chapterStr, p2VerseStr] = p2.split('.')
+
+  const p1Book = getBook(p1BookStr)
+  const p2Book = getBook(p2BookStr)
+
+  if (p1Book.order === p2Book.order) {
+    const p1Chapter = parseInt(p1chapterStr)
+    const p2Chapter = parseInt(p2chapterStr)
+
+    if (p1Chapter === p2Chapter) {
+      const p1Verse = parseInt(p1VerseStr)
+      const p2Verse = parseInt(p2VerseStr)
+
+      return p1Verse - p2Verse
+    } else {
+      return p1Chapter - p2Chapter
+    }
+  } else {
+    return p1Book.order - p2Book.order
+  }
+}
