@@ -1,4 +1,4 @@
-import React, { MutableRefObject, useMemo } from 'react'
+import React, { MutableRefObject, useMemo, useRef } from 'react'
 import {
   Dimensions,
   FlatList,
@@ -38,10 +38,11 @@ export default function ReferencesModal({
   currentVerseIndex,
 }: Props) {
   const insets = useSafeAreaInsets()
-
+  const referencesRef = useRef<FlatList<References[string][number]>>(null)
   const activeReferences = useMemo(() => {
     if (!referenceVerse) return []
 
+    referencesRef.current?.scrollToOffset({ animated: false, offset: 0 })
     const activeReferences = (references as References)[referenceVerse]
 
     return activeReferences.sort((r1, r2) => isPassageAfter(r1[0], r2[0]))
@@ -142,6 +143,7 @@ export default function ReferencesModal({
         </ModalScreenHeader>
         <View style={{ flex: 1 }}>
           <FlatList
+            ref={referencesRef}
             data={activeReferences}
             ListHeaderComponent={<Spacer units={4} />}
             ListFooterComponent={<Spacer units={4} />}

@@ -8,9 +8,21 @@ export const colors = {
   fg2: '#d8d8d8',
   fg3: '#9b9b9b',
   b: 'rgba(164, 152, 142, 0.15)',
-  p1: '#ba9a82',
-  p2: '#9F8471',
+  p1: '#bea088',
+  p2: '#7e695a',
 }
+
+// export const colors = {
+//   bg1: '#202020',
+//   bg2: '#2b2b2b',
+//   bg3: '#333333',
+//   fg1: '#efefef',
+//   fg2: '#d8d8d8',
+//   fg3: '#9b9b9b',
+//   b: 'rgba(164, 152, 142, 0.15)',
+//   p1: '#7f9d76',
+//   p2: '#59755c',
+// }
 
 export const gutterSize = 24
 

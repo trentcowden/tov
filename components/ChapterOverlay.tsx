@@ -96,7 +96,7 @@ export default function ChapterOverlay({
             gap: 8,
             // borderRadius: 16,
             borderRadius: 99,
-            paddingHorizontal: gutterSize,
+            paddingHorizontal: gutterSize * 1.5,
             // paddingVertical: gutterSize / 2,
             height: insets.top,
             backgroundColor: colors.bg3,
@@ -111,24 +111,24 @@ export default function ChapterOverlay({
           style={{
             flexDirection: 'row',
             alignItems: 'center',
-            gap: 6,
+            gap: 8,
             width: 100,
           }}
         >
           <TovIcon name="book" size={14} />
-          {/* <Text
+          <Text
             numberOfLines={1}
             adjustsFontSizeToFit
             maxFontSizeMultiplier={1}
             style={{
-              ...typography(12, 'uib', 'l', colors.fg2),
+              ...typography(14, 'uib', 'l', colors.fg2),
             }}
           >
             {activeBook.name.replace(' ', '').slice(0, 3)}
             {'. '}
             {activeChapter.chapterId.split('.')[1]}
-          </Text> */}
-          <Text
+          </Text>
+          {/* <Text
             numberOfLines={1}
             adjustsFontSizeToFit
             maxFontSizeMultiplier={1}
@@ -138,9 +138,9 @@ export default function ChapterOverlay({
             }}
           >
             {activeBook.name}
-          </Text>
+          </Text> */}
         </View>
-        <View
+        {/* <View
           style={{
             flexDirection: 'row',
             alignItems: 'center',
@@ -160,7 +160,7 @@ export default function ChapterOverlay({
           >
             Ch. {activeChapter.chapterId.split('.')[1]}
           </Text>
-        </View>
+        </View> */}
         {/* <TouchableOpacity style={{ paddingHorizontal: gutterSize }}>
         <FontAwesome5 name="history" size={20} color={colors.fg3} />
       </TouchableOpacity> */}

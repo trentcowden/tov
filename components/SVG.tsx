@@ -13,6 +13,7 @@ export type IconName =
   | 'scroll'
   | 'book'
   | 'location'
+  | 'arrowRightSquare'
 
 interface ParentProps {
   name: IconName
@@ -61,6 +62,23 @@ export default function TovIcon({ name, size, color, style }: ParentProps) {
 function SVGComponent(props: ChildProps) {
   // For regular icons, make sure to remove any hard-coded fill colors in order to fill with the prop color.
   switch (props.name) {
+    case 'arrowRightSquare':
+      return (
+        <Svg fill="none" viewBox="0 0 14 14" {...props}>
+          <G strokeWidth={1}>
+            <Path
+              fill={colors.p1}
+              d="M7 .25c-1.148 0-2.269.105-3.343.225A3.632 3.632 0 00.463 3.678C.348 4.747.25 5.86.25 7c0 1.14.098 2.253.213 3.322a3.632 3.632 0 003.194 3.203c1.074.12 2.195.225 3.343.225s2.269-.105 3.343-.225a3.632 3.632 0 003.194-3.203c.115-1.069.213-2.182.213-3.322 0-1.14-.098-2.253-.213-3.322A3.632 3.632 0 0010.343.475C9.269.355 8.148.25 7 .25z"
+            />
+            <Path
+              fill={colors.p2}
+              fillRule="evenodd"
+              d="M10.585 7.768a1.263 1.263 0 000-1.536c-.388-.51-.996-1.156-1.708-1.63-.76-.506-1.695-.046-1.857.8A8.289 8.289 0 006.93 6H4a1 1 0 100 2h2.929c.025.216.057.416.091.598.162.846 1.096 1.306 1.857.8.712-.474 1.32-1.12 1.708-1.63z"
+              clipRule="evenodd"
+            />
+          </G>
+        </Svg>
+      )
     case 'location':
       return (
         <Svg fill="none" viewBox="0 0 14 14" {...props}>
