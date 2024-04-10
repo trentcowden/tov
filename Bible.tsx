@@ -65,7 +65,7 @@ import { addToHistory, removeFromHistory } from './redux/history'
 import { useAppDispatch, useAppSelector } from './redux/hooks'
 
 const lineHeight = 36
-const headerHeight = 32
+const headerHeight = 48
 
 export default function BibleView() {
   const activeChapterIndex = useAppSelector((state) => state.activeChapterIndex)
@@ -580,6 +580,8 @@ export default function BibleView() {
             ))} */}
             <Spacer units={8} additional={insets.top} />
             <Text
+              numberOfLines={1}
+              adjustsFontSizeToFit
               style={{
                 ...typography(28, 'b', 'c', colors.fg1),
                 height: headerHeight,
@@ -599,7 +601,7 @@ export default function BibleView() {
                   {
                     pattern: /\[([0-9]{1,3})\]/,
                     style: {
-                      fontFamily: 'Bold',
+                      fontFamily: 'UIBold',
                       color: colors.p1,
                       fontSize: 16,
                       // backgroundColor: colors.bg2,
@@ -634,15 +636,12 @@ export default function BibleView() {
           </ScrollView>
         </Animated.View>
         <ChapterOverlay
-          overlayOpacity={overlayOpacity}
           activeChapter={activeChapter}
           activeBook={activeBook}
           isStatusBarHidden={isStatusBarHidden}
-          pastOverlayOffset={pastOverlayOffset}
           navigatorTransition={navigatorTransition}
-          textTranslateY={textTranslateY}
-          setIsStatusBarHidden={setIsStatusBarHidden}
-          textTranslateX={textTranslateX}
+          focusSearch={focusSearch}
+          savedNavigatorTransition={savedNavigatorTransition}
         />
         <Navigator
           searchResultsRef={searchListRef}

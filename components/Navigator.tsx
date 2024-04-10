@@ -201,37 +201,43 @@ export default function Navigator({
         >
           <ModalScreenHeader
             close={closeNavigator}
-            icon={<TovIcon name="search" size={iconSize} />}
+            // icon={<TovIcon name="search" size={iconSize} />}
           >
-            <TextInput
-              placeholder="Quick find"
-              placeholderTextColor={colors.fg3}
-              ref={searchRef}
-              clearButtonMode="always"
-              cursorColor={colors.fg1}
-              selectionColor={colors.fg1}
-              onChangeText={(text) => setSearchText(text)}
-              autoCorrect={false}
-              style={{
-                flex: 1,
-                paddingHorizontal: gutterSize / 1.5,
-                backgroundColor: colors.bg3,
-                borderRadius: 12,
-                ...typography(18, 'uib', 'l', colors.fg1),
-                height: 50,
-              }}
-              returnKeyType={'go'}
-              onSubmitEditing={() => {
-                if (
-                  searchText !== '' &&
-                  searchResults.length > 0 &&
-                  typeof searchResults[0].item !== 'string'
-                ) {
-                  goToChapter(searchResults[0].item.chapterId)
-                  closeNavigator()
-                }
-              }}
-            />
+            <>
+              <TextInput
+                placeholder="Quick find"
+                placeholderTextColor={colors.fg3}
+                ref={searchRef}
+                clearButtonMode="always"
+                cursorColor={colors.fg1}
+                selectionColor={colors.fg1}
+                onChangeText={(text) => setSearchText(text)}
+                autoCorrect={false}
+                style={{
+                  flex: 1,
+                  paddingRight: gutterSize / 1.5,
+                  paddingLeft: gutterSize + 20,
+                  backgroundColor: colors.bg3,
+                  borderRadius: 12,
+                  ...typography(18, 'uib', 'l', colors.fg1),
+                  height: 50,
+                }}
+                returnKeyType={'go'}
+                onSubmitEditing={() => {
+                  if (
+                    searchText !== '' &&
+                    searchResults.length > 0 &&
+                    typeof searchResults[0].item !== 'string'
+                  ) {
+                    goToChapter(searchResults[0].item.chapterId)
+                    closeNavigator()
+                  }
+                }}
+              />
+              <View style={{ position: 'absolute', left: gutterSize / 2 }}>
+                <TovIcon name="search" size={24} />
+              </View>
+            </>
           </ModalScreenHeader>
           {/* <View
             style={{

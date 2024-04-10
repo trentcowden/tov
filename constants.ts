@@ -1,28 +1,28 @@
 import { Dimensions } from 'react-native'
 
-export const colors = {
-  bg1: '#292521',
-  bg2: '#332E28',
-  bg3: '#3E3830',
-  fg1: '#efefef',
-  fg2: '#d8d8d8',
-  fg3: '#9b9b9b',
-  b: 'rgba(164, 152, 142, 0.15)',
-  p1: '#bea088',
-  p2: '#7e695a',
-}
-
 // export const colors = {
-//   bg1: '#202020',
-//   bg2: '#2b2b2b',
-//   bg3: '#333333',
+//   bg1: '#292521',
+//   bg2: '#332E28',
+//   bg3: '#3E3830',
 //   fg1: '#efefef',
 //   fg2: '#d8d8d8',
 //   fg3: '#9b9b9b',
 //   b: 'rgba(164, 152, 142, 0.15)',
-//   p1: '#7f9d76',
-//   p2: '#59755c',
+//   p1: '#bea088',
+//   p2: '#7e695a',
 // }
+
+export const colors = {
+  bg1: '#252322',
+  bg2: '#2a2826',
+  bg3: '#31302c',
+  fg1: '#efefef',
+  fg2: '#d8d8d8',
+  fg3: '#9b9b9b',
+  b: 'rgba(134, 126, 118, 0.15)',
+  p1: '#bea088',
+  p2: '#7e695a',
+}
 
 export const gutterSize = 24
 
@@ -74,12 +74,14 @@ export const typography = (
         : weight === 'uib'
           ? 'UIBold'
           : weight === 'r'
-            ? 'Regular'
-            : weight === 'i'
-              ? 'Regular-Italic'
-              : weight === 'b'
-                ? 'Bold'
-                : 'Bold-Italic',
+            ? // ? 'Regular'
+              'UIRegular'
+            : // : weight === 'i'
+              //   ? 'Regular-Italic'
+              weight === 'b'
+              ? // ? 'Bold'
+                'UIBold'
+              : 'UIBold',
   }
 }
 

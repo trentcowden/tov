@@ -1,12 +1,13 @@
 import { ReactNode } from 'react'
 import { Text, TouchableOpacity, View } from 'react-native'
 import Spacer from '../Spacer'
-import { colors, gutterSize, typography } from '../constants'
+import { colors, gutterSize, iconSize, typography } from '../constants'
+import TovIcon from './SVG'
 
 interface Props {
   children: ReactNode
   close: () => void
-  icon: ReactNode
+  icon?: ReactNode
   paddingLeft?: number
 }
 
@@ -30,7 +31,8 @@ export default function ModalScreenHeader({
         zIndex: 4,
       }}
     >
-      <Text style={typography(13, 'uir', 'c', colors.fg3)}>Close</Text>
+      {/* <Text style={typography(13, 'uir', 'c', colors.fg3)}>Close</Text> */}
+      <TovIcon name="close" size={iconSize} />
     </TouchableOpacity>
   )
 
@@ -46,7 +48,7 @@ export default function ModalScreenHeader({
       }}
     >
       {icon}
-      <Spacer units={2} />
+      <Spacer units={icon ? 2 : 0} />
       <View
         style={{
           flex: 1,

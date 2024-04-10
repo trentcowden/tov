@@ -1,14 +1,17 @@
+import { ImpactFeedbackStyle, impactAsync } from 'expo-haptics'
 import { StatusBar } from 'expo-status-bar'
-import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
-import { Text, View } from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { Pressable, Text, View } from 'react-native'
 import Animated, {
   SharedValue,
+  interpolate,
   useAnimatedStyle,
   useSharedValue,
+  withSpring,
   withTiming,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { colors, gutterSize, typography } from '../constants'
+import { colors, gutterSize, panActivateConfig, typography } from '../constants'
 import { Books } from '../data/types/books'
 import { Chapters } from '../data/types/chapters'
 import TovIcon from './SVG'
@@ -16,30 +19,25 @@ import TovIcon from './SVG'
 interface Props {
   activeChapter: Chapters[number]
   activeBook: Books[number]
-  setIsStatusBarHidden: Dispatch<SetStateAction<boolean>>
   isStatusBarHidden: boolean
-  overlayOpacity: SharedValue<number>
-  pastOverlayOffset: boolean
   navigatorTransition: SharedValue<number>
-  textTranslateY: SharedValue<number>
-  textTranslateX: SharedValue<number>
+  savedNavigatorTransition: SharedValue<number>
+  focusSearch: () => void
 }
 
 export default function ChapterOverlay({
   activeChapter,
   activeBook,
   isStatusBarHidden,
-  pastOverlayOffset,
   navigatorTransition,
-  textTranslateY,
-  setIsStatusBarHidden,
-  textTranslateX,
+  savedNavigatorTransition,
+  focusSearch,
 }: Props) {
   const insets = useSafeAreaInsets()
   const [navigatorOpen, setNavigatorOpen] = useState(false)
   const [chapterChanging, setChapterChanging] = useState(false)
   const overlayOpacity = useSharedValue(0)
-
+  const pressed = useSharedValue(0)
   // useDerivedValue(() => {
   //   if (navigatorTransition.value === 1) runOnJS(setNavigatorOpen)(false)
   //   else runOnJS(setNavigatorOpen)(true)
@@ -69,6 +67,7 @@ export default function ChapterOverlay({
   const overlayAnimatedStyles = useAnimatedStyle(() => ({
     // opacity: overlayOpacity.value,
     opacity: overlayOpacity.value,
+    transform: [{ scale: interpolate(pressed.value, [0, 1], [1, 1.1]) }],
   }))
 
   return (
@@ -86,7 +85,20 @@ export default function ChapterOverlay({
       ]}
     >
       {/* <BlurView blurType="dark" style={[]}> */}
-      <View
+      <Pressable
+        onPressIn={() => {
+          pressed.value = withTiming(1, { duration: 150 })
+        }}
+        onPressOut={() => {
+          pressed.value = withSpring(0, panActivateConfig)
+        }}
+        onPress={() => {
+          savedNavigatorTransition.value = 1
+          navigatorTransition.value = withTiming(1)
+
+          focusSearch()
+          impactAsync(ImpactFeedbackStyle.Heavy)
+        }}
         style={[
           {
             flexDirection: 'row',
@@ -164,7 +176,7 @@ export default function ChapterOverlay({
         {/* <TouchableOpacity style={{ paddingHorizontal: gutterSize }}>
         <FontAwesome5 name="history" size={20} color={colors.fg3} />
       </TouchableOpacity> */}
-      </View>
+      </Pressable>
       {/* </BlurView> */}
       <StatusBar
         hidden={isStatusBarHidden}

@@ -41,6 +41,9 @@ export default function ModalScreen({
     return {
       opacity: openModal.value,
       zIndex: openModal.value !== 0 ? 4 : -1,
+      transform: [
+        { translateY: interpolate(openModal.value, [0, 1], [32, 0]) },
+      ],
     }
   })
 
