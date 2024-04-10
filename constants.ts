@@ -15,12 +15,13 @@ import { Dimensions } from 'react-native'
 export const colors = {
   bg1: '#252322',
   bg2: '#2a2826',
-  bg3: '#31302c',
+  bg3: '#302e2a',
+  bg4: '#393632',
   fg1: '#efefef',
   fg2: '#d8d8d8',
   fg3: '#9b9b9b',
   b: 'rgba(134, 126, 118, 0.15)',
-  p1: '#bea088',
+  p1: '#c7a388',
   p2: '#7e695a',
 }
 
@@ -29,8 +30,8 @@ export const gutterSize = 24
 export const screenWidth = Dimensions.get('screen').width
 export const screenHeight = Dimensions.get('screen').height
 
-export const iconSize = 28
-export const smallIconSize = 48
+export const iconSize = 24
+export const modalWidth = Dimensions.get('screen').width - gutterSize * 3
 
 export const chapterChangeDuration = 250
 export const overScrollReq = 75

@@ -14,7 +14,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { colors, gutterSize, panActivateConfig, typography } from '../constants'
 import { Books } from '../data/types/books'
 import { Chapters } from '../data/types/chapters'
-import TovIcon from './SVG'
+import TovIcon, { IconName } from './SVG'
 
 interface Props {
   activeChapter: Chapters[number]
@@ -38,6 +38,15 @@ export default function ChapterOverlay({
   const [chapterChanging, setChapterChanging] = useState(false)
   const overlayOpacity = useSharedValue(0)
   const pressed = useSharedValue(0)
+  const [icon, setIcon] = useState<IconName>('book')
+
+  // useDerivedValue(() => {
+  //   if (navigatorTransition.value > 0.1) {
+  //     runOnJS(setIcon)('bookOpen')
+  //   } else {
+  //     runOnJS(setIcon)('book')
+  //   }
+  // })
   // useDerivedValue(() => {
   //   if (navigatorTransition.value === 1) runOnJS(setNavigatorOpen)(false)
   //   else runOnJS(setNavigatorOpen)(true)
@@ -67,7 +76,7 @@ export default function ChapterOverlay({
   const overlayAnimatedStyles = useAnimatedStyle(() => ({
     // opacity: overlayOpacity.value,
     opacity: overlayOpacity.value,
-    transform: [{ scale: interpolate(pressed.value, [0, 1], [1, 1.1]) }],
+    transform: [{ scale: interpolate(pressed.value, [0, 1], [1, 1.05]) }],
   }))
 
   return (
@@ -87,7 +96,7 @@ export default function ChapterOverlay({
       {/* <BlurView blurType="dark" style={[]}> */}
       <Pressable
         onPressIn={() => {
-          pressed.value = withTiming(1, { duration: 150 })
+          pressed.value = withTiming(1, { duration: 75 })
         }}
         onPressOut={() => {
           pressed.value = withSpring(0, panActivateConfig)
@@ -127,7 +136,7 @@ export default function ChapterOverlay({
             width: 100,
           }}
         >
-          <TovIcon name="book" size={14} />
+          <TovIcon name={icon} size={14} />
           <Text
             numberOfLines={1}
             adjustsFontSizeToFit

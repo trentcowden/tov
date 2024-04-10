@@ -1,3 +1,4 @@
+import { ImpactFeedbackStyle, impactAsync } from 'expo-haptics'
 import React, { MutableRefObject, useMemo, useRef } from 'react'
 import {
   Dimensions,
@@ -9,7 +10,13 @@ import {
 import { SharedValue, withTiming } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Spacer from '../Spacer'
-import { colors, gutterSize, iconSize, typography } from '../constants'
+import {
+  colors,
+  gutterSize,
+  iconSize,
+  modalWidth,
+  typography,
+} from '../constants'
 import references from '../data/references.json'
 import { Chapters } from '../data/types/chapters'
 import { References } from '../data/types/references'
@@ -119,6 +126,7 @@ export default function ReferencesModal({
       openModal={openReferences}
       openNested={openReferencesNested}
       close={() => {
+        impactAsync(ImpactFeedbackStyle.Light)
         openReferences.value = withTiming(0)
       }}
       nestedScreen={<></>}
@@ -126,7 +134,7 @@ export default function ReferencesModal({
     >
       <View
         style={{
-          width: Dimensions.get('window').width - gutterSize * 2,
+          width: modalWidth,
           height: navigatorHeight,
           backgroundColor: colors.bg2,
           borderRadius: 16,
@@ -135,6 +143,7 @@ export default function ReferencesModal({
       >
         <ModalScreenHeader
           close={() => {
+            impactAsync(ImpactFeedbackStyle.Light)
             openReferences.value = withTiming(0)
           }}
           icon={<TovIcon name="references" size={iconSize} />}

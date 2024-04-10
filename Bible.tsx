@@ -97,7 +97,7 @@ export default function BibleView() {
   const textFadeOut = useSharedValue(1)
 
   const [verseOffsets, setVerseOffsets] = useState<number[]>()
-  const currentVerseReq = insets.top + gutterSize * 4 + headerHeight
+  const currentVerseReq = insets.top + lineHeight
   const currentVerseIndex = useRef(0)
 
   const navigatorTransition = useSharedValue(0)
@@ -198,6 +198,7 @@ export default function BibleView() {
       if (Math.abs(textTranslateX.value) > 10) return
       // If the navigator is already open, ignore taps.
       else if (navigatorTransition.value !== 0) return
+      else if (openReferences.value !== 0) return
 
       savedNavigatorTransition.value = 1
       navigatorTransition.value = withTiming(1)
@@ -450,17 +451,19 @@ export default function BibleView() {
       opacity:
         textFadeOut.value !== 0
           ? interpolate(textFadeOut.value, [0, 1], [1, 0])
-          : scrollBarActivate.value > 0
-            ? interpolate(scrollBarActivate.value, [0, 1], [1, 0.3])
-            : navigatorTransition.value !== 0
-              ? interpolate(navigatorTransition.value, [0, 1], [1, 0.7])
-              : openReferences.value !== 0
-                ? interpolate(openReferences.value, [0, 1], [1, 0.7])
-                : interpolate(
-                    textTranslateX.value,
-                    [-horizTransReq, 0, horizTransReq],
-                    [0.3, 1, 0.3]
-                  ),
+          : textTranslateX.value !== 0
+            ? interpolate(
+                textTranslateX.value,
+                [-horizTransReq, 0, horizTransReq],
+                [0.3, 1, 0.3]
+              )
+            : scrollBarActivate.value > 0
+              ? interpolate(scrollBarActivate.value, [0, 1], [1, 0.7])
+              : navigatorTransition.value !== 0
+                ? interpolate(navigatorTransition.value, [0, 1], [1, 0.3])
+                : openReferences.value !== 0
+                  ? interpolate(openReferences.value, [0, 1], [1, 0.7])
+                  : 1,
     }
   })
 
@@ -507,6 +510,7 @@ export default function BibleView() {
         onPress={
           verseId in (references as References)
             ? () => {
+                impactAsync(ImpactFeedbackStyle.Heavy)
                 setReferenceState(verseId)
                 openReferences.value = withTiming(1)
               }
@@ -611,17 +615,17 @@ export default function BibleView() {
                   {
                     pattern: /\*\*.+\*\*/,
                     style: {
-                      fontFamily: 'Bold',
+                      fontFamily: 'UIBold',
                     },
                     renderText: renderBoltAndItalicText,
                   },
-                  {
-                    pattern: /\*.+\*/,
-                    style: {
-                      fontFamily: 'Regular-Italic',
-                    },
-                    renderText: renderBoltAndItalicText,
-                  },
+                  // {
+                  //   pattern: /\*.+\*/,
+                  //   style: {
+                  //     fontFamily: 'Regular-Italic',
+                  //   },
+                  //   renderText: renderBoltAndItalicText,
+                  // },
                 ]}
                 style={{
                   ...typography(18, 'r', 'l', colors.fg1),

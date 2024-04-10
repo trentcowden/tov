@@ -155,7 +155,7 @@ export default function ScrollBar({
     backgroundColor: interpolateColor(
       scrollBarActivate.value,
       [0, 1],
-      [colors.bg2, colors.fg3]
+      [colors.bg3, colors.fg3]
     ),
     // transform: [
     //   { scaleX: interpolate(scrollBarActivate.value, [0, 1], [1, 6]) },

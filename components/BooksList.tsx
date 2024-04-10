@@ -57,7 +57,7 @@ export default function BooksList({ navigatorBook, goToBook }: Props) {
           paddingHorizontal: gutterSize,
           // marginTop: index === 0 ? 0 : gutterSize * 1.5,
           marginBottom: 4,
-          backgroundColor: colors.bg2,
+          backgroundColor: colors.bg3,
         }}
       >
         <Text style={typography(15, 'uir', 'l', colors.fg3)}>
@@ -65,7 +65,7 @@ export default function BooksList({ navigatorBook, goToBook }: Props) {
         </Text>
         <Spacer units={2} />
         <View
-          style={{ width: '100%', height: 1, backgroundColor: colors.bg3 }}
+          style={{ width: '100%', height: 1, backgroundColor: colors.bg4 }}
         />
       </View>
     )

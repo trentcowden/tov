@@ -18,7 +18,13 @@ import {
   withTiming,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { colors, gutterSize, iconSize, typography } from '../constants'
+import {
+  colors,
+  gutterSize,
+  iconSize,
+  modalWidth,
+  typography,
+} from '../constants'
 import chapters from '../data/chapters.json'
 import { Books } from '../data/types/books'
 import { Chapters } from '../data/types/chapters'
@@ -184,14 +190,14 @@ export default function Navigator({
       <KeyboardAvoidingView
         behavior="height"
         style={{
-          width: Dimensions.get('window').width - gutterSize * 2,
+          width: modalWidth,
           height: navigatorHeight,
         }}
       >
         <View
           style={{
-            width: Dimensions.get('window').width - gutterSize * 2,
-            backgroundColor: colors.bg2,
+            width: modalWidth,
+            backgroundColor: colors.bg3,
             borderRadius: 16,
             flex: 1,
             // height: '100%',
@@ -216,8 +222,8 @@ export default function Navigator({
                 style={{
                   flex: 1,
                   paddingRight: gutterSize / 1.5,
-                  paddingLeft: gutterSize + 20,
-                  backgroundColor: colors.bg3,
+                  paddingLeft: gutterSize + 14,
+                  backgroundColor: colors.bg4,
                   borderRadius: 12,
                   ...typography(18, 'uib', 'l', colors.fg1),
                   height: 50,
@@ -235,61 +241,15 @@ export default function Navigator({
                 }}
               />
               <View style={{ position: 'absolute', left: gutterSize / 2 }}>
-                <TovIcon name="search" size={24} />
+                <TovIcon name="search" size={18} />
               </View>
             </>
           </ModalScreenHeader>
-          {/* <View
-            style={{
-              width: '100%',
-              flexDirection: 'row',
-              height: 50,
-              alignItems: 'center',
-
-              zIndex: 5,
-              paddingLeft: gutterSize,
-            }}
-          >
-            <FontAwesome5 name="search" size={20} color={colors.fg3} />
-            <Spacer units={2} />
-            <View style={{ flex: 1, height: '100%' }}>
-              <TextInput
-                placeholder="Quick find"
-                placeholderTextColor={colors.fg3}
-                ref={searchRef}
-                clearButtonMode="always"
-                cursorColor={colors.fg1}
-                selectionColor={colors.fg1}
-                onChangeText={(text) => setSearchText(text)}
-                autoCorrect={false}
-                style={{
-                  flex: 1,
-                  paddingHorizontal: gutterSize / 1.5,
-                  backgroundColor: colors.bg3,
-                  borderRadius: 12,
-                  ...type(18, 'uib', 'l', colors.fg1),
-                  height: 50,
-                }}
-                returnKeyType={'go'}
-                onSubmitEditing={() => {
-                  if (
-                    searchText !== '' &&
-                    searchResults.length > 0 &&
-                    typeof searchResults[0].item !== 'string'
-                  ) {
-                    goToChapter(searchResults[0].item.chapterId)
-                    closeNavigator()
-                  }
-                }}
-              />
-            </View>
-            {closeButton}
-          </View> */}
           <View
             style={{
               // height: navigatorHeight - 50 - gutterSize,
               flex: 1,
-              width: Dimensions.get('window').width - gutterSize * 2,
+              width: modalWidth,
               justifyContent: 'center',
               paddingTop: gutterSize,
             }}

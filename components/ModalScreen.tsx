@@ -13,6 +13,7 @@ import {
   colors,
   gutterSize,
   horizVelocReq,
+  modalWidth,
   panActivateConfig,
 } from '../constants'
 import { useAppDispatch } from '../redux/hooks'
@@ -42,7 +43,7 @@ export default function ModalScreen({
       opacity: openModal.value,
       zIndex: openModal.value !== 0 ? 4 : -1,
       transform: [
-        { translateY: interpolate(openModal.value, [0, 1], [32, 0]) },
+        { translateY: interpolate(openModal.value, [0, 1], [24, 0]) },
       ],
     }
   })
@@ -111,7 +112,7 @@ export default function ModalScreen({
             {
               top: insets.top + gutterSize,
               height: navigatorHeight - gutterSize,
-              width: Dimensions.get('window').width - gutterSize * 2,
+              width: modalWidth,
               borderRadius: 16,
               position: 'absolute',
               paddingTop: gutterSize,

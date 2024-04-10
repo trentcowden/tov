@@ -21,7 +21,7 @@ export default function ModalScreenHeader({
     <TouchableOpacity
       onPress={close}
       style={{
-        paddingLeft: gutterSize,
+        paddingLeft: gutterSize / 2,
         paddingRight: gutterSize,
         alignItems: 'center',
         justifyContent: 'center',
@@ -31,8 +31,8 @@ export default function ModalScreenHeader({
         zIndex: 4,
       }}
     >
-      {/* <Text style={typography(13, 'uir', 'c', colors.fg3)}>Close</Text> */}
       <TovIcon name="close" size={iconSize} />
+      {/* <Text style={typography(13, 'uir', 'c', colors.fg3)}>Close</Text> */}
     </TouchableOpacity>
   )
 
