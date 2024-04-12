@@ -146,7 +146,7 @@ export default function ReferencesModal({
             impactAsync(ImpactFeedbackStyle.Light)
             openReferences.value = withTiming(0)
           }}
-          icon={<TovIcon name="references" size={iconSize} />}
+          // icon={<TovIcon name="references" size={iconSize} />}
         >
           {`Cross References for ${referenceVerse ? getVerseReference(referenceVerse) : ''}`}
         </ModalScreenHeader>

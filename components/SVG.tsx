@@ -159,7 +159,7 @@ function SVGComponent(props: ChildProps) {
         >
           <Path
             d="M7 15l5 5 5-5M7 9l5-5 5 5"
-            stroke={colors.p1}
+            stroke={colors.fg3}
             strokeWidth={2}
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -228,7 +228,7 @@ function SVGComponent(props: ChildProps) {
         >
           <Path
             d="M4 17h16m0 0l-4-4m4 4l-4 4m4-14H4m0 0l4-4M4 7l4 4"
-            stroke={colors.p1}
+            stroke={colors.fg3}
             strokeWidth={2}
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -252,7 +252,7 @@ function SVGComponent(props: ChildProps) {
         <Svg viewBox="0 0 24 24" fill="none" {...props}>
           <Path
             d="M21 21l-4.35-4.35M19 11a8 8 0 11-16 0 8 8 0 0116 0z"
-            stroke={colors.p1}
+            stroke={colors.fg3}
             strokeWidth={2}
             strokeLinecap="round"
             strokeLinejoin="round"

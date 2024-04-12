@@ -197,7 +197,7 @@ export default function Navigator({
         <View
           style={{
             width: modalWidth,
-            backgroundColor: colors.bg3,
+            backgroundColor: colors.bg2,
             borderRadius: 16,
             flex: 1,
             // height: '100%',
@@ -223,7 +223,7 @@ export default function Navigator({
                   flex: 1,
                   paddingRight: gutterSize / 1.5,
                   paddingLeft: gutterSize + 14,
-                  backgroundColor: colors.bg4,
+                  backgroundColor: colors.bg3,
                   borderRadius: 12,
                   ...typography(18, 'uib', 'l', colors.fg1),
                   height: 50,

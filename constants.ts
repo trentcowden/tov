@@ -1,29 +1,29 @@
 import { Dimensions } from 'react-native'
 
-// export const colors = {
-//   bg1: '#292521',
-//   bg2: '#332E28',
-//   bg3: '#3E3830',
-//   fg1: '#efefef',
-//   fg2: '#d8d8d8',
-//   fg3: '#9b9b9b',
-//   b: 'rgba(164, 152, 142, 0.15)',
-//   p1: '#bea088',
-//   p2: '#7e695a',
-// }
-
 export const colors = {
-  bg1: '#252322',
-  bg2: '#2a2826',
-  bg3: '#302e2a',
-  bg4: '#393632',
+  bg1: '#292521',
+  bg2: '#332E28',
+  bg3: '#3E3830',
   fg1: '#efefef',
   fg2: '#d8d8d8',
   fg3: '#9b9b9b',
-  b: 'rgba(134, 126, 118, 0.15)',
-  p1: '#c7a388',
+  b: 'rgba(164, 152, 142, 0.15)',
+  p1: '#c3a994',
   p2: '#7e695a',
 }
+
+// export const colors = {
+//   bg1: '#252322',
+//   bg2: '#292725',
+//   bg3: '#302e2a',
+//   bg4: '#393632',
+//   fg1: '#efefef',
+//   fg2: '#d8d8d8',
+//   fg3: '#9b9b9b',
+//   b: 'rgba(134, 126, 118, 0.15)',
+//   p1: '#d8c2b0',
+//   p2: '#beaca0',
+// }
 
 export const gutterSize = 24
 
@@ -75,13 +75,12 @@ export const typography = (
         : weight === 'uib'
           ? 'UIBold'
           : weight === 'r'
-            ? // ? 'Regular'
-              'UIRegular'
+            ? 'Regular'
             : // : weight === 'i'
               //   ? 'Regular-Italic'
               weight === 'b'
               ? // ? 'Bold'
-                'UIBold'
+                'Bold'
               : 'UIBold',
   }
 }

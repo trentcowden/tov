@@ -23,6 +23,8 @@ interface Props {
   navigatorTransition: SharedValue<number>
   savedNavigatorTransition: SharedValue<number>
   focusSearch: () => void
+  textTranslateX: SharedValue<number>
+  savedTextTranslateX: SharedValue<number>
 }
 
 export default function ChapterOverlay({
@@ -32,6 +34,8 @@ export default function ChapterOverlay({
   navigatorTransition,
   savedNavigatorTransition,
   focusSearch,
+  textTranslateX,
+  savedTextTranslateX,
 }: Props) {
   const insets = useSafeAreaInsets()
   const [navigatorOpen, setNavigatorOpen] = useState(false)
@@ -102,9 +106,10 @@ export default function ChapterOverlay({
           pressed.value = withSpring(0, panActivateConfig)
         }}
         onPress={() => {
+          textTranslateX.value = withSpring(0, panActivateConfig)
+          savedTextTranslateX.value = 0
           savedNavigatorTransition.value = 1
           navigatorTransition.value = withTiming(1)
-
           focusSearch()
           impactAsync(ImpactFeedbackStyle.Heavy)
         }}
@@ -114,7 +119,7 @@ export default function ChapterOverlay({
             justifyContent: 'space-between',
             alignItems: 'center',
             width: '100%',
-            gap: 8,
+            gap: 6,
             // borderRadius: 16,
             borderRadius: 99,
             paddingHorizontal: gutterSize * 1.5,
@@ -132,7 +137,7 @@ export default function ChapterOverlay({
           style={{
             flexDirection: 'row',
             alignItems: 'center',
-            gap: 8,
+            gap: 6,
             width: 100,
           }}
         >

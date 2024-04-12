@@ -30,6 +30,7 @@ interface Props {
   textTranslateY: SharedValue<number>
   scrollBarPosition: SharedValue<number>
   overScrollAmount: SharedValue<number>
+  openNavigator: SharedValue<number>
 }
 
 const activeScrollBarWidth = gutterSize * 5
@@ -43,6 +44,7 @@ export default function ScrollBar({
   textTranslateY,
   overScrollAmount,
   scrollBarPosition,
+  openNavigator,
 }: Props) {
   const insets = useSafeAreaInsets()
   const startingOffset = useSharedValue(0)
@@ -131,6 +133,11 @@ export default function ScrollBar({
 
   const verseNumberStyles = useAnimatedStyle(() => ({
     opacity: scrollBarActivate.value,
+    transform: [
+      {
+        translateX: interpolate(scrollBarActivate.value, [0, 1], [6, 0]),
+      },
+    ],
     // transform: [
     //   {
     //     translateX: interpolate(
@@ -151,35 +158,32 @@ export default function ScrollBar({
   }))
 
   const scrollBarStyles = useAnimatedStyle(() => ({
-    opacity: interpolate(scrollBarActivate.value, [-1, 0], [0, 1]),
+    opacity:
+      openNavigator.value !== 0
+        ? interpolate(openNavigator.value, [0, 1], [1, 0.5])
+        : interpolate(scrollBarActivate.value, [-1, 0], [0, 1]),
     backgroundColor: interpolateColor(
       scrollBarActivate.value,
       [0, 1],
-      [colors.bg3, colors.fg3]
+      [colors.p2, colors.fg3]
     ),
-    // transform: [
-    //   { scaleX: interpolate(scrollBarActivate.value, [0, 1], [1, 6]) },
-    //   {
-    //     translateX:
-    //       scrollBarActivate.value !== 0
-    //         ? interpolate(
-    //             scrollBarActivate.value,
-    //             [0, 1],
-    //             [0, -gutterSize / 4.75]
-    //           )
-    //         : textTranslateX.value,
-    //   },
-    // ],
+    transform: [
+      // { scaleX: interpolate(scrollBarActivate.value, [0, 1], [1, 6]) },
+      {
+        translateX: textTranslateX.value,
+      },
+    ],
   }))
 
   const scrollIconStyles = useAnimatedStyle(() => ({
     opacity: scrollBarActivate.value,
     transform: [
       {
-        translateX:
-          scrollBarActivate.value !== 0
-            ? interpolate(scrollBarActivate.value, [0, 1], [0, -gutterSize])
-            : textTranslateX.value,
+        translateX: interpolate(
+          scrollBarActivate.value,
+          [0, 1],
+          [-gutterSize, -gutterSize - 6]
+        ),
       },
     ],
   }))
@@ -215,7 +219,7 @@ export default function ScrollBar({
             {
               position: 'absolute',
               right: 0,
-              width: gutterSize * 1.5,
+              width: gutterSize,
               alignItems: 'flex-end',
               justifyContent: 'center',
             },
@@ -226,7 +230,7 @@ export default function ScrollBar({
             style={[
               {
                 // width: gutterSize,
-                width: gutterSize / 2,
+                width: gutterSize / 3,
                 borderRadius: 99,
                 height: scrollBarHeight,
                 zIndex: 5,
@@ -240,6 +244,7 @@ export default function ScrollBar({
             ]}
           ></Animated.View>
           <Animated.View
+            pointerEvents={'none'}
             style={[
               {
                 alignSelf: 'center',

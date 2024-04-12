@@ -57,7 +57,7 @@ export default function BooksList({ navigatorBook, goToBook }: Props) {
           paddingHorizontal: gutterSize,
           // marginTop: index === 0 ? 0 : gutterSize * 1.5,
           marginBottom: 4,
-          backgroundColor: colors.bg3,
+          backgroundColor: colors.bg2,
         }}
       >
         <Text style={typography(15, 'uir', 'l', colors.fg3)}>

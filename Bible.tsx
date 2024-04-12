@@ -451,18 +451,18 @@ export default function BibleView() {
       opacity:
         textFadeOut.value !== 0
           ? interpolate(textFadeOut.value, [0, 1], [1, 0])
-          : textTranslateX.value !== 0
-            ? interpolate(
-                textTranslateX.value,
-                [-horizTransReq, 0, horizTransReq],
-                [0.3, 1, 0.3]
-              )
-            : scrollBarActivate.value > 0
-              ? interpolate(scrollBarActivate.value, [0, 1], [1, 0.7])
-              : navigatorTransition.value !== 0
-                ? interpolate(navigatorTransition.value, [0, 1], [1, 0.3])
+          : navigatorTransition.value !== 0
+            ? interpolate(navigatorTransition.value, [0, 1], [1, 0.5])
+            : textTranslateX.value !== 0
+              ? interpolate(
+                  textTranslateX.value,
+                  [-horizTransReq, 0, horizTransReq],
+                  [0.5, 1, 0.5]
+                )
+              : scrollBarActivate.value > 0
+                ? interpolate(scrollBarActivate.value, [0, 1], [1, 0.5])
                 : openReferences.value !== 0
-                  ? interpolate(openReferences.value, [0, 1], [1, 0.7])
+                  ? interpolate(openReferences.value, [0, 1], [1, 0.5])
                   : 1,
     }
   })
@@ -605,7 +605,7 @@ export default function BibleView() {
                   {
                     pattern: /\[([0-9]{1,3})\]/,
                     style: {
-                      fontFamily: 'UIBold',
+                      fontFamily: 'Bold',
                       color: colors.p1,
                       fontSize: 16,
                       // backgroundColor: colors.bg2,
@@ -615,7 +615,7 @@ export default function BibleView() {
                   {
                     pattern: /\*\*.+\*\*/,
                     style: {
-                      fontFamily: 'UIBold',
+                      fontFamily: 'Bold',
                     },
                     renderText: renderBoltAndItalicText,
                   },
@@ -646,6 +646,8 @@ export default function BibleView() {
           navigatorTransition={navigatorTransition}
           focusSearch={focusSearch}
           savedNavigatorTransition={savedNavigatorTransition}
+          textTranslateX={textTranslateX}
+          savedTextTranslateX={savedTextTranslateX}
         />
         <Navigator
           searchResultsRef={searchListRef}
@@ -697,6 +699,7 @@ export default function BibleView() {
           verseOffsets={verseOffsets}
           scrollBarPosition={scrollBarPosition}
           overScrollAmount={overScrollAmount}
+          openNavigator={navigatorTransition}
         />
         <ModalScreen
           openModal={openSettings}
