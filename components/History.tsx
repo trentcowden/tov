@@ -1,6 +1,6 @@
-import { FlashList } from '@shopify/flash-list'
-import React from 'react'
-import { Dimensions, Text, View } from 'react-native'
+import { formatDistanceToNow } from 'date-fns'
+import React, { useMemo } from 'react'
+import { Dimensions, SectionList, Text, View } from 'react-native'
 import Animated, {
   SharedValue,
   useAnimatedStyle,
@@ -11,7 +11,6 @@ import { colors, gutterSize, iconSize, typography } from '../constants'
 import { Chapters } from '../data/types/chapters'
 import { HistoryItem } from '../redux/history'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
-import Fade from './Fade'
 import HistoryListItem from './HistoryItem'
 import TovIcon from './SVG'
 
@@ -24,6 +23,11 @@ interface Props {
     verseNumber?: number
   ) => void
   openSettings: SharedValue<number>
+}
+
+interface HistorySection {
+  distance: string
+  data: HistoryItem[]
 }
 
 export default function History({
@@ -44,6 +48,27 @@ export default function History({
     }
   })
 
+  const sections = useMemo(() => {
+    return history
+      .filter((item) => item.chapterId !== activeChapter.chapterId)
+      .reduce((groupedHistory: HistorySection[], historyItem) => {
+        let distance = formatDistanceToNow(historyItem.date)
+        if (distance.includes('minute')) {
+          distance = 'In the last hour'
+        } else if (distance.includes('hour')) {
+          distance = 'In the last day'
+        } else distance += 'ago'
+
+        const existingGroup = groupedHistory.find(
+          (group) => group.distance === distance
+        )
+
+        if (existingGroup) existingGroup.data.push(historyItem)
+        else groupedHistory.push({ distance, data: [historyItem] })
+        return groupedHistory
+      }, [])
+  }, [history])
+
   function renderHistoryItem({
     item,
     index,
@@ -60,11 +85,27 @@ export default function History({
       />
     )
   }
-  const navigatorHeight =
-    Dimensions.get('window').height -
-    insets.top -
-    insets.bottom -
-    gutterSize * 2
+
+  function renderSectionHeader({ section }: { section: HistorySection }) {
+    return (
+      <View
+        key={section.distance}
+        style={{
+          width: '100%',
+          paddingHorizontal: gutterSize / 2,
+          // marginTop: index === 0 ? 0 : gutterSize * 1.5,
+          marginBottom: 5,
+          backgroundColor: colors.bg2,
+        }}
+      >
+        <Text style={typography(13, 'uil', 'l', colors.fg3)}>
+          {section.distance}
+        </Text>
+        <Spacer units={1.5} />
+        <View style={{ width: '100%', height: 1, backgroundColor: colors.b }} />
+      </View>
+    )
+  }
 
   return (
     <Animated.View
@@ -88,6 +129,7 @@ export default function History({
           alignItems: 'center',
           gap: gutterSize,
           paddingHorizontal: gutterSize,
+          marginBottom: gutterSize / 2,
         }}
       >
         <View
@@ -95,7 +137,7 @@ export default function History({
             flex: 1,
             alignItems: 'center',
             flexDirection: 'row',
-            gap: 12,
+            gap: 8,
           }}
         >
           <TovIcon name="history" size={iconSize} />
@@ -121,14 +163,14 @@ export default function History({
         </TouchableOpacity> */}
       </View>
       <View style={{ flex: 1 }}>
-        <FlashList
-          data={history.filter(
-            (item) => item.chapterId !== activeChapter.chapterId
-          )}
+        <SectionList
+          sections={sections}
           contentContainerStyle={{ paddingHorizontal: gutterSize / 2 }}
           renderItem={renderHistoryItem}
+          renderSectionHeader={renderSectionHeader}
           keyExtractor={(item) => item.chapterId}
           showsVerticalScrollIndicator={false}
+          renderSectionFooter={() => <Spacer units={4} />}
           // estimatedItemSize={28}
           ListEmptyComponent={
             <View style={{ paddingHorizontal: gutterSize / 2 }}>
@@ -150,7 +192,7 @@ export default function History({
           ListHeaderComponent={<Spacer units={2} />}
           ListFooterComponent={<Spacer units={4} additional={insets.bottom} />}
         />
-        <Fade place="top" color={colors.bg2} />
+        {/* <Fade place="top" color={colors.bg2} /> */}
         {/* <View
           style={{
             position: 'absolute',

@@ -56,17 +56,15 @@ export default function BooksList({ navigatorBook, goToBook }: Props) {
           width: '100%',
           paddingHorizontal: gutterSize,
           // marginTop: index === 0 ? 0 : gutterSize * 1.5,
-          marginBottom: 4,
+          marginBottom: 5,
           backgroundColor: colors.bg2,
         }}
       >
-        <Text style={typography(15, 'uir', 'l', colors.fg3)}>
+        <Text style={typography(13, 'uil', 'l', colors.fg3)}>
           {sectionNames[section.sectionName]}
         </Text>
-        <Spacer units={2} />
-        <View
-          style={{ width: '100%', height: 1, backgroundColor: colors.bg4 }}
-        />
+        <Spacer units={1.5} />
+        <View style={{ width: '100%', height: 1, backgroundColor: colors.b }} />
       </View>
     )
   }
@@ -90,7 +88,7 @@ export default function BooksList({ navigatorBook, goToBook }: Props) {
           goToBook(item)
         }}
       >
-        <Text style={typography(20, 'uir', 'l', colors.fg1)}>{item.name}</Text>
+        <Text style={typography(18, 'uir', 'l', colors.fg1)}>{item.name}</Text>
       </TouchableOpacity>
     )
   }

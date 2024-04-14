@@ -7,7 +7,6 @@ import {
   Dimensions,
   KeyboardAvoidingView,
   Pressable,
-  Text,
   TextInput,
   TouchableOpacity,
   View,
@@ -121,24 +120,6 @@ export default function Navigator({
     searchRef.current?.blur()
   }
 
-  const closeButton = (
-    <TouchableOpacity
-      onPress={closeNavigator}
-      style={{
-        paddingLeft: gutterSize,
-        paddingRight: gutterSize,
-        alignItems: 'center',
-        justifyContent: 'center',
-        height: '100%',
-        top: 0,
-        right: 0,
-        zIndex: 4,
-      }}
-    >
-      <Text style={typography(15, 'uir', 'c', colors.fg2)}>Close</Text>
-    </TouchableOpacity>
-  )
-
   const navigatorHeight =
     Dimensions.get('window').height -
     insets.top -
@@ -211,21 +192,20 @@ export default function Navigator({
           >
             <>
               <TextInput
-                placeholder="Quick find"
+                placeholder="Find a chapter"
                 placeholderTextColor={colors.fg3}
                 ref={searchRef}
-                clearButtonMode="always"
+                clearButtonMode="never"
                 cursorColor={colors.fg1}
                 selectionColor={colors.fg1}
                 onChangeText={(text) => setSearchText(text)}
                 autoCorrect={false}
                 style={{
                   flex: 1,
-                  paddingRight: gutterSize / 1.5,
                   paddingLeft: gutterSize + 14,
                   backgroundColor: colors.bg3,
                   borderRadius: 12,
-                  ...typography(18, 'uib', 'l', colors.fg1),
+                  ...typography(17, 'uis', 'l', colors.fg1),
                   height: 50,
                 }}
                 returnKeyType={'go'}

@@ -1,3 +1,4 @@
+import { format } from 'date-fns'
 import { ImpactFeedbackStyle, impactAsync } from 'expo-haptics'
 import { StatusBar } from 'expo-status-bar'
 import React, { useEffect, useState } from 'react'
@@ -14,7 +15,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { colors, gutterSize, panActivateConfig, typography } from '../constants'
 import { Books } from '../data/types/books'
 import { Chapters } from '../data/types/chapters'
-import TovIcon, { IconName } from './SVG'
+import { IconName } from './SVG'
 
 interface Props {
   activeChapter: Chapters[number]
@@ -43,6 +44,7 @@ export default function ChapterOverlay({
   const overlayOpacity = useSharedValue(0)
   const pressed = useSharedValue(0)
   const [icon, setIcon] = useState<IconName>('book')
+  const [time, setTime] = useState(new Date().getTime())
 
   // useDerivedValue(() => {
   //   if (navigatorTransition.value > 0.1) {
@@ -66,6 +68,7 @@ export default function ChapterOverlay({
 
   useEffect(() => {
     overlayOpacity.value = withTiming(1)
+    setInterval(() => setTime(new Date().getTime()), 5000)
   }, [])
 
   // useEffect(() => {
@@ -122,7 +125,7 @@ export default function ChapterOverlay({
             gap: 6,
             // borderRadius: 16,
             borderRadius: 99,
-            paddingHorizontal: gutterSize * 1.5,
+            paddingHorizontal: gutterSize,
             // paddingVertical: gutterSize / 2,
             height: insets.top,
             backgroundColor: colors.bg3,
@@ -141,13 +144,13 @@ export default function ChapterOverlay({
             width: 100,
           }}
         >
-          <TovIcon name={icon} size={14} />
+          {/* <TovIcon name={icon} size={14} /> */}
           <Text
             numberOfLines={1}
             adjustsFontSizeToFit
             maxFontSizeMultiplier={1}
             style={{
-              ...typography(14, 'uib', 'l', colors.fg2),
+              ...typography(14, 'uim', 'l', colors.fg3),
             }}
           >
             {activeBook.name.replace(' ', '').slice(0, 3)}
@@ -166,7 +169,7 @@ export default function ChapterOverlay({
             {activeBook.name}
           </Text> */}
         </View>
-        {/* <View
+        <View
           style={{
             flexDirection: 'row',
             alignItems: 'center',
@@ -179,14 +182,14 @@ export default function ChapterOverlay({
             adjustsFontSizeToFit
             maxFontSizeMultiplier={1}
             style={{
-              ...typography(10, 'uib', 'l', colors.fg2),
+              ...typography(14, 'uim', 'l', colors.fg3),
               textAlign: 'right',
               flex: 1,
             }}
           >
-            Ch. {activeChapter.chapterId.split('.')[1]}
+            {format(time, 'HH:mm')}
           </Text>
-        </View> */}
+        </View>
         {/* <TouchableOpacity style={{ paddingHorizontal: gutterSize }}>
         <FontAwesome5 name="history" size={20} color={colors.fg3} />
       </TouchableOpacity> */}

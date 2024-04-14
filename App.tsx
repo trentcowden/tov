@@ -19,8 +19,11 @@ export default function App() {
     'Regular-Italic': require('./assets/fonts/Lora-Italic.ttf'),
     Bold: require('./assets/fonts/Lora-Bold.ttf'),
     'Bold-Italic': require('./assets/fonts/Lora-BoldItalic.ttf'),
-    UIRegular: require('./assets/fonts/DMSans_18pt-Regular.ttf'),
-    UIBold: require('./assets/fonts/DMSans_18pt-Bold.ttf'),
+    UILight: require('./assets/fonts/Figtree-Light.ttf'),
+    UIRegular: require('./assets/fonts/Figtree-Regular.ttf'),
+    UIBold: require('./assets/fonts/Figtree-Bold.ttf'),
+    UIMedium: require('./assets/fonts/Figtree-Medium.ttf'),
+    UISemibold: require('./assets/fonts/Figtree-SemiBold.ttf'),
   })
 
   useEffect(() => {

@@ -1,15 +1,20 @@
-import { Dimensions } from 'react-native'
+import { Dimensions, TextStyle } from 'react-native'
+import tinycolor from 'tinycolor2'
+
+const bg = 'hsl(30, 8, 15)'
+const fg = 'hsl(30, 12, 94)'
+const p = 'hsl(30, 40, 67)'
 
 export const colors = {
-  bg1: '#292521',
-  bg2: '#332E28',
-  bg3: '#3E3830',
-  fg1: '#efefef',
-  fg2: '#d8d8d8',
-  fg3: '#9b9b9b',
-  b: 'rgba(164, 152, 142, 0.15)',
-  p1: '#c3a994',
-  p2: '#7e695a',
+  bg1: tinycolor(bg).toString(),
+  bg2: tinycolor(bg).brighten(3).toString(),
+  bg3: tinycolor(bg).brighten(6).toString(),
+  fg1: tinycolor(fg).toString(),
+  fg2: tinycolor(fg).darken(12).toString(),
+  fg3: tinycolor(fg).darken(24).toString(),
+  b: tinycolor(p).setAlpha(0.1).toString(),
+  p1: tinycolor(p).toString(),
+  p2: tinycolor(p).desaturate(16).darken(32).toString(),
 }
 
 // export const colors = {
@@ -34,19 +39,18 @@ export const iconSize = 24
 export const modalWidth = Dimensions.get('screen').width - gutterSize * 3
 
 export const chapterChangeDuration = 250
-export const overScrollReq = 75
+export const overScrollReq = 40
+export const overScrollVelocityReq = 0.75
 export const zoomOutReq = 0.3
 export const horizTransReq = Dimensions.get('window').width * 0.75
 export const horizVelocReq = 600
-
-import { TextStyle } from 'react-native'
 
 /**
  * Takes in some text style settings and returns a filled out text style object. This is used simply to save space in components and simplify things overall. Used within the style prop of a text component.
  */
 export const typography = (
   size: number,
-  weight: 'r' | 'b' | 'i' | 'bi' | 'uir' | 'uib',
+  weight: 'r' | 'b' | 'uir' | 'uib' | 'uim' | 'uis' | 'uil',
   align: 'l' | 'c',
   color: string
 ): TextStyle => {
@@ -63,25 +67,23 @@ export const typography = (
     c: 'center',
   }
 
+  const weights = {
+    r: 'Regular',
+    b: 'Bold',
+    uil: 'UILight',
+    uir: 'UIRegular',
+    uib: 'UIBold',
+    uim: 'UIMedium',
+    uis: 'UISemibold',
+  }
+
   // Return the completed style object.
   return {
     fontSize: size,
     textAlign: alignments[align],
     color: color,
     fontWeight: weight === 'r' ? '400' : '600',
-    fontFamily:
-      weight === 'uir'
-        ? 'UIRegular'
-        : weight === 'uib'
-          ? 'UIBold'
-          : weight === 'r'
-            ? 'Regular'
-            : // : weight === 'i'
-              //   ? 'Regular-Italic'
-              weight === 'b'
-              ? // ? 'Bold'
-                'Bold'
-              : 'UIBold',
+    fontFamily: weights[weight],
   }
 }
 

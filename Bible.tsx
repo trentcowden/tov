@@ -43,6 +43,7 @@ import {
   horizTransReq,
   horizVelocReq,
   overScrollReq,
+  overScrollVelocityReq,
   panActivateConfig,
   screenHeight,
   screenWidth,
@@ -64,7 +65,7 @@ import {
 import { addToHistory, removeFromHistory } from './redux/history'
 import { useAppDispatch, useAppSelector } from './redux/hooks'
 
-const lineHeight = 36
+const lineHeight = 38
 const headerHeight = 48
 
 export default function BibleView() {
@@ -414,7 +415,7 @@ export default function BibleView() {
       offset > contentHeight - screenHeight &&
       activeChapterIndex.index !== (chaptersJson as Chapters).length - 1
 
-    if (goingPrev && (offset <= -overScrollReq || y < -2)) {
+    if (goingPrev && (offset <= -overScrollReq || y < -overScrollVelocityReq)) {
       // setTextRendered(false)
       scrollBarActivate.value = withTiming(-1, { duration: 200 })
 
@@ -426,7 +427,8 @@ export default function BibleView() {
       setTimeout(() => dispatch(goToPreviousChapter()), chapterChangeDuration)
     } else if (
       goingNext &&
-      (offset > contentHeight - screenHeight + overScrollReq || y > 2)
+      (offset > contentHeight - screenHeight + overScrollReq ||
+        y > overScrollVelocityReq)
     ) {
       // setTextRendered(false)
       scrollBarActivate.value = withTiming(-1, { duration: 200 })

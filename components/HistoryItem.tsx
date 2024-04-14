@@ -113,7 +113,7 @@ export default function HistoryListItem({
           }}
           style={{
             borderColor: colors.bg3,
-            paddingVertical: 12,
+            paddingVertical: 8,
             backgroundColor:
               chapterIndex === activeChapterIndex.index
                 ? colors.bg3
