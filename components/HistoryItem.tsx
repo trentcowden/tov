@@ -3,6 +3,7 @@ import React, { useRef } from 'react'
 import { Pressable } from 'react-native'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 import Animated, {
+  FadeInUp,
   FadeOut,
   interpolate,
   runOnJS,
@@ -34,6 +35,7 @@ interface Props {
     verseNumber?: number | 'bottom'
   ) => void
   activeChapter: Chapters[number]
+  showFavorites: boolean
 }
 
 const swipeReq = 75
@@ -44,6 +46,7 @@ export default function HistoryListItem({
   item,
   goToChapter,
   activeChapter,
+  showFavorites,
 }: Props) {
   const activeChapterIndex = useAppSelector((state) => state.activeChapterIndex)
   const history = useAppSelector((state) => state.history)
@@ -109,7 +112,8 @@ export default function HistoryListItem({
     <GestureDetector gesture={panGesture}>
       <Animated.View
         style={historyItemStyles}
-        exiting={FadeOut.duration(100).delay(index * 25)}
+        entering={FadeInUp.duration(100).delay(index * 25)}
+        exiting={FadeOut.duration(100)}
       >
         <Pressable
           onPressIn={() => {

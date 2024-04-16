@@ -17,7 +17,7 @@ import Animated, {
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Spacer from '../Spacer'
-import { colors, gutterSize, iconSize, typography } from '../constants'
+import { colors, gutterSize, typography } from '../constants'
 import { Chapters } from '../data/types/chapters'
 import { HistoryItem, clearHistory } from '../redux/history'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
@@ -57,6 +57,7 @@ export default function History({
       transform: [{ translateX: textTranslationX.value }],
     }
   })
+  const [showFavorites, setShowFavorites] = useState(false)
 
   useDerivedValue(() => {
     if (textTranslationX.value > 0) runOnJS(setHistoryOpen)(true)
@@ -82,10 +83,22 @@ export default function History({
 
   const sections = useMemo(() => {
     const sorted = [...history]
-
     sorted.sort((a, b) => {
       return b.date - a.date > 0 ? 1 : -1
     })
+
+    if (showFavorites) {
+      const favorites = sorted.filter((item) => item.isFavorite)
+      if (favorites.length)
+        return [
+          {
+            distance: 'Favorites',
+            data: favorites,
+          },
+        ]
+      else return []
+    }
+
     return (
       sorted
         // .filter((item) => item.chapterId !== activeChapter.chapterId)
@@ -113,7 +126,7 @@ export default function History({
           return groupedHistory
         }, [])
     )
-  }, [history, historyOpen, activeChapter])
+  }, [history, historyOpen, activeChapter, showFavorites])
 
   function renderHistoryItem({
     item,
@@ -134,6 +147,7 @@ export default function History({
   }
 
   function renderSectionHeader({ section }: { section: HistorySection }) {
+    if (showFavorites) return <View />
     return (
       <View
         key={section.distance}
@@ -174,7 +188,7 @@ export default function History({
         style={{
           flexDirection: 'row',
           alignItems: 'center',
-          gap: gutterSize,
+          gap: 8,
           paddingHorizontal: gutterSize,
           marginBottom: gutterSize / 2,
         }}
@@ -187,11 +201,34 @@ export default function History({
             gap: 8,
           }}
         >
-          <TovIcon name="history" size={iconSize} color={colors.p1} />
+          {/* <TovIcon name="history" size={iconSize} color={colors.p1} /> */}
           <Text style={[typography(24, 'uib', 'l', colors.fg1), { flex: 1 }]}>
             History
           </Text>
         </View>
+        <TouchableOpacity
+          onPress={() => setShowFavorites((current) => !current)}
+          style={{
+            // aspectRatio: 1,
+            height: 30,
+            width: 30,
+            // paddingVertical: gutterSize / 2.5,
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: showFavorites ? colors.p2 : undefined,
+            borderWidth: 1,
+            borderColor: colors.b,
+            borderRadius: 99,
+          }}
+        >
+          <TovIcon
+            name="heart"
+            color={showFavorites ? colors.fg1 : colors.fg3}
+            size={14}
+          />
+          {/* <Text style={type(13, 'uir', 'c', colors.fg3)}>Clear</Text> */}
+        </TouchableOpacity>
         <TouchableOpacity
           onPress={() =>
             Alert.alert('Are you sure you want to clear your history?', '', [
@@ -234,8 +271,9 @@ export default function History({
           ListEmptyComponent={
             <View style={{ paddingHorizontal: gutterSize / 2 }}>
               <Text style={typography(16, 'uir', 'l', colors.fg3)}>
-                Come back here to return to chapters you were previously
-                reading.
+                {showFavorites
+                  ? 'Long press on a chapter to mark it as a favorite.'
+                  : 'Come back here to return to chapters you were previously reading.'}
               </Text>
             </View>
           }
