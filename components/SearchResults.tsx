@@ -54,10 +54,12 @@ export default function SearchResults({
           closeNavigator()
         }}
       >
-        <Text style={typography(20, 'uir', 'l', colors.fg1)}>
+        <Text style={typography(18, 'uir', 'l', colors.fg1)}>
           {getChapterReference(item.item.chapterId)}
         </Text>
-        {highlight ? <TovIcon name="arrowRightSquare" size={24} /> : null}
+        {highlight ? (
+          <TovIcon name="arrowRightSquare" size={24} color={colors.p1} />
+        ) : null}
       </TouchableOpacity>
     )
   }

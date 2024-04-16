@@ -34,7 +34,7 @@ interface Props {
     chapterId: Chapters[number]['chapterId'],
     verseNumber?: number
   ) => void
-  currentVerseIndex: MutableRefObject<number>
+  currentVerseIndex: MutableRefObject<number | 'bottom'>
 }
 
 export default function ReferencesModal({
@@ -59,7 +59,7 @@ export default function ReferencesModal({
     Dimensions.get('window').height -
     insets.top -
     insets.bottom -
-    gutterSize * 2
+    gutterSize * 4
 
   function renderReference({ item }: { item: References[string][number] }) {
     if (!referenceVerse) return <View />
@@ -111,11 +111,19 @@ export default function ReferencesModal({
             // justifyContent: isAfter ? 'flex-start' : 'flex-end',
           }}
         > */}
-        {isAfter ? null : <TovIcon name={'backReference'} size={iconSize} />}
+        {isAfter ? null : (
+          <TovIcon name={'backReference'} size={iconSize} color={colors.p1} />
+        )}
         <Text style={[typography(18, 'uir', 'l', colors.fg2)]}>
           {passageString}
         </Text>
-        {isAfter ? <TovIcon name={'forwardReference'} size={iconSize} /> : null}
+        {isAfter ? (
+          <TovIcon
+            name={'forwardReference'}
+            size={iconSize}
+            color={colors.p1}
+          />
+        ) : null}
         {/* </View> */}
       </TouchableOpacity>
     )

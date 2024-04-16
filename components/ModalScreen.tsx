@@ -1,5 +1,5 @@
 import { ReactNode } from 'react'
-import { Dimensions, TouchableOpacity } from 'react-native'
+import { Dimensions, TouchableOpacity, View } from 'react-native'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 import Animated, {
   SharedValue,
@@ -15,6 +15,8 @@ import {
   horizVelocReq,
   modalWidth,
   panActivateConfig,
+  screenHeight,
+  screenWidth,
 } from '../constants'
 import { useAppDispatch } from '../redux/hooks'
 
@@ -98,6 +100,14 @@ export default function ModalScreen({
           navigatorStyles,
         ]}
       >
+        <View
+          style={{
+            width: screenWidth,
+            height: screenHeight,
+            backgroundColor: '#00000055',
+            position: 'absolute',
+          }}
+        />
         <TouchableOpacity
           onPress={close}
           style={{

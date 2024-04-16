@@ -124,7 +124,7 @@ export default function Navigator({
     Dimensions.get('window').height -
     insets.top -
     insets.bottom -
-    gutterSize * 2
+    gutterSize * 4
 
   return (
     <ModalScreen
@@ -147,7 +147,7 @@ export default function Navigator({
                   // paddingRight: gutterSize / 2,
                 }}
               >
-                <TovIcon name="arrowLeft" size={iconSize} />
+                <TovIcon name="arrowLeft" size={iconSize} color={colors.fg3} />
               </TouchableOpacity>
             }
             close={closeNavigator}
@@ -221,7 +221,7 @@ export default function Navigator({
                 }}
               />
               <View style={{ position: 'absolute', left: gutterSize / 2 }}>
-                <TovIcon name="search" size={18} />
+                <TovIcon name="search" size={18} color={colors.p1} />
               </View>
             </>
           </ModalScreenHeader>

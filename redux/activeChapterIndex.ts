@@ -3,7 +3,7 @@ import { PayloadAction, createSlice } from '@reduxjs/toolkit'
 export interface ActiveChapterState {
   transition: 'forward' | 'back' | 'fade'
   index: number
-  verseIndex: number | undefined
+  verseIndex: number | undefined | 'bottom'
 }
 
 const initialState: ActiveChapterState = {

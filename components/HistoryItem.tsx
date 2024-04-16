@@ -1,6 +1,6 @@
 import { ImpactFeedbackStyle, impactAsync } from 'expo-haptics'
 import React, { useRef } from 'react'
-import { Pressable, Text } from 'react-native'
+import { Pressable } from 'react-native'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 import Animated, {
   FadeOut,
@@ -8,15 +8,22 @@ import Animated, {
   runOnJS,
   useAnimatedStyle,
   useSharedValue,
+  withSequence,
   withSpring,
+  withTiming,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { colors, gutterSize, typography } from '../constants'
+import { colors, gutterSize, panActivateConfig, typography } from '../constants'
 import chapters from '../data/chapters.json'
 import { Chapters } from '../data/types/chapters'
-import { getVerseReference } from '../functions/bible'
-import { HistoryItem, removeFromHistory } from '../redux/history'
+import { getBook } from '../functions/bible'
+import {
+  HistoryItem,
+  removeFromHistory,
+  toggleFavorite,
+} from '../redux/history'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
+import TovIcon from './SVG'
 
 interface Props {
   item: HistoryItem
@@ -24,8 +31,9 @@ interface Props {
   closeHistory: () => void
   goToChapter: (
     chapterId: Chapters[number]['chapterId'],
-    verseNumber?: number
+    verseNumber?: number | 'bottom'
   ) => void
+  activeChapter: Chapters[number]
 }
 
 const swipeReq = 75
@@ -35,6 +43,7 @@ export default function HistoryListItem({
   index,
   item,
   goToChapter,
+  activeChapter,
 }: Props) {
   const activeChapterIndex = useAppSelector((state) => state.activeChapterIndex)
   const history = useAppSelector((state) => state.history)
@@ -54,6 +63,8 @@ export default function HistoryListItem({
   const panGesture = Gesture.Pan()
     .activeOffsetX(10)
     .onChange((event) => {
+      if (item.chapterId === activeChapter.chapterId) return
+
       itemTranslateX.value = event.translationX
 
       if (event.translationX > swipeReq && !alreadyHaptic.current) {
@@ -69,7 +80,8 @@ export default function HistoryListItem({
       }
     })
     .onFinalize((event) => {
-      console.log(event.translationX)
+      if (item.chapterId === activeChapter.chapterId) return
+
       if (event.translationX > swipeReq) {
         itemTranslateX.value = withSpring(swipeReq * 4)
         runOnJS(removeHistoryItem)()
@@ -89,7 +101,7 @@ export default function HistoryListItem({
       opacity: interpolate(itemTranslateX.value, [0, swipeReq], [1, 0.5]),
       textDecorationLine:
         itemTranslateX.value > swipeReq ? 'line-through' : 'none',
-      // transform: [{ scale: interpolate(pressed.value, [0, 1], [1, 0.5]) }],
+      transform: [{ scale: interpolate(pressed.value, [0, 1], [1, 0.95]) }],
     }
   })
 
@@ -100,44 +112,55 @@ export default function HistoryListItem({
         exiting={FadeOut.duration(100).delay(index * 25)}
       >
         <Pressable
+          onPressIn={() => {
+            pressed.value = withTiming(1, { duration: 75 })
+          }}
+          onPressOut={() => {
+            pressed.value = withSpring(0, panActivateConfig)
+          }}
+          delayLongPress={250}
           onPress={() => {
-            // pressed.value = withSequence(
-            //   withTiming(1, { duration: 100 }),
-            //   withTiming(0, {
-            //     duration: 100,
-            //   })
-            // )
-            goToChapter(item.chapterId, item.verseIndex)
+            if (item.chapterId !== activeChapter.chapterId)
+              goToChapter(item.chapterId, item.verseIndex)
 
             closeHistory()
+          }}
+          onLongPress={() => {
+            if (Math.abs(itemTranslateX.value) > 5) return
+
+            pressed.value = withSequence(
+              withTiming(-2, { duration: 75 }),
+              withSpring(0, panActivateConfig)
+            )
+            impactAsync(ImpactFeedbackStyle.Heavy)
+
+            dispatch(toggleFavorite(item.chapterId))
           }}
           style={{
             borderColor: colors.bg3,
             paddingVertical: 8,
-            backgroundColor:
-              chapterIndex === activeChapterIndex.index
-                ? colors.bg3
-                : undefined,
-            // alignItems: 'center',
-            // flexDirection: 'row',
             alignItems: 'flex-start',
-            paddingHorizontal:
-              chapterIndex === activeChapterIndex.index
-                ? gutterSize / 2
-                : gutterSize / 2,
+            paddingHorizontal: gutterSize / 2,
             gap: gutterSize / 2,
           }}
         >
           <Animated.Text
             numberOfLines={1}
             adjustsFontSizeToFit
-            style={[typography(18, 'uir', 'l', colors.fg2), textStyles]}
+            style={[
+              typography(18, item.isFavorite ? 'uib' : 'uir', 'l', colors.fg2),
+              textStyles,
+            ]}
           >
-            {getVerseReference(`${item.chapterId}.${item.verseIndex + 1}`)}
+            {item.isFavorite ? (
+              <TovIcon name="heart" size={16} color={colors.p1} />
+            ) : null}
+            {item.isFavorite ? ' ' : null}
+            {getBook(item.chapterId).name} {item.chapterId.split('.')[1]}
+            {/* <Text style={[typography(14, 'uil', 'l', colors.fg4)]}>
+              {`:${item.verseIndex + 1}`}
+            </Text> */}
           </Animated.Text>
-          {chapterIndex === activeChapterIndex.index ? (
-            <Text style={typography(12, 'uir', 'c', colors.fg3)}>Current</Text>
-          ) : null}
         </Pressable>
       </Animated.View>
     </GestureDetector>

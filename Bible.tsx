@@ -32,10 +32,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Spacer from './Spacer'
 import ChapterOverlay from './components/ChapterOverlay'
 import History from './components/History'
-import ModalScreen from './components/ModalScreen'
 import Navigator from './components/Navigator'
 import ReferencesModal from './components/ReferencesModal'
 import ScrollBar from './components/ScrollBar'
+import Settings from './components/Settings'
 import {
   chapterChangeDuration,
   colors,
@@ -62,10 +62,10 @@ import {
   goToPreviousChapter,
   setActiveChapterIndex,
 } from './redux/activeChapterIndex'
-import { addToHistory, removeFromHistory } from './redux/history'
+import { addToHistory } from './redux/history'
 import { useAppDispatch, useAppSelector } from './redux/hooks'
 
-const lineHeight = 38
+const lineHeight = 36
 const headerHeight = 48
 
 export default function BibleView() {
@@ -99,7 +99,7 @@ export default function BibleView() {
 
   const [verseOffsets, setVerseOffsets] = useState<number[]>()
   const currentVerseReq = insets.top + lineHeight
-  const currentVerseIndex = useRef(0)
+  const currentVerseIndex = useRef<number | 'bottom'>(0)
 
   const navigatorTransition = useSharedValue(0)
   const savedNavigatorTransition = useSharedValue(0)
@@ -217,13 +217,25 @@ export default function BibleView() {
   useEffect(() => {
     if (!textRendered) return
 
-    dispatch(removeFromHistory(activeChapter.chapterId))
+    // dispatch(removeFromHistory(activeChapter.chapterId))
 
     if (activeChapterIndex.transition === 'forward') {
+      dispatch(
+        addToHistory({
+          chapterId: activeChapter.chapterId,
+          verseIndex: 0,
+        })
+      )
       setPastOverlayOffset(false)
       scrollViewRef.current?.scrollTo({ y: 0, animated: false })
       textTranslateY.value = withSpring(0, { damping: 20, stiffness: 120 })
     } else if (activeChapterIndex.transition === 'back') {
+      dispatch(
+        addToHistory({
+          chapterId: activeChapter.chapterId,
+          verseIndex: 'bottom',
+        })
+      )
       scrollViewRef.current?.scrollToEnd({ animated: false })
       textTranslateY.value = withSpring(0, { damping: 20, stiffness: 120 })
     } else if (activeChapterIndex.transition === 'fade') {
@@ -231,10 +243,19 @@ export default function BibleView() {
         activeChapterIndex.verseIndex !== undefined &&
         activeChapterIndex.verseIndex !== 0
       ) {
+        dispatch(
+          addToHistory({
+            chapterId: activeChapter.chapterId,
+            verseIndex: activeChapterIndex.verseIndex,
+          })
+        )
         scrollViewRef.current?.scrollTo({
-          y: verseOffsets
-            ? verseOffsets[activeChapterIndex.verseIndex] - currentVerseReq
-            : 0,
+          y:
+            activeChapterIndex.verseIndex === 'bottom'
+              ? 9999
+              : verseOffsets
+                ? verseOffsets[activeChapterIndex.verseIndex] - currentVerseReq
+                : 0,
           animated: false,
         })
         // textFadeOut.value = withTiming(0, { duration: 250 })
@@ -243,6 +264,12 @@ export default function BibleView() {
           y: 0,
           animated: false,
         })
+        dispatch(
+          addToHistory({
+            chapterId: activeChapter.chapterId,
+            verseIndex: 0,
+          })
+        )
       }
       textFadeOut.value = withSpring(0, { damping: 20, stiffness: 120 })
     }
@@ -254,7 +281,7 @@ export default function BibleView() {
 
   function goToChapter(
     chapterId: Chapters[number]['chapterId'],
-    verseNumber?: number
+    verseNumber?: number | 'bottom'
   ) {
     scrollBarActivate.value = withTiming(-1, { duration: 200 })
     setTextRendered(false)
@@ -269,6 +296,13 @@ export default function BibleView() {
     textFadeOut.value = 0.7
     textFadeOut.value = withTiming(1, { duration: chapterChangeDuration })
 
+    dispatch(
+      addToHistory({
+        chapterId: activeChapter.chapterId,
+        verseIndex: currentVerseIndex.current,
+      })
+    )
+
     setTimeout(
       () =>
         dispatch(
@@ -279,14 +313,6 @@ export default function BibleView() {
           })
         ),
       chapterChangeDuration
-    )
-
-    dispatch(
-      addToHistory({
-        chapterId: activeChapter.chapterId,
-        date: Date.now(),
-        verseIndex: currentVerseIndex.current,
-      })
     )
   }
 
@@ -338,6 +364,10 @@ export default function BibleView() {
   function getVerseIndex(offset: number) {
     if (!verseOffsets) return -1
 
+    if (offset + 50 > verseOffsets[verseOffsets.length - 1] - screenHeight) {
+      return 'bottom'
+    }
+
     let low = 0
     let high = verseOffsets.length - 1
     let result = -1
@@ -372,7 +402,9 @@ export default function BibleView() {
   function handleScrollVersePosition(offset: number) {
     const result = getVerseIndex(offset)
 
-    if (result >= 0) currentVerseIndex.current = result
+    if (result === 'bottom' || result >= 0) {
+      currentVerseIndex.current = result
+    }
   }
 
   function handleOverScrollAmount(offset: number, contentHeight: number) {
@@ -424,6 +456,12 @@ export default function BibleView() {
         withTiming(-screenHeight, { duration: 0 })
       )
       if (!alreadyHaptic.current) impactAsync(ImpactFeedbackStyle.Heavy)
+      dispatch(
+        addToHistory({
+          chapterId: activeChapter.chapterId,
+          verseIndex: currentVerseIndex.current,
+        })
+      )
       setTimeout(() => dispatch(goToPreviousChapter()), chapterChangeDuration)
     } else if (
       goingNext &&
@@ -440,6 +478,12 @@ export default function BibleView() {
         withTiming(screenHeight, { duration: 0 })
       )
       if (!alreadyHaptic.current) impactAsync(ImpactFeedbackStyle.Heavy)
+      dispatch(
+        addToHistory({
+          chapterId: activeChapter.chapterId,
+          verseIndex: currentVerseIndex.current,
+        })
+      )
       setTimeout(() => dispatch(goToNextChapter()), chapterChangeDuration)
     } else if (alreadyHaptic.current) impactAsync(ImpactFeedbackStyle.Light)
   }
@@ -474,9 +518,10 @@ export default function BibleView() {
   }))
 
   function onTextLayout(event: NativeSyntheticEvent<TextLayoutEventData>) {
-    const spaceBeforeTextStarts = insets.top + gutterSize * 2 + headerHeight
+    const spaceBeforeTextStarts = insets.top + gutterSize * 3 + headerHeight
     const spaceAfterTextEnds = insets.bottom + gutterSize * 2
     const verseOffsets: number[] = []
+
     event.nativeEvent.lines.forEach((line) => {
       // if (/\[[0-9]{1,3}\]/.test(line.text)) {
       // const matches = /[0-9]{1,3} /g.exec(line.text)
@@ -504,6 +549,7 @@ export default function BibleView() {
     const verseNumber = text.replace('[', '').replace(']', '')
     const verseId = `${activeChapter.chapterId}.${verseNumber}`
     return (
+      // <Pressable style={{ height: lineHeight }}>
       <Text
         style={{
           textDecorationLine:
@@ -529,12 +575,6 @@ export default function BibleView() {
   }
 
   useKeepAwake()
-
-  const navigatorHeight =
-    Dimensions.get('window').height -
-    insets.top -
-    insets.bottom -
-    gutterSize * 2
 
   return (
     <GestureDetector gesture={composedGestures}>
@@ -609,7 +649,7 @@ export default function BibleView() {
                     style: {
                       fontFamily: 'Bold',
                       color: colors.p1,
-                      fontSize: 16,
+                      // fontSize: 16,
                       // backgroundColor: colors.bg2,
                     },
                     renderText: renderVerseNumber,
@@ -630,7 +670,7 @@ export default function BibleView() {
                   // },
                 ]}
                 style={{
-                  ...typography(18, 'r', 'l', colors.fg1),
+                  ...typography(17, 'r', 'l', colors.fg1),
                   lineHeight: lineHeight,
                 }}
                 onTextLayout={onTextLayout}
@@ -671,7 +711,6 @@ export default function BibleView() {
           }}
           goToChapter={goToChapter}
           openSettings={openSettings}
-          // currentVerseIndex={currentVerseIndex}
         />
         <Animated.View
           style={[
@@ -703,26 +742,10 @@ export default function BibleView() {
           overScrollAmount={overScrollAmount}
           openNavigator={navigatorTransition}
         />
-        <ModalScreen
-          openModal={openSettings}
-          openNested={openSettingsNested}
-          close={() => {
-            openSettings.value = withTiming(0)
-          }}
-          nestedScreen={<></>}
-          onBack={() => {}}
-        >
-          <View
-            style={{
-              width: Dimensions.get('window').width - gutterSize * 2,
-              height: navigatorHeight,
-              backgroundColor: colors.bg3,
-              borderRadius: 16,
-            }}
-          >
-            <Text>Settings</Text>
-          </View>
-        </ModalScreen>
+        <Settings
+          openSettings={openSettings}
+          openSettingsNested={openSettingsNested}
+        />
         <ReferencesModal
           goToChapter={goToChapter}
           openReferences={openReferences}

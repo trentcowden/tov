@@ -256,7 +256,7 @@ export default function ScrollBar({
               scrollIconStyles,
             ]}
           >
-            <TovIcon name="scroll" size={64} />
+            <TovIcon name="scroll" size={64} color={colors.p1} />
           </Animated.View>
         </Animated.View>
       </GestureDetector>

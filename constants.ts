@@ -2,7 +2,7 @@ import { Dimensions, TextStyle } from 'react-native'
 import tinycolor from 'tinycolor2'
 
 const bg = 'hsl(30, 8, 15)'
-const fg = 'hsl(30, 12, 94)'
+const fg = 'hsl(30, 5, 94)'
 const p = 'hsl(30, 40, 67)'
 
 export const colors = {
@@ -12,9 +12,11 @@ export const colors = {
   fg1: tinycolor(fg).toString(),
   fg2: tinycolor(fg).darken(12).toString(),
   fg3: tinycolor(fg).darken(24).toString(),
+  fg4: tinycolor(fg).darken(36).toString(),
   b: tinycolor(p).setAlpha(0.1).toString(),
   p1: tinycolor(p).toString(),
-  p2: tinycolor(p).desaturate(16).darken(32).toString(),
+  p2: tinycolor(p).desaturate(16).darken(16).toString(),
+  p3: tinycolor(p).desaturate(16).darken(32).toString(),
 }
 
 // export const colors = {
@@ -36,7 +38,7 @@ export const screenWidth = Dimensions.get('screen').width
 export const screenHeight = Dimensions.get('screen').height
 
 export const iconSize = 24
-export const modalWidth = Dimensions.get('screen').width - gutterSize * 3
+export const modalWidth = Dimensions.get('screen').width - gutterSize * 2
 
 export const chapterChangeDuration = 250
 export const overScrollReq = 40

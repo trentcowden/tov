@@ -1,15 +1,25 @@
 import { formatDistanceToNow } from 'date-fns'
-import React, { useMemo } from 'react'
-import { Dimensions, SectionList, Text, View } from 'react-native'
+import React, { useMemo, useState } from 'react'
+import {
+  Alert,
+  Dimensions,
+  SectionList,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native'
 import Animated, {
   SharedValue,
+  runOnJS,
   useAnimatedStyle,
+  useDerivedValue,
+  withTiming,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Spacer from '../Spacer'
 import { colors, gutterSize, iconSize, typography } from '../constants'
 import { Chapters } from '../data/types/chapters'
-import { HistoryItem } from '../redux/history'
+import { HistoryItem, clearHistory } from '../redux/history'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
 import HistoryListItem from './HistoryItem'
 import TovIcon from './SVG'
@@ -41,33 +51,69 @@ export default function History({
   const history = useAppSelector((state) => state.history)
   const insets = useSafeAreaInsets()
   const dispatch = useAppDispatch()
-
+  const [historyOpen, setHistoryOpen] = useState(false)
   const historyAnimatedStyles = useAnimatedStyle(() => {
     return {
       transform: [{ translateX: textTranslationX.value }],
     }
   })
 
+  useDerivedValue(() => {
+    if (textTranslationX.value > 0) runOnJS(setHistoryOpen)(true)
+    else runOnJS(setHistoryOpen)(false)
+  })
+
+  // useEffect(() => {
+  //   if (historyOpen) {
+  //     const match = history.find(
+  //       (item) => item.chapterId === activeChapter.chapterId
+  //     )
+
+  //     dispatch(
+  //       addToHistory({
+  //         chapterId: activeChapter.chapterId,
+  //         date: Date.now(),
+  //         isFavorite: match?.isFavorite ?? false,
+  //         verseIndex: currentVerseIndex.current,
+  //       })
+  //     )
+  //   }
+  // }, [historyOpen])
+
   const sections = useMemo(() => {
-    return history
-      .filter((item) => item.chapterId !== activeChapter.chapterId)
-      .reduce((groupedHistory: HistorySection[], historyItem) => {
-        let distance = formatDistanceToNow(historyItem.date)
-        if (distance.includes('minute')) {
-          distance = 'In the last hour'
-        } else if (distance.includes('hour')) {
-          distance = 'In the last day'
-        } else distance += 'ago'
+    const sorted = [...history]
 
-        const existingGroup = groupedHistory.find(
-          (group) => group.distance === distance
-        )
+    sorted.sort((a, b) => {
+      return b.date - a.date > 0 ? 1 : -1
+    })
+    return (
+      sorted
+        // .filter((item) => item.chapterId !== activeChapter.chapterId)
+        .reduce((groupedHistory: HistorySection[], historyItem) => {
+          if (historyItem.chapterId === activeChapter.chapterId) {
+            groupedHistory.unshift({
+              distance: 'Currently reading',
+              data: [historyItem],
+            })
+            return groupedHistory
+          }
+          let distance = formatDistanceToNow(historyItem.date)
+          if (distance.includes('minute')) {
+            distance = 'In the last hour'
+          } else if (distance.includes('hour')) {
+            distance = 'In the last day'
+          } else distance += ' ago'
 
-        if (existingGroup) existingGroup.data.push(historyItem)
-        else groupedHistory.push({ distance, data: [historyItem] })
-        return groupedHistory
-      }, [])
-  }, [history])
+          const existingGroup = groupedHistory.find(
+            (group) => group.distance === distance
+          )
+
+          if (existingGroup) existingGroup.data.push(historyItem)
+          else groupedHistory.push({ distance, data: [historyItem] })
+          return groupedHistory
+        }, [])
+    )
+  }, [history, historyOpen, activeChapter])
 
   function renderHistoryItem({
     item,
@@ -82,6 +128,7 @@ export default function History({
         goToChapter={goToChapter}
         index={index}
         item={item}
+        activeChapter={activeChapter}
       />
     )
   }
@@ -140,27 +187,39 @@ export default function History({
             gap: 8,
           }}
         >
-          <TovIcon name="history" size={iconSize} />
+          <TovIcon name="history" size={iconSize} color={colors.p1} />
           <Text style={[typography(24, 'uib', 'l', colors.fg1), { flex: 1 }]}>
             History
           </Text>
         </View>
-        {/* <TouchableOpacity
-          onPress={() => dispatch(clearHistory())}
+        <TouchableOpacity
+          onPress={() =>
+            Alert.alert('Are you sure you want to clear your history?', '', [
+              { isPreferred: true, style: 'cancel', text: 'Cancel' },
+              {
+                text: 'Clear',
+                style: 'destructive',
+                onPress: () => dispatch(clearHistory()),
+              },
+            ])
+          }
           style={{
-            paddingHorizontal: gutterSize / 2,
-            paddingVertical: gutterSize / 2.5,
-            gap: 5,
+            // aspectRatio: 1,
+            height: 30,
+            width: 30,
+            // paddingVertical: gutterSize / 2.5,
             flexDirection: 'row',
+            justifyContent: 'center',
             alignItems: 'center',
+            // backgroundColor: colors.bg3,
             borderWidth: 1,
             borderColor: colors.b,
-            borderRadius: 8,
+            borderRadius: 99,
           }}
         >
-          <Octicons name="trash" color={colors.fg3} size={14} />
-          <Text style={type(13, 'uir', 'c', colors.fg3)}>Clear</Text>
-        </TouchableOpacity> */}
+          <TovIcon name="trash" color={colors.fg3} size={14} />
+          {/* <Text style={type(13, 'uir', 'c', colors.fg3)}>Clear</Text> */}
+        </TouchableOpacity>
       </View>
       <View style={{ flex: 1 }}>
         <SectionList
@@ -193,7 +252,7 @@ export default function History({
           ListFooterComponent={<Spacer units={4} additional={insets.bottom} />}
         />
         {/* <Fade place="top" color={colors.bg2} /> */}
-        {/* <View
+        <View
           style={{
             position: 'absolute',
             bottom: insets.bottom + gutterSize,
@@ -208,15 +267,17 @@ export default function History({
               paddingVertical: gutterSize / 2,
               flexDirection: 'row',
               gap: 8,
+              alignItems: 'center',
             }}
             onPress={() => {
+              // textTranslationX.value = withSpring(0, panActivateConfig)
               openSettings.value = withTiming(1)
             }}
           >
-            <Octicons name="gear" size={16} color={colors.b} />
-            <Text style={typography(15, 'uir', 'c', colors.fg3)}>Settings</Text>
+            <TovIcon name="settings" size={16} color={colors.fg3} />
+            <Text style={typography(15, 'uir', 'c', colors.fg2)}>Settings</Text>
           </TouchableOpacity>
-        </View> */}
+        </View>
       </View>
     </Animated.View>
   )

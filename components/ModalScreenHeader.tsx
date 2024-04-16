@@ -31,7 +31,7 @@ export default function ModalScreenHeader({
         zIndex: 4,
       }}
     >
-      <TovIcon name="close" size={iconSize} />
+      <TovIcon name="close" size={iconSize} color={colors.fg3} />
       {/* <Text style={typography(15, 'uir', 'c', colors.fg3)}>Close</Text> */}
     </TouchableOpacity>
   )

@@ -1,7 +1,6 @@
 import * as React from 'react'
 import { DimensionValue, View, ViewStyle } from 'react-native'
 import Svg, { NumberProp, Path } from 'react-native-svg'
-import { colors } from '../constants'
 
 export type IconName =
   | 'history'
@@ -16,11 +15,15 @@ export type IconName =
   | 'chevronDown'
   | 'close'
   | 'bookOpen'
+  | 'settings'
+  | 'arrowRight'
+  | 'heart'
+  | 'trash'
 
 interface ParentProps {
   name: IconName
   size: NumberProp | undefined
-  // color?: string
+  color?: string
   style?: ViewStyle
 }
 
@@ -28,7 +31,7 @@ interface ChildProps {
   name: IconName
   width: NumberProp | undefined
   height: NumberProp | undefined
-  // fill?: string
+  fill?: string
   color?: string
 }
 
@@ -64,7 +67,7 @@ export default function TovIcon({ name, size, color, style }: ParentProps) {
 function SVGComponent(props: ChildProps) {
   // For regular icons, make sure to remove any hard-coded fill colors in order to fill with the prop color.
   switch (props.name) {
-    case 'bookOpen':
+    case 'trash':
       return (
         <Svg
           viewBox="0 0 24 24"
@@ -73,8 +76,74 @@ function SVGComponent(props: ChildProps) {
           {...props}
         >
           <Path
+            d="M16 6v-.8c0-1.12 0-1.68-.218-2.108a2 2 0 00-.874-.874C14.48 2 13.92 2 12.8 2h-1.6c-1.12 0-1.68 0-2.108.218a2 2 0 00-.874.874C8 3.52 8 4.08 8 5.2V6m2 5.5v5m4-5v5M3 6h18m-2 0v11.2c0 1.68 0 2.52-.327 3.162a3 3 0 01-1.311 1.311C16.72 22 15.88 22 14.2 22H9.8c-1.68 0-2.52 0-3.162-.327a3 3 0 01-1.311-1.311C5 19.72 5 18.88 5 17.2V6"
+            stroke={props.color}
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </Svg>
+      )
+    case 'heart':
+      return (
+        <Svg
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          {...props}
+        >
+          <Path
+            clipRule="evenodd"
+            d="M11.993 5.136c-2-2.338-5.333-2.966-7.838-.826s-2.858 5.719-.89 8.25c1.635 2.105 6.585 6.544 8.207 7.98.182.162.272.242.378.274a.504.504 0 00.286 0c.106-.032.197-.112.378-.273 1.623-1.437 6.573-5.876 8.208-7.98 1.967-2.532 1.658-6.133-.89-8.251-2.549-2.118-5.84-1.512-7.839.826z"
+            stroke={props.color}
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </Svg>
+      )
+    case 'arrowRight':
+      return (
+        <Svg
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          {...props}
+        >
+          <Path
+            d="M4 12h16m0 0l-6-6m6 6l-6 6"
+            stroke={props.color}
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </Svg>
+      )
+    case 'settings':
+      return (
+        <Svg viewBox="0 0 24 24" fill="none" {...props}>
+          <Path
+            d="M12 15a3 3 0 100-6 3 3 0 000 6z"
+            stroke="currentColor"
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <Path
+            d="M9.29 19.371l.584 1.315a2.213 2.213 0 004.044 0l.585-1.315a2.426 2.426 0 012.47-1.423l1.43.152a2.212 2.212 0 002.022-3.502l-.847-1.164a2.428 2.428 0 01-.46-1.434c0-.513.163-1.014.465-1.429l.847-1.163a2.212 2.212 0 00-2.023-3.502l-1.43.152a2.433 2.433 0 01-1.47-.312 2.425 2.425 0 01-1-1.117l-.588-1.315a2.212 2.212 0 00-4.045 0L9.29 4.63c-.207.468-.558.86-1 1.117-.445.256-.96.365-1.47.312l-1.435-.152a2.212 2.212 0 00-2.022 3.502l.847 1.163a2.43 2.43 0 010 2.858l-.847 1.163a2.21 2.21 0 00.786 3.273c.381.195.81.274 1.236.23l1.43-.153a2.434 2.434 0 012.475 1.43z"
+            stroke="currentColor"
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </Svg>
+      )
+    case 'bookOpen':
+      return (
+        <Svg viewBox="0 0 24 24" fill="none" {...props}>
+          <Path
             d="M12 21l-.1-.15c-.695-1.042-1.042-1.563-1.5-1.94a4 4 0 00-1.378-.737C8.453 18 7.827 18 6.575 18H5.2c-1.12 0-1.68 0-2.108-.218a2 2 0 01-.874-.874C2 16.48 2 15.92 2 14.8V6.2c0-1.12 0-1.68.218-2.108a2 2 0 01.874-.874C3.52 3 4.08 3 5.2 3h.4c2.24 0 3.36 0 4.216.436a4 4 0 011.748 1.748C12 6.04 12 7.16 12 9.4M12 21V9.4M12 21l.1-.15c.695-1.042 1.042-1.563 1.5-1.94a3.999 3.999 0 011.378-.737C15.547 18 16.173 18 17.425 18H18.8c1.12 0 1.68 0 2.108-.218a2 2 0 00.874-.874C22 16.48 22 15.92 22 14.8V6.2c0-1.12 0-1.68-.218-2.108a2 2 0 00-.874-.874C20.48 3 19.92 3 18.8 3h-.4c-2.24 0-3.36 0-4.216.436a4 4 0 00-1.748 1.748C12 6.04 12 7.16 12 9.4"
-            stroke={colors.p1}
+            stroke={props.color}
             strokeWidth={2}
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -83,15 +152,10 @@ function SVGComponent(props: ChildProps) {
       )
     case 'close':
       return (
-        <Svg
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          {...props}
-        >
+        <Svg viewBox="0 0 24 24" fill="none" {...props}>
           <Path
             d="M18 6L6 18M6 6l12 12"
-            stroke={colors.fg3}
+            stroke={props.color}
             strokeWidth={2}
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -100,15 +164,10 @@ function SVGComponent(props: ChildProps) {
       )
     case 'chevronDown':
       return (
-        <Svg
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          {...props}
-        >
+        <Svg viewBox="0 0 24 24" fill="none" {...props}>
           <Path
             d="M6 9l6 6 6-6"
-            stroke={colors.p1}
+            stroke={props.color}
             strokeWidth={2}
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -117,15 +176,10 @@ function SVGComponent(props: ChildProps) {
       )
     case 'arrowRightSquare':
       return (
-        <Svg
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          {...props}
-        >
+        <Svg viewBox="0 0 24 24" fill="none" {...props}>
           <Path
             d="M12 16l4-4m0 0l-4-4m4 4H8m-.2 9h8.4c1.68 0 2.52 0 3.162-.327a3 3 0 001.311-1.311C21 18.72 21 17.88 21 16.2V7.8c0-1.68 0-2.52-.327-3.162a3 3 0 00-1.311-1.311C18.72 3 17.88 3 16.2 3H7.8c-1.68 0-2.52 0-3.162.327a3 3 0 00-1.311 1.311C3 5.28 3 6.12 3 7.8v8.4c0 1.68 0 2.52.327 3.162a3 3 0 001.311 1.311C5.28 21 6.12 21 7.8 21z"
-            stroke={colors.p1}
+            stroke={props.color}
             strokeWidth={2}
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -134,15 +188,10 @@ function SVGComponent(props: ChildProps) {
       )
     case 'book':
       return (
-        <Svg
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          {...props}
-        >
+        <Svg viewBox="0 0 24 24" fill="none" {...props}>
           <Path
             d="M20 19v-3H7a3 3 0 00-3 3m4.8 3h8c1.12 0 1.68 0 2.108-.218a2 2 0 00.874-.874C20 20.48 20 19.92 20 18.8V5.2c0-1.12 0-1.68-.218-2.108a2 2 0 00-.874-.874C18.48 2 17.92 2 16.8 2h-8c-1.68 0-2.52 0-3.162.327a3 3 0 00-1.311 1.311C4 4.28 4 5.12 4 6.8v10.4c0 1.68 0 2.52.327 3.162a3 3 0 001.311 1.311C6.28 22 7.12 22 8.8 22z"
-            stroke={colors.p1}
+            stroke={props.color}
             strokeWidth={2}
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -151,15 +200,10 @@ function SVGComponent(props: ChildProps) {
       )
     case 'scroll':
       return (
-        <Svg
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          {...props}
-        >
+        <Svg viewBox="0 0 24 24" fill="none" {...props}>
           <Path
             d="M7 15l5 5 5-5M7 9l5-5 5 5"
-            stroke={colors.fg3}
+            stroke={props.color}
             strokeWidth={2}
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -168,15 +212,10 @@ function SVGComponent(props: ChildProps) {
       )
     case 'arrowLeft':
       return (
-        <Svg
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          {...props}
-        >
+        <Svg viewBox="0 0 24 24" fill="none" {...props}>
           <Path
             d="M19 12H5m0 0l7 7m-7-7l7-7"
-            stroke={colors.p1}
+            stroke={props.color}
             strokeWidth={2}
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -185,15 +224,10 @@ function SVGComponent(props: ChildProps) {
       )
     case 'forwardReference':
       return (
-        <Svg
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          {...props}
-        >
+        <Svg viewBox="0 0 24 24" fill="none" {...props}>
           <Path
             d="M6 17l5-5-5-5m7 10l5-5-5-5"
-            stroke={colors.p1}
+            stroke={props.color}
             strokeWidth={2}
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -202,15 +236,10 @@ function SVGComponent(props: ChildProps) {
       )
     case 'backReference':
       return (
-        <Svg
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          {...props}
-        >
+        <Svg viewBox="0 0 24 24" fill="none" {...props}>
           <Path
             d="M18 17l-5-5 5-5m-7 10l-5-5 5-5"
-            stroke={colors.p1}
+            stroke={props.color}
             strokeWidth={2}
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -220,15 +249,10 @@ function SVGComponent(props: ChildProps) {
 
     case 'references':
       return (
-        <Svg
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          {...props}
-        >
+        <Svg viewBox="0 0 24 24" fill="none" {...props}>
           <Path
             d="M4 17h16m0 0l-4-4m4 4l-4 4m4-14H4m0 0l4-4M4 7l4 4"
-            stroke={colors.fg3}
+            stroke={props.color}
             strokeWidth={2}
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -240,7 +264,7 @@ function SVGComponent(props: ChildProps) {
         <Svg viewBox="0 0 24 24" fill="none" {...props}>
           <Path
             d="M22.7 13.5l-2-2-2 2M21 12a9 9 0 11-1.245-4.57M12 7v5l3 2"
-            stroke={colors.p1}
+            stroke={props.color}
             strokeWidth={2}
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -252,7 +276,7 @@ function SVGComponent(props: ChildProps) {
         <Svg viewBox="0 0 24 24" fill="none" {...props}>
           <Path
             d="M21 21l-4.35-4.35M19 11a8 8 0 11-16 0 8 8 0 0116 0z"
-            stroke={colors.fg3}
+            stroke={props.color}
             strokeWidth={2}
             strokeLinecap="round"
             strokeLinejoin="round"
