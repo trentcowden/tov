@@ -1,12 +1,5 @@
-import { ImpactFeedbackStyle, impactAsync } from 'expo-haptics'
 import React, { MutableRefObject, useMemo, useRef } from 'react'
-import {
-  Dimensions,
-  FlatList,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native'
+import { Dimensions, FlatList, Text, View } from 'react-native'
 import { SharedValue, withTiming } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Spacer from '../Spacer'
@@ -25,6 +18,7 @@ import Fade from './Fade'
 import ModalScreen from './ModalScreen'
 import ModalScreenHeader from './ModalScreenHeader'
 import TovIcon from './SVG'
+import TovPressable from './TovPressable'
 
 interface Props {
   referenceVerse: string | undefined
@@ -84,26 +78,34 @@ export default function ReferencesModal({
           .join(' ')
     }
     return (
-      <TouchableOpacity
+      <View
         style={{
-          width: '100%',
-          paddingHorizontal: gutterSize,
-          paddingVertical: 12,
           flexDirection: 'row',
-          gap: 8,
+          width: '100%',
           justifyContent: isAfter ? 'flex-end' : 'flex-start',
-          alignItems: 'center',
-        }}
-        onPress={() => {
-          currentVerseIndex.current = parseInt(referenceVerse.split('.')[2]) - 1
-          goToChapter(
-            item[0].split('.').slice(0, 2).join('.'),
-            parseInt(item[0].split('.')[2]) - 1
-          )
-          openReferences.value = withTiming(0)
         }}
       >
-        {/* <View
+        <TovPressable
+          style={{
+            alignItems: 'center',
+            gap: 8,
+            flexDirection: 'row',
+            paddingHorizontal: gutterSize,
+            paddingVertical: 12,
+            borderRadius: 12,
+          }}
+          onPressColor={colors.bg3}
+          onPress={() => {
+            currentVerseIndex.current =
+              parseInt(referenceVerse.split('.')[2]) - 1
+            goToChapter(
+              item[0].split('.').slice(0, 2).join('.'),
+              parseInt(item[0].split('.')[2]) - 1
+            )
+            openReferences.value = withTiming(0)
+          }}
+        >
+          {/* <View
           style={{
             width: (screenWidth - gutterSize * 4) / 2 + 11,
             flexDirection: 'row',
@@ -111,21 +113,22 @@ export default function ReferencesModal({
             // justifyContent: isAfter ? 'flex-start' : 'flex-end',
           }}
         > */}
-        {isAfter ? null : (
-          <TovIcon name={'backReference'} size={iconSize} color={colors.p1} />
-        )}
-        <Text style={[typography(18, 'uir', 'l', colors.fg2)]}>
-          {passageString}
-        </Text>
-        {isAfter ? (
-          <TovIcon
-            name={'forwardReference'}
-            size={iconSize}
-            color={colors.p1}
-          />
-        ) : null}
-        {/* </View> */}
-      </TouchableOpacity>
+          {isAfter ? null : (
+            <TovIcon name={'backReference'} size={iconSize} color={colors.p1} />
+          )}
+          <Text style={[typography(18, 'uir', 'l', colors.fg2)]}>
+            {passageString}
+          </Text>
+          {isAfter ? (
+            <TovIcon
+              name={'forwardReference'}
+              size={iconSize}
+              color={colors.p1}
+            />
+          ) : null}
+          {/* </View> */}
+        </TovPressable>
+      </View>
     )
   }
 
@@ -134,7 +137,6 @@ export default function ReferencesModal({
       openModal={openReferences}
       openNested={openReferencesNested}
       close={() => {
-        impactAsync(ImpactFeedbackStyle.Light)
         openReferences.value = withTiming(0)
       }}
       nestedScreen={<></>}
@@ -151,7 +153,6 @@ export default function ReferencesModal({
       >
         <ModalScreenHeader
           close={() => {
-            impactAsync(ImpactFeedbackStyle.Light)
             openReferences.value = withTiming(0)
           }}
           // icon={<TovIcon name="references" size={iconSize} />}

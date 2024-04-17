@@ -1,4 +1,3 @@
-import { ImpactFeedbackStyle, impactAsync } from 'expo-haptics'
 import React from 'react'
 import { Dimensions, ScrollView, Text, View } from 'react-native'
 import { SharedValue, withTiming } from 'react-native-reanimated'
@@ -28,7 +27,6 @@ export default function Settings({ openSettings, openSettingsNested }: Props) {
       openModal={openSettings}
       openNested={openSettingsNested}
       close={() => {
-        impactAsync(ImpactFeedbackStyle.Light)
         openSettings.value = withTiming(0)
       }}
       nestedScreen={<></>}
@@ -45,7 +43,6 @@ export default function Settings({ openSettings, openSettingsNested }: Props) {
       >
         <ModalScreenHeader
           close={() => {
-            impactAsync(ImpactFeedbackStyle.Light)
             openSettings.value = withTiming(0)
           }}
         >

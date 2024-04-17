@@ -497,19 +497,15 @@ export default function BibleView() {
       opacity:
         textFadeOut.value !== 0
           ? interpolate(textFadeOut.value, [0, 1], [1, 0])
-          : navigatorTransition.value !== 0
-            ? interpolate(navigatorTransition.value, [0, 1], [1, 0.5])
-            : textTranslateX.value !== 0
-              ? interpolate(
-                  textTranslateX.value,
-                  [-horizTransReq, 0, horizTransReq],
-                  [0.5, 1, 0.5]
-                )
-              : scrollBarActivate.value > 0
-                ? interpolate(scrollBarActivate.value, [0, 1], [1, 0.5])
-                : openReferences.value !== 0
-                  ? interpolate(openReferences.value, [0, 1], [1, 0.5])
-                  : 1,
+          : textTranslateX.value !== 0
+            ? interpolate(
+                textTranslateX.value,
+                [-horizTransReq, 0, horizTransReq],
+                [0.5, 1, 0.5]
+              )
+            : scrollBarActivate.value > 0
+              ? interpolate(scrollBarActivate.value, [0, 1], [1, 0.5])
+              : 1,
     }
   })
 

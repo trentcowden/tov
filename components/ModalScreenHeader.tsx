@@ -1,8 +1,8 @@
 import { ReactNode } from 'react'
-import { Text, TouchableOpacity, View } from 'react-native'
-import Spacer from '../Spacer'
+import { Text, View } from 'react-native'
 import { colors, gutterSize, iconSize, typography } from '../constants'
 import TovIcon from './SVG'
+import TovPressable from './TovPressable'
 
 interface Props {
   children: ReactNode
@@ -18,11 +18,14 @@ export default function ModalScreenHeader({
   paddingLeft,
 }: Props) {
   const closeButton = (
-    <TouchableOpacity
+    <TovPressable
       onPress={close}
       style={{
         paddingLeft: gutterSize / 2,
-        paddingRight: gutterSize,
+        paddingRight: gutterSize / 2,
+        marginRight: gutterSize / 2,
+        marginLeft: gutterSize / 4,
+        borderRadius: 99,
         alignItems: 'center',
         justifyContent: 'center',
         height: '100%',
@@ -30,10 +33,11 @@ export default function ModalScreenHeader({
         right: 0,
         zIndex: 4,
       }}
+      onPressColor={colors.bg3}
     >
       <TovIcon name="close" size={iconSize} color={colors.fg3} />
       {/* <Text style={typography(15, 'uir', 'c', colors.fg3)}>Close</Text> */}
-    </TouchableOpacity>
+    </TovPressable>
   )
 
   return (
@@ -48,7 +52,7 @@ export default function ModalScreenHeader({
       }}
     >
       {icon}
-      <Spacer units={icon ? 2 : 0} />
+      {/* <Spacer units={icon ? 2 : 0} /> */}
       <View
         style={{
           flex: 1,

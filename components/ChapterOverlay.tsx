@@ -1,18 +1,23 @@
-import { format } from 'date-fns'
 import { ImpactFeedbackStyle, impactAsync } from 'expo-haptics'
-import { StatusBar } from 'expo-status-bar'
 import React, { useEffect, useState } from 'react'
 import { Pressable, Text, View } from 'react-native'
 import Animated, {
   SharedValue,
   interpolate,
+  interpolateColor,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
   withTiming,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { colors, gutterSize, panActivateConfig, typography } from '../constants'
+import {
+  colors,
+  gutterSize,
+  horizTransReq,
+  panActivateConfig,
+  typography,
+} from '../constants'
 import { Books } from '../data/types/books'
 import { Chapters } from '../data/types/chapters'
 import { IconName } from './SVG'
@@ -82,8 +87,23 @@ export default function ChapterOverlay({
 
   const overlayAnimatedStyles = useAnimatedStyle(() => ({
     // opacity: overlayOpacity.value,
-    opacity: overlayOpacity.value,
-    transform: [{ scale: interpolate(pressed.value, [0, 1], [1, 1.05]) }],
+    opacity:
+      textTranslateX.value !== 0
+        ? interpolate(
+            textTranslateX.value,
+            [-horizTransReq, 0, horizTransReq],
+            [0, 1, 0]
+          )
+        : 1,
+    backgroundColor: interpolateColor(
+      pressed.value,
+      [0, 1],
+      [colors.bg2, colors.bg3]
+    ),
+    transform: [
+      { scale: interpolate(pressed.value, [0, 1], [1, 0.92]) },
+      // { translateX: textTranslateX.value },
+    ],
   }))
 
   return (
@@ -95,7 +115,8 @@ export default function ChapterOverlay({
           width: '100%',
           // left: gutterSize,
           // borderRadius: 99,
-          zIndex: 5,
+          zIndex: 4,
+          borderRadius: 99,
         },
         overlayAnimatedStyles,
       ]}
@@ -123,19 +144,16 @@ export default function ChapterOverlay({
             alignItems: 'center',
             width: '100%',
             gap: 6,
-            // borderRadius: 16,
-            borderRadius: 99,
             paddingHorizontal: gutterSize,
             // paddingVertical: gutterSize / 2,
             height: insets.top,
-            backgroundColor: colors.bg3,
+            // backgroundColor: colors.bg2,
           },
         ]}
       >
         {/* <TouchableOpacity style={{ paddingHorizontal: gutterSize }}>
         <Ionicons name="settings-outline" size={20} color={colors.fg3} />
       </TouchableOpacity> */}
-
         <View
           style={{
             flexDirection: 'row',
@@ -169,7 +187,7 @@ export default function ChapterOverlay({
             {activeBook.name}
           </Text> */}
         </View>
-        <View
+        {/* <View
           style={{
             flexDirection: 'row',
             alignItems: 'center',
@@ -189,19 +207,13 @@ export default function ChapterOverlay({
           >
             {format(time, 'HH:mm')}
           </Text>
-        </View>
+        </View> */}
+
         {/* <TouchableOpacity style={{ paddingHorizontal: gutterSize }}>
         <FontAwesome5 name="history" size={20} color={colors.fg3} />
       </TouchableOpacity> */}
       </Pressable>
       {/* </BlurView> */}
-      <StatusBar
-        hidden={isStatusBarHidden}
-        backgroundColor={colors.bg2}
-        translucent={false}
-        animated
-        style="light"
-      />
     </Animated.View>
   )
 }

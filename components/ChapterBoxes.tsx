@@ -1,13 +1,14 @@
 import { FlashList } from '@shopify/flash-list'
 import { useMemo } from 'react'
-import { Text, TouchableOpacity } from 'react-native'
-import Animated, { FadeInRight, FadeOut } from 'react-native-reanimated'
+import { Text, View } from 'react-native'
+import { FadeInRight, FadeOut } from 'react-native-reanimated'
 import Spacer from '../Spacer'
 import { colors, gutterSize, typography } from '../constants'
 import chapters from '../data/chapters.json'
 import { Books } from '../data/types/books'
 import { Chapters } from '../data/types/chapters'
 import { getBook } from '../functions/bible'
+import TovPressable from './TovPressable'
 
 interface Props {
   goToChapter: (chapterId: Chapters[number]['chapterId']) => void
@@ -37,24 +38,28 @@ export default function ChapterBoxes({
   }) {
     // const availableWidth =
     return (
-      <Animated.View
-        entering={FadeInRight.duration(200).delay(index * 5)}
-        exiting={FadeOut}
+      <View
         style={{
           flex: 1,
           aspectRatio: 1,
-          backgroundColor: colors.bg3,
           marginHorizontal: gutterSize / 5,
-          borderRadius: 16,
+          // flexDirection: 'row',
+          // justifyContent: 'center',
+          // alignItems: 'center',
         }}
       >
-        <TouchableOpacity
+        <TovPressable
           style={{
-            width: '100%',
+            // flex: 1,
+            borderRadius: 12,
             height: '100%',
+            width: '100%',
+            backgroundColor: colors.bg3,
             alignItems: 'center',
             justifyContent: 'center',
           }}
+          entering={FadeInRight.duration(200).delay(index * 5)}
+          exiting={FadeOut}
           onPress={() => {
             goToChapter(item.chapterId)
             closeNavigator()
@@ -63,8 +68,8 @@ export default function ChapterBoxes({
           <Text style={typography(18, 'uib', 'c', colors.fg1)}>
             {item.chapterId.split('.')[1]}
           </Text>
-        </TouchableOpacity>
-      </Animated.View>
+        </TovPressable>
+      </View>
     )
   }
 

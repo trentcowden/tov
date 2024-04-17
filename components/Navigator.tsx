@@ -1,16 +1,8 @@
 import { HighlightRanges } from '@nozbe/microfuzz'
 import { useFuzzySearchList } from '@nozbe/microfuzz/react'
 import { FlashList } from '@shopify/flash-list'
-import { ImpactFeedbackStyle, impactAsync } from 'expo-haptics'
 import { Dispatch, RefObject, SetStateAction, useEffect, useState } from 'react'
-import {
-  Dimensions,
-  KeyboardAvoidingView,
-  Pressable,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native'
+import { Dimensions, KeyboardAvoidingView, TextInput, View } from 'react-native'
 import {
   SharedValue,
   useSharedValue,
@@ -35,6 +27,7 @@ import ModalScreen from './ModalScreen'
 import ModalScreenHeader from './ModalScreenHeader'
 import TovIcon from './SVG'
 import SearchResults from './SearchResults'
+import TovPressable from './TovPressable'
 
 interface Props {
   searchRef: RefObject<TextInput>
@@ -95,7 +88,6 @@ export default function Navigator({
   }
 
   function closeNavigator() {
-    impactAsync(ImpactFeedbackStyle.Light)
     searchRef.current?.blur()
     textPinch.value = withTiming(
       0,
@@ -134,7 +126,7 @@ export default function Navigator({
           <ModalScreenHeader
             paddingLeft={0}
             icon={
-              <TouchableOpacity
+              <TovPressable
                 onPress={() => {
                   chapterTransition.value = withTiming(0)
                   setNavigatorBook(undefined)
@@ -143,12 +135,16 @@ export default function Navigator({
                   alignItems: 'center',
                   justifyContent: 'center',
                   height: '100%',
-                  paddingLeft: gutterSize,
+                  paddingHorizontal: gutterSize / 2,
+                  marginLeft: gutterSize / 2,
+                  borderRadius: 99,
+                  marginRight: gutterSize / 4,
                   // paddingRight: gutterSize / 2,
                 }}
+                onPressColor={colors.bg3}
               >
                 <TovIcon name="arrowLeft" size={iconSize} color={colors.fg3} />
-              </TouchableOpacity>
+              </TovPressable>
             }
             close={closeNavigator}
           >
@@ -247,7 +243,7 @@ export default function Navigator({
             )}
           </View>
         </View>
-        <Pressable
+        <TovPressable
           style={{ height: gutterSize, width: '100%' }}
           onPress={closeNavigator}
         />

@@ -1,6 +1,6 @@
 import { ImpactFeedbackStyle, impactAsync } from 'expo-haptics'
 import React, { useRef } from 'react'
-import { Pressable } from 'react-native'
+import { Pressable, Text, View } from 'react-native'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 import Animated, {
   FadeInUp,
@@ -99,12 +99,19 @@ export default function HistoryListItem({
     }
   })
 
-  const textStyles = useAnimatedStyle(() => {
+  const textContainerStyles = useAnimatedStyle(() => {
     return {
       opacity: interpolate(itemTranslateX.value, [0, swipeReq], [1, 0.5]),
       textDecorationLine:
         itemTranslateX.value > swipeReq ? 'line-through' : 'none',
       transform: [{ scale: interpolate(pressed.value, [0, 1], [1, 0.95]) }],
+    }
+  })
+
+  const textStyles = useAnimatedStyle(() => {
+    return {
+      textDecorationLine:
+        itemTranslateX.value > swipeReq ? 'line-through' : 'none',
     }
   })
 
@@ -143,28 +150,54 @@ export default function HistoryListItem({
           style={{
             borderColor: colors.bg3,
             paddingVertical: 8,
-            alignItems: 'flex-start',
+            alignItems: 'center',
+            justifyContent: 'space-between',
             paddingHorizontal: gutterSize / 2,
             gap: gutterSize / 2,
+            flexDirection: 'row',
+            borderRadius: 8,
+            backgroundColor:
+              item.chapterId === activeChapter.chapterId
+                ? colors.bg3
+                : undefined,
           }}
         >
-          <Animated.Text
-            numberOfLines={1}
-            adjustsFontSizeToFit
+          <Animated.View
             style={[
-              typography(18, item.isFavorite ? 'uib' : 'uir', 'l', colors.fg2),
-              textStyles,
+              { flexDirection: 'row', alignItems: 'center', gap: 4 },
+              textContainerStyles,
             ]}
           >
             {item.isFavorite ? (
-              <TovIcon name="heart" size={16} color={colors.p1} />
+              <TovIcon name="heart" size={12} color={colors.p1} />
             ) : null}
-            {item.isFavorite ? ' ' : null}
-            {getBook(item.chapterId).name} {item.chapterId.split('.')[1]}
-            {/* <Text style={[typography(14, 'uil', 'l', colors.fg4)]}>
+            <Animated.Text
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              style={[
+                typography(
+                  18,
+                  item.isFavorite ? 'uib' : 'uir',
+                  'l',
+                  colors.fg2
+                ),
+                textStyles,
+              ]}
+            >
+              {getBook(item.chapterId).name} {item.chapterId.split('.')[1]}
+              {/* <Text style={[typography(14, 'uil', 'l', colors.fg4)]}>
               {`:${item.verseIndex + 1}`}
             </Text> */}
-          </Animated.Text>
+            </Animated.Text>
+          </Animated.View>
+
+          {item.chapterId === activeChapter.chapterId ? (
+            <View style={{ flexDirection: 'row' }}>
+              <Text style={typography(12, 'uir', 'l', colors.fg3)}>
+                Current
+              </Text>
+            </View>
+          ) : null}
         </Pressable>
       </Animated.View>
     </GestureDetector>

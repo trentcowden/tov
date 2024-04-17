@@ -1,5 +1,5 @@
 import { ReactNode } from 'react'
-import { Dimensions, TouchableOpacity, View } from 'react-native'
+import { Dimensions } from 'react-native'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 import Animated, {
   SharedValue,
@@ -19,6 +19,7 @@ import {
   screenWidth,
 } from '../constants'
 import { useAppDispatch } from '../redux/hooks'
+import TovPressable from './TovPressable'
 
 interface Props {
   openModal: SharedValue<number>
@@ -64,7 +65,7 @@ export default function ModalScreen({
     Dimensions.get('window').height -
     insets.top -
     insets.bottom -
-    gutterSize * 2
+    gutterSize * 4
 
   const panGesture = Gesture.Pan()
     .onChange((event) => {
@@ -100,21 +101,17 @@ export default function ModalScreen({
           navigatorStyles,
         ]}
       >
-        <View
-          style={{
-            width: screenWidth,
-            height: screenHeight,
-            backgroundColor: '#00000055',
-            position: 'absolute',
-          }}
-        />
-        <TouchableOpacity
+        <TovPressable
           onPress={close}
           style={{
+            alignSelf: 'center',
+            width: screenWidth + 100,
+            height: screenHeight + 100,
+            backgroundColor: '#00000055',
             position: 'absolute',
-            height: Dimensions.get('window').height,
-            width: '100%',
+            top: -100,
           }}
+          disableAnimation
         />
         {children}
         <Animated.View

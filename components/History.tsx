@@ -1,13 +1,7 @@
-import { formatDistanceToNow } from 'date-fns'
+import { formatDistanceToNow, isToday, isYesterday } from 'date-fns'
+import { StatusBar } from 'expo-status-bar'
 import React, { useMemo, useState } from 'react'
-import {
-  Alert,
-  Dimensions,
-  SectionList,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native'
+import { Alert, Dimensions, SectionList, Text, View } from 'react-native'
 import Animated, {
   SharedValue,
   runOnJS,
@@ -17,12 +11,13 @@ import Animated, {
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Spacer from '../Spacer'
-import { colors, gutterSize, typography } from '../constants'
+import { colors, gutterSize, horizTransReq, typography } from '../constants'
 import { Chapters } from '../data/types/chapters'
 import { HistoryItem, clearHistory } from '../redux/history'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
 import HistoryListItem from './HistoryItem'
 import TovIcon from './SVG'
+import TovPressable from './TovPressable'
 
 interface Props {
   activeChapter: Chapters[number]
@@ -51,6 +46,7 @@ export default function History({
   const history = useAppSelector((state) => state.history)
   const insets = useSafeAreaInsets()
   const dispatch = useAppDispatch()
+  const [historyOpening, setHistoryOpening] = useState(false)
   const [historyOpen, setHistoryOpen] = useState(false)
   const historyAnimatedStyles = useAnimatedStyle(() => {
     return {
@@ -60,7 +56,11 @@ export default function History({
   const [showFavorites, setShowFavorites] = useState(false)
 
   useDerivedValue(() => {
-    if (textTranslationX.value > 0) runOnJS(setHistoryOpen)(true)
+    if (textTranslationX.value > 0) runOnJS(setHistoryOpening)(true)
+    else runOnJS(setHistoryOpening)(false)
+
+    if (textTranslationX.value > horizTransReq - 10)
+      runOnJS(setHistoryOpen)(true)
     else runOnJS(setHistoryOpen)(false)
   })
 
@@ -99,34 +99,23 @@ export default function History({
       else return []
     }
 
-    return (
-      sorted
-        // .filter((item) => item.chapterId !== activeChapter.chapterId)
-        .reduce((groupedHistory: HistorySection[], historyItem) => {
-          if (historyItem.chapterId === activeChapter.chapterId) {
-            groupedHistory.unshift({
-              distance: 'Currently reading',
-              data: [historyItem],
-            })
-            return groupedHistory
-          }
-          let distance = formatDistanceToNow(historyItem.date)
-          if (distance.includes('minute')) {
-            distance = 'In the last hour'
-          } else if (distance.includes('hour')) {
-            distance = 'In the last day'
-          } else distance += ' ago'
+    return sorted.reduce((groupedHistory: HistorySection[], historyItem) => {
+      let distance = formatDistanceToNow(historyItem.date)
 
-          const existingGroup = groupedHistory.find(
-            (group) => group.distance === distance
-          )
+      if (historyItem.chapterId === activeChapter.chapterId) distance = 'Today'
+      else if (isToday(historyItem.date)) distance = 'Today'
+      else if (isYesterday(historyItem.date)) distance = 'Yesterday'
+      else distance += ' ago'
 
-          if (existingGroup) existingGroup.data.push(historyItem)
-          else groupedHistory.push({ distance, data: [historyItem] })
-          return groupedHistory
-        }, [])
-    )
-  }, [history, historyOpen, activeChapter, showFavorites])
+      const existingGroup = groupedHistory.find(
+        (group) => group.distance === distance
+      )
+
+      if (existingGroup) existingGroup.data.push(historyItem)
+      else groupedHistory.push({ distance, data: [historyItem] })
+      return groupedHistory
+    }, [])
+  }, [history, historyOpening, activeChapter, showFavorites])
 
   function renderHistoryItem({
     item,
@@ -155,15 +144,15 @@ export default function History({
           width: '100%',
           paddingHorizontal: gutterSize / 2,
           // marginTop: index === 0 ? 0 : gutterSize * 1.5,
-          marginBottom: 5,
+          paddingBottom: gutterSize / 3,
           backgroundColor: colors.bg2,
         }}
       >
         <Text style={typography(13, 'uil', 'l', colors.fg3)}>
           {section.distance}
         </Text>
-        <Spacer units={1.5} />
-        <View style={{ width: '100%', height: 1, backgroundColor: colors.b }} />
+        {/* <Spacer units={1.5} />
+        <View style={{ width: '100%', height: 1, backgroundColor: colors.b }} /> */}
       </View>
     )
   }
@@ -206,12 +195,12 @@ export default function History({
             History
           </Text>
         </View>
-        <TouchableOpacity
+        <TovPressable
           onPress={() => setShowFavorites((current) => !current)}
           style={{
             // aspectRatio: 1,
-            height: 30,
-            width: 30,
+            height: 32,
+            width: 32,
             // paddingVertical: gutterSize / 2.5,
             flexDirection: 'row',
             justifyContent: 'center',
@@ -221,15 +210,16 @@ export default function History({
             borderColor: colors.b,
             borderRadius: 99,
           }}
+          onPressColor={colors.bg3}
         >
           <TovIcon
             name="heart"
             color={showFavorites ? colors.fg1 : colors.fg3}
-            size={14}
+            size={16}
           />
           {/* <Text style={type(13, 'uir', 'c', colors.fg3)}>Clear</Text> */}
-        </TouchableOpacity>
-        <TouchableOpacity
+        </TovPressable>
+        <TovPressable
           onPress={() =>
             Alert.alert('Are you sure you want to clear your history?', '', [
               { isPreferred: true, style: 'cancel', text: 'Cancel' },
@@ -240,10 +230,11 @@ export default function History({
               },
             ])
           }
+          onPressColor={colors.bg3}
           style={{
             // aspectRatio: 1,
-            height: 30,
-            width: 30,
+            height: 32,
+            width: 32,
             // paddingVertical: gutterSize / 2.5,
             flexDirection: 'row',
             justifyContent: 'center',
@@ -254,9 +245,9 @@ export default function History({
             borderRadius: 99,
           }}
         >
-          <TovIcon name="trash" color={colors.fg3} size={14} />
+          <TovIcon name="trash" color={colors.fg3} size={16} />
           {/* <Text style={type(13, 'uir', 'c', colors.fg3)}>Clear</Text> */}
-        </TouchableOpacity>
+        </TovPressable>
       </View>
       <View style={{ flex: 1 }}>
         <SectionList
@@ -295,14 +286,17 @@ export default function History({
             position: 'absolute',
             bottom: insets.bottom + gutterSize,
             width: '100%',
-            alignItems: 'center',
+            alignItems: 'flex-end',
             justifyContent: 'center',
+            paddingHorizontal: gutterSize,
           }}
         >
-          <TouchableOpacity
+          <TovPressable
+            onPressColor={colors.bg3}
             style={{
-              paddingHorizontal: gutterSize * 2,
-              paddingVertical: gutterSize / 2,
+              borderRadius: 99,
+              paddingHorizontal: gutterSize,
+              paddingVertical: gutterSize,
               flexDirection: 'row',
               gap: 8,
               alignItems: 'center',
@@ -312,11 +306,18 @@ export default function History({
               openSettings.value = withTiming(1)
             }}
           >
-            <TovIcon name="settings" size={16} color={colors.fg3} />
-            <Text style={typography(15, 'uir', 'c', colors.fg2)}>Settings</Text>
-          </TouchableOpacity>
+            <TovIcon name="settings" size={24} color={colors.fg3} />
+            {/* <Text style={typography(15, 'uir', 'c', colors.fg2)}>Settings</Text> */}
+          </TovPressable>
         </View>
       </View>
+      <StatusBar
+        hidden={!historyOpen}
+        backgroundColor={colors.bg2}
+        translucent={false}
+        animated
+        style="light"
+      />
     </Animated.View>
   )
 }

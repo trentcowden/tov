@@ -1,6 +1,6 @@
 import { FlashList } from '@shopify/flash-list'
 import { RefObject } from 'react'
-import { Text, TouchableOpacity } from 'react-native'
+import { Text } from 'react-native'
 import { FlatList } from 'react-native-gesture-handler'
 import Spacer from '../Spacer'
 import { colors, gutterSize, typography } from '../constants'
@@ -8,6 +8,7 @@ import { Chapters } from '../data/types/chapters'
 import { getChapterReference } from '../functions/bible'
 import { SearchResult } from './Navigator'
 import TovIcon from './SVG'
+import TovPressable from './TovPressable'
 
 interface Props {
   searchResults: SearchResult[]
@@ -35,7 +36,7 @@ export default function SearchResults({
       index === 0 && searchResults.length > 0 && searchText !== ''
 
     return (
-      <TouchableOpacity
+      <TovPressable
         style={{
           alignItems: 'center',
           marginHorizontal: gutterSize / 2,
@@ -60,7 +61,7 @@ export default function SearchResults({
         {highlight ? (
           <TovIcon name="arrowRightSquare" size={24} color={colors.p1} />
         ) : null}
-      </TouchableOpacity>
+      </TovPressable>
     )
   }
 

@@ -1,9 +1,10 @@
 import { useMemo } from 'react'
-import { SectionList, Text, TouchableOpacity, View } from 'react-native'
+import { SectionList, Text, View } from 'react-native'
 import Spacer from '../Spacer'
 import { colors, gutterSize, typography } from '../constants'
 import books from '../data/books.json'
 import { Books } from '../data/types/books'
+import TovPressable from './TovPressable'
 
 interface Props {
   navigatorBook: Books[number] | undefined
@@ -56,22 +57,22 @@ export default function BooksList({ navigatorBook, goToBook }: Props) {
           width: '100%',
           paddingHorizontal: gutterSize,
           // marginTop: index === 0 ? 0 : gutterSize * 1.5,
-          marginBottom: 5,
+          paddingBottom: gutterSize / 3,
           backgroundColor: colors.bg2,
         }}
       >
         <Text style={typography(13, 'uil', 'l', colors.fg3)}>
           {sectionNames[section.sectionName]}
         </Text>
-        <Spacer units={1.5} />
-        <View style={{ width: '100%', height: 1, backgroundColor: colors.b }} />
+        {/* <Spacer units={1.5} />
+        <View style={{ width: '100%', height: 1, backgroundColor: colors.b }} /> */}
       </View>
     )
   }
 
   function renderBookItem({ item }: { item: Books[number] }) {
     return (
-      <TouchableOpacity
+      <TovPressable
         key={item.bookId}
         style={{
           alignItems: 'center',
@@ -84,12 +85,13 @@ export default function BooksList({ navigatorBook, goToBook }: Props) {
           marginHorizontal: gutterSize / 2,
           justifyContent: 'space-between',
         }}
+        onPressColor={colors.bg3}
         onPress={() => {
           goToBook(item)
         }}
       >
         <Text style={typography(18, 'uir', 'l', colors.fg1)}>{item.name}</Text>
-      </TouchableOpacity>
+      </TovPressable>
     )
   }
 
