@@ -15,7 +15,7 @@ import Animated, {
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { colors, gutterSize, panActivateConfig, typography } from '../constants'
-import chapters from '../data/chapters.json'
+import bibles from '../data/bibles'
 import { Chapters } from '../data/types/chapters'
 import { getBook } from '../functions/bible'
 import {
@@ -48,6 +48,7 @@ export default function HistoryListItem({
   activeChapter,
   showFavorites,
 }: Props) {
+  const settings = useAppSelector((state) => state.settings)
   const activeChapterIndex = useAppSelector((state) => state.activeChapterIndex)
   const history = useAppSelector((state) => state.history)
   const insets = useSafeAreaInsets()
@@ -55,7 +56,7 @@ export default function HistoryListItem({
   const itemTranslateX = useSharedValue(0)
   const alreadyHaptic = useRef(false)
   const pressed = useSharedValue(0)
-  const chapterIndex = (chapters as Chapters).findIndex(
+  const chapterIndex = bibles[settings.translation].findIndex(
     (chapter) => chapter.chapterId === item.chapterId
   )
 

@@ -4,10 +4,11 @@ import { Text, View } from 'react-native'
 import { FadeInRight, FadeOut } from 'react-native-reanimated'
 import Spacer from '../Spacer'
 import { colors, gutterSize, typography } from '../constants'
-import chapters from '../data/chapters.json'
+import bibles from '../data/bibles'
 import { Books } from '../data/types/books'
 import { Chapters } from '../data/types/chapters'
 import { getBook } from '../functions/bible'
+import { useAppSelector } from '../redux/hooks'
 import TovPressable from './TovPressable'
 
 interface Props {
@@ -21,9 +22,11 @@ export default function ChapterBoxes({
   navigatorBook,
   closeNavigator,
 }: Props) {
+  const settings = useAppSelector((state) => state.settings)
+
   const thisBookChapters = useMemo(
     () =>
-      (chapters as Chapters).filter(
+      bibles[settings.translation].filter(
         (chapter) => getBook(chapter.chapterId).bookId === navigatorBook?.bookId
       ),
     [navigatorBook]

@@ -83,6 +83,7 @@ export default function ReferencesModal({
           flexDirection: 'row',
           width: '100%',
           justifyContent: isAfter ? 'flex-end' : 'flex-start',
+          paddingHorizontal: gutterSize / 2,
         }}
       >
         <TovPressable
@@ -90,7 +91,7 @@ export default function ReferencesModal({
             alignItems: 'center',
             gap: 8,
             flexDirection: 'row',
-            paddingHorizontal: gutterSize,
+            paddingHorizontal: gutterSize / 2,
             paddingVertical: 12,
             borderRadius: 12,
           }}

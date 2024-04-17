@@ -172,5 +172,5 @@ for book_file in sorted_book_files:
             }
         )
 
-with open("data/chapters.json", "w", encoding="utf-8") as file:
+with open("data/web_chapters.json", "w", encoding="utf-8") as file:
     json.dump(chapters, file)

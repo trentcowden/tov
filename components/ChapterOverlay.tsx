@@ -101,7 +101,7 @@ export default function ChapterOverlay({
       [colors.bg2, colors.bg3]
     ),
     transform: [
-      { scale: interpolate(pressed.value, [0, 1], [1, 0.92]) },
+      { scale: interpolate(pressed.value, [0, 1], [1, 0.95]) },
       // { translateX: textTranslateX.value },
     ],
   }))
@@ -111,12 +111,14 @@ export default function ChapterOverlay({
       style={[
         {
           position: 'absolute',
-          top: 0,
+          top: -gutterSize,
           width: '100%',
           // left: gutterSize,
           // borderRadius: 99,
           zIndex: 4,
-          borderRadius: 99,
+          borderBottomRightRadius: 24,
+          borderBottomLeftRadius: 24,
+          paddingTop: gutterSize,
         },
         overlayAnimatedStyles,
       ]}

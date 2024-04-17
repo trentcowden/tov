@@ -22,6 +22,7 @@ interface Props {
   outerOuterStyle?: ViewStyle
   onPressColor?: string
   disableAnimation?: boolean
+  onPressScale?: number
 }
 
 export default function TovPressable({
@@ -34,16 +35,19 @@ export default function TovPressable({
   exiting,
   disableAnimation,
   outerOuterStyle,
+  onPressScale,
 }: Props) {
   const pressed = useSharedValue(0)
 
   const color = onPressColor
-    ? tinycolor(onPressColor).setAlpha(0.5).toString()
+    ? tinycolor(onPressColor).setAlpha(0.7).toString()
     : undefined
 
   const itemStyles = useAnimatedStyle(() => {
     return {
-      transform: [{ scale: interpolate(pressed.value, [0, 1], [1, 0.9]) }],
+      transform: [
+        { scale: interpolate(pressed.value, [0, 1], [1, onPressScale ?? 0.9]) },
+      ],
       backgroundColor:
         style?.backgroundColor ??
         outerStyle?.backgroundColor ??

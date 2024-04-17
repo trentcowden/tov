@@ -74,10 +74,13 @@ export default function BooksList({ navigatorBook, goToBook }: Props) {
     return (
       <TovPressable
         key={item.bookId}
+        outerStyle={{
+          alignItems: 'flex-start',
+        }}
         style={{
-          alignItems: 'center',
           paddingVertical: 6,
           paddingHorizontal: gutterSize / 2,
+          alignItems: 'center',
           backgroundColor:
             navigatorBook?.bookId === item.bookId ? colors.bg3 : undefined,
           flexDirection: 'row',

@@ -1,7 +1,8 @@
 import React, { ReactNode } from 'react'
-import { Pressable, Text, View } from 'react-native'
+import { Text, View } from 'react-native'
 import { colors, gutterSize, typography } from '../constants'
 import TovIcon, { IconName } from './SVG'
+import TovPressable from './TovPressable'
 
 interface Props {
   children: ReactNode
@@ -9,7 +10,7 @@ interface Props {
   rightIcon?: IconName
   rightText?: string
   description?: string
-  // onPress: () => void
+  onPress: () => void
 }
 
 export default function SettingsItem({
@@ -18,10 +19,11 @@ export default function SettingsItem({
   description,
   rightText,
   rightIcon,
+  onPress,
 }: Props) {
   return (
-    <Pressable
-      // onPress={onPress}
+    <TovPressable
+      onPress={onPress}
       style={{
         // paddingVertical: 8,
         paddingHorizontal: gutterSize,
@@ -67,6 +69,6 @@ export default function SettingsItem({
           {description}
         </Text>
       </View>
-    </Pressable>
+    </TovPressable>
   )
 }

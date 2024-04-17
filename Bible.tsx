@@ -49,10 +49,7 @@ import {
   screenWidth,
   typography,
 } from './constants'
-import {
-  default as chapters,
-  default as chaptersJson,
-} from './data/chapters.json'
+import bibles from './data/bibles'
 import references from './data/references.json'
 import { Chapters } from './data/types/chapters'
 import { References } from './data/types/references'
@@ -70,9 +67,9 @@ const headerHeight = 48
 
 export default function BibleView() {
   const activeChapterIndex = useAppSelector((state) => state.activeChapterIndex)
-
+  const settings = useAppSelector((state) => state.settings)
   const activeChapter = useMemo(() => {
-    return (chaptersJson as Chapters)[activeChapterIndex.index]
+    return bibles[settings.translation][activeChapterIndex.index]
   }, [activeChapterIndex.index])
 
   const activeBook = useMemo(
@@ -285,7 +282,7 @@ export default function BibleView() {
   ) {
     scrollBarActivate.value = withTiming(-1, { duration: 200 })
     setTextRendered(false)
-    const chapterIndex = (chapters as Chapters).findIndex(
+    const chapterIndex = bibles[settings.translation].findIndex(
       (chapter) => chapter.chapterId === chapterId
     )
 
@@ -445,7 +442,7 @@ export default function BibleView() {
     const goingNext =
       y > 0 &&
       offset > contentHeight - screenHeight &&
-      activeChapterIndex.index !== (chaptersJson as Chapters).length - 1
+      activeChapterIndex.index !== bibles[settings.translation].length - 1
 
     if (goingPrev && (offset <= -overScrollReq || y < -overScrollVelocityReq)) {
       // setTextRendered(false)
@@ -570,6 +567,10 @@ export default function BibleView() {
     return text.replace(/\*/g, '')
   }
 
+  function renderSectionHeader(text: string) {
+    return text.replace(/##/g, '')
+  }
+
   useKeepAwake()
 
   return (
@@ -625,7 +626,7 @@ export default function BibleView() {
               numberOfLines={1}
               adjustsFontSizeToFit
               style={{
-                ...typography(28, 'b', 'c', colors.fg1),
+                ...typography(settings.fontSize + 12, 'b', 'c', colors.fg1),
                 height: headerHeight,
                 marginBottom: gutterSize,
               }}
@@ -657,13 +658,21 @@ export default function BibleView() {
                     },
                     renderText: renderBoltAndItalicText,
                   },
-                  // {
-                  //   pattern: /\*.+\*/,
-                  //   style: {
-                  //     fontFamily: 'Regular-Italic',
-                  //   },
-                  //   renderText: renderBoltAndItalicText,
-                  // },
+                  {
+                    pattern: /\*.+\*/,
+                    style: {
+                      fontFamily: 'Regular',
+                    },
+                    renderText: renderBoltAndItalicText,
+                  },
+                  {
+                    pattern: /##.*\n/,
+                    style: {
+                      fontFamily: 'Bold',
+                      fontSize: settings.fontSize + 3,
+                    },
+                    renderText: renderSectionHeader,
+                  },
                 ]}
                 style={{
                   ...typography(17, 'r', 'l', colors.fg1),

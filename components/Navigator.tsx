@@ -16,10 +16,11 @@ import {
   modalWidth,
   typography,
 } from '../constants'
-import chapters from '../data/chapters.json'
+import bibles from '../data/bibles'
 import { Books } from '../data/types/books'
 import { Chapters } from '../data/types/chapters'
 import { getChapterReference } from '../functions/bible'
+import { useAppSelector } from '../redux/hooks'
 import BooksList from './BooksList'
 import ChapterBoxes from './ChapterBoxes'
 import Fade from './Fade'
@@ -56,6 +57,7 @@ export default function Navigator({
   searchResultsRef,
   goToChapter,
 }: Props) {
+  const settings = useAppSelector((state) => state.settings)
   const insets = useSafeAreaInsets()
   /**
    * Whether or not new search results should be calculated. We disable it as
@@ -67,7 +69,7 @@ export default function Navigator({
 
   /** Used to store the fuse.js object. */
   const searchResults: SearchResult[] = useFuzzySearchList({
-    list: chapters as Chapters,
+    list: bibles[settings.translation],
     // If `queryText` is blank, `list` is returned in whole
     queryText: searchText,
     // optional `getText` or `key`, same as with `createFuzzySearch`
