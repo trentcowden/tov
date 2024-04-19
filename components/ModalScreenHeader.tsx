@@ -6,7 +6,7 @@ import TovPressable from './TovPressable'
 
 interface Props {
   children: ReactNode
-  close: () => void
+  close?: () => void
   icon?: ReactNode
   paddingLeft?: number
 }
@@ -17,7 +17,7 @@ export default function ModalScreenHeader({
   icon,
   paddingLeft,
 }: Props) {
-  const closeButton = (
+  const closeButton = close ? (
     <TovPressable
       onPress={close}
       style={{
@@ -38,7 +38,7 @@ export default function ModalScreenHeader({
       <TovIcon name="close" size={iconSize} color={colors.fg3} />
       {/* <Text style={typography(15, 'uir', 'c', colors.fg3)}>Close</Text> */}
     </TovPressable>
-  )
+  ) : null
 
   return (
     <View

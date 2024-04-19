@@ -107,7 +107,7 @@ export default function ModalScreen({
             alignSelf: 'center',
             width: screenWidth + 100,
             height: screenHeight + 100,
-            backgroundColor: '#00000055',
+            backgroundColor: '#00000033',
             position: 'absolute',
             top: -100,
           }}

@@ -1,7 +1,7 @@
 import { formatDistanceToNow, isToday, isYesterday } from 'date-fns'
 import { StatusBar } from 'expo-status-bar'
 import React, { useMemo, useState } from 'react'
-import { Alert, Dimensions, SectionList, Text, View } from 'react-native'
+import { Dimensions, SectionList, Text, View } from 'react-native'
 import Animated, {
   SharedValue,
   runOnJS,
@@ -11,9 +11,16 @@ import Animated, {
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Spacer from '../Spacer'
-import { colors, gutterSize, horizTransReq, typography } from '../constants'
+import {
+  colors,
+  gutterSize,
+  horizTransReq,
+  iconSize,
+  shadow,
+  typography,
+} from '../constants'
 import { Chapters } from '../data/types/chapters'
-import { HistoryItem, clearHistory } from '../redux/history'
+import { HistoryItem } from '../redux/history'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
 import HistoryListItem from './HistoryItem'
 import TovIcon from './SVG'
@@ -54,6 +61,12 @@ export default function History({
     }
   })
   const [showFavorites, setShowFavorites] = useState(false)
+
+  // const [time, setTime] = useState(new Date().getTime())
+
+  // useEffect(() => {
+  //   setInterval(() => setTime(new Date().getTime()), 5000)
+  // }, [])
 
   useDerivedValue(() => {
     if (textTranslationX.value > 0) runOnJS(setHistoryOpening)(true)
@@ -169,10 +182,33 @@ export default function History({
           zIndex: 3,
           paddingTop: insets.top + gutterSize,
           paddingLeft: Dimensions.get('window').width * 1.25,
+          ...shadow,
         },
         historyAnimatedStyles,
       ]}
     >
+      {/* <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 8,
+          width: 100,
+          position: 'absolute',
+          top: gutterSize,
+          left: Dimensions.get('window').width * 1.25 + gutterSize,
+        }}
+      >
+        <Text
+          numberOfLines={1}
+          adjustsFontSizeToFit
+          maxFontSizeMultiplier={1}
+          style={{
+            ...typography(14, 'uim', 'l', colors.fg3),
+          }}
+        >
+          {format(time, 'HH:mm')}
+        </Text>
+      </View> */}
       <View
         style={{
           flexDirection: 'row',
@@ -190,7 +226,7 @@ export default function History({
             gap: 8,
           }}
         >
-          {/* <TovIcon name="history" size={iconSize} color={colors.p1} /> */}
+          <TovIcon name="history" size={iconSize} color={colors.p1} />
           <Text style={[typography(24, 'uib', 'l', colors.fg1), { flex: 1 }]}>
             History
           </Text>
@@ -217,9 +253,8 @@ export default function History({
             color={showFavorites ? colors.fg1 : colors.fg3}
             size={16}
           />
-          {/* <Text style={type(13, 'uir', 'c', colors.fg3)}>Clear</Text> */}
         </TovPressable>
-        <TovPressable
+        {/* <TovPressable
           onPress={() =>
             Alert.alert('Are you sure you want to clear your history?', '', [
               { isPreferred: true, style: 'cancel', text: 'Cancel' },
@@ -246,8 +281,7 @@ export default function History({
           }}
         >
           <TovIcon name="trash" color={colors.fg3} size={16} />
-          {/* <Text style={type(13, 'uir', 'c', colors.fg3)}>Clear</Text> */}
-        </TovPressable>
+        </TovPressable> */}
       </View>
       <View style={{ flex: 1 }}>
         <SectionList
@@ -286,33 +320,36 @@ export default function History({
             position: 'absolute',
             bottom: insets.bottom + gutterSize,
             width: '100%',
-            alignItems: 'flex-end',
+            alignItems: 'center',
             justifyContent: 'center',
             paddingHorizontal: gutterSize,
           }}
         >
           <TovPressable
-            onPressColor={colors.bg3}
+            onPressColor={colors.bg2}
             style={{
               borderRadius: 99,
               paddingHorizontal: gutterSize,
-              paddingVertical: gutterSize,
+              paddingVertical: gutterSize / 2,
               flexDirection: 'row',
+              justifyContent: 'center',
               gap: 8,
               alignItems: 'center',
+              backgroundColor: colors.bg3,
             }}
             onPress={() => {
               // textTranslationX.value = withSpring(0, panActivateConfig)
               openSettings.value = withTiming(1)
             }}
           >
-            <TovIcon name="settings" size={24} color={colors.fg3} />
-            {/* <Text style={typography(15, 'uir', 'c', colors.fg2)}>Settings</Text> */}
+            <TovIcon name="settings" size={18} color={colors.fg3} />
+            <Text style={typography(14, 'uis', 'c', colors.fg3)}>Settings</Text>
           </TovPressable>
         </View>
       </View>
       <StatusBar
-        hidden={!historyOpen}
+        // hidden={!historyOpen}
+        hidden
         backgroundColor={colors.bg2}
         translucent={false}
         animated

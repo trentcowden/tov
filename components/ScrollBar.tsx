@@ -18,9 +18,14 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { colors, gutterSize, screenHeight, typography } from '../constants'
+import {
+  colors,
+  gutterSize,
+  screenHeight,
+  shadow,
+  typography,
+} from '../constants'
 import { useAppSelector } from '../redux/hooks'
-import TovIcon from './SVG'
 
 interface Props {
   verseOffsets: number[] | undefined
@@ -33,7 +38,6 @@ interface Props {
   openNavigator: SharedValue<number>
 }
 
-const activeScrollBarWidth = gutterSize * 5
 const verseHeight = 24
 
 export default function ScrollBar({
@@ -138,15 +142,6 @@ export default function ScrollBar({
         translateX: interpolate(scrollBarActivate.value, [0, 1], [6, 0]),
       },
     ],
-    // transform: [
-    //   {
-    //     translateX: interpolate(
-    //       scrollBarActivate.value,
-    //       [0, 1],
-    //       [verseColumnWidth, 0]
-    //     ),
-    //   },
-    // ],
   }))
 
   const scrollBarAreaStyles = useAnimatedStyle(() => ({
@@ -165,7 +160,13 @@ export default function ScrollBar({
     backgroundColor: interpolateColor(
       scrollBarActivate.value,
       [0, 1],
-      [colors.p2, colors.fg3]
+      [colors.bg2, colors.p2]
+    ),
+    width: interpolate(
+      scrollBarActivate.value,
+      [0, 1],
+      [gutterSize / 2, gutterSize * 2],
+      'clamp'
     ),
     transform: [
       // { scaleX: interpolate(scrollBarActivate.value, [0, 1], [1, 6]) },
@@ -175,18 +176,18 @@ export default function ScrollBar({
     ],
   }))
 
-  const scrollIconStyles = useAnimatedStyle(() => ({
-    opacity: scrollBarActivate.value,
-    transform: [
-      {
-        translateX: interpolate(
-          scrollBarActivate.value,
-          [0, 1],
-          [-gutterSize, -gutterSize - 6]
-        ),
-      },
-    ],
-  }))
+  // const scrollIconStyles = useAnimatedStyle(() => ({
+  //   opacity: scrollBarActivate.value,
+  //   transform: [
+  //     {
+  //       translateX: interpolate(
+  //         scrollBarActivate.value,
+  //         [0, 1],
+  //         [-gutterSize, -gutterSize - 6]
+  //       ),
+  //     },
+  //   ],
+  // }))
 
   const scrollBarActiveStyles = useAnimatedStyle(() => {
     return {
@@ -230,7 +231,7 @@ export default function ScrollBar({
             style={[
               {
                 // width: gutterSize,
-                width: gutterSize / 3,
+                width: gutterSize / 2,
                 borderRadius: 99,
                 height: scrollBarHeight,
                 zIndex: 5,
@@ -239,11 +240,12 @@ export default function ScrollBar({
                   verseOffsets[verseOffsets.length - 1] < screenHeight
                     ? 'none'
                     : 'flex',
+                ...shadow,
               },
               scrollBarStyles,
             ]}
           ></Animated.View>
-          <Animated.View
+          {/* <Animated.View
             pointerEvents={'none'}
             style={[
               {
@@ -257,7 +259,7 @@ export default function ScrollBar({
             ]}
           >
             <TovIcon name="scroll" size={64} color={colors.p1} />
-          </Animated.View>
+          </Animated.View> */}
         </Animated.View>
       </GestureDetector>
       {/* <Animated.View
@@ -287,14 +289,14 @@ export default function ScrollBar({
             top: insets.top,
             height: screenHeight - insets.bottom - insets.top - gutterSize / 2,
             // height: screenHeight,
-            zIndex: 2,
+            zIndex: 5,
             // width: activeScrollBarWidth,
             width: verseColumnWidth,
             // backgroundColor: colors.bg2,
             // paddingTop: insets.top,
             // paddingBottom: insets.bottom,
             // alignItems: 'center',
-            overflow: 'hidden',
+            ...shadow,
           },
           verseNumberStyles,
         ]}
@@ -304,10 +306,10 @@ export default function ScrollBar({
           style={{
             position: 'absolute',
             backgroundColor: colors.bg2,
-            top: gutterSize / 2,
+            // top: gutterSize / 2,
             width: verseColumnWidth,
             borderRadius: 99,
-            height: screenHeight - insets.bottom - insets.top - gutterSize,
+            height: screenHeight - insets.bottom - insets.top,
           }}
         />
         <View style={{ height: '100%' }}>

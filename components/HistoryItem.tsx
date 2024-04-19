@@ -120,7 +120,7 @@ export default function HistoryListItem({
     <GestureDetector gesture={panGesture}>
       <Animated.View
         style={historyItemStyles}
-        entering={FadeInUp.duration(100).delay(index * 25)}
+        entering={FadeInUp.duration(100)}
         exiting={FadeOut.duration(100)}
       >
         <Pressable

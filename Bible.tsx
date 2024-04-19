@@ -17,7 +17,6 @@ import {
   ScrollView,
   TouchableWithoutFeedback,
 } from 'react-native-gesture-handler'
-import ParsedText from 'react-native-parsed-text'
 import Animated, {
   interpolate,
   runOnJS,
@@ -30,6 +29,7 @@ import Animated, {
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Spacer from './Spacer'
+import BibleText from './components/BibleText'
 import ChapterOverlay from './components/ChapterOverlay'
 import History from './components/History'
 import Navigator from './components/Navigator'
@@ -40,6 +40,7 @@ import {
   chapterChangeDuration,
   colors,
   gutterSize,
+  headerHeight,
   horizTransReq,
   horizVelocReq,
   overScrollReq,
@@ -50,9 +51,7 @@ import {
   typography,
 } from './constants'
 import bibles from './data/bibles'
-import references from './data/references.json'
 import { Chapters } from './data/types/chapters'
-import { References } from './data/types/references'
 import { getBook, getChapterReference } from './functions/bible'
 import {
   goToNextChapter,
@@ -61,9 +60,6 @@ import {
 } from './redux/activeChapterIndex'
 import { addToHistory } from './redux/history'
 import { useAppDispatch, useAppSelector } from './redux/hooks'
-
-const lineHeight = 36
-const headerHeight = 48
 
 export default function BibleView() {
   const activeChapterIndex = useAppSelector((state) => state.activeChapterIndex)
@@ -95,7 +91,7 @@ export default function BibleView() {
   const textFadeOut = useSharedValue(1)
 
   const [verseOffsets, setVerseOffsets] = useState<number[]>()
-  const currentVerseReq = insets.top + lineHeight
+  const currentVerseReq = insets.top + settings.lineHeight
   const currentVerseIndex = useRef<number | 'bottom'>(0)
 
   const navigatorTransition = useSharedValue(0)
@@ -119,7 +115,7 @@ export default function BibleView() {
 
   const alreadyHaptic = useRef(false)
 
-  const scrollBarPosition = useSharedValue(0)
+  const scrollBarPosition = useSharedValue(insets.top)
 
   const panGesture = Gesture.Pan()
     .onChange((event) => {
@@ -280,6 +276,10 @@ export default function BibleView() {
     chapterId: Chapters[number]['chapterId'],
     verseNumber?: number | 'bottom'
   ) {
+    if (chapterId === activeChapter.chapterId) {
+      return
+    }
+
     scrollBarActivate.value = withTiming(-1, { duration: 200 })
     setTextRendered(false)
     const chapterIndex = bibles[settings.translation].findIndex(
@@ -538,39 +538,6 @@ export default function BibleView() {
     setVerseOffsets(verseOffsets)
   }
 
-  function renderVerseNumber(text: string) {
-    const verseNumber = text.replace('[', '').replace(']', '')
-    const verseId = `${activeChapter.chapterId}.${verseNumber}`
-    return (
-      // <Pressable style={{ height: lineHeight }}>
-      <Text
-        style={{
-          textDecorationLine:
-            verseId in (references as References) ? 'underline' : 'none',
-        }}
-        onPress={
-          verseId in (references as References)
-            ? () => {
-                impactAsync(ImpactFeedbackStyle.Heavy)
-                setReferenceState(verseId)
-                openReferences.value = withTiming(1)
-              }
-            : undefined
-        }
-      >
-        {' ' + verseNumber + ' '}
-      </Text>
-    )
-  }
-
-  function renderBoltAndItalicText(text: string) {
-    return text.replace(/\*/g, '')
-  }
-
-  function renderSectionHeader(text: string) {
-    return text.replace(/##/g, '')
-  }
-
   useKeepAwake()
 
   return (
@@ -639,49 +606,13 @@ export default function BibleView() {
                 setTextRendered(true)
               }}
             >
-              <ParsedText
-                parse={[
-                  {
-                    pattern: /\[([0-9]{1,3})\]/,
-                    style: {
-                      fontFamily: 'Bold',
-                      color: colors.p1,
-                      // fontSize: 16,
-                      // backgroundColor: colors.bg2,
-                    },
-                    renderText: renderVerseNumber,
-                  },
-                  {
-                    pattern: /\*\*.+\*\*/,
-                    style: {
-                      fontFamily: 'Bold',
-                    },
-                    renderText: renderBoltAndItalicText,
-                  },
-                  {
-                    pattern: /\*.+\*/,
-                    style: {
-                      fontFamily: 'Regular',
-                    },
-                    renderText: renderBoltAndItalicText,
-                  },
-                  {
-                    pattern: /##.*\n/,
-                    style: {
-                      fontFamily: 'Bold',
-                      fontSize: settings.fontSize + 3,
-                    },
-                    renderText: renderSectionHeader,
-                  },
-                ]}
-                style={{
-                  ...typography(17, 'r', 'l', colors.fg1),
-                  lineHeight: lineHeight,
-                }}
+              <BibleText
+                openReferences={openReferences}
+                setReferenceState={setReferenceState}
                 onTextLayout={onTextLayout}
               >
                 {activeChapter.md}
-              </ParsedText>
+              </BibleText>
             </Text>
             <Spacer units={8} additional={insets.bottom} />
           </ScrollView>

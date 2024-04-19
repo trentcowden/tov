@@ -8,6 +8,7 @@ import {
   gutterSize,
   iconSize,
   modalWidth,
+  shadow,
   typography,
 } from '../constants'
 import references from '../data/references.json'
@@ -150,6 +151,7 @@ export default function ReferencesModal({
           backgroundColor: colors.bg2,
           borderRadius: 16,
           paddingTop: gutterSize,
+          ...shadow,
         }}
       >
         <ModalScreenHeader
@@ -158,8 +160,16 @@ export default function ReferencesModal({
           }}
           // icon={<TovIcon name="references" size={iconSize} />}
         >
-          {`Cross References for ${referenceVerse ? getVerseReference(referenceVerse) : ''}`}
+          {`${referenceVerse ? getVerseReference(referenceVerse) : ''}`}
         </ModalScreenHeader>
+        <Text
+          style={[
+            typography(16, 'uis', 'l', colors.fg3),
+            { paddingHorizontal: gutterSize },
+          ]}
+        >
+          Cross References
+        </Text>
         <View style={{ flex: 1 }}>
           <FlatList
             ref={referencesRef}

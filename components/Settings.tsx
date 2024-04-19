@@ -1,15 +1,24 @@
 import React from 'react'
-import { Dimensions, ScrollView, Text, View } from 'react-native'
+import { Alert, Dimensions, ScrollView, Text, View } from 'react-native'
 import { SharedValue, withTiming } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Spacer from '../Spacer'
-import { colors, gutterSize, modalWidth, typography } from '../constants'
+import {
+  colors,
+  gutterSize,
+  modalWidth,
+  shadow,
+  typography,
+} from '../constants'
+import { clearHistory } from '../redux/history'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
-import { SettingsState, setTranslation } from '../redux/settings'
+import { setTranslation } from '../redux/settings'
+import Fade from './Fade'
 import ModalScreen from './ModalScreen'
 import ModalScreenHeader from './ModalScreenHeader'
 import SettingsItem from './SettingsItem'
 import TovPressable from './TovPressable'
+import TypographySettings from './TypographySettings'
 
 interface Props {
   openSettings: SharedValue<number>
@@ -26,8 +35,9 @@ export default function Settings({ openSettings, openSettingsNested }: Props) {
     gutterSize * 4
   const dispatch = useAppDispatch()
 
-  const [nestedSetting, setNestedSetting] =
-    React.useState<keyof SettingsState>()
+  const [nestedSetting, setNestedSetting] = React.useState<
+    'translation' | 'typography' | 'theme'
+  >()
 
   console.log(settings.translation)
 
@@ -36,8 +46,11 @@ export default function Settings({ openSettings, openSettingsNested }: Props) {
       openModal={openSettings}
       openNested={openSettingsNested}
       close={() => {
-        openSettings.value = withTiming(0)
-        openSettingsNested.value = withTiming(0)
+        openSettings.value = withTiming(
+          0,
+          { duration: 200 },
+          () => (openSettingsNested.value = 0)
+        )
       }}
       nestedScreen={
         nestedSetting === 'translation' ? (
@@ -49,8 +62,11 @@ export default function Settings({ openSettings, openSettingsNested }: Props) {
               <Text>NLT</Text>
             </TovPressable>
           </View>
-        ) : nestedSetting === 'fontSize' ? (
-          <Text>Font Size</Text>
+        ) : nestedSetting === 'typography' ? (
+          <TypographySettings
+            openSettings={openSettings}
+            openSettingsNested={openSettingsNested}
+          />
         ) : nestedSetting === 'theme' ? (
           <Text>Theme</Text>
         ) : undefined
@@ -64,6 +80,7 @@ export default function Settings({ openSettings, openSettingsNested }: Props) {
           backgroundColor: colors.bg2,
           borderRadius: 16,
           paddingTop: gutterSize,
+          ...shadow,
         }}
       >
         <ModalScreenHeader
@@ -83,27 +100,47 @@ export default function Settings({ openSettings, openSettingsNested }: Props) {
           >
             <SettingsItem
               onPress={() => {
+                Alert.alert(
+                  'Are you sure you want to clear your history?',
+                  '',
+                  [
+                    { isPreferred: true, style: 'cancel', text: 'Cancel' },
+                    {
+                      text: 'Clear',
+                      style: 'destructive',
+                      onPress: () => dispatch(clearHistory()),
+                    },
+                  ]
+                )
+              }}
+              rightIcon="trash"
+              description="Did you know you can also swipe history items right to remove them individually?"
+            >
+              Clear History
+            </SettingsItem>
+            {/* <SettingsItem
+              onPress={() => {
                 setNestedSetting('translation')
                 openSettingsNested.value = withTiming(1)
               }}
               rightText={settings.translation}
               rightIcon="arrowRight"
-              description="More translations are on the way! Bible licenses are expensive :("
+              description="Choose your preferred Bible translation. More translations are on the way!"
             >
               Translation
-            </SettingsItem>
+            </SettingsItem> */}
             <SettingsItem
               onPress={() => {
-                setNestedSetting('fontSize')
+                setNestedSetting('typography')
                 openSettingsNested.value = withTiming(1)
               }}
-              rightText={settings.fontSize.toString()}
+              // rightText={settings.fontSize.toString()}
               rightIcon="arrowRight"
-              description="Change the size of the Bible text. Take it easy on those eyes!"
+              description="Change the size and spacing of the Bible text. Take it easy on those eyes!"
             >
-              Font size
+              Typography
             </SettingsItem>
-            <SettingsItem
+            {/* <SettingsItem
               onPress={() => {
                 setNestedSetting('theme')
                 openSettingsNested.value = withTiming(1)
@@ -113,21 +150,21 @@ export default function Settings({ openSettings, openSettingsNested }: Props) {
               description="Find your fashion!"
             >
               Color theme
-            </SettingsItem>
-            <SettingsItem
+            </SettingsItem> */}
+            {/* <SettingsItem
               onPress={() => {}}
               // rightText={'Tov'}
               rightIcon="arrowRight"
               description="Support the development of Tov, and also be a friend."
             >
               Buy me a coffee
-            </SettingsItem>
+            </SettingsItem> */}
             <Spacer units={2} />
             <Text style={typography(14, 'uim', 'c', colors.p2)}>
               {'Made with 🧡 by Trent Cowden'}
             </Text>
           </ScrollView>
-          {/* <Fade place="top" color={colors.bg2} /> */}
+          <Fade place="top" color={colors.bg2} />
         </View>
       </View>
     </ModalScreen>

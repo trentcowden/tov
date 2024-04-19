@@ -49,12 +49,15 @@ export default function TovPressable({
         { scale: interpolate(pressed.value, [0, 1], [1, onPressScale ?? 0.9]) },
       ],
       backgroundColor:
-        style?.backgroundColor ??
-        outerStyle?.backgroundColor ??
+        // style?.backgroundColor ??
+        // outerStyle?.backgroundColor ??
         interpolateColor(
           pressed.value,
           [0, 1],
-          ['transparent', color ?? 'transparent']
+          [
+            style?.backgroundColor ?? 'transparent',
+            color ?? style?.backgroundColor ?? 'transparent',
+          ]
         ),
     }
   })

@@ -12,8 +12,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import {
   colors,
   gutterSize,
-  iconSize,
   modalWidth,
+  shadow,
   typography,
 } from '../constants'
 import bibles from '../data/bibles'
@@ -21,6 +21,7 @@ import { Books } from '../data/types/books'
 import { Chapters } from '../data/types/chapters'
 import { getChapterReference } from '../functions/bible'
 import { useAppSelector } from '../redux/hooks'
+import BackButton from './BackButton'
 import BooksList from './BooksList'
 import ChapterBoxes from './ChapterBoxes'
 import Fade from './Fade'
@@ -118,7 +119,7 @@ export default function Navigator({
     Dimensions.get('window').height -
     insets.top -
     insets.bottom -
-    gutterSize * 4
+    gutterSize * 2
 
   return (
     <ModalScreen
@@ -128,27 +129,14 @@ export default function Navigator({
           <ModalScreenHeader
             paddingLeft={0}
             icon={
-              <TovPressable
+              <BackButton
                 onPress={() => {
                   chapterTransition.value = withTiming(0)
                   setNavigatorBook(undefined)
                 }}
-                style={{
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  height: '100%',
-                  paddingHorizontal: gutterSize / 2,
-                  marginLeft: gutterSize / 2,
-                  borderRadius: 99,
-                  marginRight: gutterSize / 4,
-                  // paddingRight: gutterSize / 2,
-                }}
-                onPressColor={colors.bg3}
-              >
-                <TovIcon name="arrowLeft" size={iconSize} color={colors.fg3} />
-              </TovPressable>
+              />
             }
-            close={closeNavigator}
+            // close={closeNavigator}
           >
             {navigatorBook?.name}
           </ModalScreenHeader>
@@ -180,8 +168,9 @@ export default function Navigator({
             borderRadius: 16,
             flex: 1,
             // height: '100%',
-            overflow: 'hidden',
+            // overflow: 'hidden',
             paddingTop: gutterSize,
+            ...shadow,
           }}
         >
           <ModalScreenHeader
@@ -206,7 +195,7 @@ export default function Navigator({
                   ...typography(17, 'uis', 'l', colors.fg1),
                   height: 50,
                 }}
-                returnKeyType={'go'}
+                returnKeyType={'done'}
                 onSubmitEditing={() => {
                   if (
                     searchText !== '' &&
@@ -246,7 +235,7 @@ export default function Navigator({
           </View>
         </View>
         <TovPressable
-          style={{ height: gutterSize, width: '100%' }}
+          style={{ height: gutterSize * 2, width: '100%' }}
           onPress={closeNavigator}
         />
       </KeyboardAvoidingView>

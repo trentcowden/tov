@@ -1,4 +1,4 @@
-import { Dimensions, TextStyle } from 'react-native'
+import { Dimensions, TextStyle, ViewStyle } from 'react-native'
 import tinycolor from 'tinycolor2'
 
 const bg = 'hsl(30, 8, 15)'
@@ -9,6 +9,7 @@ export const colors = {
   bg1: tinycolor(bg).toString(),
   bg2: tinycolor(bg).brighten(3).toString(),
   bg3: tinycolor(bg).brighten(6).toString(),
+  bg4: tinycolor(bg).brighten(9).toString(),
   fg1: tinycolor(fg).toString(),
   fg2: tinycolor(fg).darken(12).toString(),
   fg3: tinycolor(fg).darken(24).toString(),
@@ -19,6 +20,14 @@ export const colors = {
   p3: tinycolor(p).desaturate(16).darken(32).toString(),
 }
 
+export const headerHeight = 48
+
+export const shadow: ViewStyle = {
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 4 },
+  shadowOpacity: 0.1,
+  shadowRadius: 4,
+}
 // export const colors = {
 //   bg1: '#252322',
 //   bg2: '#292725',

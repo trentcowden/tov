@@ -1,5 +1,5 @@
 import { ImpactFeedbackStyle, impactAsync } from 'expo-haptics'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { Pressable, Text, View } from 'react-native'
 import Animated, {
   SharedValue,
@@ -16,6 +16,7 @@ import {
   gutterSize,
   horizTransReq,
   panActivateConfig,
+  shadow,
   typography,
 } from '../constants'
 import { Books } from '../data/types/books'
@@ -49,7 +50,6 @@ export default function ChapterOverlay({
   const overlayOpacity = useSharedValue(0)
   const pressed = useSharedValue(0)
   const [icon, setIcon] = useState<IconName>('book')
-  const [time, setTime] = useState(new Date().getTime())
 
   // useDerivedValue(() => {
   //   if (navigatorTransition.value > 0.1) {
@@ -71,11 +71,6 @@ export default function ChapterOverlay({
   //   else runOnJS(setIsStatusBarHidden)(true)
   // })
 
-  useEffect(() => {
-    overlayOpacity.value = withTiming(1)
-    setInterval(() => setTime(new Date().getTime()), 5000)
-  }, [])
-
   // useEffect(() => {
   //   if (chapterChanging) overlayOpacity.value = withTiming(0)
   //   else if (navigatorOpen) overlayOpacity.value = withTiming(0)
@@ -89,16 +84,12 @@ export default function ChapterOverlay({
     // opacity: overlayOpacity.value,
     opacity:
       textTranslateX.value !== 0
-        ? interpolate(
-            textTranslateX.value,
-            [-horizTransReq, 0, horizTransReq],
-            [0, 1, 0]
-          )
+        ? interpolate(textTranslateX.value, [0, horizTransReq / 2], [1, 0])
         : 1,
     backgroundColor: interpolateColor(
       pressed.value,
-      [0, 1],
-      [colors.bg2, colors.bg3]
+      [0, 2],
+      [colors.bg2, colors.bg1]
     ),
     transform: [
       { scale: interpolate(pressed.value, [0, 1], [1, 0.95]) },
@@ -119,6 +110,7 @@ export default function ChapterOverlay({
           borderBottomRightRadius: 24,
           borderBottomLeftRadius: 24,
           paddingTop: gutterSize,
+          ...shadow,
         },
         overlayAnimatedStyles,
       ]}
@@ -170,7 +162,7 @@ export default function ChapterOverlay({
             adjustsFontSizeToFit
             maxFontSizeMultiplier={1}
             style={{
-              ...typography(14, 'uim', 'l', colors.fg3),
+              ...typography(14, 'uis', 'l', colors.fg3),
             }}
           >
             {activeBook.name.replace(' ', '').slice(0, 3)}
@@ -189,27 +181,6 @@ export default function ChapterOverlay({
             {activeBook.name}
           </Text> */}
         </View>
-        {/* <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: 8,
-            width: 100,
-          }}
-        >
-          <Text
-            numberOfLines={1}
-            adjustsFontSizeToFit
-            maxFontSizeMultiplier={1}
-            style={{
-              ...typography(14, 'uim', 'l', colors.fg3),
-              textAlign: 'right',
-              flex: 1,
-            }}
-          >
-            {format(time, 'HH:mm')}
-          </Text>
-        </View> */}
 
         {/* <TouchableOpacity style={{ paddingHorizontal: gutterSize }}>
         <FontAwesome5 name="history" size={20} color={colors.fg3} />
