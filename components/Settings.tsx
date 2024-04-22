@@ -39,8 +39,6 @@ export default function Settings({ openSettings, openSettingsNested }: Props) {
     'translation' | 'typography' | 'theme'
   >()
 
-  console.log(settings.translation)
-
   return (
     <ModalScreen
       openModal={openSettings}
@@ -51,6 +49,7 @@ export default function Settings({ openSettings, openSettingsNested }: Props) {
           { duration: 200 },
           () => (openSettingsNested.value = 0)
         )
+        setTimeout(() => setNestedSetting(undefined), 200)
       }}
       nestedScreen={
         nestedSetting === 'translation' ? (
