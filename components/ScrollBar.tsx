@@ -26,6 +26,7 @@ import {
   typography,
 } from '../constants'
 import { useAppSelector } from '../redux/hooks'
+import TovIcon from './SVG'
 
 interface Props {
   verseOffsets: number[] | undefined
@@ -165,7 +166,7 @@ export default function ScrollBar({
     width: interpolate(
       scrollBarActivate.value,
       [0, 1],
-      [gutterSize / 2, gutterSize * 2],
+      [gutterSize / 2, gutterSize * 3],
       'clamp'
     ),
     transform: [
@@ -176,18 +177,18 @@ export default function ScrollBar({
     ],
   }))
 
-  // const scrollIconStyles = useAnimatedStyle(() => ({
-  //   opacity: scrollBarActivate.value,
-  //   transform: [
-  //     {
-  //       translateX: interpolate(
-  //         scrollBarActivate.value,
-  //         [0, 1],
-  //         [-gutterSize, -gutterSize - 6]
-  //       ),
-  //     },
-  //   ],
-  // }))
+  const scrollIconStyles = useAnimatedStyle(() => ({
+    opacity: scrollBarActivate.value,
+    // transform: [
+    //   {
+    //     translateX: interpolate(
+    //       scrollBarActivate.value,
+    //       [0, 1],
+    //       [-gutterSize, -gutterSize - 6]
+    //     ),
+    //   },
+    // ],
+  }))
 
   const scrollBarActiveStyles = useAnimatedStyle(() => {
     return {
@@ -207,6 +208,8 @@ export default function ScrollBar({
     }
   })
 
+  console.log(colors.bg2)
+
   useEffect(() => {
     if (!going)
       scrollBarActivate.value = withDelay(200, withTiming(0, { duration: 500 }))
@@ -220,7 +223,7 @@ export default function ScrollBar({
             {
               position: 'absolute',
               right: 0,
-              width: gutterSize,
+              width: gutterSize * 1.5,
               alignItems: 'flex-end',
               justifyContent: 'center',
             },
@@ -235,6 +238,8 @@ export default function ScrollBar({
                 borderRadius: 99,
                 height: scrollBarHeight,
                 zIndex: 5,
+                alignItems: 'center',
+                justifyContent: 'center',
                 display:
                   verseOffsets &&
                   verseOffsets[verseOffsets.length - 1] < screenHeight
@@ -244,22 +249,24 @@ export default function ScrollBar({
               },
               scrollBarStyles,
             ]}
-          ></Animated.View>
-          {/* <Animated.View
-            pointerEvents={'none'}
-            style={[
-              {
-                alignSelf: 'center',
-                position: 'absolute',
-                width: '100%',
-                alignItems: 'center',
-                justifyContent: 'center',
-              },
-              scrollIconStyles,
-            ]}
           >
-            <TovIcon name="scroll" size={64} color={colors.p1} />
-          </Animated.View> */}
+            <Animated.View
+              pointerEvents={'none'}
+              style={[
+                {
+                  // alignSelf: 'center',
+                  // position: 'absolute',
+                  // width: '100%',
+                  // alignItems: 'center',
+                  // justifyContent: 'center',
+                },
+                scrollIconStyles,
+              ]}
+            >
+              <TovIcon name="scroll" size={64} color={colors.fg3} />
+            </Animated.View>
+            {/* <TovIcon name="scroll" size={64} color={colors.fg3} /> */}
+          </Animated.View>
         </Animated.View>
       </GestureDetector>
       {/* <Animated.View
