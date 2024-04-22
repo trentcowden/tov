@@ -6,18 +6,18 @@ const fg = 'hsl(30, 5, 94)'
 const p = 'hsl(30, 40, 67)'
 
 export const colors = {
-  bg1: tinycolor(bg).toString(),
-  bg2: tinycolor(bg).brighten(3).toString(),
-  bg3: tinycolor(bg).brighten(6).toString(),
-  bg4: tinycolor(bg).brighten(9).toString(),
-  fg1: tinycolor(fg).toString(),
-  fg2: tinycolor(fg).darken(12).toString(),
-  fg3: tinycolor(fg).darken(24).toString(),
-  fg4: tinycolor(fg).darken(36).toString(),
+  bg1: tinycolor(bg).toHexString(),
+  bg2: tinycolor(bg).brighten(4).toHexString(),
+  bg3: tinycolor(bg).brighten(7).toHexString(),
+  bg4: tinycolor(bg).brighten(10).toHexString(),
+  fg1: tinycolor(fg).toHexString(),
+  fg2: tinycolor(fg).darken(12).toHexString(),
+  fg3: tinycolor(fg).darken(24).toHexString(),
+  fg4: tinycolor(fg).darken(36).toHexString(),
   b: tinycolor(p).setAlpha(0.1).toString(),
-  p1: tinycolor(p).toString(),
-  p2: tinycolor(p).desaturate(16).darken(16).toString(),
-  p3: tinycolor(p).desaturate(16).darken(32).toString(),
+  p1: tinycolor(p).toHexString(),
+  p2: tinycolor(p).desaturate(16).darken(16).toHexString(),
+  p3: tinycolor(p).desaturate(16).darken(32).toHexString(),
 }
 
 export const headerHeight = 48
@@ -50,11 +50,11 @@ export const iconSize = 24
 export const modalWidth = Dimensions.get('screen').width - gutterSize * 2
 
 export const chapterChangeDuration = 250
-export const overScrollReq = 40
-export const overScrollVelocityReq = 0.75
+export const overScrollReq = 75
+export const overScrollVelocityReq = 1
 export const zoomOutReq = 0.3
 export const horizTransReq = Dimensions.get('window').width * 0.75
-export const horizVelocReq = 600
+export const horizVelocReq = 500
 
 /**
  * Takes in some text style settings and returns a filled out text style object. This is used simply to save space in components and simplify things overall. Used within the style prop of a text component.
