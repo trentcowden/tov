@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { SectionList, Text, View } from 'react-native'
 import Spacer from '../Spacer'
-import { colors, gutterSize, typography } from '../constants'
+import { colors, gutterSize, screenWidth, typography } from '../constants'
 import books from '../data/books.json'
 import { Books } from '../data/types/books'
 import TovPressable from './TovPressable'
@@ -54,7 +54,7 @@ export default function BooksList({ navigatorBook, goToBook }: Props) {
       <View
         key={section.sectionName}
         style={{
-          width: '100%',
+          width: screenWidth - gutterSize * 2,
           paddingHorizontal: gutterSize,
           // marginTop: index === 0 ? 0 : gutterSize * 1.5,
           paddingBottom: gutterSize / 3,
