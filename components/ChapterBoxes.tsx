@@ -3,7 +3,7 @@ import { useMemo } from 'react'
 import { Text, View } from 'react-native'
 import { FadeInRight, FadeOut } from 'react-native-reanimated'
 import Spacer from '../Spacer'
-import { colors, gutterSize, typography } from '../constants'
+import { colors, gutterSize, sizes, typography } from '../constants'
 import bibles from '../data/bibles'
 import { Books } from '../data/types/books'
 import { Chapters } from '../data/types/chapters'
@@ -69,7 +69,7 @@ export default function ChapterBoxes({
             closeNavigator()
           }}
         >
-          <Text style={typography(18, 'uib', 'c', colors.fg1)}>
+          <Text style={typography(sizes.body, 'uib', 'c', colors.fg1)}>
             {item.chapterId.split('.')[1]}
           </Text>
         </TovPressable>

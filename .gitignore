@@ -35,3 +35,6 @@ yarn-error.*
 *.tsbuildinfo
 ios
 android
+data/hebrew.json
+data/DictBDB.json
+data/bdbMd.json

@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react'
 import { Text, View } from 'react-native'
-import { colors, gutterSize, typography } from '../constants'
+import { colors, gutterSize, sizes, typography } from '../constants'
 import TovIcon, { IconName } from './SVG'
 import TovPressable from './TovPressable'
 
@@ -41,31 +41,32 @@ export default function SettingsItem({
         <View
           style={{
             width: '100%',
-
             alignItems: 'center',
             flexDirection: 'row',
-
             gap: 8,
           }}
         >
           <Text
             numberOfLines={1}
             adjustsFontSizeToFit
-            style={[typography(16, 'uim', 'l', colors.fg2), { flex: 1 }]}
+            style={[
+              typography(sizes.body, 'uim', 'l', colors.fg2),
+              { flex: 1 },
+            ]}
           >
             {children}
           </Text>
           {rightSection}
           {rightText ? (
-            <Text style={typography(14, 'uis', 'c', colors.p1)}>
+            <Text style={typography(sizes.caption, 'uis', 'c', colors.p1)}>
               {rightText}
             </Text>
           ) : null}
           {rightIcon ? (
-            <TovIcon name={rightIcon} size={16} color={colors.p2} />
+            <TovIcon name={rightIcon} size={16} color={colors.p1} />
           ) : null}
         </View>
-        <Text style={typography(12, 'uil', 'l', colors.fg3)}>
+        <Text style={typography(sizes.caption, 'uil', 'l', colors.fg3)}>
           {description}
         </Text>
       </View>

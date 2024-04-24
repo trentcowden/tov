@@ -17,6 +17,7 @@ import {
   horizTransReq,
   panActivateConfig,
   shadow,
+  sizes,
   typography,
 } from '../constants'
 import { Books } from '../data/types/books'
@@ -162,7 +163,7 @@ export default function ChapterOverlay({
             adjustsFontSizeToFit
             maxFontSizeMultiplier={1}
             style={{
-              ...typography(14, 'uis', 'l', colors.fg3),
+              ...typography(sizes.caption, 'uis', 'l', colors.fg3),
             }}
           >
             {activeBook.name.replace(' ', '').slice(0, 3)}

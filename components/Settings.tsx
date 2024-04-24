@@ -8,6 +8,7 @@ import {
   gutterSize,
   modalWidth,
   shadow,
+  sizes,
   typography,
 } from '../constants'
 import { clearHistory } from '../redux/history'
@@ -159,7 +160,7 @@ export default function Settings({ openSettings, openSettingsNested }: Props) {
               Buy me a coffee
             </SettingsItem> */}
             <Spacer units={2} />
-            <Text style={typography(14, 'uim', 'c', colors.p2)}>
+            <Text style={typography(sizes.caption, 'uim', 'c', colors.p1)}>
               {'Made with 🧡 by Trent Cowden'}
             </Text>
           </ScrollView>

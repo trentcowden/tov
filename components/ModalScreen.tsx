@@ -118,7 +118,7 @@ export default function ModalScreen({
           style={[
             {
               top: insets.top + gutterSize,
-              height: navigatorHeight - gutterSize,
+              height: navigatorHeight,
               width: modalWidth,
               borderRadius: 16,
               position: 'absolute',

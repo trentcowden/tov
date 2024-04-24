@@ -14,6 +14,7 @@ import {
   gutterSize,
   modalWidth,
   shadow,
+  sizes,
   typography,
 } from '../constants'
 import bibles from '../data/bibles'
@@ -192,7 +193,7 @@ export default function Navigator({
                   paddingLeft: gutterSize + 14,
                   backgroundColor: colors.bg3,
                   borderRadius: 12,
-                  ...typography(17, 'uis', 'l', colors.fg1),
+                  ...typography(sizes.body, 'uis', 'l', colors.fg1),
                   height: 50,
                 }}
                 returnKeyType={'done'}

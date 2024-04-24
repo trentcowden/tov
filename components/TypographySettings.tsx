@@ -2,7 +2,7 @@ import { Text, TouchableOpacity, View, ViewStyle } from 'react-native'
 import { ScrollView } from 'react-native-gesture-handler'
 import { SharedValue, withTiming } from 'react-native-reanimated'
 import Spacer from '../Spacer'
-import { colors, gutterSize, typography } from '../constants'
+import { colors, gutterSize, sizes, typography } from '../constants'
 import bibles from '../data/bibles'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
 import {
@@ -80,51 +80,81 @@ export default function TypographySettings({
       <Spacer units={2} />
       <View style={{ paddingHorizontal: gutterSize, gap: 8 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-          <Text style={{ ...typography(16, 'uim', 'l', colors.fg1), flex: 1 }}>
+          <Text
+            style={{
+              ...typography(sizes.body, 'uim', 'l', colors.fg1),
+              flex: 1,
+            }}
+          >
             Font Size
           </Text>
           <TouchableOpacity onPress={decreaseFontSize} style={buttonStyles}>
-            <TovIcon name="minus" size={18} color={colors.p2} />
+            <TovIcon name="minus" size={18} color={colors.p1} />
           </TouchableOpacity>
-          <Text style={[typography(20, 'uib', 'c', colors.p1), { width: 32 }]}>
+          <Text
+            style={[
+              typography(sizes.subtitle, 'uib', 'c', colors.fg2),
+              { width: 32 },
+            ]}
+          >
             {settings.fontSize}
           </Text>
           <TouchableOpacity onPress={increaseFontSize} style={buttonStyles}>
-            <TovIcon name="plus" size={18} color={colors.p2} />
+            <TovIcon name="plus" size={18} color={colors.p1} />
           </TouchableOpacity>
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-          <Text style={{ ...typography(16, 'uim', 'l', colors.fg1), flex: 1 }}>
+          <Text
+            style={{
+              ...typography(sizes.body, 'uim', 'l', colors.fg1),
+              flex: 1,
+            }}
+          >
             Line Height
           </Text>
           <TouchableOpacity onPress={decreaseLineHeight} style={buttonStyles}>
-            <TovIcon name="minus" size={18} color={colors.p2} />
+            <TovIcon name="minus" size={18} color={colors.p1} />
           </TouchableOpacity>
-          <Text style={[typography(20, 'uib', 'c', colors.p1), { width: 32 }]}>
+          <Text
+            style={[
+              typography(sizes.subtitle, 'uib', 'c', colors.fg2),
+              { width: 32 },
+            ]}
+          >
             {settings.lineHeight}
           </Text>
           <TouchableOpacity onPress={increaseLineHeight} style={buttonStyles}>
-            <TovIcon name="plus" size={18} color={colors.p2} />
+            <TovIcon name="plus" size={18} color={colors.p1} />
           </TouchableOpacity>
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-          <Text style={{ ...typography(16, 'uim', 'l', colors.fg1), flex: 1 }}>
+          <Text
+            style={{
+              ...typography(sizes.body, 'uim', 'l', colors.fg1),
+              flex: 1,
+            }}
+          >
             Paragraph Spacing
           </Text>
           <TouchableOpacity
             onPress={decreaseParagraphSpacing}
             style={buttonStyles}
           >
-            <TovIcon name="minus" size={18} color={colors.p2} />
+            <TovIcon name="minus" size={18} color={colors.p1} />
           </TouchableOpacity>
-          <Text style={[typography(20, 'uib', 'c', colors.p1), { width: 32 }]}>
+          <Text
+            style={[
+              typography(sizes.subtitle, 'uib', 'c', colors.fg2),
+              { width: 32 },
+            ]}
+          >
             {settings.paragraphSpacing}
           </Text>
           <TouchableOpacity
             onPress={increaseParagraphSpacing}
             style={buttonStyles}
           >
-            <TovIcon name="plus" size={18} color={colors.p2} />
+            <TovIcon name="plus" size={18} color={colors.p1} />
           </TouchableOpacity>
         </View>
       </View>

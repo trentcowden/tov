@@ -23,10 +23,10 @@ import {
   gutterSize,
   screenHeight,
   shadow,
+  sizes,
   typography,
 } from '../constants'
 import { useAppSelector } from '../redux/hooks'
-import TovIcon from './SVG'
 
 interface Props {
   verseOffsets: number[] | undefined
@@ -161,7 +161,7 @@ export default function ScrollBar({
     backgroundColor: interpolateColor(
       scrollBarActivate.value,
       [0, 1],
-      [colors.bg2, colors.p2]
+      [colors.bg2, colors.p1]
     ),
     width: interpolate(
       scrollBarActivate.value,
@@ -263,7 +263,7 @@ export default function ScrollBar({
                 scrollIconStyles,
               ]}
             >
-              <TovIcon name="scroll" size={64} color={colors.fg3} />
+              {/* <TovIcon name="scroll" size={64} color={colors.fg3} /> */}
             </Animated.View>
             {/* <TovIcon name="scroll" size={64} color={colors.fg3} /> */}
           </Animated.View>
@@ -352,7 +352,7 @@ export default function ScrollBar({
                   numberOfLines={1}
                   adjustsFontSizeToFit
                   style={{
-                    ...typography(12, 'uib', 'c', colors.p1),
+                    ...typography(sizes.caption, 'uib', 'c', colors.p1),
                     // width: verseColumnWidth,
                   }}
                 >

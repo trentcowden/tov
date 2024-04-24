@@ -589,17 +589,24 @@ export default function BibleView() {
               </View>
             ))} */}
             <Spacer units={8} additional={insets.top} />
-            <Text
-              numberOfLines={1}
-              adjustsFontSizeToFit
+            <View
               style={{
-                ...typography(settings.fontSize + 12, 'b', 'c', colors.fg1),
                 height: headerHeight,
+                alignItems: 'center',
+                justifyContent: 'center',
                 marginBottom: gutterSize,
               }}
             >
-              {getChapterReference(activeChapter.chapterId)}
-            </Text>
+              <Text
+                numberOfLines={1}
+                adjustsFontSizeToFit
+                style={{
+                  ...typography(settings.fontSize + 14, 'b', 'c', colors.fg1),
+                }}
+              >
+                {getChapterReference(activeChapter.chapterId)}
+              </Text>
+            </View>
             <Text
               onTextLayout={onTextLayout}
               onLayout={() => {

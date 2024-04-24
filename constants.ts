@@ -1,9 +1,10 @@
 import { Dimensions, TextStyle, ViewStyle } from 'react-native'
 import tinycolor from 'tinycolor2'
 
-const bg = 'hsl(30, 8, 15)'
-const fg = 'hsl(30, 5, 94)'
-const p = 'hsl(30, 40, 67)'
+const hue = 28
+const bg = `hsl(${hue}, 9, 15)`
+const fg = `hsl(${hue}, 5, 94)`
+const p = `hsl(${hue}, 60, 58)`
 
 export const colors = {
   bg1: tinycolor(bg).toHexString(),
@@ -15,12 +16,21 @@ export const colors = {
   fg3: tinycolor(fg).darken(24).toHexString(),
   fg4: tinycolor(fg).darken(36).toHexString(),
   b: tinycolor(p).setAlpha(0.1).toString(),
+  pText: tinycolor(p).desaturate(8).brighten(8).toHexString(),
   p1: tinycolor(p).toHexString(),
-  p2: tinycolor(p).desaturate(16).darken(16).toHexString(),
-  p3: tinycolor(p).desaturate(16).darken(32).toHexString(),
+  p2: tinycolor(p).desaturate(8).darken(8).toHexString(),
 }
 
-export const headerHeight = 48
+export const sizes = {
+  title: 24,
+  subtitle: 20,
+  body: 17,
+  caption: 14,
+}
+
+console.log(colors)
+
+export const headerHeight = 56
 
 export const shadow: ViewStyle = {
   shadowColor: '#000',

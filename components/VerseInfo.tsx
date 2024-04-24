@@ -8,7 +8,7 @@ import Animated, {
   useDerivedValue,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { colors, gutterSize, typography } from '../constants'
+import { colors, gutterSize, sizes, typography } from '../constants'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
 
 interface Props {
@@ -49,7 +49,9 @@ export default function VerseInfo({ textTranslationX }: Props) {
     >
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
         <Ionicons name="settings-outline" size={20} color={colors.fg2} />
-        <Text style={typography(24, 'b', 'l', colors.fg1)}>Settings</Text>
+        <Text style={typography(sizes.title, 'b', 'l', colors.fg1)}>
+          Settings
+        </Text>
       </View>
     </Animated.View>
   )

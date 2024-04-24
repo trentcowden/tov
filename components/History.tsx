@@ -17,6 +17,7 @@ import {
   horizTransReq,
   iconSize,
   shadow,
+  sizes,
   typography,
 } from '../constants'
 import { Chapters } from '../data/types/chapters'
@@ -161,7 +162,7 @@ export default function History({
           backgroundColor: colors.bg2,
         }}
       >
-        <Text style={typography(13, 'uil', 'l', colors.fg3)}>
+        <Text style={typography(sizes.caption, 'uil', 'l', colors.fg3)}>
           {section.distance}
         </Text>
         {/* <Spacer units={1.5} />
@@ -227,7 +228,12 @@ export default function History({
           }}
         >
           <TovIcon name="history" size={iconSize} color={colors.p1} />
-          <Text style={[typography(24, 'uib', 'l', colors.fg1), { flex: 1 }]}>
+          <Text
+            style={[
+              typography(sizes.title, 'uib', 'l', colors.fg1),
+              { flex: 1 },
+            ]}
+          >
             History
           </Text>
         </View>
@@ -241,12 +247,12 @@ export default function History({
             flexDirection: 'row',
             justifyContent: 'center',
             alignItems: 'center',
-            backgroundColor: showFavorites ? colors.p2 : undefined,
+            backgroundColor: showFavorites ? colors.p1 : undefined,
             borderWidth: 1,
             borderColor: colors.b,
             borderRadius: 99,
           }}
-          onPressColor={colors.bg3}
+          onPressColor={showFavorites ? colors.p2 : colors.bg3}
         >
           <TovIcon
             name="heart"
@@ -254,34 +260,6 @@ export default function History({
             size={16}
           />
         </TovPressable>
-        {/* <TovPressable
-          onPress={() =>
-            Alert.alert('Are you sure you want to clear your history?', '', [
-              { isPreferred: true, style: 'cancel', text: 'Cancel' },
-              {
-                text: 'Clear',
-                style: 'destructive',
-                onPress: () => dispatch(clearHistory()),
-              },
-            ])
-          }
-          onPressColor={colors.bg3}
-          style={{
-            // aspectRatio: 1,
-            height: 32,
-            width: 32,
-            // paddingVertical: gutterSize / 2.5,
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center',
-            // backgroundColor: colors.bg3,
-            borderWidth: 1,
-            borderColor: colors.b,
-            borderRadius: 99,
-          }}
-        >
-          <TovIcon name="trash" color={colors.fg3} size={16} />
-        </TovPressable> */}
       </View>
       <View style={{ flex: 1 }}>
         <SectionList
@@ -295,22 +273,13 @@ export default function History({
           // estimatedItemSize={28}
           ListEmptyComponent={
             <View style={{ paddingHorizontal: gutterSize / 2 }}>
-              <Text style={typography(16, 'uir', 'l', colors.fg3)}>
+              <Text style={typography(sizes.body, 'uir', 'l', colors.fg3)}>
                 {showFavorites
                   ? 'Long press on a chapter to mark it as a favorite.'
                   : 'Come back here to return to chapters you were previously reading.'}
               </Text>
             </View>
           }
-          // ListHeaderComponent={
-          //   <>
-          //     <Spacer units={4} />
-          //     {renderHistoryItem({
-          //       item: { chapterId: activeChapter.chapterId, date: 0 },
-          //       index: -1,
-          //     })}
-          //   </>
-          // }
           ListHeaderComponent={<Spacer units={2} />}
           ListFooterComponent={<Spacer units={4} additional={insets.bottom} />}
         />
@@ -343,12 +312,13 @@ export default function History({
             }}
           >
             <TovIcon name="settings" size={18} color={colors.fg3} />
-            <Text style={typography(14, 'uis', 'c', colors.fg3)}>Settings</Text>
+            <Text style={typography(sizes.caption, 'uis', 'c', colors.fg3)}>
+              Settings
+            </Text>
           </TovPressable>
         </View>
       </View>
       <StatusBar
-        // hidden={!historyOpen}
         hidden
         backgroundColor={colors.bg2}
         translucent={false}

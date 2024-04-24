@@ -1,6 +1,6 @@
 import { ReactNode } from 'react'
 import { Text, View } from 'react-native'
-import { colors, gutterSize, iconSize, typography } from '../constants'
+import { colors, gutterSize, iconSize, sizes, typography } from '../constants'
 import TovIcon from './SVG'
 import TovPressable from './TovPressable'
 
@@ -64,7 +64,7 @@ export default function ModalScreenHeader({
           <Text
             adjustsFontSizeToFit
             numberOfLines={2}
-            style={[typography(22, 'uib', 'l', colors.fg1)]}
+            style={[typography(sizes.title, 'uib', 'l', colors.fg1)]}
           >
             {children}
           </Text>

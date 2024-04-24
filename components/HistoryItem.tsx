@@ -14,7 +14,13 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { colors, gutterSize, panActivateConfig, typography } from '../constants'
+import {
+  colors,
+  gutterSize,
+  panActivateConfig,
+  sizes,
+  typography,
+} from '../constants'
 import bibles from '../data/bibles'
 import { Chapters } from '../data/types/chapters'
 import { getBook } from '../functions/bible'
@@ -177,7 +183,7 @@ export default function HistoryListItem({
               adjustsFontSizeToFit
               style={[
                 typography(
-                  18,
+                  sizes.body,
                   item.isFavorite ? 'uib' : 'uir',
                   'l',
                   colors.fg2
@@ -194,7 +200,7 @@ export default function HistoryListItem({
 
           {item.chapterId === activeChapter.chapterId ? (
             <View style={{ flexDirection: 'row' }}>
-              <Text style={typography(12, 'uir', 'l', colors.fg3)}>
+              <Text style={typography(sizes.caption, 'uir', 'l', colors.fg3)}>
                 Current
               </Text>
             </View>
