@@ -122,7 +122,7 @@ export default function ModalScreen({
               width: modalWidth,
               borderRadius: 16,
               position: 'absolute',
-              paddingTop: gutterSize,
+              paddingTop: gutterSize / 2,
               backgroundColor: colors.bg2,
               overflow: 'hidden',
             },

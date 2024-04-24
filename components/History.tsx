@@ -1,8 +1,11 @@
 import { formatDistanceToNow, isToday, isYesterday } from 'date-fns'
 import { StatusBar } from 'expo-status-bar'
 import React, { useMemo, useState } from 'react'
-import { Dimensions, SectionList, Text, View } from 'react-native'
+import { Dimensions, Text, View } from 'react-native'
 import Animated, {
+  FadeIn,
+  FadeOut,
+  LinearTransition,
   SharedValue,
   runOnJS,
   useAnimatedStyle,
@@ -26,14 +29,13 @@ import { useAppDispatch, useAppSelector } from '../redux/hooks'
 import HistoryListItem from './HistoryItem'
 import TovIcon from './SVG'
 import TovPressable from './TovPressable'
-
 interface Props {
   activeChapter: Chapters[number]
   textTranslationX: SharedValue<number>
   closeHistory: () => void
   goToChapter: (
     chapterId: Chapters[number]['chapterId'],
-    verseNumber?: number
+    verseNumber?: number | 'bottom'
   ) => void
   openSettings: SharedValue<number>
 }
@@ -103,57 +105,45 @@ export default function History({
 
     if (showFavorites) {
       const favorites = sorted.filter((item) => item.isFavorite)
-      if (favorites.length)
-        return [
-          {
-            distance: 'Favorites',
-            data: favorites,
-          },
-        ]
+      if (favorites.length) return favorites
       else return []
     }
 
-    return sorted.reduce((groupedHistory: HistorySection[], historyItem) => {
-      let distance = formatDistanceToNow(historyItem.date)
+    return sorted.reduce(
+      (groupedHistory: (string | HistoryItem)[], historyItem) => {
+        let distance = formatDistanceToNow(historyItem.date)
 
-      if (historyItem.chapterId === activeChapter.chapterId) distance = 'Today'
-      else if (isToday(historyItem.date)) distance = 'Today'
-      else if (isYesterday(historyItem.date)) distance = 'Yesterday'
-      else distance += ' ago'
+        if (historyItem.chapterId === activeChapter.chapterId)
+          distance = 'Today'
+        else if (isToday(historyItem.date)) distance = 'Today'
+        else if (isYesterday(historyItem.date)) distance = 'Yesterday'
+        else distance += ' ago'
 
-      const existingGroup = groupedHistory.find(
-        (group) => group.distance === distance
-      )
+        if (!groupedHistory.includes(distance)) groupedHistory.push(distance)
+        groupedHistory.push(historyItem)
 
-      if (existingGroup) existingGroup.data.push(historyItem)
-      else groupedHistory.push({ distance, data: [historyItem] })
-      return groupedHistory
-    }, [])
+        return groupedHistory
+
+        // if (existingGroup) existingGroup.data.push(historyItem)
+        // else groupedHistory.push({ distance, data: [historyItem] })
+        // return groupedHistory
+      },
+      []
+    )
   }, [history, historyOpening, activeChapter, showFavorites])
 
   function renderHistoryItem({
     item,
     index,
   }: {
-    item: HistoryItem
+    item: HistoryItem | string
     index: number
   }) {
-    return (
-      <HistoryListItem
-        closeHistory={closeHistory}
-        goToChapter={goToChapter}
-        index={index}
-        item={item}
-        activeChapter={activeChapter}
-      />
-    )
-  }
-
-  function renderSectionHeader({ section }: { section: HistorySection }) {
-    if (showFavorites) return <View />
-    return (
-      <View
-        key={section.distance}
+    return typeof item === 'string' ? (
+      <Animated.View
+        entering={FadeIn}
+        exiting={FadeOut}
+        key={item}
         style={{
           width: '100%',
           paddingHorizontal: gutterSize / 2,
@@ -163,11 +153,20 @@ export default function History({
         }}
       >
         <Text style={typography(sizes.caption, 'uil', 'l', colors.fg3)}>
-          {section.distance}
+          {item}
         </Text>
         {/* <Spacer units={1.5} />
-        <View style={{ width: '100%', height: 1, backgroundColor: colors.b }} /> */}
-      </View>
+      <View style={{ width: '100%', height: 1, backgroundColor: colors.b }} /> */}
+      </Animated.View>
+    ) : (
+      <HistoryListItem
+        closeHistory={closeHistory}
+        goToChapter={goToChapter}
+        index={index}
+        item={item}
+        activeChapter={activeChapter}
+        showFavorites={showFavorites}
+      />
     )
   }
 
@@ -262,14 +261,20 @@ export default function History({
         </TovPressable>
       </View>
       <View style={{ flex: 1 }}>
-        <SectionList
-          sections={sections}
+        <Animated.FlatList
+          itemLayoutAnimation={LinearTransition.springify()
+            .damping(20)
+            .mass(0.5)
+            .stiffness(140)}
+          data={sections}
           contentContainerStyle={{ paddingHorizontal: gutterSize / 2 }}
           renderItem={renderHistoryItem}
-          renderSectionHeader={renderSectionHeader}
-          keyExtractor={(item) => item.chapterId}
+          // renderSectionHeader={renderSectionHeader}
+          keyExtractor={(item) =>
+            typeof item === 'string' ? item : item.date.toString()
+          }
           showsVerticalScrollIndicator={false}
-          renderSectionFooter={() => <Spacer units={4} />}
+          // renderSectionFooter={() => <Spacer units={4} />}
           // estimatedItemSize={28}
           ListEmptyComponent={
             <View style={{ paddingHorizontal: gutterSize / 2 }}>

@@ -1,10 +1,10 @@
 import { Dimensions, TextStyle, ViewStyle } from 'react-native'
 import tinycolor from 'tinycolor2'
 
-const hue = 28
-const bg = `hsl(${hue}, 9, 15)`
-const fg = `hsl(${hue}, 5, 94)`
-const p = `hsl(${hue}, 60, 58)`
+const hue = 25
+const bg = `hsl(${hue}, 10, 15)`
+const fg = `hsl(${hue}, 10, 94)`
+const p = `hsl(${hue}, 65, 58)`
 
 export const colors = {
   bg1: tinycolor(bg).toHexString(),
@@ -26,6 +26,7 @@ export const sizes = {
   subtitle: 20,
   body: 17,
   caption: 14,
+  tiny: 12,
 }
 
 console.log(colors)

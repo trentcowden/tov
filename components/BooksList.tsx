@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
-import { SectionList, Text, View } from 'react-native'
+import { SectionList, Text } from 'react-native'
+import Animated, { FadeIn, FadeOut } from 'react-native-reanimated'
 import Spacer from '../Spacer'
 import {
   colors,
@@ -57,7 +58,9 @@ export default function BooksList({ navigatorBook, goToBook }: Props) {
 
   function renderSectionHeader({ section }: { section: Sections[number] }) {
     return (
-      <View
+      <Animated.View
+        entering={FadeIn}
+        exiting={FadeOut}
         key={section.sectionName}
         style={{
           width: screenWidth - gutterSize * 2,
@@ -72,13 +75,15 @@ export default function BooksList({ navigatorBook, goToBook }: Props) {
         </Text>
         {/* <Spacer units={1.5} />
         <View style={{ width: '100%', height: 1, backgroundColor: colors.b }} /> */}
-      </View>
+      </Animated.View>
     )
   }
 
   function renderBookItem({ item }: { item: Books[number] }) {
     return (
       <TovPressable
+        entering={FadeIn}
+        exiting={FadeOut}
         key={item.bookId}
         outerStyle={{
           alignItems: 'flex-start',

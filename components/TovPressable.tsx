@@ -46,7 +46,9 @@ export default function TovPressable({
   const itemStyles = useAnimatedStyle(() => {
     return {
       transform: [
-        { scale: interpolate(pressed.value, [0, 1], [1, onPressScale ?? 0.9]) },
+        {
+          scale: interpolate(pressed.value, [0, 1], [1, onPressScale ?? 0.95]),
+        },
       ],
       backgroundColor:
         // style?.backgroundColor ??

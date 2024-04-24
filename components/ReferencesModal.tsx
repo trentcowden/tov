@@ -1,15 +1,15 @@
 import { FlashList } from '@shopify/flash-list'
-import React, { MutableRefObject, useMemo, useRef } from 'react'
+import React, { MutableRefObject, useEffect, useMemo, useRef } from 'react'
 import { Dimensions, FlatList, Text, View } from 'react-native'
 import { SharedValue, withTiming } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import uuid from 'react-native-uuid'
 import Spacer from '../Spacer'
 import {
   colors,
   gutterSize,
   iconSize,
   modalWidth,
+  screenWidth,
   shadow,
   sizes,
   typography,
@@ -51,6 +51,9 @@ export default function ReferencesModal({
 }: Props) {
   const insets = useSafeAreaInsets()
   const referencesRef = useRef<FlatList<References[string][number]>>(null)
+  const wordListRef = useRef<FlatList<[string, string, string]>>(null)
+  const [view, setView] = React.useState<'references' | 'hebrew'>('references')
+
   const activeReferences = useMemo(() => {
     if (!referenceVerse) return []
 
@@ -69,6 +72,8 @@ export default function ReferencesModal({
 
     const chapterIndex = parseInt(referenceVerse.split('.')[1]) - 1
     const verseIndex = parseInt(referenceVerse.split('.')[2]) - 1
+
+    if (!hebrew[referenceVerse.split('.')[0]]) return
 
     return hebrew[referenceVerse.split('.')[0]][chapterIndex][verseIndex]
   }, [referenceVerse])
@@ -132,6 +137,7 @@ export default function ReferencesModal({
               start.split('.').slice(0, 2).join('.'),
               parseInt(start.split('.')[2]) - 1
             )
+            openReferencesNested.value = withTiming(0)
             openReferences.value = withTiming(0)
           }}
         >
@@ -174,19 +180,29 @@ export default function ReferencesModal({
         }}
         style={{
           flexDirection: 'row',
-          justifyContent: 'space-between',
           alignItems: 'center',
           paddingVertical: gutterSize / 2,
-          paddingHorizontal: gutterSize,
+          paddingHorizontal: gutterSize / 2,
+          borderRadius: 12,
         }}
+        onPressColor={colors.bg3}
       >
-        <Text style={typography(sizes.body, 'uib', 'l', colors.fg2)}>
-          {item[0]}
-        </Text>
-        <Text style={typography(sizes.body, 'uil', 'l', colors.fg2)}>
-          {latinMap[item[1]]}
-        </Text>
-        <Text style={typography(sizes.body, 'uir', 'l', colors.fg2)}>
+        <View style={{ gap: 4 }}>
+          <Text style={[typography(sizes.body, 'uib', 'l', colors.fg2)]}>
+            {item[0]}
+          </Text>
+          <Text style={typography(sizes.caption, 'uir', 'l', colors.fg3)}>
+            {latinMap[item[1]]}
+          </Text>
+        </View>
+        <Text
+          numberOfLines={1}
+          adjustsFontSizeToFit
+          style={[
+            typography(sizes.body, 'uir', 'l', colors.fg2),
+            { flex: 1, textAlign: 'right' },
+          ]}
+        >
           {defMap[item[1]]}
         </Text>
         {/* <Text style={typography(sizes.subtitle, 'uir', 'l', colors.fg2)}>
@@ -196,23 +212,9 @@ export default function ReferencesModal({
     )
   }
 
-  // function renderWordReference({ item }: { item: string }) {
-  //   return (
-  //     <View
-  //       style={{
-  //         flexDirection: 'row',
-  //         justifyContent: 'space-between',
-  //         alignItems: 'center',
-  //         paddingVertical: gutterSize / 2,
-  //         paddingHorizontal: gutterSize,
-  //       }}
-  //     >
-  //       <Text style={typography(sizes.subtitle, 'uir', 'l', colors.fg2)}>
-  //         {item}
-  //       </Text>
-  //     </View>
-  //   )
-  // }
+  useEffect(() => {
+    if (!currentVerseHebrew) setView('references')
+  }, [currentVerseHebrew])
 
   return (
     <ModalScreen
@@ -233,6 +235,7 @@ export default function ReferencesModal({
                   }}
                 />
               }
+
               // close={() => {
               //   openSettings.value = withTiming(0)
               //   openSettingsNested.value = withTiming(0)
@@ -285,7 +288,10 @@ export default function ReferencesModal({
           </View>
         </View>
       }
-      onBack={() => {}}
+      onBack={() => {
+        wordListRef.current?.scrollToOffset({ animated: false, offset: 0 })
+        setSelectedWord(undefined)
+      }}
     >
       <View
         style={{
@@ -293,7 +299,7 @@ export default function ReferencesModal({
           height: navigatorHeight,
           backgroundColor: colors.bg2,
           borderRadius: 16,
-          paddingTop: gutterSize,
+          paddingTop: gutterSize / 2,
           ...shadow,
         }}
       >
@@ -306,33 +312,99 @@ export default function ReferencesModal({
         >
           {`${referenceVerse ? getVerseReference(referenceVerse) : ''}`}
         </ModalScreenHeader>
-        <Text
+        {currentVerseHebrew ? (
+          <View
+            style={{
+              flexDirection: 'row',
+              width: screenWidth - gutterSize * 2,
+              paddingHorizontal: gutterSize,
+              gap: gutterSize / 2,
+              marginTop: gutterSize / 4,
+            }}
+          >
+            <TovPressable
+              outerOuterStyle={{
+                flex: 1,
+              }}
+              onPressColor={colors.p2}
+              style={{
+                borderWidth: 1,
+                borderColor: colors.b,
+                borderRadius: 12,
+                paddingHorizontal: gutterSize / 2,
+                paddingVertical: gutterSize / 3,
+                backgroundColor: view === 'references' ? colors.p1 : colors.bg2,
+              }}
+              onPress={() => setView('references')}
+            >
+              <Text
+                style={typography(
+                  sizes.caption,
+                  view === 'references' ? 'uis' : 'uir',
+                  'c',
+                  view === 'references' ? colors.fg1 : colors.fg3
+                )}
+              >
+                Cross References
+              </Text>
+            </TovPressable>
+            <TovPressable
+              onPressColor={colors.p2}
+              outerOuterStyle={{
+                flex: 1,
+              }}
+              style={{
+                borderWidth: 1,
+                borderColor: colors.b,
+                borderRadius: 12,
+                paddingHorizontal: gutterSize / 2,
+                paddingVertical: gutterSize / 3,
+                backgroundColor: view === 'hebrew' ? colors.p1 : colors.bg2,
+              }}
+              onPress={() => setView('hebrew')}
+            >
+              <Text
+                style={typography(
+                  sizes.caption,
+                  view === 'hebrew' ? 'uis' : 'uir',
+                  'c',
+                  view === 'hebrew' ? colors.fg1 : colors.fg3
+                )}
+              >
+                Hebrew Words
+              </Text>
+            </TovPressable>
+          </View>
+        ) : null}
+        {/* <Text
           style={[
             typography(sizes.subtitle, 'uis', 'l', colors.fg3),
             { paddingHorizontal: gutterSize },
           ]}
         >
           Cross References
-        </Text>
+        </Text> */}
         <View style={{ flex: 1 }}>
-          {/* <FlatList
-            ref={referencesRef}
-            data={activeReferences}
-            ListHeaderComponent={<Spacer units={4} />}
-            ListFooterComponent={<Spacer units={4} />}
-            renderItem={renderReference}
-          /> */}
-          {currentVerseHebrew ? (
+          {view === 'references' ? (
             <FlatList
+              ref={referencesRef}
+              data={activeReferences}
+              ListHeaderComponent={<Spacer units={2} />}
+              ListFooterComponent={<Spacer units={4} />}
+              renderItem={renderReference}
+            />
+          ) : currentVerseHebrew ? (
+            <FlatList
+              ref={wordListRef}
               data={currentVerseHebrew}
               renderItem={renderHebrewWord}
-              keyExtractor={(item) => uuid.v4().toString()}
-              contentContainerStyle={{
-                paddingHorizontal: gutterSize / 2,
-                paddingVertical: gutterSize,
-              }}
+              ListHeaderComponent={<Spacer units={2} />}
+              ListFooterComponent={<Spacer units={4} />}
+              keyExtractor={(item, index) => item[0] + item[1] + index}
+              contentContainerStyle={{ paddingHorizontal: gutterSize / 2 }}
             />
           ) : null}
+
           <Fade place="top" color={colors.bg2} />
         </View>
       </View>

@@ -137,7 +137,7 @@ export default function Navigator({
                 }}
               />
             }
-            // close={closeNavigator}
+            close={closeNavigator}
           >
             {navigatorBook?.name}
           </ModalScreenHeader>
@@ -189,12 +189,13 @@ export default function Navigator({
                 onChangeText={(text) => setSearchText(text)}
                 autoCorrect={false}
                 style={{
-                  flex: 1,
+                  // flex: 1,
+                  // marginTop: gutterSize / 2,
+                  height: 50,
                   paddingLeft: gutterSize + 14,
                   backgroundColor: colors.bg3,
                   borderRadius: 12,
                   ...typography(sizes.body, 'uis', 'l', colors.fg1),
-                  height: 50,
                 }}
                 returnKeyType={'done'}
                 onSubmitEditing={() => {

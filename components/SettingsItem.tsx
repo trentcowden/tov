@@ -28,6 +28,7 @@ export default function SettingsItem({
         // paddingVertical: 8,
         paddingHorizontal: gutterSize,
       }}
+      onPressScale={0.96}
     >
       <View
         style={{
@@ -66,7 +67,7 @@ export default function SettingsItem({
             <TovIcon name={rightIcon} size={16} color={colors.p1} />
           ) : null}
         </View>
-        <Text style={typography(sizes.caption, 'uil', 'l', colors.fg3)}>
+        <Text style={typography(sizes.tiny, 'uil', 'l', colors.fg3)}>
           {description}
         </Text>
       </View>

@@ -1,9 +1,9 @@
 import { ImpactFeedbackStyle, impactAsync } from 'expo-haptics'
-import React, { useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { Pressable, Text, View } from 'react-native'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 import Animated, {
-  FadeInUp,
+  FadeIn,
   FadeOut,
   interpolate,
   runOnJS,
@@ -60,6 +60,7 @@ export default function HistoryListItem({
   const insets = useSafeAreaInsets()
   const dispatch = useAppDispatch()
   const itemTranslateX = useSharedValue(0)
+  const textTranslateX = useSharedValue(0)
   const alreadyHaptic = useRef(false)
   const pressed = useSharedValue(0)
   const chapterIndex = bibles[settings.translation].findIndex(
@@ -100,6 +101,14 @@ export default function HistoryListItem({
       }
     })
 
+  useEffect(() => {
+    if (item.isFavorite) {
+      textTranslateX.value = withSpring(16, panActivateConfig)
+    } else {
+      textTranslateX.value = withSpring(0, panActivateConfig)
+    }
+  }, [item.isFavorite])
+
   const historyItemStyles = useAnimatedStyle(() => {
     return {
       transform: [{ translateX: itemTranslateX.value }],
@@ -119,6 +128,7 @@ export default function HistoryListItem({
     return {
       textDecorationLine:
         itemTranslateX.value > swipeReq ? 'line-through' : 'none',
+      transform: [{ translateX: textTranslateX.value }],
     }
   })
 
@@ -126,8 +136,8 @@ export default function HistoryListItem({
     <GestureDetector gesture={panGesture}>
       <Animated.View
         style={historyItemStyles}
-        entering={FadeInUp.duration(100)}
-        exiting={FadeOut.duration(100)}
+        entering={FadeIn}
+        exiting={FadeOut}
       >
         <Pressable
           onPressIn={() => {
@@ -171,13 +181,10 @@ export default function HistoryListItem({
         >
           <Animated.View
             style={[
-              { flexDirection: 'row', alignItems: 'center', gap: 4 },
+              { flexDirection: 'row', alignItems: 'center' },
               textContainerStyles,
             ]}
           >
-            {item.isFavorite ? (
-              <TovIcon name="heart" size={12} color={colors.p1} />
-            ) : null}
             <Animated.Text
               numberOfLines={1}
               adjustsFontSizeToFit
@@ -196,11 +203,20 @@ export default function HistoryListItem({
               {`:${item.verseIndex + 1}`}
             </Text> */}
             </Animated.Text>
+            {item.isFavorite ? (
+              <Animated.View
+                entering={FadeIn}
+                exiting={FadeOut.duration(75)}
+                style={{ position: 'absolute', left: 0 }}
+              >
+                <TovIcon name="heart" size={12} color={colors.p1} />
+              </Animated.View>
+            ) : null}
           </Animated.View>
 
           {item.chapterId === activeChapter.chapterId ? (
             <View style={{ flexDirection: 'row' }}>
-              <Text style={typography(sizes.caption, 'uir', 'l', colors.fg3)}>
+              <Text style={typography(sizes.tiny, 'uir', 'l', colors.fg3)}>
                 Current
               </Text>
             </View>

@@ -2,6 +2,7 @@ import { FlashList } from '@shopify/flash-list'
 import { RefObject } from 'react'
 import { Text } from 'react-native'
 import { FlatList } from 'react-native-gesture-handler'
+import { FadeIn, FadeOut } from 'react-native-reanimated'
 import Spacer from '../Spacer'
 import { colors, gutterSize, sizes, typography } from '../constants'
 import { Chapters } from '../data/types/chapters'
@@ -37,6 +38,8 @@ export default function SearchResults({
 
     return (
       <TovPressable
+        entering={FadeIn}
+        exiting={FadeOut}
         style={{
           alignItems: 'center',
           marginHorizontal: gutterSize / 2,
@@ -69,7 +72,7 @@ export default function SearchResults({
     <FlatList
       ref={searchResultsRef as any}
       keyboardShouldPersistTaps="always"
-      keyExtractor={(item) => JSON.stringify(item)}
+      keyExtractor={(item) => item.item.chapterId}
       renderItem={renderSearchResultItem}
       ListFooterComponent={<Spacer units={4} />}
       data={searchResults}

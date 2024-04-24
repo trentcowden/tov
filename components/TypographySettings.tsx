@@ -1,4 +1,4 @@
-import { Text, TouchableOpacity, View, ViewStyle } from 'react-native'
+import { Text, View, ViewStyle } from 'react-native'
 import { ScrollView } from 'react-native-gesture-handler'
 import { SharedValue, withTiming } from 'react-native-reanimated'
 import Spacer from '../Spacer'
@@ -14,6 +14,7 @@ import BackButton from './BackButton'
 import BibleText from './BibleText'
 import ModalScreenHeader from './ModalScreenHeader'
 import TovIcon from './SVG'
+import TovPressable from './TovPressable'
 
 interface Props {
   openSettings: SharedValue<number>
@@ -88,9 +89,9 @@ export default function TypographySettings({
           >
             Font Size
           </Text>
-          <TouchableOpacity onPress={decreaseFontSize} style={buttonStyles}>
+          <TovPressable onPress={decreaseFontSize} style={buttonStyles}>
             <TovIcon name="minus" size={18} color={colors.p1} />
-          </TouchableOpacity>
+          </TovPressable>
           <Text
             style={[
               typography(sizes.subtitle, 'uib', 'c', colors.fg2),
@@ -99,9 +100,9 @@ export default function TypographySettings({
           >
             {settings.fontSize}
           </Text>
-          <TouchableOpacity onPress={increaseFontSize} style={buttonStyles}>
+          <TovPressable onPress={increaseFontSize} style={buttonStyles}>
             <TovIcon name="plus" size={18} color={colors.p1} />
-          </TouchableOpacity>
+          </TovPressable>
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
           <Text
@@ -112,9 +113,9 @@ export default function TypographySettings({
           >
             Line Height
           </Text>
-          <TouchableOpacity onPress={decreaseLineHeight} style={buttonStyles}>
+          <TovPressable onPress={decreaseLineHeight} style={buttonStyles}>
             <TovIcon name="minus" size={18} color={colors.p1} />
-          </TouchableOpacity>
+          </TovPressable>
           <Text
             style={[
               typography(sizes.subtitle, 'uib', 'c', colors.fg2),
@@ -123,9 +124,9 @@ export default function TypographySettings({
           >
             {settings.lineHeight}
           </Text>
-          <TouchableOpacity onPress={increaseLineHeight} style={buttonStyles}>
+          <TovPressable onPress={increaseLineHeight} style={buttonStyles}>
             <TovIcon name="plus" size={18} color={colors.p1} />
-          </TouchableOpacity>
+          </TovPressable>
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
           <Text
@@ -136,12 +137,9 @@ export default function TypographySettings({
           >
             Paragraph Spacing
           </Text>
-          <TouchableOpacity
-            onPress={decreaseParagraphSpacing}
-            style={buttonStyles}
-          >
+          <TovPressable onPress={decreaseParagraphSpacing} style={buttonStyles}>
             <TovIcon name="minus" size={18} color={colors.p1} />
-          </TouchableOpacity>
+          </TovPressable>
           <Text
             style={[
               typography(sizes.subtitle, 'uib', 'c', colors.fg2),
@@ -150,12 +148,9 @@ export default function TypographySettings({
           >
             {settings.paragraphSpacing}
           </Text>
-          <TouchableOpacity
-            onPress={increaseParagraphSpacing}
-            style={buttonStyles}
-          >
+          <TovPressable onPress={increaseParagraphSpacing} style={buttonStyles}>
             <TovIcon name="plus" size={18} color={colors.p1} />
-          </TouchableOpacity>
+          </TovPressable>
         </View>
       </View>
       <Spacer units={4} />

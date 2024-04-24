@@ -119,12 +119,12 @@ export default function BibleView() {
 
   const panGesture = Gesture.Pan()
     .onChange((event) => {
-      if (navigatorTransition.value !== 0) return
+      if (navigatorTransition.value !== 0 || textFadeOut.value !== 0) return
 
       textTranslateX.value = savedTextTranslateX.value + event.translationX
     })
     .onFinalize((e) => {
-      if (navigatorTransition.value !== 0) return
+      if (navigatorTransition.value !== 0 || textFadeOut.value !== 0) return
 
       const comingFrom =
         savedTextTranslateX.value === 0

@@ -161,7 +161,7 @@ export default function ScrollBar({
     backgroundColor: interpolateColor(
       scrollBarActivate.value,
       [0, 1],
-      [colors.bg2, colors.p1]
+      [colors.bg4, colors.p1]
     ),
     width: interpolate(
       scrollBarActivate.value,
@@ -207,8 +207,6 @@ export default function ScrollBar({
       opacity: interpolate(scrollBarActivate.value, [0, 1], [0, 1]),
     }
   })
-
-  console.log(colors.bg2)
 
   useEffect(() => {
     if (!going)
