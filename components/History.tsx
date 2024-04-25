@@ -284,7 +284,7 @@ export default function History({
             </View>
           }
           ListHeaderComponent={<Spacer units={2} />}
-          ListFooterComponent={<Spacer units={4} additional={insets.bottom} />}
+          ListFooterComponent={<Spacer units={14} additional={insets.bottom} />}
         />
         {/* <Fade place="top" color={colors.bg2} /> */}
         <View
