@@ -338,6 +338,8 @@ export default function ReferencesModal({
               onPress={() => setView('references')}
             >
               <Text
+                numberOfLines={1}
+                adjustsFontSizeToFit
                 style={typography(
                   sizes.caption,
                   view === 'references' ? 'uis' : 'uir',
@@ -364,6 +366,8 @@ export default function ReferencesModal({
               onPress={() => setView('hebrew')}
             >
               <Text
+                numberOfLines={1}
+                adjustsFontSizeToFit
                 style={typography(
                   sizes.caption,
                   view === 'hebrew' ? 'uis' : 'uir',

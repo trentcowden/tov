@@ -147,7 +147,7 @@ export default function History({
         style={{
           width: '100%',
           paddingHorizontal: gutterSize / 2,
-          // marginTop: index === 0 ? 0 : gutterSize * 1.5,
+          marginTop: index === 0 ? 0 : gutterSize,
           paddingBottom: gutterSize / 3,
           backgroundColor: colors.bg2,
         }}
@@ -155,8 +155,6 @@ export default function History({
         <Text style={typography(sizes.caption, 'uil', 'l', colors.fg3)}>
           {item}
         </Text>
-        {/* <Spacer units={1.5} />
-      <View style={{ width: '100%', height: 1, backgroundColor: colors.b }} /> */}
       </Animated.View>
     ) : (
       <HistoryListItem
