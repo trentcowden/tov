@@ -112,36 +112,37 @@ export default function ReferencesModal({
           .join(' ')
     }
     return (
-      <View
+      // <View
+      //   style={{
+      //     flexDirection: 'row',
+      //     width: '100%',
+      //     justifyContent: isAfter ? 'flex-end' : 'flex-start',
+      //     paddingHorizontal: gutterSize / 2,
+      //   }}
+      // >
+      <TovPressable
         style={{
+          alignItems: 'center',
+          gap: 8,
+          // width: screenWidth - gutterSize * 4,
           flexDirection: 'row',
-          width: '100%',
-          justifyContent: isAfter ? 'flex-end' : 'flex-start',
           paddingHorizontal: gutterSize / 2,
+          paddingVertical: 12,
+          borderRadius: 12,
+          justifyContent: isAfter ? 'flex-end' : 'flex-start',
+        }}
+        onPressColor={colors.bg3}
+        onPress={() => {
+          currentVerseIndex.current = parseInt(referenceVerse.split('.')[2]) - 1
+          goToChapter(
+            start.split('.').slice(0, 2).join('.'),
+            parseInt(start.split('.')[2]) - 1
+          )
+          openReferencesNested.value = withTiming(0)
+          openReferences.value = withTiming(0)
         }}
       >
-        <TovPressable
-          style={{
-            alignItems: 'center',
-            gap: 8,
-            flexDirection: 'row',
-            paddingHorizontal: gutterSize / 2,
-            paddingVertical: 12,
-            borderRadius: 12,
-          }}
-          onPressColor={colors.bg3}
-          onPress={() => {
-            currentVerseIndex.current =
-              parseInt(referenceVerse.split('.')[2]) - 1
-            goToChapter(
-              start.split('.').slice(0, 2).join('.'),
-              parseInt(start.split('.')[2]) - 1
-            )
-            openReferencesNested.value = withTiming(0)
-            openReferences.value = withTiming(0)
-          }}
-        >
-          {/* <View
+        {/* <View
           style={{
             width: (screenWidth - gutterSize * 4) / 2 + 11,
             flexDirection: 'row',
@@ -149,22 +150,22 @@ export default function ReferencesModal({
             // justifyContent: isAfter ? 'flex-start' : 'flex-end',
           }}
         > */}
-          {isAfter ? null : (
-            <TovIcon name={'backReference'} size={iconSize} color={colors.p1} />
-          )}
-          <Text style={[typography(sizes.body, 'uir', 'l', colors.fg2)]}>
-            {passageString}
-          </Text>
-          {isAfter ? (
-            <TovIcon
-              name={'forwardReference'}
-              size={iconSize}
-              color={colors.p1}
-            />
-          ) : null}
-          {/* </View> */}
-        </TovPressable>
-      </View>
+        {isAfter ? null : (
+          <TovIcon name={'backReference'} size={iconSize} color={colors.p1} />
+        )}
+        <Text style={[typography(sizes.body, 'uir', 'l', colors.fg2)]}>
+          {passageString}
+        </Text>
+        {isAfter ? (
+          <TovIcon
+            name={'forwardReference'}
+            size={iconSize}
+            color={colors.p1}
+          />
+        ) : null}
+        {/* </View> */}
+      </TovPressable>
+      // </View>
     )
   }
 
@@ -251,7 +252,7 @@ export default function ReferencesModal({
                 ListHeaderComponent={() => (
                   <View
                     style={{
-                      paddingHorizontal: gutterSize,
+                      paddingHorizontal: gutterSize / 2,
                     }}
                   >
                     <Spacer units={2} />
@@ -281,6 +282,7 @@ export default function ReferencesModal({
                 data={wordReferences[selectedWord[1]].filter(
                   (reference) => reference !== referenceVerse
                 )}
+                contentContainerStyle={{ paddingHorizontal: gutterSize / 2 }}
                 renderItem={renderReference}
               />
             ) : null}
@@ -396,6 +398,7 @@ export default function ReferencesModal({
               ListHeaderComponent={<Spacer units={2} />}
               ListFooterComponent={<Spacer units={4} />}
               renderItem={renderReference}
+              contentContainerStyle={{ paddingHorizontal: gutterSize / 2 }}
             />
           ) : currentVerseHebrew ? (
             <FlatList

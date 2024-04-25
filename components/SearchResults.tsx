@@ -53,6 +53,7 @@ export default function SearchResults({
           flexDirection: 'row',
           justifyContent: 'space-between',
         }}
+        onPressColor={colors.bg3}
         onPress={() => {
           goToChapter(item.item.chapterId)
           closeNavigator()
