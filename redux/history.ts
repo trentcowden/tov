@@ -38,8 +38,8 @@ export const history = createSlice({
         (historyItem) => historyItem.chapterId !== action.payload
       )
     },
-    clearHistory: () => {
-      return []
+    clearHistory: (state, action: PayloadAction<string>) => {
+      return state.filter((item) => item.chapterId === action.payload)
     },
     toggleFavorite: (state, action: PayloadAction<string>) => {
       const match = state.find((item) => item.chapterId === action.payload)

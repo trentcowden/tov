@@ -13,6 +13,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { GoToChapter } from '../Bible'
 import Spacer from '../Spacer'
 import {
   colors,
@@ -34,10 +35,7 @@ interface Props {
   activeChapter: Chapters[number]
   textTranslationX: SharedValue<number>
   closeHistory: () => void
-  goToChapter: (
-    chapterId: Chapters[number]['chapterId'],
-    verseNumber?: number | 'bottom'
-  ) => void
+  goToChapter: GoToChapter
   openSettings: SharedValue<number>
 }
 
@@ -264,7 +262,8 @@ export default function History({
           itemLayoutAnimation={LinearTransition.springify()
             .damping(20)
             .mass(0.5)
-            .stiffness(140)}
+            .stiffness(140)
+            .restDisplacementThreshold(0)}
           data={sections}
           contentContainerStyle={{ paddingHorizontal: gutterSize / 2 }}
           renderItem={renderHistoryItem}

@@ -1,24 +1,30 @@
 import React from 'react'
-import { Alert, Dimensions, ScrollView, Text, View } from 'react-native'
+import { Alert, Dimensions, ScrollView, View } from 'react-native'
 import { SharedValue, withTiming } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { colors, gutterSize, modalWidth, shadow } from '../constants'
+import { Chapters } from '../data/types/chapters'
 import { clearHistory } from '../redux/history'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
-import { setTranslation } from '../redux/settings'
 import Fade from './Fade'
 import ModalScreen from './ModalScreen'
 import ModalScreenHeader from './ModalScreenHeader'
 import SettingsItem from './SettingsItem'
-import TovPressable from './TovPressable'
 import TypographySettings from './TypographySettings'
 
 interface Props {
   openSettings: SharedValue<number>
   openSettingsNested: SharedValue<number>
+  activeChapter: Chapters[number]
 }
 
-export default function Settings({ openSettings, openSettingsNested }: Props) {
+export default function Settings({
+  openSettings,
+  openSettingsNested,
+  activeChapter,
+}: Props) {
+  const activeChapterIndex = useAppSelector((state) => state.activeChapterIndex)
+
   const insets = useSafeAreaInsets()
   const settings = useAppSelector((state) => state.settings)
   const navigatorHeight =
@@ -31,6 +37,8 @@ export default function Settings({ openSettings, openSettingsNested }: Props) {
   const [nestedSetting, setNestedSetting] = React.useState<
     'translation' | 'typography' | 'theme'
   >()
+
+  console.log(activeChapter.chapterId)
 
   return (
     <ModalScreen
@@ -45,22 +53,11 @@ export default function Settings({ openSettings, openSettingsNested }: Props) {
         setTimeout(() => setNestedSetting(undefined), 200)
       }}
       nestedScreen={
-        nestedSetting === 'translation' ? (
-          <View>
-            <TovPressable onPress={() => dispatch(setTranslation('web'))}>
-              <Text>WEB</Text>
-            </TovPressable>
-            <TovPressable onPress={() => dispatch(setTranslation('nlt'))}>
-              <Text>NLT</Text>
-            </TovPressable>
-          </View>
-        ) : nestedSetting === 'typography' ? (
+        nestedSetting === 'typography' ? (
           <TypographySettings
             openSettings={openSettings}
             openSettingsNested={openSettingsNested}
           />
-        ) : nestedSetting === 'theme' ? (
-          <Text>Theme</Text>
         ) : undefined
       }
       onBack={() => {}}
@@ -100,7 +97,8 @@ export default function Settings({ openSettings, openSettingsNested }: Props) {
                     {
                       text: 'Clear',
                       style: 'destructive',
-                      onPress: () => dispatch(clearHistory()),
+                      onPress: () =>
+                        dispatch(clearHistory(activeChapter.chapterId)),
                     },
                   ]
                 )

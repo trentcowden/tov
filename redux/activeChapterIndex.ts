@@ -4,22 +4,23 @@ export interface ActiveChapterState {
   transition: 'forward' | 'back' | 'fade'
   index: number
   verseIndex: number | undefined | 'bottom'
+  highlightVerse: boolean
+  cameFromReference: boolean
 }
 
 const initialState: ActiveChapterState = {
   transition: 'fade',
   index: 0,
   verseIndex: undefined,
+  highlightVerse: false,
+  cameFromReference: false,
 }
 
 export const activeChapterIndex = createSlice({
   name: 'activeChapterIndex',
   initialState,
   reducers: {
-    setActiveChapterIndex: (
-      state,
-      action: PayloadAction<ActiveChapterState>
-    ) => {
+    setActiveChapterIndex: (_, action: PayloadAction<ActiveChapterState>) => {
       return action.payload
     },
     goToNextChapter: (state) => {
@@ -27,6 +28,8 @@ export const activeChapterIndex = createSlice({
         transition: 'forward',
         index: state.index + 1,
         verseIndex: undefined,
+        highlightVerse: false,
+        cameFromReference: false,
       }
     },
     goToPreviousChapter: (state) => {
@@ -34,6 +37,8 @@ export const activeChapterIndex = createSlice({
         transition: 'back',
         index: state.index - 1,
         verseIndex: undefined,
+        highlightVerse: false,
+        cameFromReference: false,
       }
     },
   },

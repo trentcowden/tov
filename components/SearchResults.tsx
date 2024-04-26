@@ -3,6 +3,7 @@ import { RefObject } from 'react'
 import { Text } from 'react-native'
 import { FlatList } from 'react-native-gesture-handler'
 import { FadeIn, FadeOut } from 'react-native-reanimated'
+import { GoToChapter } from '../Bible'
 import Spacer from '../Spacer'
 import { colors, gutterSize, sizes, typography } from '../constants'
 import { Chapters } from '../data/types/chapters'
@@ -15,7 +16,7 @@ interface Props {
   searchResults: SearchResult[]
   searchText: string
   searchResultsRef: RefObject<FlashList<Chapters[number]>>
-  goToChapter: (chapterId: Chapters[number]['chapterId']) => void
+  goToChapter: GoToChapter
   closeNavigator: () => void
 }
 
@@ -55,7 +56,7 @@ export default function SearchResults({
         }}
         onPressColor={colors.bg3}
         onPress={() => {
-          goToChapter(item.item.chapterId)
+          goToChapter({ chapterId: item.item.chapterId })
           closeNavigator()
         }}
       >

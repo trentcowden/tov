@@ -19,6 +19,7 @@ import {
 } from 'react-native-gesture-handler'
 import Animated, {
   interpolate,
+  interpolateColor,
   runOnJS,
   useAnimatedStyle,
   useSharedValue,
@@ -58,6 +59,15 @@ import {
 } from './redux/activeChapterIndex'
 import { addToHistory } from './redux/history'
 import { useAppDispatch, useAppSelector } from './redux/hooks'
+
+interface GoToChapterParams {
+  chapterId: Chapters[number]['chapterId']
+  verseNumber?: number | 'bottom'
+  highlightVerse?: boolean
+  cameFromReference?: boolean
+}
+
+export type GoToChapter = (params: GoToChapterParams) => void
 
 export default function BibleView() {
   const dispatch = useAppDispatch()
@@ -276,10 +286,12 @@ export default function BibleView() {
     )
   }, [activeChapterIndex.index, textRendered])
 
-  function goToChapter(
-    chapterId: Chapters[number]['chapterId'],
-    verseNumber?: number | 'bottom'
-  ) {
+  const goToChapter: GoToChapter = ({
+    chapterId,
+    verseNumber,
+    highlightVerse,
+    cameFromReference,
+  }) => {
     if (chapterId === activeChapter.chapterId) {
       return
     }
@@ -290,10 +302,6 @@ export default function BibleView() {
       (chapter) => chapter.chapterId === chapterId
     )
 
-    // textTranslateY.value = withSequence(
-    //   withTiming(-screenHeight, { duration: chapterChangeDuration }),
-    //   withTiming(screenHeight, { duration: 0 })
-    // )
     textFadeOut.value = 0.7
     textFadeOut.value = withTiming(1, { duration: chapterChangeDuration })
 
@@ -304,6 +312,15 @@ export default function BibleView() {
       })
     )
 
+    console.log(
+      'old index',
+      activeChapterIndex.index,
+      'came from reference',
+      activeChapterIndex.cameFromReference,
+      'highlight verse',
+      highlightVerse
+    )
+
     setTimeout(
       () =>
         dispatch(
@@ -311,6 +328,10 @@ export default function BibleView() {
             transition: 'fade',
             index: chapterIndex,
             verseIndex: verseNumber,
+            highlightVerse:
+              activeChapterIndex.cameFromReference === true ||
+              highlightVerse === true,
+            cameFromReference: cameFromReference ?? false,
           })
         ),
       chapterChangeDuration
@@ -535,6 +556,33 @@ export default function BibleView() {
 
   useKeepAwake()
 
+  const highlightVerseNumber = useSharedValue(0)
+
+  useEffect(() => {
+    console.log(activeChapterIndex)
+    if (
+      activeChapterIndex.verseIndex !== undefined &&
+      activeChapterIndex.verseIndex !== 'bottom' &&
+      textRendered &&
+      activeChapterIndex.highlightVerse
+    ) {
+      highlightVerseNumber.value = withSequence(
+        withTiming(1),
+        withDelay(2000, withTiming(0))
+      )
+    }
+  }, [activeChapterIndex, textRendered])
+
+  const verseNumberStyles = useAnimatedStyle(() => {
+    return {
+      backgroundColor: interpolateColor(
+        highlightVerseNumber.value,
+        [0, 1],
+        [colors.p1 + '00', colors.p1 + '22']
+      ),
+    }
+  })
+
   return (
     <GestureDetector gesture={composedGestures}>
       <View
@@ -583,6 +631,27 @@ export default function BibleView() {
                 <Text style={{ color: 'green', fontSize: 20 }}>{index}</Text>
               </View>
             ))} */}
+            {textRendered && verseOffsets ? (
+              <Animated.View
+                style={[
+                  {
+                    alignSelf: 'center',
+                    position: 'absolute',
+                    height: settings.lineHeight,
+                    borderRadius: 12,
+                    top:
+                      activeChapterIndex.verseIndex !== undefined &&
+                      activeChapterIndex.verseIndex !== 'bottom'
+                        ? verseOffsets[activeChapterIndex.verseIndex]
+                        : 0,
+                    width: screenWidth - gutterSize,
+                  },
+                  verseNumberStyles,
+                ]}
+              >
+                {/* <Text style={{ color: 'green', fontSize: 20 }}>{index}</Text> */}
+              </Animated.View>
+            ) : null}
             <Spacer units={6} additional={insets.top} />
             {/* <View
               style={{
@@ -685,6 +754,7 @@ export default function BibleView() {
         <Settings
           openSettings={openSettings}
           openSettingsNested={openSettingsNested}
+          activeChapter={activeChapter}
         />
         <ReferencesModal
           goToChapter={goToChapter}

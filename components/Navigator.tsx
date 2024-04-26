@@ -9,6 +9,7 @@ import {
   withTiming,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { GoToChapter } from '../Bible'
 import {
   colors,
   gutterSize,
@@ -39,7 +40,7 @@ interface Props {
   setSearchText: Dispatch<SetStateAction<string>>
   textPinch: SharedValue<number>
   savedTextPinch: SharedValue<number>
-  goToChapter: (chapterId: Chapters[number]['chapterId']) => void
+  goToChapter: GoToChapter
 }
 
 export interface SearchResult {
@@ -204,7 +205,7 @@ export default function Navigator({
                     searchResults.length > 0 &&
                     typeof searchResults[0].item !== 'string'
                   ) {
-                    goToChapter(searchResults[0].item.chapterId)
+                    goToChapter({ chapterId: searchResults[0].item.chapterId })
                     closeNavigator()
                   }
                 }}

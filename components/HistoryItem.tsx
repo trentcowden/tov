@@ -14,6 +14,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { GoToChapter } from '../Bible'
 import {
   colors,
   gutterSize,
@@ -36,10 +37,7 @@ interface Props {
   item: HistoryItem
   index: number
   closeHistory: () => void
-  goToChapter: (
-    chapterId: Chapters[number]['chapterId'],
-    verseNumber?: number | 'bottom'
-  ) => void
+  goToChapter: GoToChapter
   activeChapter: Chapters[number]
   showFavorites: boolean
 }
@@ -149,7 +147,10 @@ export default function HistoryListItem({
           delayLongPress={250}
           onPress={() => {
             if (item.chapterId !== activeChapter.chapterId)
-              goToChapter(item.chapterId, item.verseIndex)
+              goToChapter({
+                chapterId: item.chapterId,
+                verseNumber: item.verseIndex,
+              })
 
             closeHistory()
           }}
