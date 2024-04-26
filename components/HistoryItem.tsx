@@ -193,12 +193,14 @@ export default function HistoryListItem({
                   sizes.body,
                   item.isFavorite ? 'uib' : 'uir',
                   'l',
-                  colors.fg2
+                  colors.fg1
                 ),
                 textStyles,
               ]}
             >
-              {getBook(item.chapterId).name} {item.chapterId.split('.')[1]}
+              {item.chapterId === 'tutorial'
+                ? 'Tutorial'
+                : `${getBook(item.chapterId).name} ${item.chapterId.split('.')[1]}`}
               {/* <Text style={[typography(14, 'uil', 'l', colors.fg4)]}>
               {`:${item.verseIndex + 1}`}
             </Text> */}

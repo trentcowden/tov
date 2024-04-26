@@ -60,7 +60,8 @@ export default function BibleText({
   }
 
   function renderSectionHeader(text: string) {
-    return text.replace(/## /g, '')
+    // return text.replace(/## /g, '')
+    return ''
   }
 
   return (
@@ -70,7 +71,7 @@ export default function BibleText({
           pattern: /\[([0-9]{1,3})\]/,
           style: {
             fontFamily: 'Bold',
-            color: colors.pText,
+            color: colors.p1,
             // fontSize: 16,
             // backgroundColor: colors.bg2,
           },
@@ -79,7 +80,7 @@ export default function BibleText({
         {
           pattern: /\*\*.+\*\*/,
           style: {
-            fontFamily: 'Bold',
+            fontFamily: 'SemiBold',
           },
           renderText: renderBoltAndItalicText,
         },

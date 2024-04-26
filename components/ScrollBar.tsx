@@ -161,12 +161,12 @@ export default function ScrollBar({
     backgroundColor: interpolateColor(
       scrollBarActivate.value,
       [0, 1],
-      [colors.bg4, colors.p1]
+      [colors.p1 + '88', colors.p1]
     ),
     width: interpolate(
       scrollBarActivate.value,
       [0, 1],
-      [gutterSize / 2, gutterSize * 3],
+      [gutterSize * 0.25, gutterSize * 3],
       'clamp'
     ),
     transform: [
@@ -350,7 +350,7 @@ export default function ScrollBar({
                   numberOfLines={1}
                   adjustsFontSizeToFit
                   style={{
-                    ...typography(sizes.caption, 'uib', 'c', colors.p1),
+                    ...typography(sizes.tiny, 'uib', 'c', colors.p1),
                     // width: verseColumnWidth,
                   }}
                 >

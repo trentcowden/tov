@@ -23,9 +23,9 @@ import TovPressable from './TovPressable'
 
 interface Props {
   openModal: SharedValue<number>
-  openNested: SharedValue<number>
+  openNested?: SharedValue<number>
   children: ReactNode
-  nestedScreen: ReactNode
+  nestedScreen?: ReactNode
   close: () => void
   onBack: () => void
 }
@@ -41,7 +41,7 @@ export default function ModalScreen({
   const insets = useSafeAreaInsets()
   const dispatch = useAppDispatch()
 
-  const navigatorStyles = useAnimatedStyle(() => {
+  const modalStyle = useAnimatedStyle(() => {
     return {
       opacity: openModal.value,
       zIndex: openModal.value !== 0 ? 4 : -1,
@@ -51,14 +51,19 @@ export default function ModalScreen({
     }
   })
 
-  const selectedBookStyles = useAnimatedStyle(() => {
-    return {
-      opacity: openNested.value,
-      zIndex: openNested.value !== 0 ? 4 : -1,
-      transform: [
-        { translateX: interpolate(openNested.value, [0, 1], [200, 0]) },
-      ],
-    }
+  const nestedStyle = useAnimatedStyle(() => {
+    return openNested
+      ? {
+          opacity: openNested.value,
+          zIndex: openNested.value !== 0 ? 4 : -1,
+          transform: [
+            { translateX: interpolate(openNested.value, [0, 1], [200, 0]) },
+          ],
+        }
+      : {
+          opacity: 0,
+          zIndex: -1,
+        }
   })
 
   const navigatorHeight =
@@ -69,12 +74,12 @@ export default function ModalScreen({
 
   const panGesture = Gesture.Pan()
     .onChange((event) => {
-      if (openNested.value === 0) return
+      if (!openNested || openNested.value === 0) return
 
       openNested.value = interpolate(event.translationX, [0, 200], [1, 0])
     })
     .onFinalize((e) => {
-      if (openNested.value === 0) return
+      if (!openNested || openNested.value === 0) return
 
       if (
         (openNested.value < 0.5 || e.velocityX > horizVelocReq) &&
@@ -98,7 +103,7 @@ export default function ModalScreen({
             paddingTop: insets.top + gutterSize,
             justifyContent: 'flex-start',
           },
-          navigatorStyles,
+          modalStyle,
         ]}
       >
         <TovPressable
@@ -126,7 +131,7 @@ export default function ModalScreen({
               backgroundColor: colors.bg2,
               overflow: 'hidden',
             },
-            selectedBookStyles,
+            nestedStyle,
           ]}
         >
           {nestedScreen}

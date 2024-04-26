@@ -31,8 +31,10 @@ interface Props {
   navigatorTransition: SharedValue<number>
   savedNavigatorTransition: SharedValue<number>
   focusSearch: () => void
+  textTranslateY: SharedValue<number>
   textTranslateX: SharedValue<number>
   savedTextTranslateX: SharedValue<number>
+  textFade: SharedValue<number>
 }
 
 export default function ChapterOverlay({
@@ -44,6 +46,8 @@ export default function ChapterOverlay({
   focusSearch,
   textTranslateX,
   savedTextTranslateX,
+  textTranslateY,
+  textFade,
 }: Props) {
   const insets = useSafeAreaInsets()
   const [navigatorOpen, setNavigatorOpen] = useState(false)
@@ -84,6 +88,15 @@ export default function ChapterOverlay({
   const overlayAnimatedStyles = useAnimatedStyle(() => ({
     // opacity: overlayOpacity.value,
     opacity:
+      // textFade.value !== 0
+      //   ? interpolate(textFade.value, [0, 1], [1, 0])
+      //   : textTranslateY.value !== 0
+      //     ? interpolate(
+      //         textTranslateY.value,
+      //         [-screenHeight / 2, 0, screenHeight / 2],
+      //         [0, 1, 0]
+      //       )
+      //     :
       textTranslateX.value !== 0
         ? interpolate(textTranslateX.value, [0, horizTransReq / 2], [1, 0])
         : 1,
@@ -166,9 +179,9 @@ export default function ChapterOverlay({
               ...typography(sizes.caption, 'uis', 'l', colors.fg3),
             }}
           >
-            {activeBook.name.replace(' ', '').slice(0, 3)}
-            {'. '}
-            {activeChapter.chapterId.split('.')[1]}
+            {activeChapter.chapterId === 'tutorial'
+              ? 'Tov'
+              : `${activeBook.name.replace(' ', '').slice(0, 3)}. ${activeChapter.chapterId.split('.')[1]}`}
           </Text>
           {/* <Text
             numberOfLines={1}

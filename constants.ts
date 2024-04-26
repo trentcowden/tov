@@ -1,29 +1,29 @@
 import { Dimensions, TextStyle, ViewStyle } from 'react-native'
 import tinycolor from 'tinycolor2'
 
-const hue = 25
-const bg = `hsl(${hue}, 10, 15)`
-const fg = `hsl(${hue}, 10, 94)`
-const p = `hsl(${hue}, 65, 58)`
+const hue = 27
+const bg = `hsl(${hue}, 23, 11)`
+const fg = `hsl(${hue}, 10, 95)`
+const p = `hsl(${hue}, 49, 65)`
 
 export const colors = {
   bg1: tinycolor(bg).toHexString(),
-  bg2: tinycolor(bg).brighten(4).toHexString(),
-  bg3: tinycolor(bg).brighten(7).toHexString(),
-  bg4: tinycolor(bg).brighten(10).toHexString(),
+  bg2: tinycolor(bg).saturate(4).brighten(3).toHexString(),
+  bg3: tinycolor(bg).saturate(8).brighten(6).toHexString(),
+  // bg4: tinycolor(bg).brighten(10).toHexString(),
   fg1: tinycolor(fg).toHexString(),
   fg2: tinycolor(fg).darken(12).toHexString(),
   fg3: tinycolor(fg).darken(24).toHexString(),
-  fg4: tinycolor(fg).darken(36).toHexString(),
-  b: tinycolor(p).setAlpha(0.1).toString(),
-  pText: tinycolor(p).desaturate(8).brighten(8).toHexString(),
+  // fg4: tinycolor(fg).darken(36).toHexString(),
+  // b: tinycolor(p).setAlpha(0.1).toString(),
+  // p0: tinycolor(p).setAlpha(0.5).toHexString(),
   p1: tinycolor(p).toHexString(),
-  p2: tinycolor(p).desaturate(8).darken(8).toHexString(),
+  p2: tinycolor(p).desaturate(8).darken(12).toHexString(),
 }
 
 export const sizes = {
-  title: 24,
-  subtitle: 20,
+  title: 23,
+  subtitle: 19,
   body: 17,
   caption: 14,
   tiny: 12,
@@ -31,7 +31,7 @@ export const sizes = {
 
 console.log(colors)
 
-export const headerHeight = 56
+export const headerHeight = 48
 
 export const shadow: ViewStyle = {
   shadowColor: '#000',

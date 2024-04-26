@@ -1,7 +1,7 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit'
 
 export interface SettingsState {
-  translation: 'web' | 'nlt'
+  translation: 'web'
   fontSize: number
   lineHeight: number
   paragraphSpacing: number
@@ -9,7 +9,7 @@ export interface SettingsState {
 }
 
 const initialState: SettingsState = {
-  translation: 'nlt',
+  translation: 'web',
   fontSize: 17,
   lineHeight: 36,
   paragraphSpacing: 18,

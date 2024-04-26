@@ -2,15 +2,7 @@ import React from 'react'
 import { Alert, Dimensions, ScrollView, Text, View } from 'react-native'
 import { SharedValue, withTiming } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import Spacer from '../Spacer'
-import {
-  colors,
-  gutterSize,
-  modalWidth,
-  shadow,
-  sizes,
-  typography,
-} from '../constants'
+import { colors, gutterSize, modalWidth, shadow } from '../constants'
 import { clearHistory } from '../redux/history'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
 import { setTranslation } from '../redux/settings'
@@ -79,7 +71,7 @@ export default function Settings({ openSettings, openSettingsNested }: Props) {
           height: navigatorHeight,
           backgroundColor: colors.bg2,
           borderRadius: 16,
-          paddingTop: gutterSize,
+          paddingTop: gutterSize / 2,
           ...shadow,
         }}
       >
@@ -159,10 +151,10 @@ export default function Settings({ openSettings, openSettingsNested }: Props) {
             >
               Buy me a coffee
             </SettingsItem> */}
-            <Spacer units={2} />
+            {/* <Spacer units={2} />
             <Text style={typography(sizes.caption, 'uim', 'c', colors.p1)}>
               {'Made with 🧡 by Trent Cowden'}
-            </Text>
+            </Text> */}
           </ScrollView>
           <Fade place="top" color={colors.bg2} />
         </View>

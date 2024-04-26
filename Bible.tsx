@@ -40,7 +40,6 @@ import {
   chapterChangeDuration,
   colors,
   gutterSize,
-  headerHeight,
   horizTransReq,
   horizVelocReq,
   overScrollReq,
@@ -48,11 +47,10 @@ import {
   panActivateConfig,
   screenHeight,
   screenWidth,
-  typography,
 } from './constants'
 import bibles from './data/bibles'
 import { Chapters } from './data/types/chapters'
-import { getBook, getChapterReference } from './functions/bible'
+import { getBook } from './functions/bible'
 import {
   goToNextChapter,
   goToPreviousChapter,
@@ -62,6 +60,14 @@ import { addToHistory } from './redux/history'
 import { useAppDispatch, useAppSelector } from './redux/hooks'
 
 export default function BibleView() {
+  const dispatch = useAppDispatch()
+  // useEffect(() => {
+  //   dispatch(setTranslation('web'))
+  // }, [])
+  // return
+
+  // return
+
   const activeChapterIndex = useAppSelector((state) => state.activeChapterIndex)
   const settings = useAppSelector((state) => state.settings)
   const activeChapter = useMemo(() => {
@@ -73,10 +79,8 @@ export default function BibleView() {
     [activeChapter]
   )
   const insets = useSafeAreaInsets()
-  const dispatch = useAppDispatch()
+  // const dispatch = useAppDispatch()
   const usableHeight = screenHeight - insets.top - insets.bottom
-
-  const overlayOpacity = useSharedValue(0)
 
   const searchRef = useRef<TextInput>(null)
   const scrollViewRef = useRef<ScrollView>(null)
@@ -350,14 +354,6 @@ export default function BibleView() {
     }
   }
 
-  function handleScrollOverlayOffset(offset: number) {
-    if (textTranslateY.value === 0) {
-      if (offset > gutterSize * 2 + headerHeight)
-        overlayOpacity.value = withTiming(1)
-      else overlayOpacity.value = withTiming(0)
-    }
-  }
-
   function getVerseIndex(offset: number) {
     if (!verseOffsets) return -1
 
@@ -416,7 +412,6 @@ export default function BibleView() {
     const contentHeight = event.nativeEvent.contentSize.height
 
     handleScrollBarUpdate(offset)
-    handleScrollOverlayOffset(offset)
     handleScrollVersePosition(offset)
     handleScrollHaptics(offset, contentHeight)
     handleOverScrollAmount(offset, contentHeight)
@@ -511,7 +506,7 @@ export default function BibleView() {
   }))
 
   function onTextLayout(event: NativeSyntheticEvent<TextLayoutEventData>) {
-    const spaceBeforeTextStarts = insets.top + gutterSize * 3 + headerHeight
+    const spaceBeforeTextStarts = insets.top + gutterSize * 1.5
     const spaceAfterTextEnds = insets.bottom + gutterSize * 2
     const verseOffsets: number[] = []
 
@@ -588,11 +583,11 @@ export default function BibleView() {
                 <Text style={{ color: 'green', fontSize: 20 }}>{index}</Text>
               </View>
             ))} */}
-            <Spacer units={8} additional={insets.top} />
-            <View
+            <Spacer units={6} additional={insets.top} />
+            {/* <View
               style={{
                 height: headerHeight,
-                alignItems: 'center',
+                alignItems: 'flex-start',
                 justifyContent: 'center',
                 marginBottom: gutterSize,
               }}
@@ -601,12 +596,12 @@ export default function BibleView() {
                 numberOfLines={1}
                 adjustsFontSizeToFit
                 style={{
-                  ...typography(settings.fontSize + 14, 'b', 'c', colors.fg1),
+                  ...typography(settings.fontSize + 8, 'b', 'l', colors.fg2),
                 }}
               >
                 {getChapterReference(activeChapter.chapterId)}
               </Text>
-            </View>
+            </View> */}
             <Text
               onTextLayout={onTextLayout}
               onLayout={() => {
@@ -633,6 +628,8 @@ export default function BibleView() {
           savedNavigatorTransition={savedNavigatorTransition}
           textTranslateX={textTranslateX}
           savedTextTranslateX={savedTextTranslateX}
+          textTranslateY={textTranslateY}
+          textFade={textFadeOut}
         />
         <Navigator
           searchResultsRef={searchListRef}

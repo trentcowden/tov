@@ -26,6 +26,7 @@ import {
 import { Chapters } from '../data/types/chapters'
 import { HistoryItem } from '../redux/history'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
+import Fade from './Fade'
 import HistoryListItem from './HistoryItem'
 import TovIcon from './SVG'
 import TovPressable from './TovPressable'
@@ -178,7 +179,7 @@ export default function History({
           position: 'absolute',
           left: -Dimensions.get('window').width * 2,
           zIndex: 3,
-          paddingTop: insets.top + gutterSize,
+          paddingTop: insets.top ? insets.top + gutterSize / 4 : gutterSize,
           paddingLeft: Dimensions.get('window').width * 1.25,
           ...shadow,
         },
@@ -227,7 +228,7 @@ export default function History({
           <TovIcon name="history" size={iconSize} color={colors.p1} />
           <Text
             style={[
-              typography(sizes.title, 'uib', 'l', colors.fg1),
+              typography(sizes.title, 'uib', 'l', colors.fg2),
               { flex: 1 },
             ]}
           >
@@ -244,16 +245,16 @@ export default function History({
             flexDirection: 'row',
             justifyContent: 'center',
             alignItems: 'center',
-            backgroundColor: showFavorites ? colors.p1 : undefined,
-            borderWidth: 1,
-            borderColor: colors.b,
+            backgroundColor: showFavorites ? colors.p1 : colors.bg3,
+            // borderWidth: 1,
+            // borderColor: colors.b,
             borderRadius: 99,
           }}
           onPressColor={showFavorites ? colors.p2 : colors.bg3}
         >
           <TovIcon
             name="heart"
-            color={showFavorites ? colors.fg1 : colors.fg3}
+            color={showFavorites ? colors.bg1 : colors.fg3}
             size={16}
           />
         </TovPressable>
@@ -286,7 +287,7 @@ export default function History({
           ListHeaderComponent={<Spacer units={2} />}
           ListFooterComponent={<Spacer units={14} additional={insets.bottom} />}
         />
-        {/* <Fade place="top" color={colors.bg2} /> */}
+        <Fade place="top" color={colors.bg2} />
         <View
           style={{
             position: 'absolute',
@@ -298,7 +299,7 @@ export default function History({
           }}
         >
           <TovPressable
-            onPressColor={colors.bg2}
+            onPressColor={colors.bg3}
             style={{
               borderRadius: 99,
               paddingHorizontal: gutterSize,

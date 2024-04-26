@@ -26,14 +26,15 @@ export default function SettingsItem({
       onPress={onPress}
       style={{
         // paddingVertical: 8,
-        paddingHorizontal: gutterSize,
+        marginHorizontal: gutterSize,
+        backgroundColor: colors.bg3,
+        borderRadius: 16,
       }}
+      onPressColor={colors.bg3}
       onPressScale={0.96}
     >
       <View
         style={{
-          backgroundColor: colors.bg3,
-          borderRadius: 16,
           paddingVertical: gutterSize / 2,
           paddingHorizontal: gutterSize / 2,
           gap: gutterSize / 2,
