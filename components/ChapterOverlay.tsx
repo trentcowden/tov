@@ -116,14 +116,16 @@ export default function ChapterOverlay({
       style={[
         {
           position: 'absolute',
-          top: -gutterSize,
-          width: '100%',
+          top: gutterSize / 2,
+          right: gutterSize / 2,
+          // width: '100%',
           // left: gutterSize,
           // borderRadius: 99,
           zIndex: 4,
-          borderBottomRightRadius: 24,
-          borderBottomLeftRadius: 24,
-          paddingTop: gutterSize,
+          borderRadius: 999,
+          // paddingTop: gutterSize,
+          width: 80,
+          height: insets.top - gutterSize / 2,
           ...shadow,
         },
         overlayAnimatedStyles,
@@ -147,14 +149,13 @@ export default function ChapterOverlay({
         }}
         style={[
           {
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
             width: '100%',
-            gap: 6,
-            paddingHorizontal: gutterSize,
+            flex: 1,
+            paddingHorizontal: gutterSize / 2,
+            justifyContent: 'center',
+            alignItems: 'center',
             // paddingVertical: gutterSize / 2,
-            height: insets.top,
+            //
             // backgroundColor: colors.bg2,
           },
         ]}
@@ -167,7 +168,8 @@ export default function ChapterOverlay({
             flexDirection: 'row',
             alignItems: 'center',
             gap: 6,
-            width: 100,
+
+            // width: 100,
           }}
         >
           {/* <TovIcon name={icon} size={14} /> */}

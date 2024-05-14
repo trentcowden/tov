@@ -32,6 +32,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Spacer from './Spacer'
 import BibleText from './components/BibleText'
 import ChapterOverlay from './components/ChapterOverlay'
+import CircularProgress from './components/CircularProgress'
 import History from './components/History'
 import Navigator from './components/Navigator'
 import ReferencesModal from './components/ReferencesModal'
@@ -44,7 +45,6 @@ import {
   horizTransReq,
   horizVelocReq,
   overScrollReq,
-  overScrollVelocityReq,
   panActivateConfig,
   screenHeight,
   screenWidth,
@@ -127,7 +127,7 @@ export default function BibleView() {
   const [isStatusBarHidden, setIsStatusBarHidden] = useState(true)
   const [pastOverlayOffset, setPastOverlayOffset] = useState(false)
 
-  const alreadyHaptic = useRef(false)
+  const alreadyHaptic = useSharedValue(0)
 
   const scrollBarPosition = useSharedValue(insets.top)
 
@@ -344,15 +344,15 @@ export default function BibleView() {
     // If we meet the requirements for going to the next or previous chapter while we
     // are still scrolling, give some haptic feedback to indicate to the user that if
     // they release their finger, they will go to the next/previous chapter.
-    if (offset < -overScrollReq && !alreadyHaptic.current) {
+    if (offset < -overScrollReq && alreadyHaptic.value === 0) {
       impactAsync(ImpactFeedbackStyle.Heavy)
-      alreadyHaptic.current = true
+      alreadyHaptic.value = withTiming(1)
     } else if (
       offset > contentHeight - screenHeight + overScrollReq &&
-      !alreadyHaptic.current
+      alreadyHaptic.value === 0
     ) {
       impactAsync(ImpactFeedbackStyle.Heavy)
-      alreadyHaptic.current = true
+      alreadyHaptic.value = withTiming(1)
       // If we were previously eligible to go to the next/previous chapter but aren't
       // anymore, give a lighter haptic feedback to indicate that the chapter won't
       // change on release.
@@ -360,18 +360,18 @@ export default function BibleView() {
       textTranslateY.value === 0 &&
       offset < 0 &&
       offset > -overScrollReq &&
-      alreadyHaptic.current === true
+      alreadyHaptic.value !== 0
     ) {
       impactAsync(ImpactFeedbackStyle.Light)
-      alreadyHaptic.current = false
+      alreadyHaptic.value = withTiming(0)
     } else if (
       textTranslateY.value === 0 &&
       offset > contentHeight - screenHeight &&
       offset < contentHeight - screenHeight + overScrollReq &&
-      alreadyHaptic.current === true
+      alreadyHaptic.value !== 0
     ) {
       impactAsync(ImpactFeedbackStyle.Light)
-      alreadyHaptic.current = false
+      alreadyHaptic.value = withTiming(0)
     }
   }
 
@@ -460,7 +460,11 @@ export default function BibleView() {
       offset > contentHeight - screenHeight &&
       activeChapterIndex.index !== bibles[settings.translation].length - 1
 
-    if (goingPrev && (offset <= -overScrollReq || y < -overScrollVelocityReq)) {
+    if (
+      goingPrev &&
+      offset <= -overScrollReq
+      // || y < -overScrollVelocityReq
+    ) {
       // setTextRendered(false)
       scrollBarActivate.value = withTiming(-1, { duration: 200 })
 
@@ -468,7 +472,7 @@ export default function BibleView() {
         withTiming(screenHeight, { duration: chapterChangeDuration }),
         withTiming(-screenHeight, { duration: 0 })
       )
-      if (!alreadyHaptic.current) impactAsync(ImpactFeedbackStyle.Heavy)
+      if (alreadyHaptic.value === 0) impactAsync(ImpactFeedbackStyle.Heavy)
       dispatch(
         addToHistory({
           chapterId: activeChapter.chapterId,
@@ -478,8 +482,9 @@ export default function BibleView() {
       setTimeout(() => dispatch(goToPreviousChapter()), chapterChangeDuration)
     } else if (
       goingNext &&
-      (offset > contentHeight - screenHeight + overScrollReq ||
-        y > overScrollVelocityReq)
+      offset > contentHeight - screenHeight + overScrollReq
+      // ||
+      // y > overScrollVelocityReq
     ) {
       // setTextRendered(false)
       scrollBarActivate.value = withTiming(-1, { duration: 200 })
@@ -490,7 +495,7 @@ export default function BibleView() {
         }),
         withTiming(screenHeight, { duration: 0 })
       )
-      if (!alreadyHaptic.current) impactAsync(ImpactFeedbackStyle.Heavy)
+      if (alreadyHaptic.value === 0) impactAsync(ImpactFeedbackStyle.Heavy)
       dispatch(
         addToHistory({
           chapterId: activeChapter.chapterId,
@@ -498,7 +503,7 @@ export default function BibleView() {
         })
       )
       setTimeout(() => dispatch(goToNextChapter()), chapterChangeDuration)
-    } else if (alreadyHaptic.current) impactAsync(ImpactFeedbackStyle.Light)
+    } else if (alreadyHaptic.value) impactAsync(ImpactFeedbackStyle.Light)
   }
 
   const textStyles = useAnimatedStyle(() => {
@@ -613,7 +618,7 @@ export default function BibleView() {
               minHeight: Dimensions.get('window').height,
             }}
             onScrollBeginDrag={() => {
-              alreadyHaptic.current = false
+              alreadyHaptic.value = 0
               fingerDown.current = true
             }}
           >
@@ -763,6 +768,24 @@ export default function BibleView() {
           referenceVerse={referenceVerse}
           currentVerseIndex={currentVerseIndex}
         />
+        {/* Absolute view with overscroll progrses in circular progress */}
+        <View
+          style={{
+            position: 'absolute',
+            width: screenWidth,
+            height: screenHeight,
+            left: 0,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+          pointerEvents="none"
+        >
+          <CircularProgress
+            progress={overScrollAmount}
+            textTranslateY={textTranslateY}
+            alreadyHaptic={alreadyHaptic}
+          />
+        </View>
         {/* <View
           style={{
             position: 'absolute',

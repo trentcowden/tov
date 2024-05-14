@@ -21,6 +21,8 @@ export const colors = {
   p2: tinycolor(p).desaturate(8).darken(12).toHexString(),
 }
 
+console.log(colors)
+
 export const sizes = {
   title: 23,
   subtitle: 19,
