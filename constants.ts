@@ -37,9 +37,9 @@ export const headerHeight = 48
 
 export const shadow: ViewStyle = {
   shadowColor: '#000',
-  shadowOffset: { width: 0, height: 4 },
-  shadowOpacity: 0.1,
-  shadowRadius: 4,
+  shadowOffset: { width: 0, height: 6 },
+  shadowOpacity: 0.4,
+  shadowRadius: 10,
 }
 // export const colors = {
 //   bg1: '#252322',

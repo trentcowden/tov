@@ -3,7 +3,7 @@ import { PayloadAction, createSlice } from '@reduxjs/toolkit'
 export interface HistoryItem {
   chapterId: string
   date: number
-  verseIndex: number | 'bottom'
+  verseIndex: number | 'bottom' | 'top'
   isFavorite: boolean
 }
 

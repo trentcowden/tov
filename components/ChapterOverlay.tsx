@@ -103,7 +103,7 @@ export default function ChapterOverlay({
     backgroundColor: interpolateColor(
       pressed.value,
       [0, 2],
-      [colors.bg2, colors.bg1]
+      [colors.bg3, colors.bg1]
     ),
     transform: [
       { scale: interpolate(pressed.value, [0, 1], [1, 0.95]) },
@@ -125,7 +125,7 @@ export default function ChapterOverlay({
           borderRadius: 999,
           // paddingTop: gutterSize,
           width: 80,
-          height: insets.top - gutterSize / 2,
+          height: insets.top - gutterSize,
           ...shadow,
         },
         overlayAnimatedStyles,

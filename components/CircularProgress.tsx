@@ -33,7 +33,7 @@ interface Props {
   textTranslateY: SharedValue<number>
   children?: ReactNode
   childSize?: number
-  alreadyHaptic: SharedValue<number>
+  releaseToChange: SharedValue<number>
 }
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle)
@@ -43,7 +43,7 @@ const strokeWidth = 2
 export default function CircularProgress({
   progress,
   textTranslateY,
-  alreadyHaptic,
+  releaseToChange,
 }: Props) {
   const activeChapterIndex = useAppSelector((state) => state.activeChapterIndex)
   const translation = useAppSelector((state) => state.settings.translation)
@@ -105,7 +105,7 @@ export default function CircularProgress({
       circumference * (1 - Math.abs(progressNormalized.value))
     ),
     stroke: interpolateColor(
-      alreadyHaptic.value,
+      releaseToChange.value,
       [0, 1],
       [colors.fg3 + '44', colors.p1]
     ),
@@ -113,7 +113,7 @@ export default function CircularProgress({
 
   const pathAnimatedProps = useAnimatedProps(() => ({
     stroke: interpolateColor(
-      alreadyHaptic.value,
+      releaseToChange.value,
       [0, 1],
       [colors.p1, colors.bg3]
     ),
@@ -149,7 +149,7 @@ export default function CircularProgress({
 
   useAnimatedReaction(
     () => {
-      return alreadyHaptic.value
+      return releaseToChange.value
     },
     (currentValue, previousValue) => {
       if (currentValue !== 0 && previousValue === 0) {
@@ -173,7 +173,7 @@ export default function CircularProgress({
 
   const progressBg = useAnimatedStyle(() => ({
     backgroundColor: interpolateColor(
-      alreadyHaptic.value,
+      releaseToChange.value,
       [0, 1],
       [colors.bg1, colors.p1]
     ),
@@ -181,7 +181,7 @@ export default function CircularProgress({
 
   const textStyles = useAnimatedStyle(() => ({
     color: interpolateColor(
-      alreadyHaptic.value,
+      releaseToChange.value,
       [0, 1],
       [colors.fg3, colors.p1]
     ),
