@@ -1,5 +1,5 @@
 import React, { ReactNode, useMemo, useState } from 'react'
-import { View } from 'react-native'
+import { View, ViewStyle } from 'react-native'
 import Animated, {
   SharedValue,
   interpolate,
@@ -74,7 +74,7 @@ export default function CircularProgress({
   )
 
   const [config, setConfig] = useState({
-    direction: 'column',
+    direction: 'column' as ViewStyle['flexDirection'],
     iconPath: 'M12 20V4m0 0l-6 6m6-6l6 6',
     text: prevChapter,
   })
@@ -86,13 +86,13 @@ export default function CircularProgress({
   useDerivedValue(() => {
     if (progress.value < 0) {
       runOnJS(setConfig)({
-        direction: 'column',
+        direction: 'column-reverse',
         iconPath: 'M12 20V4m0 0l-6 6m6-6l6 6',
         text: prevChapter,
       })
     } else if (progress.value > 0) {
       runOnJS(setConfig)({
-        direction: 'column-reverse',
+        direction: 'column',
         iconPath: 'M12 4V20M12 20L18 14M12 20L6 14',
         text: nextChapter,
       })
@@ -190,7 +190,7 @@ export default function CircularProgress({
         translateY: interpolate(
           progressNormalized.value,
           [-1, 0, 1],
-          [12, 0, -12]
+          [-12, 0, 12]
         ),
       },
     ],

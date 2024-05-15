@@ -1,6 +1,6 @@
 import { ImpactFeedbackStyle, impactAsync } from 'expo-haptics'
 import React, { RefObject, useEffect, useMemo, useRef } from 'react'
-import { View } from 'react-native'
+import { Text, View } from 'react-native'
 import {
   Gesture,
   GestureDetector,
@@ -60,25 +60,21 @@ export default function ScrollBar({
   const startingOffset = useSharedValue(0)
   const going = useAppSelector((state) => state.activeChapterIndex.transition)
   const usableHeight = screenHeight - insets.top * 1 - insets.bottom * 2
+  const textHeight = verseOffsets ? verseOffsets[verseOffsets.length - 1] : 1
   const recentOffset = useRef<number>()
   const [verseText, setVerseText] = React.useState<string>('')
   const pop = useSharedValue(0)
-  const relativeVerseOffsets = useMemo<number[] | undefined>(() => {
-    if (!verseOffsets) return undefined
 
-    const textHeight = verseOffsets[verseOffsets.length - 1]
+  const scrollBarHeight = useMemo(() => {
+    return usableHeight * (usableHeight / textHeight)
+  }, [verseOffsets])
+
+  const relativeVerseOffsets = useMemo<number[] | undefined>(() => {
+    if (!verseOffsets) return
 
     return verseOffsets.map(
       (verseOffset) => (verseOffset / textHeight) * usableHeight
     )
-  }, [verseOffsets])
-
-  const scrollBarHeight = useMemo(() => {
-    if (!verseOffsets) return 0
-    const usableHeight = screenHeight - insets.top * 1 - insets.bottom * 2
-    const textHeight = verseOffsets[verseOffsets.length - 1]
-
-    return usableHeight * (usableHeight / textHeight)
   }, [verseOffsets])
 
   useDerivedValue(() => {
@@ -277,8 +273,66 @@ export default function ScrollBar({
       scrollBarActivate.value = withDelay(200, withTiming(0, { duration: 500 }))
   }, [going])
 
+  const verseNumberStyles = useAnimatedStyle(() => ({
+    opacity: scrollBarActivate.value,
+    transform: [
+      {
+        translateX: interpolate(scrollBarActivate.value, [0, 1], [6, 0]),
+      },
+    ],
+  }))
+
   return (
     <>
+      <Animated.View
+        style={[
+          {
+            position: 'absolute',
+            right: 0,
+            // top: insets.top,
+            top: insets.top,
+            height: usableHeight,
+            // height: screenHeight,
+            zIndex: 0,
+            // width: activeScrollBarWidth,
+            width: gutterSize * 0.75,
+            // backgroundColor: colors.bg2,
+            // paddingTop: insets.top,
+            // paddingBottom: insets.bottom,
+            // alignItems: 'center',
+            ...shadow,
+          },
+          verseNumberStyles,
+        ]}
+        pointerEvents={'none'}
+      >
+        <View style={{ height: '100%' }}>
+          {relativeVerseOffsets?.slice(0, -1).map((offset, index) => {
+            return (
+              <View
+                key={offset}
+                style={{
+                  width: gutterSize * 0.75,
+                  // height: verseHeight,
+                  position: 'absolute',
+                  top: offset,
+                }}
+              >
+                <Text
+                  numberOfLines={1}
+                  adjustsFontSizeToFit
+                  style={{
+                    ...typography(7, 'uil', 'c', colors.fg3),
+                    // width: verseColumnWidth,
+                  }}
+                >
+                  {index + 1}
+                </Text>
+              </View>
+            )
+          })}
+        </View>
+      </Animated.View>
       <GestureDetector gesture={scrollPanGesture}>
         <Animated.View
           style={[
@@ -296,7 +350,7 @@ export default function ScrollBar({
             style={[
               {
                 // width: gutterSize,
-                width: gutterSize,
+                width: gutterSize * 0.75,
                 borderRadius: 99,
 
                 zIndex: 5,
@@ -333,24 +387,6 @@ export default function ScrollBar({
           {verseText}
         </Animated.Text>
       </View>
-      {/* <Animated.View
-        style={[
-          {
-            position: 'absolute',
-            right: 0,
-            width: verseColumnWidth * 2,
-            height: scrollBarHeight,
-            zIndex: 20,
-            backgroundColor: colors.fg3,
-            borderRadius: 99,
-            justifyContent: 'center',
-            paddingLeft: 4,
-          },
-          scrollBarActiveStyles,
-        ]}
-        pointerEvents={'none'}
-      >
-      </Animated.View> */}
     </>
   )
 }

@@ -36,7 +36,6 @@ export default function VerseNumber({
 
   useEffect(() => {
     if (activeChapterIndex.verseIndex === parseInt(verseNumber) - 1) {
-      console.log('beep')
       highlightVerseNumber.value = withSequence(
         withTiming(1),
         withDelay(2000, withTiming(0))

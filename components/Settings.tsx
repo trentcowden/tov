@@ -38,8 +38,6 @@ export default function Settings({
     'translation' | 'typography' | 'theme'
   >()
 
-  console.log(activeChapter.chapterId)
-
   return (
     <ModalScreen
       openModal={openSettings}

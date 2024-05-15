@@ -18,6 +18,7 @@ import {
   TouchableWithoutFeedback,
 } from 'react-native-gesture-handler'
 import Animated, {
+  Extrapolation,
   interpolate,
   interpolateColor,
   runOnJS,
@@ -31,10 +32,10 @@ import Animated, {
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Spacer from './Spacer'
 import BibleText from './components/BibleText'
-import ChapterOverlay from './components/ChapterOverlay'
 import CircularProgress from './components/CircularProgress'
 import History from './components/History'
 import Navigator from './components/Navigator'
+import ReferencesModal from './components/ReferencesModal'
 import ScrollBar from './components/ScrollBar'
 import Settings from './components/Settings'
 import {
@@ -47,10 +48,12 @@ import {
   panActivateConfig,
   screenHeight,
   screenWidth,
+  sizes,
+  typography,
 } from './constants'
 import bibles from './data/bibles'
 import { Chapters } from './data/types/chapters'
-import { getBook } from './functions/bible'
+import { getBook, getChapterReference } from './functions/bible'
 import {
   goToNextChapter,
   goToPreviousChapter,
@@ -67,7 +70,6 @@ interface GoToChapterParams {
 }
 
 export type GoToChapter = (params: GoToChapterParams) => void
-
 export default function BibleView() {
   const dispatch = useAppDispatch()
   // useEffect(() => {
@@ -105,7 +107,7 @@ export default function BibleView() {
 
   const [verseOffsets, setVerseOffsets] = useState<number[]>()
   const currentVerseReq = screenHeight / 2
-  const spaceBeforeTextStarts = insets.top + gutterSize * 2.5
+  const spaceBeforeTextStarts = insets.top + gutterSize * 6
   const currentVerseIndex = useSharedValue<number | 'bottom' | 'top'>(0)
 
   const navigatorTransition = useSharedValue(0)
@@ -130,12 +132,16 @@ export default function BibleView() {
   const releaseToChange = useSharedValue(0)
   const alreadyHaptic = useRef(false)
   const scrollBarPosition = useSharedValue(insets.top * 1)
+  const scrollOffset = useSharedValue(0)
 
   const panGesture = Gesture.Pan()
     .onChange((event) => {
       if (navigatorTransition.value !== 0 || textFadeOut.value !== 0) return
 
-      textTranslateX.value = savedTextTranslateX.value + event.translationX
+      const value = savedTextTranslateX.value + event.translationX
+      if (value < horizTransReq && value > 0) {
+        textTranslateX.value = value
+      }
     })
     .onFinalize((e) => {
       if (navigatorTransition.value !== 0 || textFadeOut.value !== 0) return
@@ -225,6 +231,7 @@ export default function BibleView() {
     if (!textRendered) return
 
     releaseToChange.value = 0
+    alreadyHaptic.current = false
 
     // dispatch(removeFromHistory(activeChapter.chapterId))
 
@@ -469,7 +476,7 @@ export default function BibleView() {
   function onScroll(event: NativeSyntheticEvent<NativeScrollEvent>) {
     const offset = event.nativeEvent.contentOffset.y
     const contentHeight = event.nativeEvent.contentSize.height
-
+    if (textTranslateY.value === 0) scrollOffset.value = offset
     handleScrollBarUpdate(offset)
     handleScrollHaptics(offset, contentHeight)
     handleScrollVersePosition(offset)
@@ -504,6 +511,7 @@ export default function BibleView() {
       offset <= -overScrollReq
       // || y < -overScrollVelocityReq
     ) {
+      setTimeout(() => (scrollOffset.value = 1000), chapterChangeDuration)
       // setTextRendered(false)
       scrollBarActivate.value = withTiming(-1, { duration: 200 })
 
@@ -525,6 +533,7 @@ export default function BibleView() {
       // ||
       // y > overScrollVelocityReq
     ) {
+      setTimeout(() => (scrollOffset.value = 0), chapterChangeDuration)
       // setTextRendered(false)
       scrollBarActivate.value = withTiming(-1, { duration: 200 })
 
@@ -602,7 +611,6 @@ export default function BibleView() {
   const highlightVerseNumber = useSharedValue(0)
 
   useEffect(() => {
-    console.log(activeChapterIndex)
     if (
       activeChapterIndex.verseIndex !== undefined &&
       activeChapterIndex.verseIndex !== 'bottom' &&
@@ -626,6 +634,52 @@ export default function BibleView() {
     }
   })
 
+  const headerText = useAnimatedStyle(() => ({
+    // width: interpolate(
+    //   scrollOffset.value,
+    //   [0, insets.top + gutterSize],
+    //   [screenWidth, 80],
+    //   Extrapolation.CLAMP
+    // ),
+    opacity: interpolate(
+      scrollOffset.value,
+      [insets.top + gutterSize * 1.5, insets.top + gutterSize * 2],
+      [1, 0]
+    ),
+    backgroundColor: interpolateColor(
+      scrollOffset.value,
+      [gutterSize * 1.5 + insets.top, insets.top + gutterSize * 2.5],
+      [colors.bg1, colors.bg2 + 'EE']
+    ),
+    fontSize: interpolate(
+      scrollOffset.value,
+      [gutterSize, insets.top + gutterSize * 1.5],
+      [sizes.title, sizes.caption],
+      Extrapolation.CLAMP
+    ),
+  }))
+
+  const header = useAnimatedStyle(() => ({
+    transform: [
+      {
+        translateY: interpolate(
+          scrollOffset.value,
+          [0, insets.top + gutterSize * 1.5],
+          [insets.top + gutterSize * 1.5, 0],
+          {
+            extrapolateLeft: Extrapolation.EXTEND,
+            extrapolateRight: Extrapolation.CLAMP,
+          }
+        ),
+      },
+    ],
+    backgroundColor: interpolateColor(
+      scrollOffset.value,
+      [gutterSize * 1.5 + insets.top, spaceBeforeTextStarts],
+      [colors.bg1, colors.bg2 + 'EE']
+    ),
+  }))
+
   return (
     <GestureDetector gesture={composedGestures}>
       <View
@@ -642,6 +696,46 @@ export default function BibleView() {
             textStyles,
           ]}
         >
+          <Animated.View
+            style={[
+              {
+                position: 'absolute',
+                zIndex: 2,
+                justifyContent: 'center',
+                top: 0,
+                // borderRadius: 12,
+                overflow: 'hidden',
+                width: '100%',
+                height: insets.top,
+                paddingHorizontal: gutterSize,
+              },
+              header,
+            ]}
+          >
+            <Animated.Text
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              style={[
+                typography(sizes.caption, 'uib', 'l', colors.fg3),
+                {
+                  position: 'absolute',
+                  left: gutterSize,
+                },
+              ]}
+            >
+              {`${activeBook.name.replace(' ', '').slice(0, 3)}. ${activeChapter.chapterId.split('.')[1]}`}
+            </Animated.Text>
+            <Animated.Text
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              style={[
+                typography(sizes.title, 'b', 'l', colors.fg3),
+                headerText,
+              ]}
+            >
+              {getChapterReference(activeChapter.chapterId)}
+            </Animated.Text>
+          </Animated.View>
           <ScrollView
             showsVerticalScrollIndicator={false}
             style={{ paddingHorizontal: gutterSize, flex: 1 }}
@@ -696,24 +790,7 @@ export default function BibleView() {
               </Animated.View>
             ) : null}
             <Spacer additional={spaceBeforeTextStarts} />
-            {/* <View
-              style={{
-                height: headerHeight,
-                alignItems: 'flex-start',
-                justifyContent: 'center',
-                marginBottom: gutterSize,
-              }}
-            >
-              <Text
-                numberOfLines={1}
-                adjustsFontSizeToFit
-                style={{
-                  ...typography(settings.fontSize + 8, 'b', 'l', colors.fg2),
-                }}
-              >
-                {getChapterReference(activeChapter.chapterId)}
-              </Text>
-            </View> */}
+
             <Text
               onTextLayout={onTextLayout}
               onLayout={() => {
@@ -731,7 +808,7 @@ export default function BibleView() {
             <Spacer units={10} additional={insets.bottom} />
           </ScrollView>
         </Animated.View>
-        <ChapterOverlay
+        {/* <ChapterOverlay
           activeChapter={activeChapter}
           activeBook={activeBook}
           isStatusBarHidden={isStatusBarHidden}
@@ -742,7 +819,7 @@ export default function BibleView() {
           savedTextTranslateX={savedTextTranslateX}
           textTranslateY={textTranslateY}
           textFade={textFadeOut}
-        />
+        /> */}
         <Navigator
           searchResultsRef={searchListRef}
           textPinch={navigatorTransition}
@@ -800,13 +877,13 @@ export default function BibleView() {
           openSettingsNested={openSettingsNested}
           activeChapter={activeChapter}
         />
-        {/* <ReferencesModal
+        <ReferencesModal
           goToChapter={goToChapter}
           openReferences={openReferences}
           openReferencesNested={openReferencesNested}
           referenceVerse={referenceVerse}
           currentVerseIndex={currentVerseIndex}
-        /> */}
+        />
         {/* Absolute view with overscroll progrses in circular progress */}
         <View
           style={{

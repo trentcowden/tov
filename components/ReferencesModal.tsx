@@ -1,4 +1,4 @@
-import React, { MutableRefObject, useMemo, useRef } from 'react'
+import React, { useMemo, useRef } from 'react'
 import { Dimensions, FlatList, Text, View } from 'react-native'
 import { SharedValue, withTiming } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -27,7 +27,7 @@ interface Props {
   openReferences: SharedValue<number>
   openReferencesNested: SharedValue<number>
   goToChapter: GoToChapter
-  currentVerseIndex: MutableRefObject<number | 'bottom'>
+  currentVerseIndex: SharedValue<number | 'bottom' | 'top'>
 }
 
 export default function ReferencesModal({
@@ -121,7 +121,7 @@ export default function ReferencesModal({
         }}
         onPressColor={colors.bg3}
         onPress={() => {
-          currentVerseIndex.current = parseInt(referenceVerse.split('.')[2]) - 1
+          currentVerseIndex.value = parseInt(referenceVerse.split('.')[2]) - 1
           goToChapter({
             chapterId: start.split('.').slice(0, 2).join('.'),
             verseNumber: parseInt(start.split('.')[2]) - 1,

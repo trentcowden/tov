@@ -1,6 +1,6 @@
 import { ImpactFeedbackStyle, impactAsync } from 'expo-haptics'
 import React, { useEffect, useRef } from 'react'
-import { Pressable, Text, View } from 'react-native'
+import { Pressable } from 'react-native'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 import Animated, {
   FadeIn,
@@ -176,7 +176,7 @@ export default function HistoryListItem({
             borderRadius: 8,
             backgroundColor:
               item.chapterId === activeChapter.chapterId
-                ? colors.bg3
+                ? colors.p1 + '55'
                 : undefined,
           }}
         >
@@ -217,13 +217,13 @@ export default function HistoryListItem({
             ) : null}
           </Animated.View>
 
-          {item.chapterId === activeChapter.chapterId ? (
+          {/* {item.chapterId === activeChapter.chapterId ? (
             <View style={{ flexDirection: 'row' }}>
               <Text style={typography(sizes.tiny, 'uir', 'l', colors.fg3)}>
                 Current
               </Text>
             </View>
-          ) : null}
+          ) : null} */}
         </Pressable>
       </Animated.View>
     </GestureDetector>

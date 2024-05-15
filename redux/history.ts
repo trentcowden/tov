@@ -17,7 +17,7 @@ export const history = createSlice({
       state,
       action: PayloadAction<Omit<HistoryItem, 'isFavorite' | 'date'>>
     ) => {
-      console.log('adding', action.payload, 'to history')
+      // console.log('adding', action.payload, 'to history')
       const match = state.find(
         (item) => item.chapterId === action.payload.chapterId
       )
