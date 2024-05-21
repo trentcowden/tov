@@ -1,7 +1,7 @@
 import { HighlightRanges } from '@nozbe/microfuzz'
 import { useFuzzySearchList } from '@nozbe/microfuzz/react'
 import { FlashList } from '@shopify/flash-list'
-import { Dispatch, RefObject, SetStateAction, useEffect, useState } from 'react'
+import { RefObject, useEffect, useState } from 'react'
 import { Dimensions, KeyboardAvoidingView, TextInput, View } from 'react-native'
 import {
   SharedValue,
@@ -9,7 +9,6 @@ import {
   withTiming,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { GoToChapter } from '../Bible'
 import {
   colors,
   gutterSize,
@@ -22,6 +21,7 @@ import bibles from '../data/bibles'
 import { Books } from '../data/types/books'
 import { Chapters } from '../data/types/chapters'
 import { getChapterReference } from '../functions/bible'
+import { JumpToChapter } from '../hooks/useChapterChange'
 import { useAppSelector } from '../redux/hooks'
 import BackButton from './BackButton'
 import BooksList from './BooksList'
@@ -35,12 +35,10 @@ import TovPressable from './TovPressable'
 
 interface Props {
   searchRef: RefObject<TextInput>
-  searchText: string
   searchResultsRef: RefObject<FlashList<Chapters[number]>>
-  setSearchText: Dispatch<SetStateAction<string>>
   textPinch: SharedValue<number>
   savedTextPinch: SharedValue<number>
-  goToChapter: GoToChapter
+  jumpToChapter: JumpToChapter
 }
 
 export interface SearchResult {
@@ -53,12 +51,10 @@ export interface SearchResult {
 
 export default function Navigator({
   searchRef,
-  searchText,
-  setSearchText,
   textPinch,
   savedTextPinch,
   searchResultsRef,
-  goToChapter,
+  jumpToChapter,
 }: Props) {
   const settings = useAppSelector((state) => state.settings)
   const insets = useSafeAreaInsets()
@@ -69,6 +65,7 @@ export default function Navigator({
   const chapterTransition = useSharedValue(0)
 
   const [navigatorBook, setNavigatorBook] = useState<Books[number]>()
+  const [searchText, setSearchText] = useState('')
 
   /** Used to store the fuse.js object. */
   const searchResults: SearchResult[] = useFuzzySearchList({
@@ -144,7 +141,7 @@ export default function Navigator({
           </ModalScreenHeader>
           <View style={{ height: navigatorHeight - gutterSize * 2 - 50 }}>
             <ChapterBoxes
-              goToChapter={goToChapter}
+              jumpToChapter={jumpToChapter}
               navigatorBook={navigatorBook}
               closeNavigator={closeNavigator}
             />
@@ -205,7 +202,9 @@ export default function Navigator({
                     searchResults.length > 0 &&
                     typeof searchResults[0].item !== 'string'
                   ) {
-                    goToChapter({ chapterId: searchResults[0].item.chapterId })
+                    jumpToChapter({
+                      chapterId: searchResults[0].item.chapterId,
+                    })
                     closeNavigator()
                   }
                 }}
@@ -228,7 +227,7 @@ export default function Navigator({
               <BooksList navigatorBook={navigatorBook} goToBook={goToBook} />
             ) : (
               <SearchResults
-                goToChapter={goToChapter}
+                jumpToChapter={jumpToChapter}
                 searchText={searchText}
                 searchResultsRef={searchResultsRef}
                 searchResults={searchResults}

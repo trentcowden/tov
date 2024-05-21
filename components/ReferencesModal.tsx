@@ -2,7 +2,6 @@ import React, { useMemo, useRef } from 'react'
 import { Dimensions, FlatList, Text, View } from 'react-native'
 import { SharedValue, withTiming } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { GoToChapter } from '../Bible'
 import Spacer from '../Spacer'
 import {
   colors,
@@ -16,6 +15,7 @@ import {
 import references from '../data/references.json'
 import { References } from '../data/types/references'
 import { getVerseReference, isPassageAfter } from '../functions/bible'
+import { JumpToChapter } from '../hooks/useChapterChange'
 import Fade from './Fade'
 import ModalScreen from './ModalScreen'
 import ModalScreenHeader from './ModalScreenHeader'
@@ -26,7 +26,7 @@ interface Props {
   referenceVerse: string | undefined
   openReferences: SharedValue<number>
   openReferencesNested: SharedValue<number>
-  goToChapter: GoToChapter
+  jumpToChapter: JumpToChapter
   currentVerseIndex: SharedValue<number | 'bottom' | 'top'>
 }
 
@@ -34,7 +34,7 @@ export default function ReferencesModal({
   openReferences,
   openReferencesNested,
   referenceVerse,
-  goToChapter,
+  jumpToChapter,
   currentVerseIndex,
 }: Props) {
   const insets = useSafeAreaInsets()
@@ -122,10 +122,10 @@ export default function ReferencesModal({
         onPressColor={colors.bg3}
         onPress={() => {
           currentVerseIndex.value = parseInt(referenceVerse.split('.')[2]) - 1
-          goToChapter({
+          console.log(currentVerseIndex.value)
+          jumpToChapter({
             chapterId: start.split('.').slice(0, 2).join('.'),
             verseNumber: parseInt(start.split('.')[2]) - 1,
-            highlightVerse: true,
             cameFromReference: true,
           })
           openReferencesNested.value = withTiming(0)

@@ -10,6 +10,7 @@ import Animated, {
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import {
+  backdropColor,
   colors,
   gutterSize,
   horizVelocReq,
@@ -112,7 +113,7 @@ export default function ModalScreen({
             alignSelf: 'center',
             width: screenWidth + 100,
             height: screenHeight + 100,
-            backgroundColor: '#00000033',
+            backgroundColor: backdropColor,
             position: 'absolute',
             top: -100,
           }}

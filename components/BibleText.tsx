@@ -70,7 +70,7 @@ export default function BibleText({
         {
           pattern: /\[([0-9]{1,3})\]/,
           style: {
-            fontFamily: 'Bold',
+            fontFamily: 'UIBold',
             color: colors.p1,
             // fontSize: 16,
             // backgroundColor: colors.bg2,

@@ -4,7 +4,6 @@ import { Pressable, Text, View } from 'react-native'
 import Animated, {
   SharedValue,
   interpolate,
-  interpolateColor,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
@@ -16,6 +15,7 @@ import {
   gutterSize,
   horizTransReq,
   panActivateConfig,
+  screenWidth,
   shadow,
   sizes,
   typography,
@@ -27,27 +27,21 @@ import { IconName } from './SVG'
 interface Props {
   activeChapter: Chapters[number]
   activeBook: Books[number]
-  isStatusBarHidden: boolean
-  navigatorTransition: SharedValue<number>
-  savedNavigatorTransition: SharedValue<number>
-  focusSearch: () => void
-  textTranslateY: SharedValue<number>
   textTranslateX: SharedValue<number>
   savedTextTranslateX: SharedValue<number>
-  textFade: SharedValue<number>
+  savedNavigatorTransition: SharedValue<number>
+  navigatorTransition: SharedValue<number>
+  focusSearch: () => void
 }
 
 export default function ChapterOverlay({
   activeChapter,
   activeBook,
-  isStatusBarHidden,
+  textTranslateX,
+  focusSearch,
   navigatorTransition,
   savedNavigatorTransition,
-  focusSearch,
-  textTranslateX,
   savedTextTranslateX,
-  textTranslateY,
-  textFade,
 }: Props) {
   const insets = useSafeAreaInsets()
   const [navigatorOpen, setNavigatorOpen] = useState(false)
@@ -86,25 +80,11 @@ export default function ChapterOverlay({
   // }, [isStatusBarHidden, pastOverlayOffset, navigatorOpen, chapterChanging])
 
   const overlayAnimatedStyles = useAnimatedStyle(() => ({
-    // opacity: overlayOpacity.value,
-    opacity:
-      // textFade.value !== 0
-      //   ? interpolate(textFade.value, [0, 1], [1, 0])
-      //   : textTranslateY.value !== 0
-      //     ? interpolate(
-      //         textTranslateY.value,
-      //         [-screenHeight / 2, 0, screenHeight / 2],
-      //         [0, 1, 0]
-      //       )
-      //     :
-      textTranslateX.value !== 0
-        ? interpolate(textTranslateX.value, [0, horizTransReq / 2], [1, 0])
-        : 1,
-    backgroundColor: interpolateColor(
-      pressed.value,
-      [0, 2],
-      [colors.bg3, colors.bg1]
-    ),
+    // backgroundColor: interpolateColor(
+    //   pressed.value,
+    //   [0, 2],
+    //   [colors.bg3, colors.bg1]
+    // ),
     transform: [
       { scale: interpolate(pressed.value, [0, 1], [1, 0.95]) },
       // { translateX: textTranslateX.value },
@@ -116,16 +96,16 @@ export default function ChapterOverlay({
       style={[
         {
           position: 'absolute',
-          top: gutterSize / 2,
-          right: gutterSize / 2,
+          // top: gutterSize / 2,
+          right: gutterSize,
           // width: '100%',
           // left: gutterSize,
           // borderRadius: 99,
-          zIndex: 4,
+          zIndex: 0,
           borderRadius: 999,
           // paddingTop: gutterSize,
-          width: 80,
-          height: insets.top - gutterSize,
+          width: screenWidth - horizTransReq - gutterSize * 2,
+          height: insets.top ?? gutterSize * 2,
           ...shadow,
         },
         overlayAnimatedStyles,
@@ -151,12 +131,14 @@ export default function ChapterOverlay({
           {
             width: '100%',
             flex: 1,
-            paddingHorizontal: gutterSize / 2,
+            paddingHorizontal: gutterSize / 8,
             justifyContent: 'center',
             alignItems: 'center',
             // paddingVertical: gutterSize / 2,
             //
-            // backgroundColor: colors.bg2,
+            backgroundColor: colors.bg2,
+            borderBottomRightRadius: 999,
+            borderBottomLeftRadius: 999,
           },
         ]}
       >

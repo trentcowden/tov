@@ -3,9 +3,8 @@ import { PayloadAction, createSlice } from '@reduxjs/toolkit'
 export interface ActiveChapterState {
   transition: 'forward' | 'back' | 'fade'
   index: number
-  verseIndex: number | undefined | 'bottom'
+  verseIndex: number | undefined | 'bottom' | 'top'
   highlightVerse: boolean
-  cameFromReference: boolean
 }
 
 const initialState: ActiveChapterState = {
@@ -13,7 +12,6 @@ const initialState: ActiveChapterState = {
   index: 0,
   verseIndex: undefined,
   highlightVerse: false,
-  cameFromReference: false,
 }
 
 export const activeChapterIndex = createSlice({
@@ -29,7 +27,6 @@ export const activeChapterIndex = createSlice({
         index: state.index + 1,
         verseIndex: undefined,
         highlightVerse: false,
-        cameFromReference: false,
       }
     },
     goToPreviousChapter: (state) => {
@@ -38,7 +35,6 @@ export const activeChapterIndex = createSlice({
         index: state.index - 1,
         verseIndex: undefined,
         highlightVerse: false,
-        cameFromReference: false,
       }
     },
   },

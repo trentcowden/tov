@@ -3,11 +3,11 @@ import { RefObject } from 'react'
 import { Text } from 'react-native'
 import { FlatList } from 'react-native-gesture-handler'
 import { FadeIn, FadeOut } from 'react-native-reanimated'
-import { GoToChapter } from '../Bible'
 import Spacer from '../Spacer'
 import { colors, gutterSize, sizes, typography } from '../constants'
 import { Chapters } from '../data/types/chapters'
 import { getChapterReference } from '../functions/bible'
+import { JumpToChapter } from '../hooks/useChapterChange'
 import { SearchResult } from './Navigator'
 import TovIcon from './SVG'
 import TovPressable from './TovPressable'
@@ -16,14 +16,14 @@ interface Props {
   searchResults: SearchResult[]
   searchText: string
   searchResultsRef: RefObject<FlashList<Chapters[number]>>
-  goToChapter: GoToChapter
+  jumpToChapter: JumpToChapter
   closeNavigator: () => void
 }
 
 export default function SearchResults({
   searchText,
   searchResultsRef,
-  goToChapter,
+  jumpToChapter,
   closeNavigator,
   searchResults,
 }: Props) {
@@ -56,7 +56,7 @@ export default function SearchResults({
         }}
         onPressColor={colors.bg3}
         onPress={() => {
-          goToChapter({ chapterId: item.item.chapterId })
+          jumpToChapter({ chapterId: item.item.chapterId })
           closeNavigator()
         }}
       >

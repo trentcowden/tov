@@ -26,7 +26,6 @@ import {
   panActivateConfig,
   screenHeight,
   shadow,
-  sizes,
   typography,
 } from '../constants'
 import { useAppSelector } from '../redux/hooks'
@@ -43,8 +42,8 @@ interface Props {
   currentVerseIndex: SharedValue<number | 'bottom' | 'top'>
 }
 
-const verseHeight = 24
-const scrollBarSmall = 8
+const scrollBarWidth = gutterSize / 2
+
 export default function ScrollBar({
   verseOffsets,
   scrollBarActivate,
@@ -85,7 +84,7 @@ export default function ScrollBar({
         ? 'End'
         : currentVerseIndex.value === 'top'
           ? 'Beginning'
-          : `Verse ${(currentVerseIndex.value + 1).toString()}`
+          : `${(currentVerseIndex.value + 1).toString()}`
     )
   })
 
@@ -239,7 +238,7 @@ export default function ScrollBar({
     backgroundColor: interpolateColor(
       scrollBarActivate.value,
       [0, 1],
-      [colors.bg3, colors.p1]
+      [colors.bg2, colors.p1]
     ),
     // width: interpolate(
     //   scrollBarActivate.value,
@@ -293,9 +292,9 @@ export default function ScrollBar({
             top: insets.top,
             height: usableHeight,
             // height: screenHeight,
-            zIndex: 0,
+            zIndex: 1,
             // width: activeScrollBarWidth,
-            width: gutterSize * 0.75,
+            width: scrollBarWidth,
             // backgroundColor: colors.bg2,
             // paddingTop: insets.top,
             // paddingBottom: insets.bottom,
@@ -310,9 +309,9 @@ export default function ScrollBar({
           {relativeVerseOffsets?.slice(0, -1).map((offset, index) => {
             return (
               <View
-                key={offset}
+                key={offset * index}
                 style={{
-                  width: gutterSize * 0.75,
+                  width: scrollBarWidth,
                   // height: verseHeight,
                   position: 'absolute',
                   top: offset,
@@ -350,7 +349,7 @@ export default function ScrollBar({
             style={[
               {
                 // width: gutterSize,
-                width: gutterSize * 0.75,
+                width: scrollBarWidth,
                 borderRadius: 99,
 
                 zIndex: 5,
@@ -378,14 +377,23 @@ export default function ScrollBar({
         }}
         pointerEvents="none"
       >
-        <Animated.Text
+        <Animated.View
           style={[
             verseNumStyles,
-            typography(sizes.title, 'uib', 'c', colors.p1),
+            {
+              alignItems: 'center',
+              justifyContent: 'center',
+            },
           ]}
         >
-          {verseText}
-        </Animated.Text>
+          <Text
+            numberOfLines={1}
+            adjustsFontSizeToFit
+            style={[typography(40, 'uib', 'c', colors.p1)]}
+          >
+            {verseText}
+          </Text>
+        </Animated.View>
       </View>
     </>
   )

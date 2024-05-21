@@ -13,13 +13,13 @@ import { useAppSelector } from '../redux/hooks'
 import TovPressable from './TovPressable'
 
 interface Props {
-  goToChapter: GoToChapter
+  jumpToChapter: GoToChapter
   closeNavigator: () => void
   navigatorBook: Books[number] | undefined
 }
 
 export default function ChapterBoxes({
-  goToChapter,
+  jumpToChapter,
   navigatorBook,
   closeNavigator,
 }: Props) {
@@ -66,7 +66,7 @@ export default function ChapterBoxes({
           entering={FadeInRight.duration(200).delay(index * 5)}
           exiting={FadeOut}
           onPress={() => {
-            goToChapter({ chapterId: item.chapterId })
+            jumpToChapter({ chapterId: item.chapterId })
             closeNavigator()
           }}
         >

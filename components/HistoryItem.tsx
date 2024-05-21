@@ -14,7 +14,6 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { GoToChapter } from '../Bible'
 import {
   colors,
   gutterSize,
@@ -25,6 +24,7 @@ import {
 import bibles from '../data/bibles'
 import { Chapters } from '../data/types/chapters'
 import { getBook } from '../functions/bible'
+import { JumpToChapter } from '../hooks/useChapterChange'
 import {
   HistoryItem,
   removeFromHistory,
@@ -37,7 +37,7 @@ interface Props {
   item: HistoryItem
   index: number
   closeHistory: () => void
-  goToChapter: GoToChapter
+  jumpToChapter: JumpToChapter
   activeChapter: Chapters[number]
   showFavorites: boolean
 }
@@ -48,7 +48,7 @@ export default function HistoryListItem({
   closeHistory,
   index,
   item,
-  goToChapter,
+  jumpToChapter,
   activeChapter,
   showFavorites,
 }: Props) {
@@ -147,7 +147,7 @@ export default function HistoryListItem({
           delayLongPress={250}
           onPress={() => {
             if (item.chapterId !== activeChapter.chapterId)
-              goToChapter({
+              jumpToChapter({
                 chapterId: item.chapterId,
                 verseNumber: item.verseIndex,
               })

@@ -1,30 +1,38 @@
 import { formatDistanceToNow, isToday, isYesterday } from 'date-fns'
+import { impactAsync } from 'expo-haptics'
 import { StatusBar } from 'expo-status-bar'
 import React, { useMemo, useState } from 'react'
 import { Dimensions, Text, View } from 'react-native'
+import { TouchableOpacity } from 'react-native-gesture-handler'
 import Animated, {
   FadeIn,
   FadeOut,
   LinearTransition,
   SharedValue,
+  interpolate,
   runOnJS,
   useAnimatedStyle,
   useDerivedValue,
+  withSpring,
   withTiming,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { GoToChapter } from '../Bible'
 import Spacer from '../Spacer'
 import {
+  backdropColor,
   colors,
   gutterSize,
   horizTransReq,
   iconSize,
+  panActivateConfig,
+  screenHeight,
+  screenWidth,
   shadow,
   sizes,
   typography,
 } from '../constants'
 import { Chapters } from '../data/types/chapters'
+import { JumpToChapter } from '../hooks/useChapterChange'
 import { HistoryItem } from '../redux/history'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
 import Fade from './Fade'
@@ -34,8 +42,9 @@ import TovPressable from './TovPressable'
 interface Props {
   activeChapter: Chapters[number]
   textTranslationX: SharedValue<number>
+  savedTextTranslationX: SharedValue<number>
   closeHistory: () => void
-  goToChapter: GoToChapter
+  jumpToChapter: JumpToChapter
   openSettings: SharedValue<number>
 }
 
@@ -46,9 +55,10 @@ interface HistorySection {
 
 export default function History({
   textTranslationX,
+  savedTextTranslationX,
   closeHistory,
   activeChapter,
-  goToChapter,
+  jumpToChapter,
   openSettings,
 }: Props) {
   const activeChapterIndex = useAppSelector((state) => state.activeChapterIndex)
@@ -158,7 +168,7 @@ export default function History({
     ) : (
       <HistoryListItem
         closeHistory={closeHistory}
-        goToChapter={goToChapter}
+        jumpToChapter={jumpToChapter}
         index={index}
         item={item}
         activeChapter={activeChapter}
@@ -167,24 +177,30 @@ export default function History({
     )
   }
 
+  const returnTapStyles = useAnimatedStyle(() => ({
+    opacity: interpolate(textTranslationX.value, [0, horizTransReq], [0, 1]),
+    zIndex: Math.abs(textTranslationX.value) < 10 ? -1 : 1,
+  }))
+
   return (
-    <Animated.View
-      style={[
-        {
-          width: Dimensions.get('window').width * 2,
-          height: Dimensions.get('window').height,
-          backgroundColor: colors.bg2,
-          position: 'absolute',
-          left: -Dimensions.get('window').width * 2,
-          zIndex: 3,
-          paddingTop: insets.top ? insets.top + gutterSize / 4 : gutterSize,
-          paddingLeft: Dimensions.get('window').width * 1.25,
-          ...shadow,
-        },
-        historyAnimatedStyles,
-      ]}
-    >
-      {/* <View
+    <>
+      <Animated.View
+        style={[
+          {
+            width: Dimensions.get('window').width * 2,
+            height: Dimensions.get('window').height,
+            backgroundColor: colors.bg2,
+            position: 'absolute',
+            left: -Dimensions.get('window').width * 2,
+            zIndex: 3,
+            paddingTop: insets.top ? insets.top + gutterSize / 4 : gutterSize,
+            paddingLeft: Dimensions.get('window').width * 1.3,
+            ...shadow,
+          },
+          historyAnimatedStyles,
+        ]}
+      >
+        {/* <View
         style={{
           flexDirection: 'row',
           alignItems: 'center',
@@ -206,128 +222,154 @@ export default function History({
           {format(time, 'HH:mm')}
         </Text>
       </View> */}
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          gap: 8,
-          paddingHorizontal: gutterSize,
-          marginBottom: gutterSize / 2,
-        }}
-      >
         <View
           style={{
-            flex: 1,
-            alignItems: 'center',
             flexDirection: 'row',
+            alignItems: 'center',
             gap: 8,
-          }}
-        >
-          <TovIcon name="history" size={iconSize} color={colors.p1} />
-          <Text
-            style={[
-              typography(sizes.title, 'uib', 'l', colors.fg2),
-              { flex: 1 },
-            ]}
-          >
-            History
-          </Text>
-        </View>
-        <TovPressable
-          onPress={() => setShowFavorites((current) => !current)}
-          style={{
-            // aspectRatio: 1,
-            height: 32,
-            width: 32,
-            // paddingVertical: gutterSize / 2.5,
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center',
-            backgroundColor: showFavorites ? colors.p1 : colors.bg3,
-            // borderWidth: 1,
-            // borderColor: colors.b,
-            borderRadius: 99,
-          }}
-          onPressColor={showFavorites ? colors.p2 : colors.bg3}
-        >
-          <TovIcon
-            name="heart"
-            color={showFavorites ? colors.bg1 : colors.fg3}
-            size={16}
-          />
-        </TovPressable>
-      </View>
-      <View style={{ flex: 1 }}>
-        <Animated.FlatList
-          itemLayoutAnimation={LinearTransition.springify()
-            .damping(20)
-            .mass(0.5)
-            .stiffness(140)
-            .restDisplacementThreshold(0)}
-          data={sections}
-          contentContainerStyle={{ paddingHorizontal: gutterSize / 2 }}
-          renderItem={renderHistoryItem}
-          // renderSectionHeader={renderSectionHeader}
-          keyExtractor={(item) =>
-            typeof item === 'string' ? item : item.date.toString()
-          }
-          showsVerticalScrollIndicator={false}
-          // renderSectionFooter={() => <Spacer units={4} />}
-          // estimatedItemSize={28}
-          ListEmptyComponent={
-            <View style={{ paddingHorizontal: gutterSize / 2 }}>
-              <Text style={typography(sizes.body, 'uir', 'l', colors.fg3)}>
-                {showFavorites
-                  ? 'Long press on a chapter to mark it as a favorite.'
-                  : 'Come back here to return to chapters you were previously reading.'}
-              </Text>
-            </View>
-          }
-          ListHeaderComponent={<Spacer units={2} />}
-          ListFooterComponent={<Spacer units={14} additional={insets.bottom} />}
-        />
-        <Fade place="top" color={colors.bg2} />
-        <View
-          style={{
-            position: 'absolute',
-            bottom: insets.bottom + gutterSize,
-            width: '100%',
-            alignItems: 'center',
-            justifyContent: 'center',
             paddingHorizontal: gutterSize,
+            marginBottom: gutterSize / 2,
           }}
         >
-          <TovPressable
-            onPressColor={colors.bg3}
+          <View
             style={{
-              borderRadius: 99,
-              paddingHorizontal: gutterSize,
-              paddingVertical: gutterSize / 2,
+              flex: 1,
+              alignItems: 'center',
+              flexDirection: 'row',
+              gap: 8,
+            }}
+          >
+            <TovIcon name="history" size={iconSize} color={colors.p1} />
+            <Text
+              style={[
+                typography(sizes.title, 'uib', 'l', colors.fg2),
+                { flex: 1 },
+              ]}
+            >
+              History
+            </Text>
+          </View>
+          <TovPressable
+            onPress={() => setShowFavorites((current) => !current)}
+            style={{
+              // aspectRatio: 1,
+              height: 32,
+              width: 32,
+              // paddingVertical: gutterSize / 2.5,
               flexDirection: 'row',
               justifyContent: 'center',
-              gap: 8,
               alignItems: 'center',
-              backgroundColor: colors.bg3,
+              backgroundColor: showFavorites ? colors.p1 : colors.bg3,
+              // borderWidth: 1,
+              // borderColor: colors.b,
+              borderRadius: 99,
             }}
-            onPress={() => {
-              // textTranslationX.value = withSpring(0, panActivateConfig)
-              openSettings.value = withTiming(1)
-            }}
+            onPressColor={showFavorites ? colors.p2 : colors.bg3}
           >
-            <TovIcon name="settings" size={18} color={colors.fg3} />
-            <Text style={typography(sizes.caption, 'uis', 'c', colors.fg3)}>
-              Settings
-            </Text>
+            <TovIcon
+              name="heart"
+              color={showFavorites ? colors.bg1 : colors.fg3}
+              size={16}
+            />
           </TovPressable>
         </View>
-      </View>
-      <StatusBar
-        hidden
-        backgroundColor={colors.bg2}
-        translucent={false}
-        animated
-        style="light"
-      />
-    </Animated.View>
+        <View style={{ flex: 1 }}>
+          <Animated.FlatList
+            itemLayoutAnimation={LinearTransition.springify()
+              .damping(20)
+              .mass(0.5)
+              .stiffness(140)
+              .restDisplacementThreshold(0)}
+            data={sections}
+            contentContainerStyle={{ paddingHorizontal: gutterSize / 2 }}
+            renderItem={renderHistoryItem}
+            // renderSectionHeader={renderSectionHeader}
+            keyExtractor={(item) =>
+              typeof item === 'string' ? item : item.date.toString()
+            }
+            showsVerticalScrollIndicator={false}
+            // renderSectionFooter={() => <Spacer units={4} />}
+            // estimatedItemSize={28}
+            ListEmptyComponent={
+              <View style={{ paddingHorizontal: gutterSize / 2 }}>
+                <Text style={typography(sizes.body, 'uir', 'l', colors.fg3)}>
+                  {showFavorites
+                    ? 'Long press on a chapter to mark it as a favorite.'
+                    : 'Come back here to return to chapters you were previously reading.'}
+                </Text>
+              </View>
+            }
+            ListHeaderComponent={<Spacer units={2} />}
+            ListFooterComponent={
+              <Spacer units={14} additional={insets.bottom} />
+            }
+          />
+          <Fade place="top" color={colors.bg2} />
+          <View
+            style={{
+              position: 'absolute',
+              bottom: insets.bottom + gutterSize,
+              width: '100%',
+              alignItems: 'center',
+              justifyContent: 'center',
+              paddingHorizontal: gutterSize,
+            }}
+          >
+            <TovPressable
+              onPressColor={colors.bg3}
+              style={{
+                borderRadius: 99,
+                paddingHorizontal: gutterSize,
+                paddingVertical: gutterSize / 2,
+                flexDirection: 'row',
+                justifyContent: 'center',
+                gap: 8,
+                alignItems: 'center',
+                backgroundColor: colors.bg3,
+              }}
+              onPress={() => {
+                // textTranslationX.value = withSpring(0, panActivateConfig)
+                openSettings.value = withTiming(1)
+              }}
+            >
+              <TovIcon name="settings" size={18} color={colors.fg3} />
+              <Text style={typography(sizes.caption, 'uis', 'c', colors.fg3)}>
+                Settings
+              </Text>
+            </TovPressable>
+          </View>
+        </View>
+        <StatusBar
+          hidden
+          backgroundColor={colors.bg2}
+          translucent={false}
+          animated
+          style="light"
+        />
+      </Animated.View>
+      <Animated.View
+        style={[
+          {
+            width: screenWidth,
+            height: screenHeight,
+            position: 'absolute',
+            backgroundColor: backdropColor,
+          },
+          returnTapStyles,
+        ]}
+      >
+        <TouchableOpacity
+          activeOpacity={0}
+          onPress={() => {
+            runOnJS(impactAsync)()
+            textTranslationX.value = withSpring(0, panActivateConfig)
+            savedTextTranslationX.value = 0
+          }}
+          style={{
+            ...Dimensions.get('window'),
+          }}
+        />
+      </Animated.View>
+    </>
   )
 }

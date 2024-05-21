@@ -1205,6 +1205,11 @@
     call-me-maybe "^1.0.1"
     js-yaml "^4.1.0"
 
+"@birdwingo/react-native-spinning-numbers@^1.0.9":
+  version "1.0.9"
+  resolved "https://registry.yarnpkg.com/@birdwingo/react-native-spinning-numbers/-/react-native-spinning-numbers-1.0.9.tgz#dfb3f310496ee2d4caaeeb4f58ffd54541c034ed"
+  integrity sha512-kwhCcomZUZwCY9O52Xg828cvtj6z0Aw9sosoRLPfbhClA0hyG2CLk4JJlCb+VjiUZ/5VqAWrIE/UaeysQyvOMg==
+
 "@colors/colors@1.5.0":
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/@colors/colors/-/colors-1.5.0.tgz#bb504579c1cae923e6576a4f5da43d25f97bdbd9"

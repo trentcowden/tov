@@ -9,6 +9,7 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@birdwingo/react-native-spinning-numbers": "^1.0.9",
     "@expo/vector-icons": "^13.0.0",
     "@nozbe/microfuzz": "^1.0.0",
     "@react-native-community/blur": "^4.4.0",
