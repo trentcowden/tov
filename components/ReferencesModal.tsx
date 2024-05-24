@@ -28,6 +28,8 @@ interface Props {
   openReferencesNested: SharedValue<number>
   jumpToChapter: JumpToChapter
   currentVerseIndex: SharedValue<number | 'bottom' | 'top'>
+  scrollOffset: SharedValue<number>
+  overlayOpacity: SharedValue<number>
 }
 
 export default function ReferencesModal({
@@ -36,6 +38,8 @@ export default function ReferencesModal({
   referenceVerse,
   jumpToChapter,
   currentVerseIndex,
+  overlayOpacity,
+  scrollOffset,
 }: Props) {
   const insets = useSafeAreaInsets()
   const referencesRef = useRef<FlatList<References[string][number]>>(null)
@@ -74,13 +78,24 @@ export default function ReferencesModal({
 
   function renderReference({
     item,
+    index,
   }: {
     item: string | [string] | [string, string]
+    index: number
   }) {
     if (!referenceVerse) return <View />
 
     const start = typeof item === 'string' ? item : item[0]
     const isAfter = isPassageAfter(referenceVerse, start) < 0
+    const prevReference = index > 0 ? activeReferences[index - 1] : null
+    const prevStart = prevReference
+      ? typeof prevReference === 'string'
+        ? prevReference
+        : prevReference[0]
+      : null
+    const prevIsAfter =
+      prevStart !== null ? isPassageAfter(referenceVerse, prevStart) < 0 : null
+
     let passageString = getVerseReference(start)
 
     if (typeof item !== 'string' && item.length === 2) {
@@ -100,39 +115,74 @@ export default function ReferencesModal({
           .join(' ')
     }
     return (
-      // <View
-      //   style={{
-      //     flexDirection: 'row',
-      //     width: '100%',
-      //     justifyContent: isAfter ? 'flex-end' : 'flex-start',
-      //     paddingHorizontal: gutterSize / 2,
-      //   }}
-      // >
-      <TovPressable
-        style={{
-          alignItems: 'center',
-          gap: 8,
-          // width: screenWidth - gutterSize * 4,
-          flexDirection: 'row',
-          paddingHorizontal: gutterSize / 2,
-          paddingVertical: 12,
-          borderRadius: 12,
-          justifyContent: isAfter ? 'flex-end' : 'flex-start',
-        }}
-        onPressColor={colors.bg3}
-        onPress={() => {
-          currentVerseIndex.value = parseInt(referenceVerse.split('.')[2]) - 1
-          console.log(currentVerseIndex.value)
-          jumpToChapter({
-            chapterId: start.split('.').slice(0, 2).join('.'),
-            verseNumber: parseInt(start.split('.')[2]) - 1,
-            cameFromReference: true,
-          })
-          openReferencesNested.value = withTiming(0)
-          openReferences.value = withTiming(0)
-        }}
-      >
-        {/* <View
+      <View style={{}}>
+        {index === 0 && !isAfter ? (
+          <Text
+            style={[
+              typography(sizes.caption, 'uil', 'l', colors.fg3),
+              {
+                paddingHorizontal: gutterSize / 2,
+                marginBottom: gutterSize / 2,
+              },
+            ]}
+          >
+            Cross references before this verse
+          </Text>
+        ) : isAfter && !prevIsAfter ? (
+          <View
+            style={{
+              width: '100%',
+              paddingHorizontal: gutterSize / 2,
+              marginTop: index !== 0 ? gutterSize : 0,
+            }}
+          >
+            {index !== 0 ? (
+              <View
+                style={{
+                  width: '100%',
+                  height: 1,
+                  backgroundColor: colors.bg3,
+                }}
+              />
+            ) : null}
+            <Text
+              style={[
+                typography(sizes.caption, 'uil', 'l', colors.fg3),
+                {
+                  marginBottom: gutterSize / 2,
+                  marginTop: index !== 0 ? gutterSize : 0,
+                  textAlign: 'right',
+                },
+              ]}
+            >
+              Cross references after this verse
+            </Text>
+          </View>
+        ) : null}
+        <TovPressable
+          style={{
+            alignItems: 'center',
+            gap: 8,
+            // width: screenWidth - gutterSize * 4,
+            flexDirection: 'row',
+            paddingHorizontal: gutterSize / 2,
+            paddingVertical: 12,
+            borderRadius: 12,
+            justifyContent: isAfter ? 'flex-end' : 'flex-start',
+          }}
+          onPressColor={colors.bg3}
+          onPress={() => {
+            jumpToChapter({
+              chapterId: start.split('.').slice(0, 2).join('.'),
+              verseNumber: parseInt(start.split('.')[2]) - 1,
+              comingFrom: 'reference',
+              currentVerse: parseInt(referenceVerse.split('.')[2]) - 1,
+            })
+            openReferencesNested.value = withTiming(0)
+            openReferences.value = withTiming(0)
+          }}
+        >
+          {/* <View
           style={{
             width: (screenWidth - gutterSize * 4) / 2 + 11,
             flexDirection: 'row',
@@ -140,22 +190,22 @@ export default function ReferencesModal({
             // justifyContent: isAfter ? 'flex-start' : 'flex-end',
           }}
         > */}
-        {isAfter ? null : (
-          <TovIcon name={'backReference'} size={iconSize} color={colors.p1} />
-        )}
-        <Text style={[typography(sizes.body, 'uir', 'l', colors.fg2)]}>
-          {passageString}
-        </Text>
-        {isAfter ? (
-          <TovIcon
-            name={'forwardReference'}
-            size={iconSize}
-            color={colors.p1}
-          />
-        ) : null}
-        {/* </View> */}
-      </TovPressable>
-      // </View>
+          {isAfter ? null : (
+            <TovIcon name={'backReference'} size={iconSize} color={colors.p1} />
+          )}
+          <Text style={[typography(sizes.body, 'uir', 'l', colors.fg1)]}>
+            {passageString}
+          </Text>
+          {isAfter ? (
+            <TovIcon
+              name={'forwardReference'}
+              size={iconSize}
+              color={colors.p1}
+            />
+          ) : null}
+          {/* </View> */}
+        </TovPressable>
+      </View>
     )
   }
 
@@ -210,6 +260,8 @@ export default function ReferencesModal({
   return (
     <ModalScreen
       openModal={openReferences}
+      overlayOpacity={overlayOpacity}
+      scrollOffset={scrollOffset}
       // openNested={openReferencesNested}
       close={() => {
         openReferences.value = withTiming(0)
@@ -372,14 +424,14 @@ export default function ReferencesModal({
             </TovPressable>
           </View>
         ) : null} */}
-        <Text
+        {/* <Text
           style={[
             typography(sizes.body, 'uis', 'l', colors.fg3),
             { paddingHorizontal: gutterSize },
           ]}
         >
           Cross References
-        </Text>
+        </Text> */}
         <View style={{ flex: 1 }}>
           {/* {view === 'references' ? ( */}
           <FlatList

@@ -42,6 +42,7 @@ interface Props {
   showFavorites: boolean
 }
 
+const heartSize = 14
 const swipeReq = 75
 
 export default function HistoryListItem({
@@ -101,7 +102,7 @@ export default function HistoryListItem({
 
   useEffect(() => {
     if (item.isFavorite) {
-      textTranslateX.value = withSpring(16, panActivateConfig)
+      textTranslateX.value = withSpring(heartSize + 4, panActivateConfig)
     } else {
       textTranslateX.value = withSpring(0, panActivateConfig)
     }
@@ -149,6 +150,7 @@ export default function HistoryListItem({
             if (item.chapterId !== activeChapter.chapterId)
               jumpToChapter({
                 chapterId: item.chapterId,
+                comingFrom: 'history',
                 verseNumber: item.verseIndex,
               })
 
@@ -167,7 +169,7 @@ export default function HistoryListItem({
           }}
           style={{
             borderColor: colors.bg3,
-            paddingVertical: 8,
+            paddingVertical: 10,
             alignItems: 'center',
             justifyContent: 'space-between',
             paddingHorizontal: gutterSize / 2,
@@ -176,7 +178,7 @@ export default function HistoryListItem({
             borderRadius: 8,
             backgroundColor:
               item.chapterId === activeChapter.chapterId
-                ? colors.p1 + '55'
+                ? colors.ph
                 : undefined,
           }}
         >
@@ -209,10 +211,14 @@ export default function HistoryListItem({
             {item.isFavorite ? (
               <Animated.View
                 entering={FadeIn}
-                exiting={FadeOut.duration(75)}
+                exiting={FadeOut.duration(125)}
                 style={{ position: 'absolute', left: 0 }}
               >
-                <TovIcon name="heart" size={12} color={colors.p1} />
+                <TovIcon
+                  name="heartFilled"
+                  size={heartSize}
+                  color={colors.p1}
+                />
               </Animated.View>
             ) : null}
           </Animated.View>

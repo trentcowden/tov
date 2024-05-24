@@ -1,30 +1,47 @@
+import { ImpactFeedbackStyle, impactAsync } from 'expo-haptics'
 import React, { useMemo } from 'react'
-import Animated, {
+import { Text, View } from 'react-native'
+import {
   Extrapolation,
   SharedValue,
   interpolate,
   useAnimatedStyle,
   useSharedValue,
+  withSpring,
+  withTiming,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import {
   colors,
   gutterSize,
-  screenWidth,
+  panActivateConfig,
   sizes,
   typography,
 } from '../constants'
 import bibles from '../data/bibles'
 import { getChapterReference } from '../functions/bible'
 import { useAppSelector } from '../redux/hooks'
+import TovPressable from './TovPressable'
 
 interface Props {
   scrollOffset: SharedValue<number>
+  textTranslateX: SharedValue<number>
+  savedTextTranslateX: SharedValue<number>
+  savedNavigatorTransition: SharedValue<number>
+  navigatorTransition: SharedValue<number>
+  focusSearch: () => void
 }
 
 const scale = sizes.caption / sizes.title
 
-export default function ChapterTitle({ scrollOffset }: Props) {
+export default function ChapterTitle({
+  scrollOffset,
+  navigatorTransition,
+  savedNavigatorTransition,
+  savedTextTranslateX,
+  textTranslateX,
+  focusSearch,
+}: Props) {
   const activeChapterIndex = useAppSelector((state) => state.activeChapterIndex)
   const settings = useAppSelector((state) => state.settings)
   const activeChapter = useMemo(() => {
@@ -53,25 +70,40 @@ export default function ChapterTitle({ scrollOffset }: Props) {
   }))
 
   return (
-    <Animated.Text
-      numberOfLines={1}
-      onLayout={(e) => {
-        width.value = e.nativeEvent.layout.width
+    <View
+      style={{
+        width: '100%',
+        paddingHorizontal: gutterSize / 2,
+        justifyContent: 'flex-start',
       }}
-      adjustsFontSizeToFit
-      style={[
-        typography(sizes.title, 'uib', 'l', colors.fg3),
-        // headerText,
-        {
-          // position: 'absolute',
-          // top: insets.top + gutterSize * 4,
-          left: -screenWidth + gutterSize * 3,
-          width: screenWidth * 2 - gutterSize * 4,
-          paddingLeft: screenWidth - gutterSize * 2,
-        },
-      ]}
     >
-      {getChapterReference(activeChapter.chapterId)}
-    </Animated.Text>
+      <TovPressable
+        onPress={() => {
+          textTranslateX.value = withSpring(0, panActivateConfig)
+          savedTextTranslateX.value = 0
+          savedNavigatorTransition.value = 1
+          navigatorTransition.value = withTiming(1)
+          focusSearch()
+          impactAsync(ImpactFeedbackStyle.Heavy)
+        }}
+        onPressColor={colors.bg2}
+        style={{
+          paddingHorizontal: gutterSize / 2,
+          paddingVertical: gutterSize / 2,
+          borderRadius: 12,
+        }}
+      >
+        <Text
+          numberOfLines={1}
+          onLayout={(e) => {
+            width.value = e.nativeEvent.layout.width
+          }}
+          adjustsFontSizeToFit
+          style={[typography(sizes.title, 'uib', 'l', colors.p1)]}
+        >
+          {getChapterReference(activeChapter.chapterId)}
+        </Text>
+      </TovPressable>
+    </View>
   )
 }

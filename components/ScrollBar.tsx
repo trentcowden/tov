@@ -26,6 +26,7 @@ import {
   panActivateConfig,
   screenHeight,
   shadow,
+  sizes,
   typography,
 } from '../constants'
 import { useAppSelector } from '../redux/hooks'
@@ -68,6 +69,13 @@ export default function ScrollBar({
     return usableHeight * (usableHeight / textHeight)
   }, [verseOffsets])
 
+  const maxScrollPos =
+    screenHeight -
+    insets.bottom * 2 -
+    scrollBarHeight -
+    insets.top * 1 +
+    insets.top
+
   const relativeVerseOffsets = useMemo<number[] | undefined>(() => {
     if (!verseOffsets) return
 
@@ -84,14 +92,13 @@ export default function ScrollBar({
         ? 'End'
         : currentVerseIndex.value === 'top'
           ? 'Beginning'
-          : `${(currentVerseIndex.value + 1).toString()}`
+          : `Verse ${(currentVerseIndex.value + 1).toString()}`
     )
   })
 
   const scrollPanGesture = Gesture.Pan()
     .onBegin((event) => {
-      if (verseOffsets && verseOffsets[verseOffsets.length - 1] < screenHeight)
-        return
+      if (textHeight < screenHeight) return
 
       runOnJS(impactAsync)(ImpactFeedbackStyle.Heavy)
       pop.value = withSequence(
@@ -104,8 +111,7 @@ export default function ScrollBar({
       scrollBarPosition.value = event.absoluteY - startingOffset.value
     })
     .onChange((event) => {
-      if (verseOffsets && verseOffsets[verseOffsets.length - 1] < screenHeight)
-        return
+      if (textHeight < screenHeight) return
 
       if (event.absoluteY - startingOffset.value < insets.top * 1)
         scrollBarPosition.value = insets.top * 1
@@ -118,8 +124,8 @@ export default function ScrollBar({
       else scrollBarPosition.value = event.absoluteY - startingOffset.value
     })
     .onFinalize((event) => {
-      if (verseOffsets && verseOffsets[verseOffsets.length - 1] < screenHeight)
-        return
+      if (textHeight < screenHeight) return
+
       runOnJS(impactAsync)(ImpactFeedbackStyle.Light)
 
       scrollBarActivate.value = withTiming(0, { duration: 250 })
@@ -187,8 +193,6 @@ export default function ScrollBar({
         (scrollBarPosition.value - insets.top * 1) /
         (usableHeight - scrollBarHeight)
 
-      const textHeight = verseOffsets[verseOffsets.length - 1]
-
       // let closestOffset = relativeVerseOffsets[0]
       // let minDiff = Math.abs(normalizedFingerPos - closestOffset)
 
@@ -217,8 +221,35 @@ export default function ScrollBar({
   const scrollBarAreaStyles = useAnimatedStyle(() => ({
     transform: [
       {
-        translateY: scrollBarPosition.value,
+        translateY:
+          // interpolate(
+          scrollBarPosition.value,
+        //   [
+        //     insets.top - gutterSize,
+        //     insets.top,
+        //     maxScrollPos,
+        //     maxScrollPos + gutterSize,
+        //   ],
+        //   [
+        //     insets.top - gutterSize / 4,
+        //     insets.top,
+        //     maxScrollPos,
+        //     maxScrollPos + gutterSize / 4,
+        //   ]
+        // ),
       },
+      // {
+      //   scaleY: interpolate(
+      //     scrollBarPosition.value,
+      //     [
+      //       insets.top - gutterSize,
+      //       insets.top,
+      //       maxScrollPos,
+      //       maxScrollPos + gutterSize,
+      //     ],
+      //     [0.9, 1, 1, 0.9]
+      //   ),
+      // },
     ],
   }))
 
@@ -231,10 +262,7 @@ export default function ScrollBar({
     //       [0, 1],
     //       [scrollBarHeight, scrollBarSmall]
     //     ),
-    opacity:
-      openNavigator.value !== 0
-        ? interpolate(openNavigator.value, [0, 1], [1, 0.5])
-        : interpolate(scrollBarActivate.value, [-1, 0], [0, 1]),
+    opacity: interpolate(scrollBarActivate.value, [-1, 0], [0, 1]),
     backgroundColor: interpolateColor(
       scrollBarActivate.value,
       [0, 1],
@@ -355,11 +383,7 @@ export default function ScrollBar({
                 zIndex: 5,
                 alignItems: 'center',
                 justifyContent: 'center',
-                display:
-                  verseOffsets &&
-                  verseOffsets[verseOffsets.length - 1] < screenHeight
-                    ? 'none'
-                    : 'flex',
+                display: textHeight < screenHeight ? 'none' : 'flex',
                 ...shadow,
               },
               scrollBarStyles,
@@ -389,7 +413,7 @@ export default function ScrollBar({
           <Text
             numberOfLines={1}
             adjustsFontSizeToFit
-            style={[typography(40, 'uib', 'c', colors.p1)]}
+            style={[typography(sizes.massive, 'uib', 'c', colors.p1)]}
           >
             {verseText}
           </Text>

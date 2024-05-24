@@ -16,12 +16,16 @@ interface Props {
   openSettings: SharedValue<number>
   openSettingsNested: SharedValue<number>
   activeChapter: Chapters[number]
+  scrollOffset: SharedValue<number>
+  overlayOpacity: SharedValue<number>
 }
 
 export default function Settings({
   openSettings,
   openSettingsNested,
   activeChapter,
+  overlayOpacity,
+  scrollOffset,
 }: Props) {
   const activeChapterIndex = useAppSelector((state) => state.activeChapterIndex)
 
@@ -42,6 +46,8 @@ export default function Settings({
     <ModalScreen
       openModal={openSettings}
       openNested={openSettingsNested}
+      overlayOpacity={overlayOpacity}
+      scrollOffset={scrollOffset}
       close={() => {
         openSettings.value = withTiming(
           0,

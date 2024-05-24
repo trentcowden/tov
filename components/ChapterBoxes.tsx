@@ -2,18 +2,18 @@ import { FlashList } from '@shopify/flash-list'
 import { useMemo } from 'react'
 import { Text, View } from 'react-native'
 import { FadeInRight, FadeOut } from 'react-native-reanimated'
-import { GoToChapter } from '../Bible'
 import Spacer from '../Spacer'
 import { colors, gutterSize, sizes, typography } from '../constants'
 import bibles from '../data/bibles'
 import { Books } from '../data/types/books'
 import { Chapters } from '../data/types/chapters'
 import { getBook } from '../functions/bible'
+import { JumpToChapter } from '../hooks/useChapterChange'
 import { useAppSelector } from '../redux/hooks'
 import TovPressable from './TovPressable'
 
 interface Props {
-  jumpToChapter: GoToChapter
+  jumpToChapter: JumpToChapter
   closeNavigator: () => void
   navigatorBook: Books[number] | undefined
 }
@@ -66,7 +66,10 @@ export default function ChapterBoxes({
           entering={FadeInRight.duration(200).delay(index * 5)}
           exiting={FadeOut}
           onPress={() => {
-            jumpToChapter({ chapterId: item.chapterId })
+            jumpToChapter({
+              chapterId: item.chapterId,
+              comingFrom: 'navigator',
+            })
             closeNavigator()
           }}
         >

@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react'
 import { View } from 'react-native'
 import Animated, {
+  Extrapolation,
   SharedValue,
   interpolate,
   interpolateColor,
@@ -28,6 +29,7 @@ import { getChapterReference } from '../functions/bible'
 import { useAppSelector } from '../redux/hooks'
 
 interface Props {
+  place: 'top' | 'bottom'
   progress: SharedValue<number>
   textTranslateY: SharedValue<number>
   releaseToChange: SharedValue<number>
@@ -39,6 +41,7 @@ const size = 40
 const strokeWidth = 1
 
 export default function CircularProgress({
+  place,
   progress,
   textTranslateY,
   releaseToChange,
@@ -58,7 +61,7 @@ export default function CircularProgress({
   }, [activeChapterIndex.index])
 
   const nextChapter = useMemo(() => {
-    if (activeChapterIndex.index === bibles[translation].length) return null
+    if (activeChapterIndex.index === bibles[translation].length - 1) return null
 
     return getChapterReference(
       bibles[translation][activeChapterIndex.index + 1].chapterId
@@ -112,7 +115,22 @@ export default function CircularProgress({
   }))
 
   const viewAnimatedStyles = useAnimatedStyle(() => ({
-    opacity: interpolate(progressNormalized.value, [-1, 0, 1], [1, 0, 1]),
+    opacity:
+      place === 'top' && prevChapter
+        ? interpolate(
+            progressNormalized.value,
+            [-1, 0],
+            [1, 0],
+            Extrapolation.CLAMP
+          )
+        : place === 'bottom' && nextChapter
+          ? interpolate(
+              progressNormalized.value,
+              [1, 0],
+              [1, 0],
+              Extrapolation.CLAMP
+            )
+          : 0,
     transform: [
       {
         scale: interpolate(pop.value, [0, 1], [1, 1.1]),

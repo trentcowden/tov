@@ -14,6 +14,7 @@ import {
   gutterSize,
   modalWidth,
   shadow,
+  showOverlayOffset,
   sizes,
   typography,
 } from '../constants'
@@ -39,6 +40,8 @@ interface Props {
   textPinch: SharedValue<number>
   savedTextPinch: SharedValue<number>
   jumpToChapter: JumpToChapter
+  scrollOffset: SharedValue<number>
+  overlayOpacity: SharedValue<number>
 }
 
 export interface SearchResult {
@@ -55,6 +58,8 @@ export default function Navigator({
   savedTextPinch,
   searchResultsRef,
   jumpToChapter,
+  overlayOpacity,
+  scrollOffset,
 }: Props) {
   const settings = useAppSelector((state) => state.settings)
   const insets = useSafeAreaInsets()
@@ -90,6 +95,10 @@ export default function Navigator({
   }
 
   function closeNavigator() {
+    if (scrollOffset.value < showOverlayOffset) {
+      overlayOpacity.value = withTiming(0)
+    }
+
     searchRef.current?.blur()
     textPinch.value = withTiming(
       0,
@@ -104,8 +113,6 @@ export default function Navigator({
       searchRef.current?.clear()
       setSearchText('')
     }, 200)
-
-    // if (overlayOpacity.value !== 0) overlayOpacity.value = withTiming(1)
   }
 
   function goToBook(book: Books[number]) {
@@ -122,7 +129,6 @@ export default function Navigator({
 
   return (
     <ModalScreen
-      onBack={resetNavigatorBook}
       nestedScreen={
         <>
           <ModalScreenHeader
@@ -152,6 +158,9 @@ export default function Navigator({
       close={closeNavigator}
       openModal={textPinch}
       openNested={chapterTransition}
+      onBack={resetNavigatorBook}
+      overlayOpacity={overlayOpacity}
+      scrollOffset={scrollOffset}
     >
       <KeyboardAvoidingView
         behavior="height"
@@ -204,6 +213,7 @@ export default function Navigator({
                   ) {
                     jumpToChapter({
                       chapterId: searchResults[0].item.chapterId,
+                      comingFrom: 'navigator',
                     })
                     closeNavigator()
                   }

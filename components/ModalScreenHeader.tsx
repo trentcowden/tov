@@ -64,7 +64,7 @@ export default function ModalScreenHeader({
           <Text
             adjustsFontSizeToFit
             numberOfLines={2}
-            style={[typography(sizes.title, 'uib', 'l', colors.fg1)]}
+            style={[typography(sizes.title, 'uib', 'l', colors.fg2)]}
           >
             {children}
           </Text>

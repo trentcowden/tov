@@ -19,7 +19,6 @@ import Animated, {
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Spacer from '../Spacer'
 import {
-  backdropColor,
   colors,
   gutterSize,
   horizTransReq,
@@ -267,7 +266,7 @@ export default function History({
             onPressColor={showFavorites ? colors.p2 : colors.bg3}
           >
             <TovIcon
-              name="heart"
+              name={showFavorites ? 'heartFilled' : 'heart'}
               color={showFavorites ? colors.bg1 : colors.fg3}
               size={16}
             />
@@ -353,7 +352,6 @@ export default function History({
             width: screenWidth,
             height: screenHeight,
             position: 'absolute',
-            backgroundColor: backdropColor,
           },
           returnTapStyles,
         ]}

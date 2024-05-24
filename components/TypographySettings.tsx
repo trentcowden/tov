@@ -79,7 +79,7 @@ export default function TypographySettings({
         Typography
       </ModalScreenHeader>
       <Spacer units={2} />
-      <View style={{ paddingHorizontal: gutterSize, gap: 8 }}>
+      <View style={{ paddingHorizontal: gutterSize, gap: 16 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
           <Text
             style={{
@@ -90,7 +90,7 @@ export default function TypographySettings({
             Font Size
           </Text>
           <TovPressable onPress={decreaseFontSize} style={buttonStyles}>
-            <TovIcon name="minus" size={18} color={colors.p1} />
+            <TovIcon name="minus" size={22} color={colors.p1} />
           </TovPressable>
           <Text
             style={[
@@ -101,7 +101,7 @@ export default function TypographySettings({
             {settings.fontSize}
           </Text>
           <TovPressable onPress={increaseFontSize} style={buttonStyles}>
-            <TovIcon name="plus" size={18} color={colors.p1} />
+            <TovIcon name="plus" size={22} color={colors.p1} />
           </TovPressable>
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
@@ -114,7 +114,7 @@ export default function TypographySettings({
             Line Height
           </Text>
           <TovPressable onPress={decreaseLineHeight} style={buttonStyles}>
-            <TovIcon name="minus" size={18} color={colors.p1} />
+            <TovIcon name="minus" size={22} color={colors.p1} />
           </TovPressable>
           <Text
             style={[
@@ -125,7 +125,7 @@ export default function TypographySettings({
             {settings.lineHeight}
           </Text>
           <TovPressable onPress={increaseLineHeight} style={buttonStyles}>
-            <TovIcon name="plus" size={18} color={colors.p1} />
+            <TovIcon name="plus" size={22} color={colors.p1} />
           </TovPressable>
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
@@ -138,7 +138,7 @@ export default function TypographySettings({
             Paragraph Spacing
           </Text>
           <TovPressable onPress={decreaseParagraphSpacing} style={buttonStyles}>
-            <TovIcon name="minus" size={18} color={colors.p1} />
+            <TovIcon name="minus" size={22} color={colors.p1} />
           </TovPressable>
           <Text
             style={[
@@ -149,7 +149,7 @@ export default function TypographySettings({
             {settings.paragraphSpacing}
           </Text>
           <TovPressable onPress={increaseParagraphSpacing} style={buttonStyles}>
-            <TovIcon name="plus" size={18} color={colors.p1} />
+            <TovIcon name="plus" size={22} color={colors.p1} />
           </TovPressable>
         </View>
       </View>
@@ -168,6 +168,7 @@ export default function TypographySettings({
         <BibleText>{bibles[settings.translation][0].md}</BibleText>
         <Spacer units={4} />
       </ScrollView>
+      <Spacer units={4} />
     </View>
   )
 }

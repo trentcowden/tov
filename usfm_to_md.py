@@ -37,11 +37,13 @@ def usfm_to_markdown(book: str, chapter: int, usfm_text: str):
     usfm_text = re.sub(r"\\bd (.+?)\\bd\*", r"**\1**", usfm_text)
 
     # Italics text
-    usfm_text = re.sub(r"\\it( *)(.+?)( *)\\it\*", r"**\2**", usfm_text)
+    usfm_text = re.sub(r"\\it( *)(.+?)( *)\\it\*", r"*\2*", usfm_text)
+    usfm_text = re.sub(r"\\sp( *)(.+?)( *)\n", r"*\2*\n", usfm_text)
 
     # Descriptions (mostly in the psalms)
     # usfm_text = re.sub(r"\\d( *)(.+?)( *)\n", r"*\2*\n\n", usfm_text)
-    usfm_text = re.sub(r"\\d( *)(.+?)( *)\n", r"", usfm_text)
+    usfm_text = re.sub(r"\\d( *)(.+?)( *)\n", r"*\2*\n\n", usfm_text)
+    usfm_text = re.sub(r"\\ms1( *)(.+?)( *)\n", r"", usfm_text)
 
     # Selahs
     usfm_text = re.sub(r"\\qs ?(.+) ?\\qs\*", r"\n*\1*", usfm_text)

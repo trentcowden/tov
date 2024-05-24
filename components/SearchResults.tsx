@@ -48,15 +48,18 @@ export default function SearchResults({
           height: 48,
           paddingHorizontal: gutterSize / 2,
           borderBottomWidth: 0,
-          backgroundColor: highlight ? colors.bg3 : colors.bg2,
+          backgroundColor: highlight ? colors.ph : colors.bg2,
           marginBottom: 0,
           borderColor: colors.bg3,
           flexDirection: 'row',
           justifyContent: 'space-between',
         }}
-        onPressColor={colors.bg3}
+        onPressColor={colors.p1}
         onPress={() => {
-          jumpToChapter({ chapterId: item.item.chapterId })
+          jumpToChapter({
+            chapterId: item.item.chapterId,
+            comingFrom: 'navigator',
+          })
           closeNavigator()
         }}
       >

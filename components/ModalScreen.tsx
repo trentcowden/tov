@@ -7,10 +7,10 @@ import Animated, {
   runOnJS,
   useAnimatedStyle,
   withSpring,
+  withTiming,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import {
-  backdropColor,
   colors,
   gutterSize,
   horizVelocReq,
@@ -18,6 +18,7 @@ import {
   panActivateConfig,
   screenHeight,
   screenWidth,
+  showOverlayOffset,
 } from '../constants'
 import { useAppDispatch } from '../redux/hooks'
 import TovPressable from './TovPressable'
@@ -29,6 +30,8 @@ interface Props {
   nestedScreen?: ReactNode
   close: () => void
   onBack: () => void
+  scrollOffset: SharedValue<number>
+  overlayOpacity: SharedValue<number>
 }
 
 export default function ModalScreen({
@@ -38,6 +41,8 @@ export default function ModalScreen({
   nestedScreen,
   close,
   onBack,
+  scrollOffset,
+  overlayOpacity,
 }: Props) {
   const insets = useSafeAreaInsets()
   const dispatch = useAppDispatch()
@@ -108,12 +113,16 @@ export default function ModalScreen({
         ]}
       >
         <TovPressable
-          onPress={close}
+          onPress={() => {
+            if (scrollOffset.value < showOverlayOffset)
+              overlayOpacity.value = withTiming(0)
+            close()
+          }}
           style={{
             alignSelf: 'center',
             width: screenWidth + 100,
             height: screenHeight + 100,
-            backgroundColor: backdropColor,
+            backgroundColor: colors.bd,
             position: 'absolute',
             top: -100,
           }}
@@ -123,6 +132,7 @@ export default function ModalScreen({
         <Animated.View
           style={[
             {
+              zIndex: 3,
               top: insets.top + gutterSize,
               height: navigatorHeight,
               width: modalWidth,

@@ -51,6 +51,7 @@ export default function BibleText({
         }
       >
         {' ' + verseNumber + ' '}
+        {/* {verseNumber + ' '} */}
       </Text>
     )
   }
@@ -72,7 +73,7 @@ export default function BibleText({
           style: {
             fontFamily: 'UIBold',
             color: colors.p1,
-            // fontSize: 16,
+            fontSize: settings.fontSize - 2,
             // backgroundColor: colors.bg2,
           },
           renderText: renderVerseNumber,
@@ -87,7 +88,7 @@ export default function BibleText({
         {
           pattern: /\*.+\*/,
           style: {
-            fontFamily: 'Regular',
+            fontFamily: 'Regular-Italic',
           },
           renderText: renderBoltAndItalicText,
         },

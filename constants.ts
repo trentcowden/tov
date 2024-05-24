@@ -20,6 +20,8 @@ export const colors = {
   fg3: tinycolor(fg).darken(24).toHexString(),
   p1: tinycolor(p).toHexString(),
   p2: tinycolor(p).desaturate(8).darken(12).toHexString(),
+  ph: tinycolor(p).setAlpha(0.3).toHslString(),
+  bd: '#00000044',
 }
 
 export const colorsLight = {
@@ -34,6 +36,7 @@ export const colorsLight = {
 }
 
 export const sizes = {
+  massive: 32,
   title: 23,
   subtitle: 19,
   body: 17,
@@ -62,9 +65,9 @@ export const shadow: ViewStyle = {
 //   p2: '#beaca0',
 // }
 
-export const backdropColor = '#00000055'
+// export const backdropColor = '#00000055'
 export const gutterSize = 24
-
+export const showOverlayOffset = gutterSize * 4
 export const screenWidth = Dimensions.get('screen').width
 export const screenHeight = Dimensions.get('screen').height
 export const currentVerseReq = screenHeight / 2
@@ -72,19 +75,21 @@ export const currentVerseReq = screenHeight / 2
 export const iconSize = 24
 export const modalWidth = Dimensions.get('screen').width - gutterSize * 2
 
-export const chapterChangeDuration = 250
+export const chapterChangeDuration = 200
 export const overScrollReq = 75
 export const overScrollVelocityReq = 1
 export const zoomOutReq = 0.3
 export const horizTransReq = Dimensions.get('window').width * 0.7
 export const horizVelocReq = 500
 
+export const textBackdropOpacity = 0.5
+
 /**
  * Takes in some text style settings and returns a filled out text style object. This is used simply to save space in components and simplify things overall. Used within the style prop of a text component.
  */
 export const typography = (
   size: number,
-  weight: 'r' | 'b' | 'uir' | 'uib' | 'uim' | 'uis' | 'uil',
+  weight: 'l' | 'li' | 'ri' | 'r' | 'b' | 'uir' | 'uib' | 'uim' | 'uis' | 'uil',
   align: 'l' | 'c',
   color: string
 ): TextStyle => {
@@ -102,6 +107,9 @@ export const typography = (
   }
 
   const weights = {
+    l: 'Light',
+    li: 'LightItalic',
+    ri: 'RegularItalic',
     r: 'Regular',
     b: 'Bold',
     uil: 'UILight',

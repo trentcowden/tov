@@ -9,6 +9,7 @@ interface Props {
   textTranslateX: SharedValue<number>
   openReferences: SharedValue<number>
   searchRef: React.RefObject<TextInput>
+  overlayOpacity: SharedValue<number>
 }
 
 export default function useNavigatorOpen({
@@ -17,6 +18,7 @@ export default function useNavigatorOpen({
   openReferences,
   textTranslateX,
   searchRef,
+  overlayOpacity,
 }: Props) {
   function focusSearch() {
     searchRef.current?.focus()
@@ -32,6 +34,7 @@ export default function useNavigatorOpen({
       else if (navigatorTransition.value !== 0) return
       else if (openReferences.value !== 0) return
 
+      overlayOpacity.value = withTiming(1)
       savedNavigatorTransition.value = 1
       navigatorTransition.value = withTiming(1)
 
@@ -41,5 +44,6 @@ export default function useNavigatorOpen({
 
   return {
     tapGesture,
+    focusSearch,
   }
 }

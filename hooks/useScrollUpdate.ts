@@ -9,9 +9,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import {
   currentVerseReq,
   getUsableHeight,
-  gutterSize,
   overScrollReq,
   screenHeight,
+  showOverlayOffset,
 } from '../constants'
 
 interface Props {
@@ -23,7 +23,8 @@ interface Props {
   scrollBarActivate: SharedValue<number>
   currentVerseIndex: SharedValue<number | 'top' | 'bottom'>
   overScrollAmount: SharedValue<number>
-  showOverlay: SharedValue<number>
+  overlayOpacity: SharedValue<number>
+  scrollOffset: SharedValue<number>
 }
 
 export default function useScrollUpdate({
@@ -35,12 +36,12 @@ export default function useScrollUpdate({
   currentVerseIndex,
   overScrollAmount,
   scrollBarActivate,
-  showOverlay,
+  overlayOpacity,
+  scrollOffset,
 }: Props) {
   const insets = useSafeAreaInsets()
   const usableHeight = getUsableHeight(insets)
   const scrollBarPosition = useSharedValue(insets.top * 1)
-  const scrollOffset = useSharedValue(0)
 
   function handleScrollHaptics(offset: number, contentHeight: number) {
     if (!fingerDown.current) return
@@ -140,7 +141,7 @@ export default function useScrollUpdate({
     if (!verseOffsets || scrollBarActivate.value > 0) return
 
     const textHeight = verseOffsets[verseOffsets.length - 1]
-
+    console.log(offset)
     // This shit is crazy. Thanks chat gpt.
     const scrollBarHeight = usableHeight * (usableHeight / textHeight)
     const scrollRatio = offset / (textHeight - screenHeight)
@@ -169,8 +170,11 @@ export default function useScrollUpdate({
     const offset = event.nativeEvent.contentOffset.y
     const contentHeight = event.nativeEvent.contentSize.height
     scrollOffset.value = offset
-    if (offset > gutterSize * 4) showOverlay.value = withTiming(1)
-    else showOverlay.value = withTiming(0)
+    if (textTranslateY.value === 0) {
+      if (offset > showOverlayOffset) overlayOpacity.value = withTiming(1)
+      else overlayOpacity.value = withTiming(0)
+    }
+
     handleScrollBarUpdate(offset)
     handleScrollHaptics(offset, contentHeight)
     handleScrollVersePosition(offset)
@@ -178,5 +182,5 @@ export default function useScrollUpdate({
     handleOverScrollAmount(offset, contentHeight)
   }
 
-  return { onScroll, scrollBarPosition, scrollOffset }
+  return { onScroll, scrollBarPosition }
 }

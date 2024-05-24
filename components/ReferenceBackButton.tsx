@@ -43,7 +43,7 @@ export default function ReferenceBackButton({
     return historyItem
   }, [history])
 
-  console.log(recentChapter)
+  // console.log(recentChapter)
 
   return recentChapter ? (
     <Pressable
@@ -74,6 +74,7 @@ export default function ReferenceBackButton({
         jumpToChapter({
           chapterId: recentChapter.chapterId,
           verseNumber: recentChapter.verseIndex,
+          comingFrom: 'reference',
         })
 
         if (typeof recentChapter.verseIndex !== 'number') return

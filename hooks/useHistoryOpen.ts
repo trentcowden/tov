@@ -5,19 +5,28 @@ import {
   SharedValue,
   useSharedValue,
   withSpring,
+  withTiming,
 } from 'react-native-reanimated'
-import { horizTransReq, horizVelocReq, panActivateConfig } from '../constants'
+import {
+  gutterSize,
+  horizTransReq,
+  horizVelocReq,
+  panActivateConfig,
+  showOverlayOffset,
+} from '../constants'
 
 interface Props {
   navigatorTransition: SharedValue<number>
   textFadeOut: SharedValue<number>
-  showOverlay: SharedValue<number>
+  scrollOffset: SharedValue<number>
+  overlayOpacity: SharedValue<number>
 }
 
 export default function useHistoryOpen({
   navigatorTransition,
   textFadeOut,
-  showOverlay,
+  overlayOpacity,
+  scrollOffset,
 }: Props) {
   const textTranslateX = useSharedValue(0)
   const savedTextTranslateX = useSharedValue(0)
@@ -25,6 +34,11 @@ export default function useHistoryOpen({
   const panGesture = Gesture.Pan()
     .onChange((event) => {
       if (navigatorTransition.value !== 0 || textFadeOut.value !== 0) return
+
+      if (textTranslateX.value > gutterSize * 2) {
+        overlayOpacity.value = withTiming(0)
+      } else if (scrollOffset.value > showOverlayOffset)
+        overlayOpacity.value = withTiming(1)
 
       const value = savedTextTranslateX.value + event.translationX
       if (value < horizTransReq && value > 0) {
@@ -47,10 +61,13 @@ export default function useHistoryOpen({
             textTranslateX.value > horizTransReq / 2 ||
             e.velocityX > horizVelocReq
           ) {
+            overlayOpacity.value = withTiming(0)
             runOnJS(impactAsync)(ImpactFeedbackStyle.Heavy)
             savedTextTranslateX.value = horizTransReq
             textTranslateX.value = withSpring(horizTransReq, panActivateConfig)
           } else {
+            if (scrollOffset.value > showOverlayOffset)
+              overlayOpacity.value = withTiming(1)
             savedTextTranslateX.value = 0
             textTranslateX.value = withSpring(0, panActivateConfig)
           }
@@ -73,10 +90,14 @@ export default function useHistoryOpen({
             textTranslateX.value < horizTransReq / 2 ||
             e.velocityX < -horizVelocReq
           ) {
+            if (scrollOffset.value > showOverlayOffset)
+              overlayOpacity.value = withTiming(1)
             runOnJS(impactAsync)(ImpactFeedbackStyle.Light)
             savedTextTranslateX.value = 0
             textTranslateX.value = withSpring(0, panActivateConfig)
           } else {
+            if (scrollOffset.value < showOverlayOffset)
+              overlayOpacity.value = withTiming(0)
             savedTextTranslateX.value = horizTransReq
             textTranslateX.value = withSpring(horizTransReq, panActivateConfig)
           }
