@@ -99,10 +99,11 @@ export default function Navigator({
       overlayOpacity.value = withTiming(0)
     }
 
-    searchRef.current?.blur()
+    setTimeout(() => searchRef.current?.blur(), 200)
     textPinch.value = withTiming(
       0,
-      { duration: 200 },
+      // { duration: 200 },
+      {},
       () => (chapterTransition.value = 0)
     )
 
