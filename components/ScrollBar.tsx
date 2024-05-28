@@ -21,7 +21,6 @@ import Animated, {
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import {
-  colors,
   currentVerseReq,
   gutterSize,
   panActivateConfig,
@@ -30,6 +29,7 @@ import {
   sizes,
   typography,
 } from '../constants'
+import useColors from '../hooks/useColors'
 import { useAppSelector } from '../redux/hooks'
 
 interface Props {
@@ -37,10 +37,7 @@ interface Props {
   scrollBarActivate: SharedValue<number>
   scrollViewRef: RefObject<ScrollView>
   textTranslateX: SharedValue<number>
-  textTranslateY: SharedValue<number>
   scrollBarPosition: SharedValue<number>
-  overScrollAmount: SharedValue<number>
-  openNavigator: SharedValue<number>
   currentVerseIndex: SharedValue<number | 'bottom' | 'top'>
 }
 
@@ -51,12 +48,10 @@ export default function ScrollBar({
   scrollBarActivate,
   scrollViewRef,
   textTranslateX,
-  textTranslateY,
-  overScrollAmount,
   scrollBarPosition,
-  openNavigator,
   currentVerseIndex,
 }: Props) {
+  const colors = useColors()
   const insets = useSafeAreaInsets()
   const startingOffset = useSharedValue(0)
   const going = useAppSelector((state) => state.activeChapterIndex.transition)
@@ -69,13 +64,6 @@ export default function ScrollBar({
   const scrollBarHeight = useMemo(() => {
     return usableHeight * (usableHeight / textHeight)
   }, [verseOffsets])
-
-  const maxScrollPos =
-    screenHeight -
-    insets.bottom * 2 -
-    scrollBarHeight -
-    insets.top * 1 +
-    insets.top
 
   const relativeVerseOffsets = useMemo<number[] | undefined>(() => {
     if (!verseOffsets) return

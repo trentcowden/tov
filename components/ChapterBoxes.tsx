@@ -3,12 +3,13 @@ import { useMemo } from 'react'
 import { Text, View } from 'react-native'
 import { FadeInRight, FadeOut } from 'react-native-reanimated'
 import Spacer from '../Spacer'
-import { colors, gutterSize, sizes, typography } from '../constants'
+import { gutterSize, sizes, typography } from '../constants'
 import bibles from '../data/bibles'
 import { Books } from '../data/types/books'
 import { Chapters } from '../data/types/chapters'
 import { getBook } from '../functions/bible'
 import { JumpToChapter } from '../hooks/useChapterChange'
+import useColors from '../hooks/useColors'
 import { useAppSelector } from '../redux/hooks'
 import TovPressable from './TovPressable'
 
@@ -23,6 +24,7 @@ export default function ChapterBoxes({
   navigatorBook,
   closeNavigator,
 }: Props) {
+  const colors = useColors()
   const settings = useAppSelector((state) => state.settings)
 
   const thisBookChapters = useMemo(

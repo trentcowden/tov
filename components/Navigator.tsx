@@ -6,13 +6,14 @@ import { Dimensions, KeyboardAvoidingView, TextInput, View } from 'react-native'
 import {
   SharedValue,
   useSharedValue,
+  withSpring,
   withTiming,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import {
-  colors,
   gutterSize,
   modalWidth,
+  panActivateConfig,
   shadow,
   showOverlayOffset,
   sizes,
@@ -23,6 +24,7 @@ import { Books } from '../data/types/books'
 import { Chapters } from '../data/types/chapters'
 import { getChapterReference } from '../functions/bible'
 import { JumpToChapter } from '../hooks/useChapterChange'
+import useColors from '../hooks/useColors'
 import { useAppSelector } from '../redux/hooks'
 import BackButton from './BackButton'
 import BooksList from './BooksList'
@@ -59,13 +61,14 @@ export default function Navigator({
   overlayOpacity,
   scrollOffset,
 }: Props) {
+  const colors = useColors()
   const settings = useAppSelector((state) => state.settings)
   const insets = useSafeAreaInsets()
   /**
    * Whether or not new search results should be calculated. We disable it as
    * the user is typing to prevent lag.
    */
-  const chapterTransition = useSharedValue(0)
+  const openNavigatorNested = useSharedValue(0)
 
   const [navigatorBook, setNavigatorBook] = useState<Books[number]>()
   const [searchText, setSearchText] = useState('')
@@ -98,11 +101,11 @@ export default function Navigator({
     }
 
     setTimeout(() => searchRef.current?.blur(), 200)
-    openNavigator.value = withTiming(
+    openNavigator.value = withSpring(
       0,
       // { duration: 200 },
-      {},
-      () => (chapterTransition.value = 0)
+      panActivateConfig,
+      () => (openNavigatorNested.value = 0)
     )
 
     setTimeout(() => {
@@ -113,7 +116,7 @@ export default function Navigator({
   }
 
   function goToBook(book: Books[number]) {
-    chapterTransition.value = withTiming(1)
+    openNavigatorNested.value = withSpring(1, panActivateConfig)
     setNavigatorBook(book)
     searchRef.current?.blur()
   }
@@ -133,7 +136,7 @@ export default function Navigator({
             icon={
               <BackButton
                 onPress={() => {
-                  chapterTransition.value = withTiming(0)
+                  openNavigatorNested.value = withSpring(0, panActivateConfig)
                   setNavigatorBook(undefined)
                 }}
               />
@@ -154,7 +157,7 @@ export default function Navigator({
       }
       close={closeNavigator}
       openModal={openNavigator}
-      openNested={chapterTransition}
+      openNested={openNavigatorNested}
       onBack={resetNavigatorBook}
       overlayOpacity={overlayOpacity}
       scrollOffset={scrollOffset}

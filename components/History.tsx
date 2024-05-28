@@ -14,12 +14,10 @@ import Animated, {
   useAnimatedStyle,
   useDerivedValue,
   withSpring,
-  withTiming,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Spacer from '../Spacer'
 import {
-  colors,
   gutterSize,
   horizTransReq,
   iconSize,
@@ -32,6 +30,7 @@ import {
 } from '../constants'
 import { Chapters } from '../data/types/chapters'
 import { JumpToChapter } from '../hooks/useChapterChange'
+import useColors from '../hooks/useColors'
 import { HistoryItem } from '../redux/history'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
 import Fade from './Fade'
@@ -60,6 +59,7 @@ export default function History({
   jumpToChapter,
   openSettings,
 }: Props) {
+  const colors = useColors()
   const activeChapterIndex = useAppSelector((state) => state.activeChapterIndex)
   const history = useAppSelector((state) => state.history)
   const insets = useSafeAreaInsets()
@@ -328,7 +328,7 @@ export default function History({
               }}
               onPress={() => {
                 // textTranslationX.value = withSpring(0, panActivateConfig)
-                openSettings.value = withTiming(1)
+                openSettings.value = withSpring(1, panActivateConfig)
               }}
             >
               <TovIcon name="settings" size={18} color={colors.fg3} />

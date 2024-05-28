@@ -9,6 +9,7 @@ import {
   TextInput,
   TextLayoutEventData,
   View,
+  useColorScheme,
 } from 'react-native'
 import {
   Gesture,
@@ -26,16 +27,15 @@ import Animated, {
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Spacer from './Spacer'
 import BibleText from './components/BibleText'
+import ChapterChangeFeedback from './components/ChapterChangeFeedback'
 import ChapterOverlay from './components/ChapterOverlay'
 import ChapterTitle from './components/ChapterTitle'
-import CircularProgress from './components/CircularProgress'
 import History from './components/History'
 import Navigator from './components/Navigator'
 import ReferencesModal from './components/ReferencesModal'
 import ScrollBar from './components/ScrollBar'
 import Settings from './components/Settings'
 import {
-  colors,
   gutterSize,
   horizTransReq,
   panActivateConfig,
@@ -45,6 +45,7 @@ import bibles from './data/bibles'
 import { Chapters } from './data/types/chapters'
 import { getBook } from './functions/bible'
 import useChapterChange from './hooks/useChapterChange'
+import useColors from './hooks/useColors'
 import useHighlightVerse from './hooks/useHighlightVerse'
 import useHistoryOpen from './hooks/useHistoryOpen'
 import useNavigatorOpen from './hooks/useNavigatorOpen'
@@ -52,6 +53,8 @@ import useScrollUpdate from './hooks/useScrollUpdate'
 import { useAppDispatch, useAppSelector } from './redux/hooks'
 
 export default function BibleView() {
+  const colors = useColors()
+  const colorScheme = useColorScheme()
   const dispatch = useAppDispatch()
   const activeChapterIndex = useAppSelector((state) => state.activeChapterIndex)
   const settings = useAppSelector((state) => state.settings)
@@ -59,7 +62,6 @@ export default function BibleView() {
   const activeChapter = useMemo(() => {
     return bibles[settings.translation][activeChapterIndex.index]
   }, [activeChapterIndex.index])
-  // const referenceTree = useAppSelector((state) => state.referenceTree)
 
   const activeBook = useMemo(
     () => getBook(activeChapter.chapterId),
@@ -292,7 +294,7 @@ export default function BibleView() {
               }}
             >
               <Spacer additional={insets.top ?? gutterSize} />
-              <CircularProgress
+              <ChapterChangeFeedback
                 place="top"
                 progress={overScrollAmount}
                 textTranslateY={textTranslateY}
@@ -320,7 +322,7 @@ export default function BibleView() {
               </Text>
             </View>
             <Spacer units={6} />
-            <CircularProgress
+            <ChapterChangeFeedback
               place="bottom"
               progress={overScrollAmount}
               textTranslateY={textTranslateY}
@@ -352,11 +354,8 @@ export default function BibleView() {
         <ScrollBar
           scrollBarActivate={scrollBarActivate}
           scrollViewRef={scrollViewRef}
-          textTranslateY={textTranslateY}
           verseOffsets={verseOffsets}
           scrollBarPosition={scrollBarPosition}
-          overScrollAmount={overScrollAmount}
-          openNavigator={openNavigator}
           currentVerseIndex={currentVerseIndex}
           textTranslateX={textTranslateX}
         />
@@ -372,7 +371,6 @@ export default function BibleView() {
           openReferences={openReferences}
           openReferencesNested={openReferencesNested}
           referenceVerse={referenceVerse}
-          currentVerseIndex={currentVerseIndex}
           overlayOpacity={overlayOpacity}
           scrollOffset={scrollOffset}
         />
@@ -380,7 +378,7 @@ export default function BibleView() {
           activeBook={activeBook}
           activeChapter={activeChapter}
           textTranslateX={textTranslateX}
-          navigatorTransition={openNavigator}
+          openNavigator={openNavigator}
           savedTextTranslateX={savedTextTranslateX}
           focusSearch={focusSearch}
           overlayOpacity={overlayOpacity}

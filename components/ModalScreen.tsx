@@ -11,7 +11,6 @@ import Animated, {
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import {
-  colors,
   gutterSize,
   horizVelocReq,
   modalWidth,
@@ -20,6 +19,7 @@ import {
   screenWidth,
   showOverlayOffset,
 } from '../constants'
+import useColors from '../hooks/useColors'
 import { useAppDispatch } from '../redux/hooks'
 import TovPressable from './TovPressable'
 
@@ -44,13 +44,14 @@ export default function ModalScreen({
   scrollOffset,
   overlayOpacity,
 }: Props) {
+  const colors = useColors()
   const insets = useSafeAreaInsets()
   const dispatch = useAppDispatch()
 
   const modalStyle = useAnimatedStyle(() => {
     return {
       opacity: openModal.value,
-      zIndex: openModal.value !== 0 ? 4 : -1,
+      zIndex: openModal.value > 0.2 ? 4 : -1,
       transform: [
         { translateY: interpolate(openModal.value, [0, 1], [12, 0]) },
         { scale: interpolate(openModal.value, [0, 1], [0.95, 1]) },

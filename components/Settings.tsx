@@ -1,15 +1,17 @@
 import React from 'react'
 import { Alert, Dimensions, ScrollView, View } from 'react-native'
-import { SharedValue, withTiming } from 'react-native-reanimated'
+import { SharedValue, withSpring } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { colors, gutterSize, modalWidth, shadow } from '../constants'
+import { gutterSize, modalWidth, panActivateConfig, shadow } from '../constants'
 import { Chapters } from '../data/types/chapters'
+import useColors from '../hooks/useColors'
 import { clearHistory } from '../redux/history'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
 import Fade from './Fade'
 import ModalScreen from './ModalScreen'
 import ModalScreenHeader from './ModalScreenHeader'
 import SettingsItem from './SettingsItem'
+import ThemeSettings from './ThemeSettings'
 import TypographySettings from './TypographySettings'
 
 interface Props {
@@ -27,10 +29,9 @@ export default function Settings({
   overlayOpacity,
   scrollOffset,
 }: Props) {
-  const activeChapterIndex = useAppSelector((state) => state.activeChapterIndex)
-
-  const insets = useSafeAreaInsets()
+  const colors = useColors()
   const settings = useAppSelector((state) => state.settings)
+  const insets = useSafeAreaInsets()
   const navigatorHeight =
     Dimensions.get('window').height -
     insets.top -
@@ -49,9 +50,9 @@ export default function Settings({
       overlayOpacity={overlayOpacity}
       scrollOffset={scrollOffset}
       close={() => {
-        openSettings.value = withTiming(
+        openSettings.value = withSpring(
           0,
-          { duration: 200 },
+          panActivateConfig,
           () => (openSettingsNested.value = 0)
         )
         setTimeout(() => setNestedSetting(undefined), 200)
@@ -59,6 +60,11 @@ export default function Settings({
       nestedScreen={
         nestedSetting === 'typography' ? (
           <TypographySettings
+            openSettings={openSettings}
+            openSettingsNested={openSettingsNested}
+          />
+        ) : nestedSetting === 'theme' ? (
+          <ThemeSettings
             openSettings={openSettings}
             openSettingsNested={openSettingsNested}
           />
@@ -78,8 +84,8 @@ export default function Settings({
       >
         <ModalScreenHeader
           close={() => {
-            openSettings.value = withTiming(0)
-            openSettingsNested.value = withTiming(0)
+            openSettings.value = withSpring(0, panActivateConfig)
+            openSettingsNested.value = withSpring(0, panActivateConfig)
           }}
         >
           Settings
@@ -102,7 +108,7 @@ export default function Settings({
                       text: 'Clear',
                       style: 'destructive',
                       onPress: () => {
-                        openSettings.value = withTiming(0)
+                        openSettings.value = withSpring(0, panActivateConfig)
                         dispatch(clearHistory(activeChapter.chapterId))
                       },
                     },
@@ -128,7 +134,7 @@ export default function Settings({
             <SettingsItem
               onPress={() => {
                 setNestedSetting('typography')
-                openSettingsNested.value = withTiming(1)
+                openSettingsNested.value = withSpring(1, panActivateConfig)
               }}
               // rightText={settings.fontSize.toString()}
               rightIcon="arrowRight"
@@ -136,17 +142,23 @@ export default function Settings({
             >
               Typography
             </SettingsItem>
-            {/* <SettingsItem
+            <SettingsItem
               onPress={() => {
                 setNestedSetting('theme')
-                openSettingsNested.value = withTiming(1)
+                openSettingsNested.value = withSpring(1, panActivateConfig)
               }}
-              rightText={settings.theme}
+              rightText={
+                settings.theme === 'auto'
+                  ? 'Auto'
+                  : settings.theme === 'dark'
+                    ? 'Dark'
+                    : 'Light'
+              }
               rightIcon="arrowRight"
               description="Find your fashion!"
             >
               Color theme
-            </SettingsItem> */}
+            </SettingsItem>
             {/* <SettingsItem
               onPress={() => {}}
               // rightText={'Tov'}

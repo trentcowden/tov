@@ -2,11 +2,12 @@ import { ImpactFeedbackStyle, impactAsync } from 'expo-haptics'
 import React, { useMemo } from 'react'
 import { NativeSyntheticEvent, Text, TextLayoutEventData } from 'react-native'
 import ParsedText from 'react-native-parsed-text'
-import { SharedValue, withTiming } from 'react-native-reanimated'
-import { colors, typography } from '../constants'
+import { SharedValue, withSpring } from 'react-native-reanimated'
+import { panActivateConfig, typography } from '../constants'
 import bibles from '../data/bibles'
 import references from '../data/references.json'
 import { References } from '../data/types/references'
+import useColors from '../hooks/useColors'
 import { useAppSelector } from '../redux/hooks'
 
 interface Props {
@@ -24,6 +25,7 @@ export default function BibleText({
   openReferences,
   onTextLayout,
 }: Props) {
+  const colors = useColors()
   const activeChapterIndex = useAppSelector((state) => state.activeChapterIndex)
   const settings = useAppSelector((state) => state.settings)
   const activeChapter = useMemo(() => {
@@ -45,7 +47,7 @@ export default function BibleText({
                 impactAsync(ImpactFeedbackStyle.Heavy)
                 if (setReferenceState) setReferenceState(verseId)
                 if (openReferences !== undefined)
-                  openReferences.value = withTiming(1)
+                  openReferences.value = withSpring(1, panActivateConfig)
               }
             : undefined
         }

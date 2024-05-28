@@ -13,18 +13,12 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import {
-  colors,
-  gutterSize,
-  panActivateConfig,
-  sizes,
-  typography,
-} from '../constants'
+import { gutterSize, panActivateConfig, sizes, typography } from '../constants'
 import bibles from '../data/bibles'
 import { Chapters } from '../data/types/chapters'
 import { getBook } from '../functions/bible'
 import { JumpToChapter } from '../hooks/useChapterChange'
+import useColors from '../hooks/useColors'
 import {
   HistoryItem,
   removeFromHistory,
@@ -53,10 +47,8 @@ export default function HistoryListItem({
   activeChapter,
   showFavorites,
 }: Props) {
+  const colors = useColors()
   const settings = useAppSelector((state) => state.settings)
-  const activeChapterIndex = useAppSelector((state) => state.activeChapterIndex)
-  const history = useAppSelector((state) => state.history)
-  const insets = useSafeAreaInsets()
   const dispatch = useAppDispatch()
   const itemTranslateX = useSharedValue(0)
   const textTranslateX = useSharedValue(0)

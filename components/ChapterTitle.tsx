@@ -11,15 +11,10 @@ import {
   withTiming,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import {
-  colors,
-  gutterSize,
-  panActivateConfig,
-  sizes,
-  typography,
-} from '../constants'
+import { gutterSize, panActivateConfig, sizes, typography } from '../constants'
 import bibles from '../data/bibles'
 import { getChapterReference } from '../functions/bible'
+import useColors from '../hooks/useColors'
 import { useAppSelector } from '../redux/hooks'
 import TovPressable from './TovPressable'
 
@@ -42,6 +37,7 @@ export default function ChapterTitle({
   focusSearch,
   overlayOpacity,
 }: Props) {
+  const colors = useColors()
   const activeChapterIndex = useAppSelector((state) => state.activeChapterIndex)
   const settings = useAppSelector((state) => state.settings)
   const activeChapter = useMemo(() => {
@@ -82,7 +78,7 @@ export default function ChapterTitle({
           textTranslateX.value = withSpring(0, panActivateConfig)
           overlayOpacity.value = withTiming(1)
           savedTextTranslateX.value = 0
-          openNavigator.value = withTiming(1)
+          openNavigator.value = withSpring(1, panActivateConfig)
           focusSearch()
           impactAsync(ImpactFeedbackStyle.Heavy)
         }}

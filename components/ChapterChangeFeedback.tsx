@@ -17,7 +17,6 @@ import Animated, {
 } from 'react-native-reanimated'
 import Svg, { Circle, Path } from 'react-native-svg'
 import {
-  colors,
   gutterSize,
   overScrollReq,
   panActivateConfig,
@@ -26,6 +25,7 @@ import {
 } from '../constants'
 import bibles from '../data/bibles'
 import { getChapterReference } from '../functions/bible'
+import useColors from '../hooks/useColors'
 import { useAppSelector } from '../redux/hooks'
 
 interface Props {
@@ -40,12 +40,13 @@ const AnimatedPath = Animated.createAnimatedComponent(Path)
 const size = 40
 const strokeWidth = 1
 
-export default function CircularProgress({
+export default function ChapterChangeFeedback({
   place,
   progress,
   textTranslateY,
   releaseToChange,
 }: Props) {
+  const colors = useColors()
   const activeChapterIndex = useAppSelector((state) => state.activeChapterIndex)
   const translation = useAppSelector((state) => state.settings.translation)
   const radius = useMemo(() => (size - strokeWidth) / 2, [size, strokeWidth])

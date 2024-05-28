@@ -5,14 +5,22 @@ export interface SettingsState {
   fontSize: number
   lineHeight: number
   paragraphSpacing: number
-  theme: 'dark' | 'light' | 'black'
+  theme: 'dark' | 'light' | 'auto'
+}
+
+export const defaultTypography: {
+  fontSize: number
+  lineHeight: number
+  paragraphSpacing: number
+} = {
+  fontSize: 17,
+  lineHeight: 36,
+  paragraphSpacing: 18,
 }
 
 const initialState: SettingsState = {
   translation: 'web',
-  fontSize: 17,
-  lineHeight: 36,
-  paragraphSpacing: 18,
+  ...defaultTypography,
   theme: 'dark',
 }
 

@@ -1,10 +1,17 @@
 import React, { useMemo } from 'react'
 import { Pressable, Text } from 'react-native'
-import { SharedValue, withTiming } from 'react-native-reanimated'
+import { SharedValue, withSpring } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { colors, gutterSize, shadow, sizes, typography } from '../constants'
+import {
+  gutterSize,
+  panActivateConfig,
+  shadow,
+  sizes,
+  typography,
+} from '../constants'
 import bibles from '../data/bibles'
 import { JumpToChapter } from '../hooks/useChapterChange'
+import useColors from '../hooks/useColors'
 import { useAppSelector } from '../redux/hooks'
 
 interface Props {
@@ -18,6 +25,7 @@ export default function ReferenceBackButton({
   setReferenceState,
   openReferences,
 }: Props) {
+  const colors = useColors()
   const insets = useSafeAreaInsets()
   const referenceTree = useAppSelector((state) => state.referenceTree)
   const activeChapterIndex = useAppSelector((state) => state.activeChapterIndex)
@@ -81,7 +89,7 @@ export default function ReferenceBackButton({
 
         const verseId = `${recentChapter.chapterId}.${recentChapter.verseIndex + 1}`
         setReferenceState(verseId)
-        openReferences.value = withTiming(1)
+        openReferences.value = withSpring(1, panActivateConfig)
       }}
     >
       {/* <TovIcon name={icon} size={14} /> */}

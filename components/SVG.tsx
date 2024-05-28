@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { DimensionValue, View, ViewStyle } from 'react-native'
 import Svg, { NumberProp, Path } from 'react-native-svg'
+import useColors from '../hooks/useColors'
 
 export type IconName =
   | 'history'
@@ -23,6 +24,7 @@ export type IconName =
   | 'minus'
   | 'plus'
   | 'bookmark'
+  | 'checkmarkCircle'
 
 interface ParentProps {
   name: IconName
@@ -69,8 +71,26 @@ export default function TovIcon({ name, size, color, style }: ParentProps) {
 }
 
 function SVGComponent(props: ChildProps) {
+  const colors = useColors()
   // For regular icons, make sure to remove any hard-coded fill colors in order to fill with the prop color.
   switch (props.name) {
+    case 'checkmarkCircle':
+      return (
+        <Svg
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          {...props}
+        >
+          <Path
+            d="M7.5 12l3 3 6-6m5.5 3c0 5.523-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2s10 4.477 10 10z"
+            stroke={props.color}
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </Svg>
+      )
     case 'bookmark':
       return (
         <Svg

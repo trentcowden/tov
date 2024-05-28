@@ -1,7 +1,13 @@
 import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics'
 import { TextInput } from 'react-native'
 import { Gesture } from 'react-native-gesture-handler'
-import { runOnJS, SharedValue, withTiming } from 'react-native-reanimated'
+import {
+  runOnJS,
+  SharedValue,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated'
+import { panActivateConfig } from '../constants'
 
 interface Props {
   openNavigator: SharedValue<number>
@@ -33,7 +39,7 @@ export default function useNavigatorOpen({
       else if (openReferences.value !== 0) return
 
       overlayOpacity.value = withTiming(1)
-      openNavigator.value = withTiming(1)
+      openNavigator.value = withSpring(1, panActivateConfig)
 
       runOnJS(focusSearch)()
       runOnJS(impactAsync)(ImpactFeedbackStyle.Heavy)

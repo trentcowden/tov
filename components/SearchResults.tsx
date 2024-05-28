@@ -4,10 +4,11 @@ import { Text } from 'react-native'
 import { FlatList } from 'react-native-gesture-handler'
 import { FadeIn, FadeOut } from 'react-native-reanimated'
 import Spacer from '../Spacer'
-import { colors, gutterSize, sizes, typography } from '../constants'
+import { gutterSize, sizes, typography } from '../constants'
 import { Chapters } from '../data/types/chapters'
 import { getChapterReference } from '../functions/bible'
 import { JumpToChapter } from '../hooks/useChapterChange'
+import useColors from '../hooks/useColors'
 import { SearchResult } from './Navigator'
 import TovIcon from './SVG'
 import TovPressable from './TovPressable'
@@ -27,6 +28,7 @@ export default function SearchResults({
   closeNavigator,
   searchResults,
 }: Props) {
+  const colors = useColors()
   function renderSearchResultItem({
     item,
     index,

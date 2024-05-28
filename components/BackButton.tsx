@@ -1,4 +1,5 @@
-import { colors, gutterSize, iconSize } from '../constants'
+import { gutterSize, iconSize } from '../constants'
+import useColors from '../hooks/useColors'
 import TovIcon from './SVG'
 import TovPressable from './TovPressable'
 
@@ -7,6 +8,8 @@ interface Props {
 }
 
 export default function BackButton({ onPress }: Props) {
+  const colors = useColors()
+
   return (
     <TovPressable
       onPress={onPress}

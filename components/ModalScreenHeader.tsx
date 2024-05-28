@@ -1,6 +1,7 @@
 import { ReactNode } from 'react'
 import { Text, View } from 'react-native'
-import { colors, gutterSize, iconSize, sizes, typography } from '../constants'
+import { gutterSize, iconSize, sizes, typography } from '../constants'
+import useColors from '../hooks/useColors'
 import TovIcon from './SVG'
 import TovPressable from './TovPressable'
 
@@ -17,6 +18,7 @@ export default function ModalScreenHeader({
   icon,
   paddingLeft,
 }: Props) {
+  const colors = useColors()
   const closeButton = close ? (
     <TovPressable
       onPress={close}

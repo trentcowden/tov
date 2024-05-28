@@ -1,5 +1,5 @@
 import { ImpactFeedbackStyle, impactAsync } from 'expo-haptics'
-import React, { useState } from 'react'
+import React from 'react'
 import { Pressable, Text, View } from 'react-native'
 import Animated, {
   SharedValue,
@@ -12,7 +12,6 @@ import Animated, {
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import {
-  colors,
   gutterSize,
   panActivateConfig,
   shadow,
@@ -21,12 +20,12 @@ import {
 } from '../constants'
 import { Books } from '../data/types/books'
 import { Chapters } from '../data/types/chapters'
-import { IconName } from './SVG'
+import useColors from '../hooks/useColors'
 
 interface Props {
   activeChapter: Chapters[number]
   activeBook: Books[number]
-  navigatorTransition: SharedValue<number>
+  openNavigator: SharedValue<number>
   focusSearch: () => void
   textTranslateX: SharedValue<number>
   savedTextTranslateX: SharedValue<number>
@@ -36,17 +35,15 @@ interface Props {
 export default function ChapterOverlay({
   activeChapter,
   activeBook,
-  navigatorTransition,
+  openNavigator,
   focusSearch,
   textTranslateX,
   savedTextTranslateX,
   overlayOpacity,
 }: Props) {
+  const colors = useColors()
   const insets = useSafeAreaInsets()
-  const [navigatorOpen, setNavigatorOpen] = useState(false)
-  const [chapterChanging, setChapterChanging] = useState(false)
   const pressed = useSharedValue(0)
-  const [icon, setIcon] = useState<IconName>('book')
 
   const overlayAnimatedStyles = useAnimatedStyle(() => ({
     opacity: overlayOpacity.value,
@@ -55,10 +52,7 @@ export default function ChapterOverlay({
       [0, 2],
       [colors.bg2, colors.bg1]
     ),
-    transform: [
-      { scale: interpolate(pressed.value, [0, 1], [1, 0.95]) },
-      // { translateX: textTranslateX.value },
-    ],
+    transform: [{ scale: interpolate(pressed.value, [0, 1], [1, 0.95]) }],
   }))
 
   return (
@@ -93,7 +87,7 @@ export default function ChapterOverlay({
           if (overlayOpacity.value === 0) return
           textTranslateX.value = withSpring(0, panActivateConfig)
           savedTextTranslateX.value = 0
-          navigatorTransition.value = withTiming(1)
+          openNavigator.value = withSpring(1, panActivateConfig)
           focusSearch()
           impactAsync(ImpactFeedbackStyle.Heavy)
         }}

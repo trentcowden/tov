@@ -2,15 +2,10 @@ import { useMemo } from 'react'
 import { SectionList, Text } from 'react-native'
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated'
 import Spacer from '../Spacer'
-import {
-  colors,
-  gutterSize,
-  screenWidth,
-  sizes,
-  typography,
-} from '../constants'
+import { gutterSize, screenWidth, sizes, typography } from '../constants'
 import books from '../data/books.json'
 import { Books } from '../data/types/books'
+import useColors from '../hooks/useColors'
 import TovPressable from './TovPressable'
 
 interface Props {
@@ -24,6 +19,7 @@ type Sections = Array<{
 }>
 
 export default function BooksList({ navigatorBook, goToBook }: Props) {
+  const colors = useColors()
   const sections = useMemo<Sections>(() => {
     const sections: Sections = []
 

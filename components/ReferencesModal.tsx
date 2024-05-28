@@ -1,13 +1,13 @@
 import React, { useMemo, useRef } from 'react'
 import { Dimensions, FlatList, Text, View } from 'react-native'
-import { SharedValue, withTiming } from 'react-native-reanimated'
+import { SharedValue, withSpring, withTiming } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Spacer from '../Spacer'
 import {
-  colors,
   gutterSize,
   iconSize,
   modalWidth,
+  panActivateConfig,
   shadow,
   sizes,
   typography,
@@ -16,6 +16,7 @@ import references from '../data/references.json'
 import { References } from '../data/types/references'
 import { getVerseReference, isPassageAfter } from '../functions/bible'
 import { JumpToChapter } from '../hooks/useChapterChange'
+import useColors from '../hooks/useColors'
 import Fade from './Fade'
 import ModalScreen from './ModalScreen'
 import ModalScreenHeader from './ModalScreenHeader'
@@ -27,7 +28,6 @@ interface Props {
   openReferences: SharedValue<number>
   openReferencesNested: SharedValue<number>
   jumpToChapter: JumpToChapter
-  currentVerseIndex: SharedValue<number | 'bottom' | 'top'>
   scrollOffset: SharedValue<number>
   overlayOpacity: SharedValue<number>
 }
@@ -37,10 +37,10 @@ export default function ReferencesModal({
   openReferencesNested,
   referenceVerse,
   jumpToChapter,
-  currentVerseIndex,
   overlayOpacity,
   scrollOffset,
 }: Props) {
+  const colors = useColors()
   const insets = useSafeAreaInsets()
   const referencesRef = useRef<FlatList<References[string][number]>>(null)
   const wordListRef = useRef<FlatList<[string, string, string]>>(null)
@@ -54,21 +54,6 @@ export default function ReferencesModal({
 
     return activeReferences.sort((r1, r2) => isPassageAfter(r1[0], r2[0]))
   }, [referenceVerse])
-
-  // const [selectedWord, setSelectedWord] = React.useState<
-  //   [string, string] | undefined
-  // >(undefined)
-
-  // const currentVerseHebrew = useMemo(() => {
-  //   if (!referenceVerse) return
-
-  //   const chapterIndex = parseInt(referenceVerse.split('.')[1]) - 1
-  //   const verseIndex = parseInt(referenceVerse.split('.')[2]) - 1
-
-  //   if (!hebrew[referenceVerse.split('.')[0]]) return
-
-  //   return hebrew[referenceVerse.split('.')[0]][chapterIndex][verseIndex]
-  // }, [referenceVerse])
 
   const navigatorHeight =
     Dimensions.get('window').height -
@@ -104,12 +89,6 @@ export default function ReferencesModal({
     if (typeof item !== 'string' && item.length === 2) {
       passageString += '-'
 
-      // if (passage1Chapter !== passage2Chapter)
-      //   passageString += getVerseReference(item[1])
-      //     .split(' ')
-      //     .slice(-1)
-      //     .join(' ')
-      // else
       endingVerse = parseInt(
         getVerseReference(item[1]).split(':').slice(-1).join(' ')
       )
@@ -165,7 +144,6 @@ export default function ReferencesModal({
           style={{
             alignItems: 'center',
             gap: 8,
-            // width: screenWidth - gutterSize * 4,
             flexDirection: 'row',
             paddingHorizontal: gutterSize / 2,
             paddingVertical: 12,
@@ -183,17 +161,9 @@ export default function ReferencesModal({
                 endingVerse !== 0 ? endingVerse - startingVerse : undefined,
             })
             openReferencesNested.value = withTiming(0)
-            openReferences.value = withTiming(0)
+            openReferences.value = withSpring(0, panActivateConfig)
           }}
         >
-          {/* <View
-          style={{
-            width: (screenWidth - gutterSize * 4) / 2 + 11,
-            flexDirection: 'row',
-            gap: 12,
-            // justifyContent: isAfter ? 'flex-start' : 'flex-end',
-          }}
-        > */}
           {isAfter ? null : (
             <TovIcon name={'backReference'} size={iconSize} color={colors.p1} />
           )}
@@ -207,138 +177,21 @@ export default function ReferencesModal({
               color={colors.p1}
             />
           ) : null}
-          {/* </View> */}
         </TovPressable>
       </View>
     )
   }
-
-  // function renderHebrewWord({ item }: { item: [string, string, string] }) {
-  //   // const id = 'H' + item[1].replace(/\D/g, '')
-  //   // const def = dbd[id]
-
-  //   return (
-  //     <TovPressable
-  //       onPress={() => {
-  //         openReferencesNested.value = withTiming(1)
-  //         setSelectedWord(item)
-  //       }}
-  //       style={{
-  //         flexDirection: 'row',
-  //         alignItems: 'center',
-  //         paddingVertical: gutterSize / 2,
-  //         paddingHorizontal: gutterSize / 2,
-  //         borderRadius: 12,
-  //       }}
-  //       onPressColor={colors.bg3}
-  //     >
-  //       <View style={{ gap: 4 }}>
-  //         <Text style={[typography(sizes.body, 'uib', 'l', colors.fg2)]}>
-  //           {item[0]}
-  //         </Text>
-  //         <Text style={typography(sizes.caption, 'uir', 'l', colors.fg3)}>
-  //           {latinMap[item[1]]}
-  //         </Text>
-  //       </View>
-  //       <Text
-  //         numberOfLines={1}
-  //         adjustsFontSizeToFit
-  //         style={[
-  //           typography(sizes.body, 'uir', 'l', colors.fg2),
-  //           { flex: 1, textAlign: 'right' },
-  //         ]}
-  //       >
-  //         {defMap[item[1]]}
-  //       </Text>
-  //       {/* <Text style={typography(sizes.subtitle, 'uir', 'l', colors.fg2)}>
-  //         {item[2]}
-  //       </Text> */}
-  //     </TovPressable>
-  //   )
-  // }
-
-  // useEffect(() => {
-  //   if (!currentVerseHebrew) setView('references')
-  // }, [currentVerseHebrew])
 
   return (
     <ModalScreen
       openModal={openReferences}
       overlayOpacity={overlayOpacity}
       scrollOffset={scrollOffset}
-      // openNested={openReferencesNested}
       close={() => {
-        openReferences.value = withTiming(0)
+        openReferences.value = withSpring(0, panActivateConfig)
       }}
-      // nestedScreen={
-      //   <View>
-      //     {selectedWord ? (
-      //       <ModalScreenHeader
-      //         paddingLeft={0}
-      //         icon={
-      //           <BackButton
-      //             onPress={() => {
-      //               openReferencesNested.value = withTiming(0)
-      //             }}
-      //           />
-      //         }
-
-      //         // close={() => {
-      //         //   openSettings.value = withTiming(0)
-      //         //   openSettingsNested.value = withTiming(0)
-      //         // }}
-      //       >
-      //         {`${selectedWord[0]} - ${latinMap[selectedWord[1]]}`}
-      //       </ModalScreenHeader>
-      //     ) : null}
-      //     <View style={{ height: navigatorHeight - gutterSize - 50 }}>
-      //       {selectedWord ? (
-      //         <FlashList
-      //           estimatedItemSize={50}
-      //           ListHeaderComponent={() => (
-      //             <View
-      //               style={{
-      //                 paddingHorizontal: gutterSize / 2,
-      //               }}
-      //             >
-      //               <Spacer units={2} />
-      //               <Text
-      //                 style={typography(sizes.subtitle, 'uis', 'l', colors.fg1)}
-      //               >
-      //                 Definition
-      //               </Text>
-      //               <Spacer units={1} />
-      //               <Text
-      //                 style={typography(sizes.body, 'uir', 'l', colors.fg2)}
-      //               >
-      //                 {
-      //                   strongsDefinitions['H' + strongMap[selectedWord[1]]]
-      //                     .strongs_def
-      //                 }
-      //               </Text>
-      //               <Spacer units={4} />
-      //               <Text
-      //                 style={typography(sizes.subtitle, 'uis', 'l', colors.fg1)}
-      //               >
-      //                 Verses with this word
-      //               </Text>
-      //               <Spacer units={2} />
-      //             </View>
-      //           )}
-      //           data={wordReferences[selectedWord[1]].filter(
-      //             (reference) => reference !== referenceVerse
-      //           )}
-      //           contentContainerStyle={{ paddingHorizontal: gutterSize / 2 }}
-      //           renderItem={renderReference}
-      //         />
-      //       ) : null}
-      //       <Fade place="top" color={colors.bg2} />
-      //     </View>
-      //   </View>
-      // }
       onBack={() => {
         wordListRef.current?.scrollToOffset({ animated: false, offset: 0 })
-        // setSelectedWord(undefined)
       }}
     >
       <View
@@ -353,91 +206,12 @@ export default function ReferencesModal({
       >
         <ModalScreenHeader
           close={() => {
-            openReferences.value = withTiming(0)
-            // setSelectedWord(undefined)
+            openReferences.value = withSpring(0, panActivateConfig)
           }}
-          // icon={<TovIcon name="references" size={iconSize} />}
         >
           {`${referenceVerse ? getVerseReference(referenceVerse) : ''}`}
         </ModalScreenHeader>
-        {/* {currentVerseHebrew ? (
-          <View
-            style={{
-              flexDirection: 'row',
-              width: screenWidth - gutterSize * 2,
-              paddingHorizontal: gutterSize,
-              gap: gutterSize / 2,
-              marginTop: gutterSize / 4,
-            }}
-          >
-            <TovPressable
-              outerOuterStyle={{
-                flex: 1,
-              }}
-              onPressColor={colors.p2}
-              style={{
-                borderWidth: 1,
-                borderColor: colors.b,
-                borderRadius: 12,
-                paddingHorizontal: gutterSize / 2,
-                paddingVertical: gutterSize / 3,
-                backgroundColor: view === 'references' ? colors.p1 : colors.bg2,
-              }}
-              onPress={() => setView('references')}
-            >
-              <Text
-                numberOfLines={1}
-                adjustsFontSizeToFit
-                style={typography(
-                  sizes.caption,
-                  view === 'references' ? 'uis' : 'uir',
-                  'c',
-                  view === 'references' ? colors.bg1 : colors.fg3
-                )}
-              >
-                Cross References
-              </Text>
-            </TovPressable>
-            <TovPressable
-              onPressColor={colors.p2}
-              outerOuterStyle={{
-                flex: 1,
-              }}
-              style={{
-                borderWidth: 1,
-                borderColor: colors.b,
-                borderRadius: 12,
-                paddingHorizontal: gutterSize / 2,
-                paddingVertical: gutterSize / 3,
-                backgroundColor: view === 'hebrew' ? colors.p1 : colors.bg2,
-              }}
-              onPress={() => setView('hebrew')}
-            >
-              <Text
-                numberOfLines={1}
-                adjustsFontSizeToFit
-                style={typography(
-                  sizes.caption,
-                  view === 'hebrew' ? 'uis' : 'uir',
-                  'c',
-                  view === 'hebrew' ? colors.bg1 : colors.fg3
-                )}
-              >
-                Hebrew Words
-              </Text>
-            </TovPressable>
-          </View>
-        ) : null} */}
-        {/* <Text
-          style={[
-            typography(sizes.body, 'uis', 'l', colors.fg3),
-            { paddingHorizontal: gutterSize },
-          ]}
-        >
-          Cross References
-        </Text> */}
         <View style={{ flex: 1 }}>
-          {/* {view === 'references' ? ( */}
           <FlatList
             ref={referencesRef}
             data={activeReferences}
@@ -446,18 +220,6 @@ export default function ReferencesModal({
             renderItem={renderReference}
             contentContainerStyle={{ paddingHorizontal: gutterSize / 2 }}
           />
-          {/* ) : currentVerseHebrew ? (
-            <FlatList
-              ref={wordListRef}
-              data={currentVerseHebrew}
-              renderItem={renderHebrewWord}
-              ListHeaderComponent={<Spacer units={2} />}
-              ListFooterComponent={<Spacer units={4} />}
-              keyExtractor={(item, index) => item[0] + item[1] + index}
-              contentContainerStyle={{ paddingHorizontal: gutterSize / 2 }}
-            />
-          ) : null} */}
-
           <Fade place="top" color={colors.bg2} />
         </View>
       </View>

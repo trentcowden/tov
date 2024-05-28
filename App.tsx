@@ -1,13 +1,11 @@
 import { useFonts } from 'expo-font'
-import * as SystemUI from 'expo-system-ui'
-import React, { useEffect } from 'react'
-import { Appearance, View } from 'react-native'
+import React from 'react'
+import { View } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { Provider as ReduxProvider } from 'react-redux'
 import { PersistGate as ReduxPersistProvider } from 'redux-persist/lib/integration/react'
 import Bible from './Bible'
-import { colors } from './constants'
 import { persistor, store } from './redux/store'
 
 export default function App() {
@@ -29,11 +27,6 @@ export default function App() {
     UIMedium: require('./assets/fonts/Figtree-Medium.ttf'),
     UISemibold: require('./assets/fonts/Figtree-SemiBold.ttf'),
   })
-
-  useEffect(() => {
-    Appearance.setColorScheme('dark')
-    SystemUI.setBackgroundColorAsync(colors.bg1)
-  }, [])
 
   return !fontsLoaded ? (
     <View />

@@ -1,11 +1,13 @@
 import { Text, View, ViewStyle } from 'react-native'
 import { ScrollView } from 'react-native-gesture-handler'
-import { SharedValue, withTiming } from 'react-native-reanimated'
+import { SharedValue, withSpring } from 'react-native-reanimated'
 import Spacer from '../Spacer'
-import { colors, gutterSize, sizes, typography } from '../constants'
+import { gutterSize, panActivateConfig, sizes, typography } from '../constants'
 import bibles from '../data/bibles'
+import useColors from '../hooks/useColors'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
 import {
+  defaultTypography,
   setFontSize,
   setLineHeight,
   setParagraphSpacing,
@@ -27,7 +29,7 @@ export default function TypographySettings({
 }: Props) {
   const dispatch = useAppDispatch()
   const settings = useAppSelector((state) => state.settings)
-
+  const colors = useColors()
   const decreaseFontSize = () => {
     const newFontSize = settings.fontSize - 1
     dispatch(setFontSize(newFontSize))
@@ -67,14 +69,10 @@ export default function TypographySettings({
         icon={
           <BackButton
             onPress={() => {
-              openSettingsNested.value = withTiming(0)
+              openSettingsNested.value = withSpring(0, panActivateConfig)
             }}
           />
         }
-        // close={() => {
-        //   openSettings.value = withTiming(0)
-        //   openSettingsNested.value = withTiming(0)
-        // }}
       >
         Typography
       </ModalScreenHeader>
@@ -153,6 +151,26 @@ export default function TypographySettings({
           </TovPressable>
         </View>
       </View>
+      <TovPressable
+        onPress={() => {
+          dispatch(setFontSize(defaultTypography.fontSize))
+          dispatch(setLineHeight(defaultTypography.lineHeight))
+          dispatch(setParagraphSpacing(defaultTypography.paragraphSpacing))
+        }}
+        onPressColor={colors.bg3}
+        style={{
+          marginTop: gutterSize / 2,
+          marginHorizontal: gutterSize,
+          padding: gutterSize / 2,
+          backgroundColor: colors.bg3,
+          borderRadius: 999,
+          alignItems: 'center',
+        }}
+      >
+        <Text style={typography(sizes.caption, 'uis', 'c', colors.fg3)}>
+          Reset to Default
+        </Text>
+      </TovPressable>
       <Spacer units={4} />
       <ScrollView
         style={{
