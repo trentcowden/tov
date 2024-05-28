@@ -41,7 +41,7 @@ interface Props {
   currentVerseIndex: SharedValue<number | 'bottom' | 'top'>
 }
 
-const scrollBarWidth = gutterSize / 2
+const scrollBarWidth = gutterSize / 4
 
 export default function ScrollBar({
   verseOffsets,
@@ -124,57 +124,6 @@ export default function ScrollBar({
     scrollViewRef.current?.scrollTo({ y: offset, animated: false })
   }
 
-  // useDerivedValue(() => {
-  //   if (scrollBarActivate.value <= 0 || !relativeVerseOffsets) return
-  //   let closestOffset = offsets[0];
-  //   let minDiff = Math.abs(scrollPosition - closestOffset);
-
-  //   for (let i = 1; i < offsets.length; i++) {
-  //       const diff = Math.abs(scrollPosition - offsets[i]);
-  //       if (diff < minDiff) {
-  //           minDiff = diff;
-  //           closestOffset = offsets[i];
-  //       }
-  //   }
-  //   // const posToUse = scrollBarPosition.value - insets.top
-  //   // let closest = 0
-
-  //   // let left = 0
-  //   // let right = relativeVerseOffsets.length - 1
-
-  //   // while (left <= right) {
-  //   //   const mid = Math.floor((left + right) / 2)
-  //   //   const offset = relativeVerseOffsets[mid]
-
-  //   //   if (offset === posToUse) {
-  //   //     closest = offset
-  //   //   } else if (offset < posToUse) {
-  //   //     left = mid + 1
-  //   //   } else {
-  //   //     right = mid - 1
-  //   //   }
-  //   // }
-
-  //   // // At this point, `left` is the index of the smallest value greater than scrollbarPosition,
-  //   // // and `right` is the index of the largest value smaller than scrollbarPosition.
-  //   // // We need to compare which one is closer.
-
-  //   // if (right < 0) {
-  //   //   closest = relativeVerseOffsets[left]
-  //   // } else if (left >= relativeVerseOffsets.length) {
-  //   //   closest = relativeVerseOffsets[right]
-  //   // } else {
-  //   //   const diffLeft = Math.abs(posToUse - relativeVerseOffsets[left])
-  //   //   const diffRight = Math.abs(posToUse - relativeVerseOffsets[right])
-  //   //   closest =
-  //   //     diffLeft <= diffRight
-  //   //       ? relativeVerseOffsets[left]
-  //   //       : relativeVerseOffsets[right]
-  //   // }
-
-  //   console.log('verse', relativeVerseOffsets.indexOf(closest))
-  // })
-
   useDerivedValue(() => {
     if (scrollBarActivate.value > 0 && verseOffsets) {
       // This shit is crazy. Thanks chat gpt.
@@ -182,99 +131,31 @@ export default function ScrollBar({
         (scrollBarPosition.value - insets.top * 1) /
         (usableHeight - scrollBarHeight)
 
-      // let closestOffset = relativeVerseOffsets[0]
-      // let minDiff = Math.abs(normalizedFingerPos - closestOffset)
-
-      // for (let i = 1; i < relativeVerseOffsets.length; i++) {
-      //   const diff = Math.abs(normalizedFingerPos - relativeVerseOffsets[i])
-      //   if (diff < minDiff) {
-      //     minDiff = diff
-      //     closestOffset = relativeVerseOffsets[i]
-      //   }
-      // }
-
-      // console.log(
-      //   'Found closest offset:',
-      //   closestOffset,
-      //   'at index',
-      //   relativeVerseOffsets.indexOf(closestOffset)
-      // )
-
       runOnJS(scrollTo)(normalizedFingerPos * (textHeight - screenHeight))
-      // runOnJS(scrollTo)(
-      //   verseOffsets[relativeVerseOffsets.indexOf(closest)] - currentVerseReq
-      // )
     }
   })
 
   const scrollBarAreaStyles = useAnimatedStyle(() => ({
     transform: [
       {
-        translateY:
-          // interpolate(
-          scrollBarPosition.value,
-        //   [
-        //     insets.top - gutterSize,
-        //     insets.top,
-        //     maxScrollPos,
-        //     maxScrollPos + gutterSize,
-        //   ],
-        //   [
-        //     insets.top - gutterSize / 4,
-        //     insets.top,
-        //     maxScrollPos,
-        //     maxScrollPos + gutterSize / 4,
-        //   ]
-        // ),
+        translateY: scrollBarPosition.value,
       },
-      // {
-      //   scaleY: interpolate(
-      //     scrollBarPosition.value,
-      //     [
-      //       insets.top - gutterSize,
-      //       insets.top,
-      //       maxScrollPos,
-      //       maxScrollPos + gutterSize,
-      //     ],
-      //     [0.9, 1, 1, 0.9]
-      //   ),
-      // },
     ],
   }))
 
   const scrollBarStyles = useAnimatedStyle(() => ({
     height: scrollBarHeight,
-    // scrollBarActivate.value === 0
-    //   ? scrollBarHeight
-    //   : interpolate(
-    //       scrollBarActivate.value,
-    //       [0, 1],
-    //       [scrollBarHeight, scrollBarSmall]
-    //     ),
     opacity: interpolate(scrollBarActivate.value, [-1, 0], [0, 1]),
     backgroundColor: interpolateColor(
       scrollBarActivate.value,
       [0, 1],
-      [colors.bg2, colors.p1]
+      [colors.currentTheme === 'dark' ? colors.bg2 : colors.ph, colors.p1]
     ),
-    // width: interpolate(
-    //   scrollBarActivate.value,
-    //   [0, 1],
-    //   [gutterSize * 0.25, gutterSize * 3],
-    //   'clamp'
-    // ),
     transform: [
       { translateX: textTranslateX.value },
       {
         scale: interpolate(scrollBarActivate.value, [0, 1], [1, 0.9]),
       },
-      // {
-      //   translateY: interpolate(
-      //     scrollBarActivate.value,
-      //     [0, 1],
-      //     [0, scrollBarHeight / 2 - scrollBarSmall / 2]
-      //   ),
-      // },
     ],
   }))
 

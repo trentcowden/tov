@@ -9,7 +9,7 @@ const bg = `hsl(${hue}, 23, 11)`
 const fg = `hsl(${hue}, 10, 95)`
 const p = `hsl(${hue}, 49, 65)`
 
-const bgLight = `hsl(${hue}, 23, 80)`
+const bgLight = `hsl(${hue}, 35, 80)`
 const fgLight = `hsl(${hue}, 10, 5)`
 const pLight = `hsl(${hue}, 60, 35`
 
@@ -28,8 +28,8 @@ const darkModeColors = {
 
 const lightModeColors = {
   bg1: tinycolor(bgLight).toHexString(),
-  bg2: tinycolor(bgLight).saturate(-4).darken(3).toHexString(),
-  bg3: tinycolor(bgLight).saturate(-8).darken(6).toHexString(),
+  bg2: tinycolor(bgLight).darken(3).toHexString(),
+  bg3: tinycolor(bgLight).darken(6).toHexString(),
   fg2: tinycolor(fgLight).darken(12).toHexString(),
   fg1: tinycolor(fgLight).toHexString(),
   fg3: tinycolor(fgLight).darken(24).toHexString(),
@@ -42,28 +42,22 @@ const lightModeColors = {
 export default function useColors() {
   const theme = useAppSelector((state) => state.settings.theme)
   const systemColorScheme = useColorScheme()
-  console.log(systemColorScheme)
+  console.log('systemColorScheme', systemColorScheme, 'theme', theme)
+  const currentTheme = theme === 'auto' ? systemColorScheme : theme
 
   useEffect(() => {
-    if (theme === 'auto') {
-      SystemUI.setBackgroundColorAsync(
-        tinycolor(systemColorScheme === 'dark' ? bg : bgLight).toHexString()
-      )
-      Appearance.setColorScheme(systemColorScheme)
-    } else if (theme === 'dark') {
-      SystemUI.setBackgroundColorAsync(tinycolor(bg).toHexString())
-      Appearance.setColorScheme('dark')
-    } else {
+    if (currentTheme === 'light') {
       SystemUI.setBackgroundColorAsync(tinycolor(bgLight).toHexString())
       Appearance.setColorScheme('light')
+    } else {
+      SystemUI.setBackgroundColorAsync(tinycolor(bgLight).toHexString())
+      Appearance.setColorScheme('dark')
     }
   }, [theme, systemColorScheme])
 
-  if (theme === 'auto') {
-    return systemColorScheme === 'dark' ? darkModeColors : lightModeColors
-  } else if (theme === 'dark') {
-    return darkModeColors
+  if (currentTheme === 'light') {
+    return { ...lightModeColors, currentTheme }
   } else {
-    return lightModeColors
+    return { ...darkModeColors, currentTheme }
   }
 }

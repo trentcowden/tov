@@ -50,7 +50,7 @@ export default function ChapterOverlay({
     backgroundColor: interpolateColor(
       pressed.value,
       [0, 2],
-      [colors.bg2, colors.bg1]
+      [colors.currentTheme === 'dark' ? colors.bg2 : colors.bg3, colors.p1]
     ),
     transform: [{ scale: interpolate(pressed.value, [0, 1], [1, 0.95]) }],
   }))
