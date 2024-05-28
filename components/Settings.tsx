@@ -101,8 +101,10 @@ export default function Settings({
                     {
                       text: 'Clear',
                       style: 'destructive',
-                      onPress: () =>
-                        dispatch(clearHistory(activeChapter.chapterId)),
+                      onPress: () => {
+                        openSettings.value = withTiming(0)
+                        dispatch(clearHistory(activeChapter.chapterId))
+                      },
                     },
                   ]
                 )
