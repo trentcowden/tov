@@ -5,6 +5,7 @@ export interface ActiveChapterState {
   index: number
   verseIndex: number | undefined | 'bottom' | 'top'
   highlightVerse: boolean
+  numVersesToHighlight: number | undefined
 }
 
 const initialState: ActiveChapterState = {
@@ -12,6 +13,7 @@ const initialState: ActiveChapterState = {
   index: 0,
   verseIndex: undefined,
   highlightVerse: false,
+  numVersesToHighlight: undefined,
 }
 
 export const activeChapterIndex = createSlice({
@@ -21,12 +23,17 @@ export const activeChapterIndex = createSlice({
     setActiveChapterIndex: (_, action: PayloadAction<ActiveChapterState>) => {
       return action.payload
     },
+    updateVerseIndex(state, action: PayloadAction<number | undefined>) {
+      state.verseIndex = action.payload
+      state.highlightVerse = true
+    },
     goToNextChapter: (state) => {
       return {
         transition: 'forward',
         index: state.index + 1,
         verseIndex: undefined,
         highlightVerse: false,
+        numVersesToHighlight: undefined,
       }
     },
     goToPreviousChapter: (state) => {
@@ -35,12 +42,17 @@ export const activeChapterIndex = createSlice({
         index: state.index - 1,
         verseIndex: undefined,
         highlightVerse: false,
+        numVersesToHighlight: undefined,
       }
     },
   },
 })
 
-export const { setActiveChapterIndex, goToNextChapter, goToPreviousChapter } =
-  activeChapterIndex.actions
+export const {
+  setActiveChapterIndex,
+  goToNextChapter,
+  goToPreviousChapter,
+  updateVerseIndex,
+} = activeChapterIndex.actions
 
 export default activeChapterIndex.reducer

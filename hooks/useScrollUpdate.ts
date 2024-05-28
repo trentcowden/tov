@@ -141,7 +141,6 @@ export default function useScrollUpdate({
     if (!verseOffsets || scrollBarActivate.value > 0) return
 
     const textHeight = verseOffsets[verseOffsets.length - 1]
-    console.log(offset)
     // This shit is crazy. Thanks chat gpt.
     const scrollBarHeight = usableHeight * (usableHeight / textHeight)
     const scrollRatio = offset / (textHeight - screenHeight)

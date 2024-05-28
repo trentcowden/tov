@@ -98,21 +98,23 @@ export default function ReferencesModal({
 
     let passageString = getVerseReference(start)
 
+    let startingVerse = parseInt(start.split('.')[2])
+    let endingVerse = 0
+
     if (typeof item !== 'string' && item.length === 2) {
       passageString += '-'
-      const passage1Chapter = item[0].split('.')[1]
-      const passage2Chapter = item[1].split('.')[1]
 
-      if (passage1Chapter !== passage2Chapter)
-        passageString += getVerseReference(item[1])
-          .split(' ')
-          .slice(-1)
-          .join(' ')
-      else
-        passageString += getVerseReference(item[1])
-          .split(':')
-          .slice(-1)
-          .join(' ')
+      // if (passage1Chapter !== passage2Chapter)
+      //   passageString += getVerseReference(item[1])
+      //     .split(' ')
+      //     .slice(-1)
+      //     .join(' ')
+      // else
+      endingVerse = parseInt(
+        getVerseReference(item[1]).split(':').slice(-1).join(' ')
+      )
+
+      passageString += endingVerse.toString()
     }
     return (
       <View style={{}}>
@@ -174,9 +176,11 @@ export default function ReferencesModal({
           onPress={() => {
             jumpToChapter({
               chapterId: start.split('.').slice(0, 2).join('.'),
-              verseNumber: parseInt(start.split('.')[2]) - 1,
+              verseNumber: startingVerse - 1,
               comingFrom: 'reference',
               currentVerse: parseInt(referenceVerse.split('.')[2]) - 1,
+              numVersesToHighlight:
+                endingVerse !== 0 ? endingVerse - startingVerse : undefined,
             })
             openReferencesNested.value = withTiming(0)
             openReferences.value = withTiming(0)

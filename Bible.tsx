@@ -17,6 +17,7 @@ import {
 } from 'react-native-gesture-handler'
 import Animated, {
   interpolate,
+  interpolateColor,
   runOnJS,
   useAnimatedStyle,
   useSharedValue,
@@ -44,6 +45,7 @@ import bibles from './data/bibles'
 import { Chapters } from './data/types/chapters'
 import { getBook } from './functions/bible'
 import useChapterChange from './hooks/useChapterChange'
+import useHighlightVerse from './hooks/useHighlightVerse'
 import useHistoryOpen from './hooks/useHistoryOpen'
 import useNavigatorOpen from './hooks/useNavigatorOpen'
 import useScrollUpdate from './hooks/useScrollUpdate'
@@ -64,7 +66,9 @@ export default function BibleView() {
     [activeChapter]
   )
   const overlayOpacity = useSharedValue(0)
-
+  const highlightVerseNumber = useSharedValue(0)
+  const referenceTree = useAppSelector((state) => state.referenceTree)
+  console.log(referenceTree)
   const searchRef = useRef<TextInput>(null)
   const scrollViewRef = useRef<ScrollView>(null)
   const searchListRef = useRef<FlashList<Chapters[number]>>(null)
@@ -108,6 +112,7 @@ export default function BibleView() {
     setVerseOffsets,
     overlayOpacity,
     scrollOffset,
+    highlightVerseNumber,
   })
 
   const { onScroll, scrollBarPosition } = useScrollUpdate({
@@ -139,7 +144,7 @@ export default function BibleView() {
     overlayOpacity,
   })
 
-  // useHighlightVerse({ textRendered })
+  useHighlightVerse({ verseOffsets, highlightVerseNumber })
 
   const composedGestures = Gesture.Simultaneous(panGesture, tapGesture)
 
@@ -192,6 +197,16 @@ export default function BibleView() {
       setVerseOffsets(localVerseOffsets)
   }
 
+  const verseNumberStyles = useAnimatedStyle(() => {
+    return {
+      backgroundColor: interpolateColor(
+        highlightVerseNumber.value,
+        [0, 1],
+        [colors.p1 + '00', colors.ph]
+      ),
+    }
+  })
+
   useKeepAwake()
 
   return (
@@ -242,6 +257,36 @@ export default function BibleView() {
                 <Text style={{ color: 'green', fontSize: 20 }}>{index}</Text>
               </View>
             ))} */}
+            {verseOffsets ? (
+              <Animated.View
+                style={[
+                  {
+                    alignSelf: 'center',
+                    position: 'absolute',
+                    // height: settings.lineHeight,
+                    borderRadius: 12,
+                    height:
+                      typeof activeChapterIndex.verseIndex === 'number'
+                        ? verseOffsets[
+                            activeChapterIndex.verseIndex +
+                              (activeChapterIndex.numVersesToHighlight
+                                ? activeChapterIndex.numVersesToHighlight + 1
+                                : 1)
+                          ] - verseOffsets[activeChapterIndex.verseIndex]
+                        : // + settings.lineHeight
+                          0,
+                    top:
+                      typeof activeChapterIndex.verseIndex === 'number'
+                        ? verseOffsets[activeChapterIndex.verseIndex]
+                        : 0,
+                    width: screenWidth - gutterSize,
+                  },
+                  verseNumberStyles,
+                ]}
+              >
+                {/* <Text style={{ color: 'green', fontSize: 20 }}>{index}</Text> */}
+              </Animated.View>
+            ) : null}
             <View
               style={{
                 width: '100%',

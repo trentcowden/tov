@@ -22,6 +22,7 @@ import Animated, {
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import {
   colors,
+  currentVerseReq,
   gutterSize,
   panActivateConfig,
   screenHeight,
@@ -396,8 +397,8 @@ export default function ScrollBar({
           alignItems: 'center',
           justifyContent: 'center',
           width: '100%',
-          height: '100%',
           position: 'absolute',
+          top: currentVerseReq,
         }}
         pointerEvents="none"
       >

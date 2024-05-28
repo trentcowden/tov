@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import {
-  useSharedValue,
+  SharedValue,
   withDelay,
   withSequence,
   withTiming,
@@ -8,18 +8,20 @@ import {
 import { useAppSelector } from '../redux/hooks'
 
 interface Props {
-  textRendered: boolean
+  verseOffsets: number[] | undefined
+  highlightVerseNumber: SharedValue<number>
 }
 
-export default function useHighlightVerse({ textRendered }: Props) {
+export default function useHighlightVerse({
+  verseOffsets,
+  highlightVerseNumber,
+}: Props) {
   const activeChapterIndex = useAppSelector((state) => state.activeChapterIndex)
-  const highlightVerseNumber = useSharedValue(0)
 
   useEffect(() => {
     if (
-      activeChapterIndex.verseIndex !== undefined &&
-      activeChapterIndex.verseIndex !== 'bottom' &&
-      textRendered &&
+      typeof activeChapterIndex.verseIndex === 'number' &&
+      verseOffsets !== undefined &&
       activeChapterIndex.highlightVerse
     ) {
       highlightVerseNumber.value = withSequence(
@@ -27,5 +29,5 @@ export default function useHighlightVerse({ textRendered }: Props) {
         withDelay(2000, withTiming(0))
       )
     }
-  }, [activeChapterIndex, textRendered])
+  }, [activeChapterIndex, verseOffsets])
 }

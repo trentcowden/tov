@@ -70,7 +70,7 @@ export const gutterSize = 24
 export const showOverlayOffset = gutterSize * 4
 export const screenWidth = Dimensions.get('screen').width
 export const screenHeight = Dimensions.get('screen').height
-export const currentVerseReq = screenHeight / 2
+export const currentVerseReq = screenHeight / 3
 
 export const iconSize = 24
 export const modalWidth = Dimensions.get('screen').width - gutterSize * 2

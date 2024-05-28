@@ -22,10 +22,15 @@ import {
   goToNextChapter,
   goToPreviousChapter,
   setActiveChapterIndex,
+  updateVerseIndex,
 } from '../redux/activeChapterIndex'
 import { addToHistory } from '../redux/history'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
-import { clearReferenceTree } from '../redux/referenceTree'
+import {
+  addToReferenceTree,
+  clearReferenceTree,
+  removeAfterInReferenceTree,
+} from '../redux/referenceTree'
 
 interface Props {
   activeChapter: {
@@ -41,6 +46,7 @@ interface Props {
   overScrollAmount: SharedValue<number>
   overlayOpacity: SharedValue<number>
   scrollOffset: SharedValue<number>
+  highlightVerseNumber: SharedValue<number>
 }
 
 export default function useChapterChange({
@@ -54,6 +60,7 @@ export default function useChapterChange({
   setVerseOffsets,
   overlayOpacity,
   scrollOffset,
+  highlightVerseNumber,
 }: Props) {
   const dispatch = useAppDispatch()
   const activeChapterIndex = useAppSelector((state) => state.activeChapterIndex)
@@ -69,6 +76,7 @@ export default function useChapterChange({
     verseNumber,
     comingFrom,
     currentVerse,
+    numVersesToHighlight,
   }) => {
     // If the chapter is already active, scroll to the verse.
     if (chapterId === activeChapter.chapterId) {
@@ -77,6 +85,11 @@ export default function useChapterChange({
       else if (verseNumber === 'bottom')
         scrollViewRef.current?.scrollToEnd({ animated: true })
       else {
+        dispatch(updateVerseIndex(verseNumber))
+        highlightVerseNumber.value = withSequence(
+          withTiming(1),
+          withDelay(2000, withTiming(0))
+        )
         scrollViewRef.current?.scrollTo({
           y: verseOffsets[verseNumber] - currentVerseReq,
           animated: true,
@@ -116,24 +129,39 @@ export default function useChapterChange({
     )
 
     // Handle reference tree stuff.
-    // if (comingFrom === 'reference') {
-    //   if (referenceTree.indexOf(activeChapter.chapterId) === -1) {
-    //     dispatch(addToReferenceTree(activeChapter.chapterId))
-    //   }
-    //   dispatch(addToReferenceTree(chapterId))
-    // }
-    // // If this isn't from a cross reference and the chapter is not in the reference tree, clear the reference tree.
-    // else if (referenceTree.indexOf(chapterId) === -1) {
-    //   dispatch(clearReferenceTree())
-    // }
-    // // If the chapter is not the last in the reference tree, remove all chapters after it.
-    // else if (
-    //   referenceTree.length !== 0 &&
-    //   referenceTree.indexOf(chapterId) != -1 &&
-    //   referenceTree.indexOf(chapterId) != referenceTree.length - 1
-    // ) {
-    //   dispatch(removeAfterInReferenceTree(chapterId))
-    // }
+    if (comingFrom === 'reference') {
+      if (referenceTree.indexOf(activeChapter.chapterId) === -1) {
+        dispatch(addToReferenceTree(activeChapter.chapterId))
+      }
+      dispatch(addToReferenceTree(chapterId))
+    }
+    // If this isn't from a cross reference and the chapter is not in the reference
+    // tree, clear the reference tree.
+    else if (referenceTree.indexOf(chapterId) === -1) {
+      dispatch(clearReferenceTree())
+    }
+    // If the chapter is not the last in the reference tree, remove all chapters after
+    // it.
+    else if (
+      referenceTree.length !== 0 &&
+      referenceTree.indexOf(chapterId) != -1 &&
+      referenceTree.indexOf(chapterId) != referenceTree.length - 1
+    ) {
+      dispatch(removeAfterInReferenceTree(chapterId))
+    }
+
+    console.log(chapterId, referenceTree, referenceTree.indexOf(chapterId))
+
+    console.log(
+      'going to chapter',
+      chapterId,
+      'will highlight',
+      comingFrom === 'reference'
+        ? true
+        : referenceTree.indexOf(chapterId) !== -1
+          ? true
+          : false
+    )
 
     // After the fade out, go to the new chapter.
     setTimeout(
@@ -144,7 +172,12 @@ export default function useChapterChange({
             index: chapterIndex,
             verseIndex: verseNumber,
             highlightVerse:
-              comingFrom === 'reference' ?? chapterId in referenceTree,
+              comingFrom === 'reference'
+                ? true
+                : referenceTree.indexOf(chapterId) !== -1
+                  ? true
+                  : false,
+            numVersesToHighlight,
           })
         ),
       chapterChangeDuration
@@ -323,6 +356,7 @@ export interface JumpToChapterParams {
   comingFrom: 'history' | 'reference' | 'navigator'
   verseNumber?: number | 'bottom' | 'top'
   currentVerse?: number
+  numVersesToHighlight?: number
 }
 
 export type JumpToChapter = (params: JumpToChapterParams) => void
