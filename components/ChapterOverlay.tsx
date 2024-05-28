@@ -26,28 +26,20 @@ import { IconName } from './SVG'
 interface Props {
   activeChapter: Chapters[number]
   activeBook: Books[number]
-  isStatusBarHidden: boolean
   navigatorTransition: SharedValue<number>
-  savedNavigatorTransition: SharedValue<number>
   focusSearch: () => void
-  textTranslateY: SharedValue<number>
   textTranslateX: SharedValue<number>
   savedTextTranslateX: SharedValue<number>
-  textFade: SharedValue<number>
   overlayOpacity: SharedValue<number>
 }
 
 export default function ChapterOverlay({
   activeChapter,
   activeBook,
-  isStatusBarHidden,
   navigatorTransition,
-  savedNavigatorTransition,
   focusSearch,
   textTranslateX,
   savedTextTranslateX,
-  textTranslateY,
-  textFade,
   overlayOpacity,
 }: Props) {
   const insets = useSafeAreaInsets()
@@ -101,7 +93,6 @@ export default function ChapterOverlay({
           if (overlayOpacity.value === 0) return
           textTranslateX.value = withSpring(0, panActivateConfig)
           savedTextTranslateX.value = 0
-          savedNavigatorTransition.value = 1
           navigatorTransition.value = withTiming(1)
           focusSearch()
           impactAsync(ImpactFeedbackStyle.Heavy)

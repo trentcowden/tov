@@ -82,8 +82,7 @@ export default function BibleView() {
   const currentVerseIndex = useSharedValue<number | 'bottom' | 'top'>(0)
   const fingerDown = useRef(false)
 
-  const navigatorTransition = useSharedValue(0)
-  const savedNavigatorTransition = useSharedValue(0)
+  const openNavigator = useSharedValue(0)
 
   const openSettings = useSharedValue(0)
   const openSettingsNested = useSharedValue(0)
@@ -129,15 +128,14 @@ export default function BibleView() {
   })
 
   const { panGesture, savedTextTranslateX, textTranslateX } = useHistoryOpen({
-    navigatorTransition,
+    navigatorTransition: openNavigator,
     textFadeOut,
     overlayOpacity,
     scrollOffset,
   })
 
   const { tapGesture, focusSearch } = useNavigatorOpen({
-    navigatorTransition,
-    savedNavigatorTransition,
+    openNavigator,
     textTranslateX,
     openReferences,
     searchRef,
@@ -304,8 +302,7 @@ export default function BibleView() {
               <ChapterTitle
                 scrollOffset={scrollOffset}
                 focusSearch={focusSearch}
-                navigatorTransition={navigatorTransition}
-                savedNavigatorTransition={savedNavigatorTransition}
+                openNavigator={openNavigator}
                 savedTextTranslateX={savedTextTranslateX}
                 textTranslateX={textTranslateX}
                 overlayOpacity={overlayOpacity}
@@ -334,8 +331,7 @@ export default function BibleView() {
         </Animated.View>
         <Navigator
           searchResultsRef={searchListRef}
-          textPinch={navigatorTransition}
-          savedTextPinch={savedNavigatorTransition}
+          openNavigator={openNavigator}
           searchRef={searchRef}
           jumpToChapter={jumpToChapter}
           overlayOpacity={overlayOpacity}
@@ -360,7 +356,7 @@ export default function BibleView() {
           verseOffsets={verseOffsets}
           scrollBarPosition={scrollBarPosition}
           overScrollAmount={overScrollAmount}
-          openNavigator={navigatorTransition}
+          openNavigator={openNavigator}
           currentVerseIndex={currentVerseIndex}
           textTranslateX={textTranslateX}
         />
@@ -384,13 +380,9 @@ export default function BibleView() {
           activeBook={activeBook}
           activeChapter={activeChapter}
           textTranslateX={textTranslateX}
-          navigatorTransition={navigatorTransition}
-          savedNavigatorTransition={savedNavigatorTransition}
+          navigatorTransition={openNavigator}
           savedTextTranslateX={savedTextTranslateX}
           focusSearch={focusSearch}
-          isStatusBarHidden={false}
-          textFade={textFadeOut}
-          textTranslateY={textTranslateY}
           overlayOpacity={overlayOpacity}
         />
         {/* <ReferenceBackButton

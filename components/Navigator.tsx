@@ -37,8 +37,7 @@ import TovPressable from './TovPressable'
 interface Props {
   searchRef: RefObject<TextInput>
   searchResultsRef: RefObject<FlashList<Chapters[number]>>
-  textPinch: SharedValue<number>
-  savedTextPinch: SharedValue<number>
+  openNavigator: SharedValue<number>
   jumpToChapter: JumpToChapter
   scrollOffset: SharedValue<number>
   overlayOpacity: SharedValue<number>
@@ -54,8 +53,7 @@ export interface SearchResult {
 
 export default function Navigator({
   searchRef,
-  textPinch,
-  savedTextPinch,
+  openNavigator,
   searchResultsRef,
   jumpToChapter,
   overlayOpacity,
@@ -100,14 +98,12 @@ export default function Navigator({
     }
 
     setTimeout(() => searchRef.current?.blur(), 200)
-    textPinch.value = withTiming(
+    openNavigator.value = withTiming(
       0,
       // { duration: 200 },
       {},
       () => (chapterTransition.value = 0)
     )
-
-    savedTextPinch.value = 0
 
     setTimeout(() => {
       resetNavigatorBook()
@@ -157,7 +153,7 @@ export default function Navigator({
         </>
       }
       close={closeNavigator}
-      openModal={textPinch}
+      openModal={openNavigator}
       openNested={chapterTransition}
       onBack={resetNavigatorBook}
       overlayOpacity={overlayOpacity}

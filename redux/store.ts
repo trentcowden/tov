@@ -11,6 +11,7 @@ import {
 } from 'redux-persist'
 import ExpoFileSystemStorage from 'redux-persist-expo-filesystem'
 import activeChapterIndex from './activeChapterIndex'
+import currentReference from './currentReference'
 import history from './history'
 import referenceTree from './referenceTree'
 import settings from './settings'
@@ -31,6 +32,7 @@ const rootReducer = combineReducers({
   history,
   settings,
   referenceTree,
+  currentReference,
   activeChapterIndex: persistReducer(
     activeChapterPersistConfig,
     activeChapterIndex

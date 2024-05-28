@@ -27,8 +27,7 @@ interface Props {
   scrollOffset: SharedValue<number>
   textTranslateX: SharedValue<number>
   savedTextTranslateX: SharedValue<number>
-  savedNavigatorTransition: SharedValue<number>
-  navigatorTransition: SharedValue<number>
+  openNavigator: SharedValue<number>
   focusSearch: () => void
   overlayOpacity: SharedValue<number>
 }
@@ -37,8 +36,7 @@ const scale = sizes.caption / sizes.title
 
 export default function ChapterTitle({
   scrollOffset,
-  navigatorTransition,
-  savedNavigatorTransition,
+  openNavigator,
   savedTextTranslateX,
   textTranslateX,
   focusSearch,
@@ -84,8 +82,7 @@ export default function ChapterTitle({
           textTranslateX.value = withSpring(0, panActivateConfig)
           overlayOpacity.value = withTiming(1)
           savedTextTranslateX.value = 0
-          savedNavigatorTransition.value = 1
-          navigatorTransition.value = withTiming(1)
+          openNavigator.value = withTiming(1)
           focusSearch()
           impactAsync(ImpactFeedbackStyle.Heavy)
         }}

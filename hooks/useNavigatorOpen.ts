@@ -4,8 +4,7 @@ import { Gesture } from 'react-native-gesture-handler'
 import { runOnJS, SharedValue, withTiming } from 'react-native-reanimated'
 
 interface Props {
-  navigatorTransition: SharedValue<number>
-  savedNavigatorTransition: SharedValue<number>
+  openNavigator: SharedValue<number>
   textTranslateX: SharedValue<number>
   openReferences: SharedValue<number>
   searchRef: React.RefObject<TextInput>
@@ -13,8 +12,7 @@ interface Props {
 }
 
 export default function useNavigatorOpen({
-  navigatorTransition,
-  savedNavigatorTransition,
+  openNavigator,
   openReferences,
   textTranslateX,
   searchRef,
@@ -31,12 +29,11 @@ export default function useNavigatorOpen({
       // If we are viewing history/verse info, ignore taps.
       if (Math.abs(textTranslateX.value) > 10) return
       // If the navigator is already open, ignore taps.
-      else if (navigatorTransition.value !== 0) return
+      else if (openNavigator.value !== 0) return
       else if (openReferences.value !== 0) return
 
       overlayOpacity.value = withTiming(1)
-      savedNavigatorTransition.value = 1
-      navigatorTransition.value = withTiming(1)
+      openNavigator.value = withTiming(1)
 
       runOnJS(focusSearch)()
       runOnJS(impactAsync)(ImpactFeedbackStyle.Heavy)
