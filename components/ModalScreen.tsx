@@ -53,6 +53,7 @@ export default function ModalScreen({
       zIndex: openModal.value !== 0 ? 4 : -1,
       transform: [
         { translateY: interpolate(openModal.value, [0, 1], [12, 0]) },
+        { scale: interpolate(openModal.value, [0, 1], [0.95, 1]) },
       ],
     }
   })
