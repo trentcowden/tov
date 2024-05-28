@@ -11,7 +11,7 @@ interface Props {
   rightIcon?: IconName
   rightText?: string
   description?: string
-  onPress: () => void
+  onPress?: () => void
 }
 
 export default function SettingsItem({
@@ -26,7 +26,8 @@ export default function SettingsItem({
 
   return (
     <TovPressable
-      onPress={onPress}
+      onPress={onPress ? onPress : () => {}}
+      disableAnimation={!onPress}
       style={{
         // paddingVertical: 8,
         marginHorizontal: gutterSize,

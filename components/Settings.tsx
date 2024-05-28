@@ -1,5 +1,5 @@
 import React from 'react'
-import { Alert, Dimensions, ScrollView, View } from 'react-native'
+import { Alert, Dimensions, Linking, ScrollView, View } from 'react-native'
 import { SharedValue, withSpring } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { gutterSize, modalWidth, panActivateConfig, shadow } from '../constants'
@@ -98,6 +98,15 @@ export default function Settings({
             }}
           >
             <SettingsItem
+              // rightText={settings.translation}
+              // rightIcon="arrowRight"
+              description="This app currently only contains the World English Bible (WEB). The WEB is a public
+              domain translation, meaning that anyone can use and distribute
+              it for free."
+            >
+              Translation
+            </SettingsItem>
+            <SettingsItem
               onPress={() => {
                 Alert.alert(
                   'Are you sure you want to clear your history?',
@@ -120,17 +129,7 @@ export default function Settings({
             >
               Clear History
             </SettingsItem>
-            {/* <SettingsItem
-              onPress={() => {
-                setNestedSetting('translation')
-                openSettingsNested.value = withTiming(1)
-              }}
-              rightText={settings.translation}
-              rightIcon="arrowRight"
-              description="Choose your preferred Bible translation. More translations are on the way!"
-            >
-              Translation
-            </SettingsItem> */}
+
             <SettingsItem
               onPress={() => {
                 setNestedSetting('typography')
@@ -158,6 +157,15 @@ export default function Settings({
               description="Find your fashion!"
             >
               Color theme
+            </SettingsItem>
+            <SettingsItem
+              onPress={() => {
+                Linking.openURL('mailto:trent.cowden@gmail.com')
+              }}
+              rightIcon="mail"
+              description="Send me feedback, report a bug, share about how you are using tov, or just say hi! I'd love to hear from you."
+            >
+              Contact me
             </SettingsItem>
             {/* <SettingsItem
               onPress={() => {}}
