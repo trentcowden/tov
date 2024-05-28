@@ -41,7 +41,7 @@ interface Props {
   currentVerseIndex: SharedValue<number | 'bottom' | 'top'>
 }
 
-const scrollBarWidth = gutterSize / 4
+const scrollBarWidth = gutterSize / 3
 
 export default function ScrollBar({
   verseOffsets,
