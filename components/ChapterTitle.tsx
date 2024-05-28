@@ -30,6 +30,7 @@ interface Props {
   savedNavigatorTransition: SharedValue<number>
   navigatorTransition: SharedValue<number>
   focusSearch: () => void
+  overlayOpacity: SharedValue<number>
 }
 
 const scale = sizes.caption / sizes.title
@@ -41,6 +42,7 @@ export default function ChapterTitle({
   savedTextTranslateX,
   textTranslateX,
   focusSearch,
+  overlayOpacity,
 }: Props) {
   const activeChapterIndex = useAppSelector((state) => state.activeChapterIndex)
   const settings = useAppSelector((state) => state.settings)
@@ -80,6 +82,7 @@ export default function ChapterTitle({
       <TovPressable
         onPress={() => {
           textTranslateX.value = withSpring(0, panActivateConfig)
+          overlayOpacity.value = withTiming(1)
           savedTextTranslateX.value = 0
           savedNavigatorTransition.value = 1
           navigatorTransition.value = withTiming(1)
