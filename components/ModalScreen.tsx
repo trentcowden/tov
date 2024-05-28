@@ -138,7 +138,7 @@ export default function ModalScreen({
               top: insets.top + gutterSize,
               height: navigatorHeight,
               width: modalWidth,
-              borderRadius: 16,
+              borderRadius: 12,
               position: 'absolute',
               paddingTop: gutterSize / 2,
               backgroundColor: colors.bg2,

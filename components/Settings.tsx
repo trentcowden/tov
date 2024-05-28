@@ -77,7 +77,7 @@ export default function Settings({
           width: modalWidth,
           height: navigatorHeight,
           backgroundColor: colors.bg2,
-          borderRadius: 16,
+          borderRadius: 12,
           paddingTop: gutterSize / 2,
           ...shadow,
         }}

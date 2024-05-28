@@ -173,7 +173,7 @@ export default function Navigator({
           style={{
             width: modalWidth,
             backgroundColor: colors.bg2,
-            borderRadius: 16,
+            borderRadius: 12,
             flex: 1,
             // height: '100%',
             // overflow: 'hidden',

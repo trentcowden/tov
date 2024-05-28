@@ -36,7 +36,7 @@ export default function ThemeItem({
         // paddingVertical: 8,
         marginHorizontal: gutterSize,
         backgroundColor: colors.bg3,
-        borderRadius: 16,
+        borderRadius: 12,
       }}
       onPressColor={colors.bg3}
       onPressScale={0.96}
