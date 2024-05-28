@@ -63,8 +63,9 @@ export default function BooksList({ navigatorBook, goToBook }: Props) {
         exiting={FadeOut}
         key={section.sectionName}
         style={{
-          width: screenWidth - gutterSize * 2,
-          paddingHorizontal: gutterSize,
+          marginHorizontal: gutterSize,
+          width: screenWidth - gutterSize * 4,
+          // paddingHorizontal: gutterSize,
           // marginTop: index === 0 ? 0 : gutterSize * 1.5,
           paddingBottom: gutterSize / 3,
           backgroundColor: colors.bg2,
