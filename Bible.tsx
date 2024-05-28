@@ -308,6 +308,7 @@ export default function BibleView() {
                 savedNavigatorTransition={savedNavigatorTransition}
                 savedTextTranslateX={savedTextTranslateX}
                 textTranslateX={textTranslateX}
+                overlayOpacity={overlayOpacity}
               />
             </View>
             <View style={{ paddingHorizontal: gutterSize }}>
