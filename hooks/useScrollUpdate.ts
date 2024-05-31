@@ -13,6 +13,8 @@ import {
   screenHeight,
   showOverlayOffset,
 } from '../constants'
+import bibles from '../data/bibles'
+import { useAppSelector } from '../redux/hooks'
 
 interface Props {
   fingerDown: React.MutableRefObject<boolean>
@@ -39,9 +41,11 @@ export default function useScrollUpdate({
   overlayOpacity,
   scrollOffset,
 }: Props) {
+  const activeChapterIndex = useAppSelector((state) => state.activeChapterIndex)
   const insets = useSafeAreaInsets()
   const usableHeight = getUsableHeight(insets)
   const scrollBarPosition = useSharedValue(insets.top * 1)
+  const settings = useAppSelector((state) => state.settings)
 
   function handleScrollHaptics(offset: number, contentHeight: number) {
     if (!fingerDown.current) return
@@ -49,12 +53,17 @@ export default function useScrollUpdate({
     // If we meet the requirements for going to the next or previous chapter while we
     // are still scrolling, give some haptic feedback to indicate to the user that if
     // they release their finger, they will go to the next/previous chapter.
-    if (offset < -overScrollReq && !alreadyHaptic.current) {
+    if (
+      offset < -overScrollReq &&
+      !alreadyHaptic.current &&
+      activeChapterIndex.index > 0
+    ) {
       impactAsync(ImpactFeedbackStyle.Heavy)
       alreadyHaptic.current = true
     } else if (
       offset > contentHeight - screenHeight + overScrollReq &&
-      !alreadyHaptic.current
+      !alreadyHaptic.current &&
+      activeChapterIndex.index < bibles[settings.translation].length - 1
     ) {
       impactAsync(ImpactFeedbackStyle.Heavy)
       alreadyHaptic.current = true
