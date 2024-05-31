@@ -106,7 +106,7 @@ export default function ChapterChangeFeedback({
     stroke: interpolateColor(
       releaseToChange.value,
       [0, 1],
-      [colors.fg3, colors.p1]
+      [colors.ph, colors.p1]
     ),
   }))
 
@@ -219,7 +219,7 @@ export default function ChapterChangeFeedback({
       </Animated.View>
       {config.text ? (
         <Animated.Text
-          style={[typography(sizes.body, 'uis', 'c', colors.fg2), textStyles]}
+          style={[typography(sizes.body, 'uim', 'c', colors.fg2), textStyles]}
         >
           {/* {`${text.split(' ').slice(0, -1).join('').slice(0, 3)}. ${text.split(' ').slice(-1)[0]}`} */}
           {config.text}

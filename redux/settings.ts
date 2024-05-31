@@ -14,7 +14,7 @@ export const defaultTypography: {
   paragraphSpacing: number
 } = {
   fontSize: 17,
-  lineHeight: 40,
+  lineHeight: 38,
   paragraphSpacing: 18,
 }
 

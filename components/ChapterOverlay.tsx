@@ -126,7 +126,7 @@ export default function ChapterOverlay({
             }}
           >
             {activeChapter.chapterId === 'tutorial'
-              ? 'Welcome'
+              ? 'Tutorial'
               : `${activeBook.name.replace(' ', '').slice(0, 3)}. ${activeChapter.chapterId.split('.')[1]}`}
           </Text>
           {/* <Text

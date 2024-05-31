@@ -1,8 +1,10 @@
-import React from 'react'
+import * as StoreReview from 'expo-store-review'
+import React, { useEffect } from 'react'
 import { Alert, Dimensions, Linking, View } from 'react-native'
 import { ScrollView } from 'react-native-gesture-handler'
 import { SharedValue, withSpring } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import Spacer from '../Spacer'
 import { gutterSize, modalWidth, panActivateConfig, shadow } from '../constants'
 import { Chapters } from '../data/types/chapters'
 import { JumpToChapter } from '../hooks/useChapterChange'
@@ -47,6 +49,16 @@ export default function Settings({
     insets.bottom -
     gutterSize * 4
   const dispatch = useAppDispatch()
+
+  const [canReview, setCanReview] = React.useState(false)
+
+  useEffect(() => {
+    const check = async () => {
+      const canReview = await StoreReview.isAvailableAsync()
+      setCanReview(canReview)
+    }
+    check()
+  }, [])
 
   const [nestedSetting, setNestedSetting] = React.useState<
     'translation' | 'typography' | 'theme'
@@ -175,7 +187,7 @@ export default function Settings({
             </SettingsItem>
             <SettingsItem
               rightIcon="arrowRight"
-              description="Go back to the welcome screen you saw when you first opened the app."
+              description="Go back to the tutorial screen you saw when you first opened the app."
               onPress={() => {
                 textTranslateX.value = withSpring(0, panActivateConfig)
                 openSettings.value = withSpring(0, panActivateConfig)
@@ -205,6 +217,17 @@ export default function Settings({
             >
               Contact me
             </SettingsItem>
+            {canReview ? (
+              <SettingsItem
+                onPress={() => {
+                  StoreReview.requestReview()
+                }}
+                rightIcon="star"
+                description="If you enjoy using tov, please consider leaving a review. It helps a lot!"
+              >
+                Rate tov
+              </SettingsItem>
+            ) : null}
             {/* <SettingsItem
               onPress={() => {}}
               // rightText={'Tov'}
@@ -218,6 +241,7 @@ export default function Settings({
               {'Made with 🧡 by Trent Cowden'}
             </Text> */}
           </ScrollView>
+          <Spacer units={4} />
           <Fade place="top" color={colors.bg2} />
         </View>
       </View>

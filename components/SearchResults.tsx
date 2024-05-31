@@ -50,7 +50,8 @@ export default function SearchResults({
           alignItems: 'center',
           marginHorizontal: gutterSize / 2,
           borderRadius: 12,
-          height: 48,
+          // height: 48,
+          paddingVertical: gutterSize / 3,
           paddingHorizontal: gutterSize / 2,
           borderBottomWidth: 0,
           backgroundColor: highlight ? colors.ph : colors.bg2,
@@ -59,7 +60,7 @@ export default function SearchResults({
           flexDirection: 'row',
           justifyContent: 'space-between',
         }}
-        onPressColor={colors.p1}
+        onPressColor={highlight ? colors.p1 : colors.bg3}
         onPress={() => {
           jumpToChapter({
             chapterId: item.item.chapterId,
@@ -85,6 +86,7 @@ export default function SearchResults({
       keyExtractor={(item) => item.item.chapterId}
       renderItem={renderSearchResultItem}
       ListFooterComponent={<Spacer units={4} />}
+      ItemSeparatorComponent={() => <Spacer units={1} />}
       data={searchResults.sort((a, b) =>
         getBook(a.item.chapterId).bookId === activeBook.bookId &&
         getBook(b.item.chapterId).bookId !== activeBook.bookId

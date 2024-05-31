@@ -1,7 +1,6 @@
 import * as React from 'react'
 import { DimensionValue, View, ViewStyle } from 'react-native'
 import Svg, { NumberProp, Path } from 'react-native-svg'
-import useColors from '../hooks/useColors'
 
 export type IconName =
   | 'history'
@@ -26,6 +25,7 @@ export type IconName =
   | 'bookmark'
   | 'checkmarkCircle'
   | 'mail'
+  | 'star'
 
 interface ParentProps {
   name: IconName
@@ -72,17 +72,23 @@ export default function TovIcon({ name, size, color, style }: ParentProps) {
 }
 
 function SVGComponent(props: ChildProps) {
-  const colors = useColors()
   // For regular icons, make sure to remove any hard-coded fill colors in order to fill with the prop color.
   switch (props.name) {
+    case 'star':
+      return (
+        <Svg viewBox="0 0 24 24" fill="none" {...props}>
+          <Path
+            d="M11.283 3.453c.23-.467.345-.7.502-.775a.5.5 0 01.43 0c.157.075.272.308.502.775l2.187 4.43c.068.138.102.207.152.26a.502.502 0 00.155.114c.067.03.143.042.295.064l4.891.715c.515.075.773.113.892.238a.5.5 0 01.133.41c-.023.172-.21.353-.582.716L17.3 13.846c-.11.108-.165.162-.2.226a.5.5 0 00-.06.183c-.009.072.004.148.03.3l.835 4.867c.088.514.132.77.05.922a.5.5 0 01-.349.253c-.17.032-.4-.09-.862-.332l-4.373-2.3c-.136-.07-.204-.107-.276-.12a.498.498 0 00-.192 0c-.072.013-.14.05-.276.12l-4.373 2.3c-.461.243-.692.364-.862.332a.5.5 0 01-.348-.253c-.083-.152-.039-.409.05-.922l.834-4.867c.026-.152.039-.228.03-.3a.5.5 0 00-.06-.184c-.035-.063-.09-.117-.2-.225L3.16 10.4c-.373-.363-.56-.544-.582-.716a.5.5 0 01.132-.41c.12-.125.377-.163.892-.238l4.891-.715c.152-.022.228-.034.295-.064a.5.5 0 00.155-.113c.05-.054.084-.123.152-.26l2.187-4.43z"
+            stroke={props.color}
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </Svg>
+      )
     case 'mail':
       return (
-        <Svg
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          {...props}
-        >
+        <Svg viewBox="0 0 24 24" fill="none" {...props}>
           <Path
             d="M2 7l8.165 5.715c.661.463.992.695 1.351.784a2 2 0 00.968 0c.36-.09.69-.32 1.351-.784L22 7M6.8 20h10.4c1.68 0 2.52 0 3.162-.327a3 3 0 001.311-1.311C22 17.72 22 16.88 22 15.2V8.8c0-1.68 0-2.52-.327-3.162a3 3 0 00-1.311-1.311C19.72 4 18.88 4 17.2 4H6.8c-1.68 0-2.52 0-3.162.327a3 3 0 00-1.311 1.311C2 6.28 2 7.12 2 8.8v6.4c0 1.68 0 2.52.327 3.162a3 3 0 001.311 1.311C4.28 20 5.12 20 6.8 20z"
             stroke={props.color}
@@ -94,12 +100,7 @@ function SVGComponent(props: ChildProps) {
       )
     case 'checkmarkCircle':
       return (
-        <Svg
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          {...props}
-        >
+        <Svg viewBox="0 0 24 24" fill="none" {...props}>
           <Path
             d="M7.5 12l3 3 6-6m5.5 3c0 5.523-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2s10 4.477 10 10z"
             stroke={props.color}
@@ -111,23 +112,13 @@ function SVGComponent(props: ChildProps) {
       )
     case 'bookmark':
       return (
-        <Svg
-          viewBox="0 0 24 24"
-          fill={props.color}
-          xmlns="http://www.w3.org/2000/svg"
-          {...props}
-        >
+        <Svg viewBox="0 0 24 24" fill={props.color} {...props}>
           <Path d="M5 7.8c0-1.68 0-2.52.327-3.162a3 3 0 011.311-1.311C7.28 3 8.12 3 9.8 3h4.4c1.68 0 2.52 0 3.162.327a3 3 0 011.311 1.311C19 5.28 19 6.12 19 7.8V21l-7-4-7 4V7.8z" />
         </Svg>
       )
     case 'plus':
       return (
-        <Svg
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          {...props}
-        >
+        <Svg viewBox="0 0 24 24" fill="none" {...props}>
           <Path
             d="M12 8v8m-4-4h8m-8.2 9h8.4c1.68 0 2.52 0 3.162-.327a3 3 0 001.311-1.311C21 18.72 21 17.88 21 16.2V7.8c0-1.68 0-2.52-.327-3.162a3 3 0 00-1.311-1.311C18.72 3 17.88 3 16.2 3H7.8c-1.68 0-2.52 0-3.162.327a3 3 0 00-1.311 1.311C3 5.28 3 6.12 3 7.8v8.4c0 1.68 0 2.52.327 3.162a3 3 0 001.311 1.311C5.28 21 6.12 21 7.8 21z"
             stroke={props.color}
@@ -139,12 +130,7 @@ function SVGComponent(props: ChildProps) {
       )
     case 'minus':
       return (
-        <Svg
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          {...props}
-        >
+        <Svg viewBox="0 0 24 24" fill="none" {...props}>
           <Path
             d="M8 12h8m-8.2 9h8.4c1.68 0 2.52 0 3.162-.327a3 3 0 001.311-1.311C21 18.72 21 17.88 21 16.2V7.8c0-1.68 0-2.52-.327-3.162a3 3 0 00-1.311-1.311C18.72 3 17.88 3 16.2 3H7.8c-1.68 0-2.52 0-3.162.327a3 3 0 00-1.311 1.311C3 5.28 3 6.12 3 7.8v8.4c0 1.68 0 2.52.327 3.162a3 3 0 001.311 1.311C5.28 21 6.12 21 7.8 21z"
             stroke={props.color}
@@ -156,12 +142,7 @@ function SVGComponent(props: ChildProps) {
       )
     case 'trash':
       return (
-        <Svg
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          {...props}
-        >
+        <Svg viewBox="0 0 24 24" fill="none" {...props}>
           <Path
             d="M16 6v-.8c0-1.12 0-1.68-.218-2.108a2 2 0 00-.874-.874C14.48 2 13.92 2 12.8 2h-1.6c-1.12 0-1.68 0-2.108.218a2 2 0 00-.874.874C8 3.52 8 4.08 8 5.2V6m2 5.5v5m4-5v5M3 6h18m-2 0v11.2c0 1.68 0 2.52-.327 3.162a3 3 0 01-1.311 1.311C16.72 22 15.88 22 14.2 22H9.8c-1.68 0-2.52 0-3.162-.327a3 3 0 01-1.311-1.311C5 19.72 5 18.88 5 17.2V6"
             stroke={props.color}
@@ -173,12 +154,7 @@ function SVGComponent(props: ChildProps) {
       )
     case 'heart':
       return (
-        <Svg
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          {...props}
-        >
+        <Svg viewBox="0 0 24 24" fill="none" {...props}>
           <Path
             clipRule="evenodd"
             d="M11.993 5.136c-2-2.338-5.333-2.966-7.838-.826s-2.858 5.719-.89 8.25c1.635 2.105 6.585 6.544 8.207 7.98.182.162.272.242.378.274a.504.504 0 00.286 0c.106-.032.197-.112.378-.273 1.623-1.437 6.573-5.876 8.208-7.98 1.967-2.532 1.658-6.133-.89-8.251-2.549-2.118-5.84-1.512-7.839.826z"
@@ -191,12 +167,7 @@ function SVGComponent(props: ChildProps) {
       )
     case 'heartFilled':
       return (
-        <Svg
-          viewBox="0 0 24 24"
-          fill={props.color}
-          xmlns="http://www.w3.org/2000/svg"
-          {...props}
-        >
+        <Svg viewBox="0 0 24 24" fill={props.color} {...props}>
           <Path
             clipRule="evenodd"
             d="M11.993 5.136c-2-2.338-5.333-2.966-7.838-.826s-2.858 5.719-.89 8.25c1.635 2.105 6.585 6.544 8.207 7.98.182.162.272.242.378.274a.504.504 0 00.286 0c.106-.032.197-.112.378-.273 1.623-1.437 6.573-5.876 8.208-7.98 1.967-2.532 1.658-6.133-.89-8.251-2.549-2.118-5.84-1.512-7.839.826z"
@@ -205,12 +176,7 @@ function SVGComponent(props: ChildProps) {
       )
     case 'arrowRight':
       return (
-        <Svg
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          {...props}
-        >
+        <Svg viewBox="0 0 24 24" fill="none" {...props}>
           <Path
             d="M4 12h16m0 0l-6-6m6 6l-6 6"
             stroke={props.color}

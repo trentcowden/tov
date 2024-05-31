@@ -102,7 +102,7 @@ export default function TypographySettings({
             <TovIcon name="plus" size={22} color={colors.p1} />
           </TovPressable>
         </View>
-        {/* <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
           <Text
             style={{
               ...typography(sizes.body, 'uim', 'l', colors.fg1),
@@ -125,7 +125,7 @@ export default function TypographySettings({
           <TovPressable onPress={increaseLineHeight} style={buttonStyles}>
             <TovIcon name="plus" size={22} color={colors.p1} />
           </TovPressable>
-        </View> */}
+        </View>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
           <Text
             style={{
