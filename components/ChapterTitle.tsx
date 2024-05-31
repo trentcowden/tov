@@ -1,12 +1,15 @@
 import { ImpactFeedbackStyle, impactAsync } from 'expo-haptics'
-import React, { useMemo } from 'react'
-import { Text, View } from 'react-native'
-import {
-  Extrapolation,
+import React, { useEffect, useMemo } from 'react'
+import { Pressable, View } from 'react-native'
+import Animated, {
+  FadeIn,
+  FadeOut,
   SharedValue,
   interpolate,
+  interpolateColor,
   useAnimatedStyle,
   useSharedValue,
+  withSequence,
   withSpring,
   withTiming,
 } from 'react-native-reanimated'
@@ -15,8 +18,9 @@ import { gutterSize, panActivateConfig, sizes, typography } from '../constants'
 import bibles from '../data/bibles'
 import { getChapterReference } from '../functions/bible'
 import useColors from '../hooks/useColors'
-import { useAppSelector } from '../redux/hooks'
-import TovPressable from './TovPressable'
+import { toggleFavorite } from '../redux/history'
+import { useAppDispatch, useAppSelector } from '../redux/hooks'
+import TovIcon from './SVG'
 
 interface Props {
   scrollOffset: SharedValue<number>
@@ -27,7 +31,7 @@ interface Props {
   overlayOpacity: SharedValue<number>
 }
 
-const scale = sizes.caption / sizes.title
+const heartSize = 16
 
 export default function ChapterTitle({
   scrollOffset,
@@ -37,6 +41,7 @@ export default function ChapterTitle({
   focusSearch,
   overlayOpacity,
 }: Props) {
+  const dispatch = useAppDispatch()
   const colors = useColors()
   const activeChapterIndex = useAppSelector((state) => state.activeChapterIndex)
   const settings = useAppSelector((state) => state.settings)
@@ -44,36 +49,80 @@ export default function ChapterTitle({
     return bibles[settings.translation][activeChapterIndex.index]
   }, [activeChapterIndex.index])
   const width = useSharedValue(0)
-
+  const pressed = useSharedValue(0)
   const insets = useSafeAreaInsets()
+  const history = useAppSelector((state) => state.history)
+  const itemTranslateX = useSharedValue(0)
 
-  const headerText = useAnimatedStyle(() => ({
-    opacity: interpolate(
-      scrollOffset.value,
-      [gutterSize * 3, insets.top * 0.66 + gutterSize * 3],
-      [1, 0]
-    ),
-    transform: [
-      {
-        scale: interpolate(
-          scrollOffset.value,
-          [0, gutterSize * 4 + insets.top],
-          [1, scale],
-          Extrapolation.CLAMP
+  const itemStyles = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {
+          scale: interpolate(pressed.value, [0, 1], [1, 0.95]),
+        },
+      ],
+      backgroundColor:
+        // style?.backgroundColor ??
+        // outerStyle?.backgroundColor ??
+        interpolateColor(
+          pressed.value,
+          [0, 1],
+          [colors.bg3 + '00', colors.bg3]
         ),
-      },
-    ],
-  }))
+    }
+  })
+
+  const textContainerStyles = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {
+          translateX: itemTranslateX.value,
+        },
+      ],
+    }
+  })
+
+  const historyItem = useMemo(() => {
+    return history.find((item) => item.chapterId === activeChapter.chapterId)
+  }, [history, activeChapter])
+
+  useEffect(() => {
+    if (historyItem?.isFavorite) {
+      itemTranslateX.value = withSpring(heartSize + 8, panActivateConfig)
+    } else {
+      itemTranslateX.value = withSpring(0, panActivateConfig)
+    }
+  }, [historyItem?.isFavorite])
 
   return (
-    <View
-      style={{
-        width: '100%',
-        paddingHorizontal: gutterSize / 2,
-        justifyContent: 'flex-start',
-      }}
+    <Animated.View
+      style={[
+        {
+          marginHorizontal: gutterSize / 2,
+          paddingHorizontal: gutterSize / 2,
+          justifyContent: 'flex-start',
+          borderRadius: 12,
+        },
+        itemStyles,
+      ]}
     >
-      <TovPressable
+      <Pressable
+        onPressIn={() => {
+          pressed.value = withTiming(1, { duration: 75 })
+        }}
+        onPressOut={() => {
+          pressed.value = withSpring(0, panActivateConfig)
+        }}
+        delayLongPress={250}
+        onLongPress={() => {
+          pressed.value = withSequence(
+            withTiming(-2, { duration: 75 }),
+            withSpring(0, panActivateConfig)
+          )
+          impactAsync(ImpactFeedbackStyle.Heavy)
+
+          dispatch(toggleFavorite(activeChapter.chapterId))
+        }}
         onPress={() => {
           textTranslateX.value = withSpring(0, panActivateConfig)
           overlayOpacity.value = withTiming(1)
@@ -82,24 +131,36 @@ export default function ChapterTitle({
           focusSearch()
           impactAsync(ImpactFeedbackStyle.Heavy)
         }}
-        onPressColor={colors.bg2}
         style={{
-          paddingHorizontal: gutterSize / 2,
           paddingVertical: gutterSize / 2,
           borderRadius: 12,
         }}
       >
-        <Text
-          numberOfLines={1}
-          onLayout={(e) => {
-            width.value = e.nativeEvent.layout.width
-          }}
-          adjustsFontSizeToFit
-          style={[typography(sizes.title, 'uib', 'l', colors.p1)]}
-        >
-          {getChapterReference(activeChapter.chapterId)}
-        </Text>
-      </TovPressable>
-    </View>
+        <View style={[{ flexDirection: 'row', alignItems: 'center' }]}>
+          {historyItem?.isFavorite ? (
+            <Animated.View
+              entering={FadeIn}
+              exiting={FadeOut.duration(125)}
+              style={{ position: 'absolute', left: 0 }}
+            >
+              <TovIcon name="heartFilled" size={heartSize} color={colors.p2} />
+            </Animated.View>
+          ) : null}
+          <Animated.Text
+            numberOfLines={1}
+            onLayout={(e) => {
+              width.value = e.nativeEvent.layout.width
+            }}
+            adjustsFontSizeToFit
+            style={[
+              typography(sizes.title, 'uib', 'l', colors.p1),
+              textContainerStyles,
+            ]}
+          >
+            {getChapterReference(activeChapter.chapterId)}
+          </Animated.Text>
+        </View>
+      </Pressable>
+    </Animated.View>
   )
 }
