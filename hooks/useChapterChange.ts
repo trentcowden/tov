@@ -156,19 +156,6 @@ export default function useChapterChange({
       dispatch(removeAfterInReferenceTree(chapterId))
     }
 
-    console.log(chapterId, referenceTree, referenceTree.indexOf(chapterId))
-
-    console.log(
-      'going to chapter',
-      chapterId,
-      'will highlight',
-      comingFrom === 'reference'
-        ? true
-        : referenceTree.indexOf(chapterId) !== -1
-          ? true
-          : false
-    )
-
     // After the fade out, go to the new chapter.
     setTimeout(
       () =>
