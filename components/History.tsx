@@ -199,42 +199,23 @@ export default function History({
           historyAnimatedStyles,
         ]}
       >
-        {/* <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          gap: 8,
-          width: 100,
-          position: 'absolute',
-          top: gutterSize,
-          left: Dimensions.get('window').width * 1.25 + gutterSize,
-        }}
-      >
-        <Text
-          numberOfLines={1}
-          adjustsFontSizeToFit
-          maxFontSizeMultiplier={1}
+        <TovPressable
+          onPress={() => setShowFavorites((current) => !current)}
+          onPressColor={colors.bg3}
           style={{
-            ...typography(14, 'uim', 'l', colors.fg3),
-          }}
-        >
-          {format(time, 'HH:mm')}
-        </Text>
-      </View> */}
-        <View
-          style={{
-            flexDirection: 'row',
             alignItems: 'center',
+            flexDirection: 'row',
+            marginHorizontal: gutterSize / 2,
             gap: 8,
-            paddingHorizontal: gutterSize,
-            marginBottom: gutterSize / 2,
+            borderRadius: 12,
           }}
         >
           <View
             style={{
+              padding: gutterSize / 2,
               flex: 1,
-              alignItems: 'center',
               flexDirection: 'row',
+              alignItems: 'center',
               gap: 8,
             }}
           >
@@ -248,30 +229,24 @@ export default function History({
               History
             </Text>
           </View>
-          <TovPressable
-            onPress={() => setShowFavorites((current) => !current)}
+          <View
             style={{
-              // aspectRatio: 1,
-              height: 32,
               width: 32,
-              // paddingVertical: gutterSize / 2.5,
+              height: '100%',
               flexDirection: 'row',
               justifyContent: 'center',
               alignItems: 'center',
+              borderRadius: 12,
               backgroundColor: showFavorites ? colors.p1 : colors.bg3,
-              // borderWidth: 1,
-              // borderColor: colors.b,
-              borderRadius: 99,
             }}
-            onPressColor={showFavorites ? colors.p2 : colors.bg3}
           >
             <TovIcon
               name={showFavorites ? 'heartFilled' : 'heart'}
               color={showFavorites ? colors.bg1 : colors.fg3}
               size={16}
             />
-          </TovPressable>
-        </View>
+          </View>
+        </TovPressable>
         <View style={{ flex: 1 }}>
           <Animated.FlatList
             itemLayoutAnimation={LinearTransition.springify()

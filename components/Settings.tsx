@@ -1,9 +1,11 @@
 import React from 'react'
-import { Alert, Dimensions, Linking, ScrollView, View } from 'react-native'
+import { Alert, Dimensions, Linking, View } from 'react-native'
+import { ScrollView } from 'react-native-gesture-handler'
 import { SharedValue, withSpring } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { gutterSize, modalWidth, panActivateConfig, shadow } from '../constants'
 import { Chapters } from '../data/types/chapters'
+import { JumpToChapter } from '../hooks/useChapterChange'
 import useColors from '../hooks/useColors'
 import { clearHistory } from '../redux/history'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
@@ -12,14 +14,18 @@ import ModalScreen from './ModalScreen'
 import ModalScreenHeader from './ModalScreenHeader'
 import SettingsItem from './SettingsItem'
 import ThemeSettings from './ThemeSettings'
+import TranslationSettings from './TranslationSettings'
 import TypographySettings from './TypographySettings'
 
 interface Props {
   openSettings: SharedValue<number>
   openSettingsNested: SharedValue<number>
+  textTranslateX: SharedValue<number>
   activeChapter: Chapters[number]
   scrollOffset: SharedValue<number>
   overlayOpacity: SharedValue<number>
+  jumpToChapter: JumpToChapter
+  currentVerseIndex: SharedValue<number | 'bottom' | 'top'>
 }
 
 export default function Settings({
@@ -28,6 +34,9 @@ export default function Settings({
   activeChapter,
   overlayOpacity,
   scrollOffset,
+  textTranslateX,
+  jumpToChapter,
+  currentVerseIndex,
 }: Props) {
   const colors = useColors()
   const settings = useAppSelector((state) => state.settings)
@@ -58,7 +67,12 @@ export default function Settings({
         setTimeout(() => setNestedSetting(undefined), 200)
       }}
       nestedScreen={
-        nestedSetting === 'typography' ? (
+        nestedSetting === 'translation' ? (
+          <TranslationSettings
+            openSettings={openSettings}
+            openSettingsNested={openSettingsNested}
+          />
+        ) : nestedSetting === 'typography' ? (
           <TypographySettings
             openSettings={openSettings}
             openSettingsNested={openSettingsNested}
@@ -98,15 +112,6 @@ export default function Settings({
             }}
           >
             <SettingsItem
-              // rightText={settings.translation}
-              // rightIcon="arrowRight"
-              description="This app currently only contains the World English Bible (WEB). The WEB is a public
-              domain translation, meaning that anyone can use and distribute
-              it for free."
-            >
-              Translation
-            </SettingsItem>
-            <SettingsItem
               onPress={() => {
                 Alert.alert(
                   'Are you sure you want to clear your history?',
@@ -129,7 +134,6 @@ export default function Settings({
             >
               Clear History
             </SettingsItem>
-
             <SettingsItem
               onPress={() => {
                 setNestedSetting('typography')
@@ -141,7 +145,7 @@ export default function Settings({
             >
               Typography
             </SettingsItem>
-            <SettingsItem
+            {/* <SettingsItem
               onPress={() => {
                 setNestedSetting('theme')
                 openSettingsNested.value = withSpring(1, panActivateConfig)
@@ -154,16 +158,50 @@ export default function Settings({
                     : 'Light'
               }
               rightIcon="arrowRight"
-              description="Find your fashion!"
+              description="Tov supports dark, light, and auto themes. Choose what's best for you!"
             >
               Color theme
+            </SettingsItem> */}
+            <SettingsItem
+              rightText={settings.translation}
+              rightIcon="arrowRight"
+              description="Change the Bible translation."
+              onPress={() => {
+                setNestedSetting('translation')
+                openSettingsNested.value = withSpring(1, panActivateConfig)
+              }}
+            >
+              Translation
             </SettingsItem>
+            <SettingsItem
+              rightIcon="arrowRight"
+              description="Go back to the welcome screen you saw when you first opened the app."
+              onPress={() => {
+                textTranslateX.value = withSpring(0, panActivateConfig)
+                openSettings.value = withSpring(0, panActivateConfig)
+                jumpToChapter({
+                  chapterId: 'tutorial',
+                  comingFrom: 'history',
+                })
+              }}
+            >
+              View Tutorial
+            </SettingsItem>
+            {/* <SettingsItem
+              onPress={() => {
+                Linking.openURL('mailto:trent.cowden@gmail.com')
+              }}
+              rightIcon="star"
+              description="Send me feedback, share a story, or just say hi! I'd love to hear from you."
+            >
+              Rate Tov
+            </SettingsItem> */}
             <SettingsItem
               onPress={() => {
                 Linking.openURL('mailto:trent.cowden@gmail.com')
               }}
               rightIcon="mail"
-              description="Send me feedback, report a bug, share about how you are using tov, or just say hi! I'd love to hear from you."
+              description="Send me feedback, share a story, or just say hi! I'd love to hear from you."
             >
               Contact me
             </SettingsItem>

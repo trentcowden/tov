@@ -50,7 +50,7 @@ export default function ChapterOverlay({
     backgroundColor: interpolateColor(
       pressed.value,
       [0, 2],
-      [colors.currentTheme === 'dark' ? colors.bg2 : colors.bg3, colors.p1]
+      [colors.bg2, colors.bg3]
     ),
     transform: [{ scale: interpolate(pressed.value, [0, 1], [1, 0.95]) }],
   }))
@@ -65,8 +65,8 @@ export default function ChapterOverlay({
           // left: gutterSize,
           // borderRadius: 99,
           zIndex: 4,
-          borderBottomRightRadius: 24,
-          borderBottomLeftRadius: 24,
+          borderBottomRightRadius: 32,
+          borderBottomLeftRadius: 32,
           paddingTop: gutterSize,
           ...shadow,
         },
@@ -125,7 +125,9 @@ export default function ChapterOverlay({
               ...typography(sizes.caption, 'uis', 'l', colors.fg3),
             }}
           >
-            {`${activeBook.name.replace(' ', '').slice(0, 3)}. ${activeChapter.chapterId.split('.')[1]}`}
+            {activeChapter.chapterId === 'tutorial'
+              ? 'Welcome'
+              : `${activeBook.name.replace(' ', '').slice(0, 3)}. ${activeChapter.chapterId.split('.')[1]}`}
           </Text>
           {/* <Text
             numberOfLines={1}

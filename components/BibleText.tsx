@@ -39,10 +39,15 @@ export default function BibleText({
       <Text
         style={{
           textDecorationLine:
-            verseId in (references as References) ? 'underline' : 'none',
+            verseId in (references as References) || verseId === 'tutorial.5'
+              ? 'underline'
+              : 'none',
+          fontFamily: 'UIBold',
+          color: colors.p1,
+          fontSize: settings.fontSize - 2,
         }}
         onPress={
-          verseId in (references as References)
+          verseId in (references as References) || verseId === 'tutorial.5'
             ? () => {
                 impactAsync(ImpactFeedbackStyle.Heavy)
                 if (setReferenceState) setReferenceState(verseId)
@@ -72,12 +77,6 @@ export default function BibleText({
       parse={[
         {
           pattern: /\[([0-9]{1,3})\]/,
-          style: {
-            fontFamily: 'UIBold',
-            color: colors.p1,
-            fontSize: settings.fontSize - 2,
-            // backgroundColor: colors.bg2,
-          },
           renderText: renderVerseNumber,
         },
         {

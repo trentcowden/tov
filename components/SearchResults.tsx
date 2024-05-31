@@ -5,8 +5,9 @@ import { FlatList } from 'react-native-gesture-handler'
 import { FadeIn, FadeOut } from 'react-native-reanimated'
 import Spacer from '../Spacer'
 import { gutterSize, sizes, typography } from '../constants'
+import { Books } from '../data/types/books'
 import { Chapters } from '../data/types/chapters'
-import { getChapterReference } from '../functions/bible'
+import { getBook, getChapterReference } from '../functions/bible'
 import { JumpToChapter } from '../hooks/useChapterChange'
 import useColors from '../hooks/useColors'
 import { SearchResult } from './Navigator'
@@ -19,6 +20,7 @@ interface Props {
   searchResultsRef: RefObject<FlashList<Chapters[number]>>
   jumpToChapter: JumpToChapter
   closeNavigator: () => void
+  activeBook: Books[number]
 }
 
 export default function SearchResults({
@@ -27,6 +29,7 @@ export default function SearchResults({
   jumpToChapter,
   closeNavigator,
   searchResults,
+  activeBook,
 }: Props) {
   const colors = useColors()
   function renderSearchResultItem({
@@ -82,7 +85,15 @@ export default function SearchResults({
       keyExtractor={(item) => item.item.chapterId}
       renderItem={renderSearchResultItem}
       ListFooterComponent={<Spacer units={4} />}
-      data={searchResults}
+      data={searchResults.sort((a, b) =>
+        getBook(a.item.chapterId).bookId === activeBook.bookId &&
+        getBook(b.item.chapterId).bookId !== activeBook.bookId
+          ? -1
+          : getBook(b.item.chapterId).bookId === activeBook.bookId &&
+              getBook(a.item.chapterId).bookId !== activeBook.bookId
+            ? 1
+            : 0
+      )}
     />
   )
 }

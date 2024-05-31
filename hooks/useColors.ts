@@ -39,25 +39,25 @@ const lightModeColors = {
   bd: '#00000044',
 }
 
+console.log(darkModeColors)
+
 export default function useColors() {
   const theme = useAppSelector((state) => state.settings.theme)
   const systemColorScheme = useColorScheme()
-  console.log('systemColorScheme', systemColorScheme, 'theme', theme)
   const currentTheme = theme === 'auto' ? systemColorScheme : theme
-
   useEffect(() => {
-    if (currentTheme === 'light') {
-      SystemUI.setBackgroundColorAsync(tinycolor(bgLight).toHexString())
-      Appearance.setColorScheme('light')
-    } else {
-      SystemUI.setBackgroundColorAsync(tinycolor(bgLight).toHexString())
-      Appearance.setColorScheme('dark')
-    }
-  }, [theme, systemColorScheme])
+    // if (currentTheme === 'light') {
+    //   SystemUI.setBackgroundColorAsync(tinycolor(bgLight).toHexString())
+    //   Appearance.setColorScheme('light')
+    // } else {
+    SystemUI.setBackgroundColorAsync(tinycolor(bg).toHexString())
+    Appearance.setColorScheme('dark')
+    // }
+  }, [])
 
   if (currentTheme === 'light') {
-    return { ...lightModeColors, currentTheme }
+    return lightModeColors
   } else {
-    return { ...darkModeColors, currentTheme }
+    return darkModeColors
   }
 }

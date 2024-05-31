@@ -32,7 +32,7 @@ export const shadow: ViewStyle = {
 // }
 
 // export const backdropColor = '#00000055'
-export const gutterSize = 24
+export const gutterSize = 30
 export const showOverlayOffset = gutterSize * 4
 export const screenWidth = Dimensions.get('screen').width
 export const screenHeight = Dimensions.get('screen').height

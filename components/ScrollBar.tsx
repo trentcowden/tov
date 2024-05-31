@@ -149,10 +149,15 @@ export default function ScrollBar({
     backgroundColor: interpolateColor(
       scrollBarActivate.value,
       [0, 1],
-      [colors.currentTheme === 'dark' ? colors.bg2 : colors.ph, colors.p1]
+      [colors.bg3, colors.p1]
     ),
     transform: [
-      { translateX: textTranslateX.value },
+      {
+        translateX: textTranslateX.value,
+        // textTranslateX.value !== 0
+        //   ? textTranslateX.value
+        //   : interpolate(scrollBarActivate.value, [0, 1], [0, -gutterSize]),
+      },
       {
         scale: interpolate(scrollBarActivate.value, [0, 1], [1, 0.9]),
       },
@@ -235,10 +240,12 @@ export default function ScrollBar({
           style={[
             {
               position: 'absolute',
+              // right: -scrollBarWidth * 3,
               right: 0,
-              width: gutterSize * 1.5,
+              // width: scrollBarWidth * 6,
               alignItems: 'flex-end',
               justifyContent: 'center',
+              zIndex: 3,
             },
             scrollBarAreaStyles,
           ]}
@@ -248,8 +255,7 @@ export default function ScrollBar({
               {
                 // width: gutterSize,
                 width: scrollBarWidth,
-                borderRadius: 99,
-
+                borderRadius: 999,
                 zIndex: 5,
                 alignItems: 'center',
                 justifyContent: 'center',

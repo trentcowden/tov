@@ -29,9 +29,12 @@ export default function ChapterBoxes({
 
   const thisBookChapters = useMemo(
     () =>
-      bibles[settings.translation].filter(
-        (chapter) => getBook(chapter.chapterId).bookId === navigatorBook?.bookId
-      ),
+      bibles[settings.translation]
+        .filter(
+          (chapter) =>
+            getBook(chapter.chapterId).bookId === navigatorBook?.bookId
+        )
+        .filter((chapter) => chapter.chapterId !== 'tutorial'),
     [navigatorBook]
   )
 

@@ -37,7 +37,7 @@ interface Props {
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle)
 const AnimatedPath = Animated.createAnimatedComponent(Path)
-const size = 40
+const size = 48
 const strokeWidth = 1
 
 export default function ChapterChangeFeedback({
@@ -103,7 +103,7 @@ export default function ChapterChangeFeedback({
     stroke: interpolateColor(
       releaseToChange.value,
       [0, 1],
-      [colors.fg3 + '44', colors.p1]
+      [colors.fg3, colors.p1]
     ),
   }))
 
@@ -120,23 +120,19 @@ export default function ChapterChangeFeedback({
       place === 'top' && prevChapter
         ? interpolate(
             progressNormalized.value,
-            [-1, 0],
+            [-0.5, 0],
             [1, 0],
             Extrapolation.CLAMP
           )
         : place === 'bottom' && nextChapter
           ? interpolate(
               progressNormalized.value,
-              [1, 0],
+              [0.5, 0],
               [1, 0],
               Extrapolation.CLAMP
             )
           : 0,
-    transform: [
-      {
-        scale: interpolate(pop.value, [0, 1], [1, 1.1]),
-      },
-    ],
+    transform: [{ scale: interpolate(pop.value, [0, 1], [1, 1.1]) }],
   }))
 
   useAnimatedReaction(
@@ -207,7 +203,7 @@ export default function ChapterChangeFeedback({
           />
         </Svg>
         <View style={{ position: 'absolute' }}>
-          <Svg viewBox="0 0 24 24" fill="none" width={18} height={18}>
+          <Svg viewBox="0 0 24 24" fill="none" width={22} height={22}>
             <AnimatedPath
               d={config.iconPath}
               animatedProps={pathAnimatedProps}
@@ -220,10 +216,7 @@ export default function ChapterChangeFeedback({
       </Animated.View>
       {config.text ? (
         <Animated.Text
-          style={[
-            typography(sizes.caption, 'uir', 'c', colors.fg3),
-            textStyles,
-          ]}
+          style={[typography(sizes.body, 'uis', 'c', colors.fg2), textStyles]}
         >
           {/* {`${text.split(' ').slice(0, -1).join('').slice(0, 3)}. ${text.split(' ').slice(-1)[0]}`} */}
           {config.text}

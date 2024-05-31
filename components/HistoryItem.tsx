@@ -194,7 +194,7 @@ export default function HistoryListItem({
               ]}
             >
               {item.chapterId === 'tutorial'
-                ? 'Tutorial'
+                ? 'Welcome'
                 : `${getBook(item.chapterId).name} ${item.chapterId.split('.')[1]}`}
               {/* <Text style={[typography(14, 'uil', 'l', colors.fg4)]}>
               {`:${item.verseIndex + 1}`}

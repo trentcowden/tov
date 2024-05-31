@@ -86,10 +86,7 @@ export default function useChapterChange({
         scrollViewRef.current?.scrollToEnd({ animated: true })
       else {
         dispatch(updateVerseIndex(verseNumber))
-        highlightVerseNumber.value = withSequence(
-          withTiming(1),
-          withDelay(2000, withTiming(0))
-        )
+        highlightVerseNumber.value = withSequence(withTiming(1))
         scrollViewRef.current?.scrollTo({
           y: verseOffsets[verseNumber] - currentVerseReq,
           animated: true,
@@ -100,7 +97,7 @@ export default function useChapterChange({
 
     // Reset verse offsets.
     setVerseOffsets(undefined)
-
+    highlightVerseNumber.value = withTiming(0)
     overlayOpacity.value = withTiming(0)
 
     // Find the index of the chapter to go to.

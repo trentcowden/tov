@@ -1,5 +1,6 @@
 import React, { useMemo, useRef } from 'react'
 import { Dimensions, FlatList, Text, View } from 'react-native'
+import { ScrollView } from 'react-native-gesture-handler'
 import { SharedValue, withSpring, withTiming } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Spacer from '../Spacer'
@@ -47,7 +48,9 @@ export default function ReferencesModal({
   const [view, setView] = React.useState<'references' | 'hebrew'>('references')
 
   const activeReferences = useMemo(() => {
-    if (!referenceVerse) return []
+    if (!referenceVerse || referenceVerse.includes('tutorial')) return []
+
+    // if (referenceVerse.includes('tutorial')) return ['tutorial.1']
 
     referencesRef.current?.scrollToOffset({ animated: false, offset: 0 })
     const activeReferences = (references as References)[referenceVerse]
@@ -81,7 +84,9 @@ export default function ReferencesModal({
     const prevIsAfter =
       prevStart !== null ? isPassageAfter(referenceVerse, prevStart) < 0 : null
 
-    let passageString = getVerseReference(start)
+    let passageString = referenceVerse.includes('tutorial')
+      ? 'Welcome 1'
+      : getVerseReference(start)
 
     let startingVerse = parseInt(start.split('.')[2])
     let endingVerse = 0
@@ -209,19 +214,47 @@ export default function ReferencesModal({
             openReferences.value = withSpring(0, panActivateConfig)
           }}
         >
-          {`${referenceVerse ? getVerseReference(referenceVerse) : ''}`}
+          {`${referenceVerse ? (referenceVerse.includes('tutorial') ? 'Cross References' : getVerseReference(referenceVerse)) : ''}`}
         </ModalScreenHeader>
-        <View style={{ flex: 1 }}>
-          <FlatList
-            ref={referencesRef}
-            data={activeReferences}
-            ListHeaderComponent={<Spacer units={2} />}
-            ListFooterComponent={<Spacer units={4} />}
-            renderItem={renderReference}
-            contentContainerStyle={{ paddingHorizontal: gutterSize / 2 }}
-          />
-          <Fade place="top" color={colors.bg2} />
-        </View>
+        {referenceVerse?.includes('tutorial') ? (
+          <View style={{ paddingHorizontal: gutterSize, flex: 1 }}>
+            <ScrollView style={{ height: '100%' }}>
+              <Spacer units={2} />
+              <Text style={typography(sizes.body, 'uib', 'l', colors.p1)}>
+                Cross references for the verse you tapped on will appear here.
+              </Text>
+              <Spacer units={6} />
+              <Text style={typography(sizes.caption, 'uib', 'l', colors.fg1)}>
+                What are cross references?
+              </Text>
+              <Spacer units={2} />
+              <Text style={typography(sizes.caption, 'uir', 'l', colors.fg1)}>
+                Cross references are different parts of the Bible that share
+                similar themes, words, events, or people. They can help define
+                and contextualize what you’re reading.
+              </Text>
+              <Spacer units={2} />
+              <Text style={typography(sizes.caption, 'uir', 'l', colors.fg1)}>
+                Jesus often alludes to old-testament passages in his teachings.
+                Using the cross references can help you more understand his
+                meaning more deeply.
+              </Text>
+            </ScrollView>
+            <Fade place="top" color={colors.bg2} />
+          </View>
+        ) : (
+          <View style={{ flex: 1 }}>
+            <FlatList
+              ref={referencesRef}
+              data={activeReferences}
+              ListHeaderComponent={<Spacer units={2} />}
+              ListFooterComponent={<Spacer units={4} />}
+              renderItem={renderReference}
+              contentContainerStyle={{ paddingHorizontal: gutterSize / 2 }}
+            />
+            <Fade place="top" color={colors.bg2} />
+          </View>
+        )}
       </View>
     </ModalScreen>
   )

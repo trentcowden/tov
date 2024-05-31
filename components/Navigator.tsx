@@ -43,6 +43,7 @@ interface Props {
   jumpToChapter: JumpToChapter
   scrollOffset: SharedValue<number>
   overlayOpacity: SharedValue<number>
+  activeBook: Books[number]
 }
 
 export interface SearchResult {
@@ -60,6 +61,7 @@ export default function Navigator({
   jumpToChapter,
   overlayOpacity,
   scrollOffset,
+  activeBook,
 }: Props) {
   const colors = useColors()
   const settings = useAppSelector((state) => state.settings)
@@ -242,6 +244,7 @@ export default function Navigator({
                 searchResultsRef={searchResultsRef}
                 searchResults={searchResults}
                 closeNavigator={closeNavigator}
+                activeBook={activeBook}
               />
             )}
           </View>

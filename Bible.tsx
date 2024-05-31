@@ -18,7 +18,6 @@ import {
 } from 'react-native-gesture-handler'
 import Animated, {
   interpolate,
-  interpolateColor,
   runOnJS,
   useAnimatedStyle,
   useSharedValue,
@@ -35,6 +34,7 @@ import Navigator from './components/Navigator'
 import ReferencesModal from './components/ReferencesModal'
 import ScrollBar from './components/ScrollBar'
 import Settings from './components/Settings'
+import VerseHighlight from './components/VerseHighlight'
 import {
   gutterSize,
   horizTransReq,
@@ -56,6 +56,14 @@ export default function BibleView() {
   const colors = useColors()
   const colorScheme = useColorScheme()
   const dispatch = useAppDispatch()
+  // dispatch(
+  //   setActiveChapterIndex({
+  //     index: 0,
+  //     highlightVerse: false,
+  //     transition: 'fade',
+  //     verseIndex: 0,
+  //   })
+  // )
   const activeChapterIndex = useAppSelector((state) => state.activeChapterIndex)
   const settings = useAppSelector((state) => state.settings)
   const insets = useSafeAreaInsets()
@@ -70,7 +78,15 @@ export default function BibleView() {
   const overlayOpacity = useSharedValue(0)
   const highlightVerseNumber = useSharedValue(0)
   const referenceTree = useAppSelector((state) => state.referenceTree)
-  console.log(referenceTree)
+
+  const cameFromChapter = useMemo(() => {
+    const thisIndex = referenceTree.findIndex(
+      (chapter) => chapter === activeChapter.chapterId
+    )
+    if (thisIndex < 0) return null
+    return referenceTree[thisIndex - 1]
+  }, [referenceTree, activeChapter])
+
   const searchRef = useRef<TextInput>(null)
   const scrollViewRef = useRef<ScrollView>(null)
   const searchListRef = useRef<FlashList<Chapters[number]>>(null)
@@ -197,16 +213,6 @@ export default function BibleView() {
       setVerseOffsets(localVerseOffsets)
   }
 
-  const verseNumberStyles = useAnimatedStyle(() => {
-    return {
-      backgroundColor: interpolateColor(
-        highlightVerseNumber.value,
-        [0, 1],
-        [colors.p1 + '00', colors.ph]
-      ),
-    }
-  })
-
   useKeepAwake()
 
   return (
@@ -257,36 +263,12 @@ export default function BibleView() {
                 <Text style={{ color: 'green', fontSize: 20 }}>{index}</Text>
               </View>
             ))} */}
-            {verseOffsets ? (
-              <Animated.View
-                style={[
-                  {
-                    alignSelf: 'center',
-                    position: 'absolute',
-                    // height: settings.lineHeight,
-                    borderRadius: 12,
-                    height:
-                      typeof activeChapterIndex.verseIndex === 'number'
-                        ? verseOffsets[
-                            activeChapterIndex.verseIndex +
-                              (activeChapterIndex.numVersesToHighlight
-                                ? activeChapterIndex.numVersesToHighlight + 1
-                                : 1)
-                          ] - verseOffsets[activeChapterIndex.verseIndex]
-                        : // + settings.lineHeight
-                          0,
-                    top:
-                      typeof activeChapterIndex.verseIndex === 'number'
-                        ? verseOffsets[activeChapterIndex.verseIndex]
-                        : 0,
-                    width: screenWidth - gutterSize,
-                  },
-                  verseNumberStyles,
-                ]}
-              >
-                {/* <Text style={{ color: 'green', fontSize: 20 }}>{index}</Text> */}
-              </Animated.View>
-            ) : null}
+            <VerseHighlight
+              verseOffsets={verseOffsets}
+              activeChapter={activeChapter}
+              highlightVerseNumber={highlightVerseNumber}
+              jumpToChapter={jumpToChapter}
+            />
             <View
               style={{
                 width: '100%',
@@ -338,6 +320,7 @@ export default function BibleView() {
           jumpToChapter={jumpToChapter}
           overlayOpacity={overlayOpacity}
           scrollOffset={scrollOffset}
+          activeBook={activeBook}
         />
         <History
           textTranslationX={textTranslateX}
@@ -365,6 +348,9 @@ export default function BibleView() {
           activeChapter={activeChapter}
           overlayOpacity={overlayOpacity}
           scrollOffset={scrollOffset}
+          textTranslateX={textTranslateX}
+          jumpToChapter={jumpToChapter}
+          currentVerseIndex={currentVerseIndex}
         />
         <ReferencesModal
           jumpToChapter={jumpToChapter}

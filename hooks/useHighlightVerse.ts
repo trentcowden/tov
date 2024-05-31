@@ -1,10 +1,5 @@
 import { useEffect } from 'react'
-import {
-  SharedValue,
-  withDelay,
-  withSequence,
-  withTiming,
-} from 'react-native-reanimated'
+import { SharedValue, withTiming } from 'react-native-reanimated'
 import { useAppSelector } from '../redux/hooks'
 
 interface Props {
@@ -24,10 +19,10 @@ export default function useHighlightVerse({
       verseOffsets !== undefined &&
       activeChapterIndex.highlightVerse
     ) {
-      highlightVerseNumber.value = withSequence(
-        withTiming(1),
-        withDelay(2000, withTiming(0))
-      )
+      console.log('beep')
+      highlightVerseNumber.value = withTiming(1)
+    } else {
+      highlightVerseNumber.value = withTiming(0)
     }
   }, [activeChapterIndex, verseOffsets])
 }
