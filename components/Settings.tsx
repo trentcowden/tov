@@ -115,7 +115,7 @@ export default function Settings({
               onPress={() => {
                 Alert.alert(
                   'Are you sure you want to clear your history?',
-                  '',
+                  "Don't worry–your favorites will NOT be removed.",
                   [
                     { isPreferred: true, style: 'cancel', text: 'Cancel' },
                     {
