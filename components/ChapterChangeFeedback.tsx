@@ -37,7 +37,7 @@ interface Props {
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle)
 const AnimatedPath = Animated.createAnimatedComponent(Path)
-const size = 48
+export const chapterChangeFeedbackHeight = 48
 const strokeWidth = 1
 
 export default function ChapterChangeFeedback({
@@ -49,7 +49,10 @@ export default function ChapterChangeFeedback({
   const colors = useColors()
   const activeChapterIndex = useAppSelector((state) => state.activeChapterIndex)
   const translation = useAppSelector((state) => state.settings.translation)
-  const radius = useMemo(() => (size - strokeWidth) / 2, [size, strokeWidth])
+  const radius = useMemo(
+    () => (chapterChangeFeedbackHeight - strokeWidth) / 2,
+    [chapterChangeFeedbackHeight, strokeWidth]
+  )
   const circumference = useMemo(() => radius * 2 * Math.PI, [radius])
   const pop = useSharedValue(0)
 
@@ -183,8 +186,8 @@ export default function ChapterChangeFeedback({
           {
             justifyContent: 'center',
             alignItems: 'center',
-            width: size,
-            height: size,
+            width: chapterChangeFeedbackHeight,
+            height: chapterChangeFeedbackHeight,
             borderRadius: 999,
           },
           progressBg,
@@ -192,8 +195,8 @@ export default function ChapterChangeFeedback({
       >
         <Svg fill="none">
           <AnimatedCircle
-            cx={size / 2}
-            cy={size / 2}
+            cx={chapterChangeFeedbackHeight / 2}
+            cy={chapterChangeFeedbackHeight / 2}
             r={radius}
             // stroke={progressColor}
             strokeWidth={strokeWidth}

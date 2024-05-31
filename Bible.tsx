@@ -79,14 +79,6 @@ export default function BibleView() {
   const highlightVerseNumber = useSharedValue(0)
   const referenceTree = useAppSelector((state) => state.referenceTree)
 
-  const cameFromChapter = useMemo(() => {
-    const thisIndex = referenceTree.findIndex(
-      (chapter) => chapter === activeChapter.chapterId
-    )
-    if (thisIndex < 0) return null
-    return referenceTree[thisIndex - 1]
-  }, [referenceTree, activeChapter])
-
   const searchRef = useRef<TextInput>(null)
   const scrollViewRef = useRef<ScrollView>(null)
   const searchListRef = useRef<FlashList<Chapters[number]>>(null)
@@ -96,6 +88,7 @@ export default function BibleView() {
   // Animating the main text area.
 
   const [verseOffsets, setVerseOffsets] = useState<number[]>()
+  const [verseNewlines, setVerseNewlines] = useState<boolean[]>()
   const spaceBeforeTextStarts = insets.top + gutterSize * 5
   const currentVerseIndex = useSharedValue<number | 'bottom' | 'top'>(0)
   const fingerDown = useRef(false)
@@ -130,6 +123,7 @@ export default function BibleView() {
     overlayOpacity,
     scrollOffset,
     highlightVerseNumber,
+    setVerseNewlines,
   })
 
   const { onScroll, scrollBarPosition } = useScrollUpdate({
@@ -143,7 +137,6 @@ export default function BibleView() {
     alreadyHaptic,
     overlayOpacity,
     scrollOffset,
-    highlightVerseNumber,
   })
 
   const { panGesture, savedTextTranslateX, textTranslateX } = useHistoryOpen({
@@ -189,15 +182,21 @@ export default function BibleView() {
   function onTextLayout(event: NativeSyntheticEvent<TextLayoutEventData>) {
     const spaceAfterTextEnds = insets.bottom * 2 + gutterSize * 2
     const localVerseOffsets: number[] = []
-
-    event.nativeEvent.lines.forEach((line) => {
+    const localVerseNewlines: boolean[] = []
+    event.nativeEvent.lines.forEach((line, index) => {
       // if (/\[[0-9]{1,3}\]/.test(line.text)) {
       // const matches = /[0-9]{1,3} /g.exec(line.text)
       const matches = line.text.match(/[0-9]{1,3} /g)
 
       matches?.forEach(() => {
+        if (index === 0) localVerseNewlines.push(true)
+        else if (event.nativeEvent.lines[index - 1].text.endsWith('\n'))
+          localVerseNewlines.push(true)
+        else localVerseNewlines.push(false)
+
         localVerseOffsets.push(spaceBeforeTextStarts + line.y)
       })
+
       // if (/[0-9]{1,3} /.test(line.text)) {
       //   // Set the offset relative to the very top of the scrollview.
 
@@ -210,8 +209,10 @@ export default function BibleView() {
     localVerseOffsets.push(
       spaceBeforeTextStarts + lastLine.y + lastLine.height + spaceAfterTextEnds
     )
-    if (!verseOffsets || !arraysEqual(localVerseOffsets, verseOffsets))
+    if (!verseOffsets || !arraysEqual(localVerseOffsets, verseOffsets)) {
       setVerseOffsets(localVerseOffsets)
+      setVerseNewlines(localVerseNewlines)
+    }
   }
 
   useKeepAwake()
@@ -269,6 +270,7 @@ export default function BibleView() {
               activeChapter={activeChapter}
               highlightVerseNumber={highlightVerseNumber}
               jumpToChapter={jumpToChapter}
+              verseNewlines={verseNewlines}
             />
             <View
               style={{

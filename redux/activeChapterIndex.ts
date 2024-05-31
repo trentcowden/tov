@@ -23,8 +23,14 @@ export const activeChapterIndex = createSlice({
     setActiveChapterIndex: (_, action: PayloadAction<ActiveChapterState>) => {
       return action.payload
     },
-    updateVerseIndex(state, action: PayloadAction<number | undefined>) {
-      state.verseIndex = action.payload
+    updateVerseIndex(
+      state,
+      action: PayloadAction<
+        Pick<ActiveChapterState, 'verseIndex' | 'numVersesToHighlight'>
+      >
+    ) {
+      state.verseIndex = action.payload.verseIndex
+      state.numVersesToHighlight = action.payload.numVersesToHighlight
       state.highlightVerse = true
     },
     goToNextChapter: (state) => {

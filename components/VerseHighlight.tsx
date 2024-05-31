@@ -1,5 +1,4 @@
 import React, { useMemo, useRef, useState } from 'react'
-import { Pressable, Text } from 'react-native'
 import Animated, {
   Extrapolation,
   SharedValue,
@@ -8,15 +7,9 @@ import Animated, {
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
-  withSpring,
 } from 'react-native-reanimated'
-import {
-  gutterSize,
-  panActivateConfig,
-  screenWidth,
-  sizes,
-  typography,
-} from '../constants'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { gutterSize, screenWidth } from '../constants'
 import { Chapters } from '../data/types/chapters'
 import { getChapterReference } from '../functions/bible'
 import { JumpToChapter } from '../hooks/useChapterChange'
@@ -28,6 +21,7 @@ interface Props {
   highlightVerseNumber: SharedValue<number>
   activeChapter: Chapters[number]
   jumpToChapter: JumpToChapter
+  verseNewlines: boolean[] | undefined
 }
 
 const swipeReq = 75
@@ -37,7 +31,9 @@ export default function VerseHighlight({
   highlightVerseNumber,
   activeChapter,
   jumpToChapter,
+  verseNewlines,
 }: Props) {
+  const insets = useSafeAreaInsets()
   const colors = useColors()
   const activeChapterIndex = useAppSelector((state) => state.activeChapterIndex)
   const settings = useAppSelector((state) => state.settings)
@@ -97,38 +93,42 @@ export default function VerseHighlight({
 
   const verseHighlightStyle = useAnimatedStyle(() => {
     return {
-      zIndex: highlightVerseNumber.value !== 0 ? 3 : -2,
       opacity: interpolate(
         highlightVerseNumber.value,
-        [0, 0.5],
+        [0, 1],
         [0, 0.3],
         Extrapolation.CLAMP
       ),
     }
   })
 
-  const textStyles = useAnimatedStyle(() => {
-    return {
-      // transform: [{ translateX: itemTranslateX.value }],
-      // alignItems: itemTranslateX.value < 0 ? 'flex-end' : 'flex-start',
-      // right: itemTranslateX.value > 0 ? 0 : undefined,
-      zIndex: highlightVerseNumber.value > 0.5 ? 4 : -3,
-      opacity: interpolate(highlightVerseNumber.value, [0.5, 1], [0, 1]),
-    }
-  })
+  const height = useMemo(() => {
+    if (!verseOffsets) return 0
+    else if (typeof activeChapterIndex.verseIndex !== 'number') return 0
 
-  const height = verseOffsets
-    ? typeof activeChapterIndex.verseIndex === 'number'
-      ? verseOffsets[
-          activeChapterIndex.verseIndex +
-            (activeChapterIndex.numVersesToHighlight
-              ? activeChapterIndex.numVersesToHighlight + 1
-              : 1)
-        ] -
-        verseOffsets[activeChapterIndex.verseIndex] +
-        settings.lineHeight
-      : 0
-    : 0
+    const start = verseOffsets[activeChapterIndex.verseIndex]
+    let endOffset =
+      activeChapterIndex.verseIndex +
+      (activeChapterIndex.numVersesToHighlight
+        ? activeChapterIndex.numVersesToHighlight + 1
+        : 1)
+
+    let height = verseOffsets[endOffset] - start + settings.lineHeight
+
+    // The last offset extends past the last verse, so we need to adjust the height so
+    // it doesn't go past the bottom of the screen.
+    if (endOffset === verseOffsets.length - 1) {
+      height -=
+        gutterSize * 6 + insets.bottom - settings.lineHeight - gutterSize / 2
+      // If the last verse is a newline, we need to adjust the height so that it doesn't
+      // extend into the next verse.
+    } else if (verseNewlines && verseNewlines[endOffset]) {
+      height -= settings.lineHeight
+    }
+
+    return height
+  }, [verseOffsets, activeChapterIndex])
+
   const top = verseOffsets
     ? typeof activeChapterIndex.verseIndex === 'number'
       ? verseOffsets[activeChapterIndex.verseIndex]
@@ -136,87 +136,20 @@ export default function VerseHighlight({
     : 0
 
   return verseOffsets ? (
-    <>
-      <Animated.View
-        style={[
-          {
-            position: 'absolute',
-            height,
-            top,
-            width: screenWidth - gutterSize,
-            alignSelf: 'center',
-          },
-          verseHighlightStyle,
-        ]}
-      >
-        <Pressable
-          onPress={() => {
-            highlightVerseNumber.value = withSpring(1, panActivateConfig)
-            console.log('beep')
-          }}
-          style={{
-            width: '100%',
-            height: '100%',
-            backgroundColor: colors.p1,
-            borderRadius: 12,
-          }}
-        />
-      </Animated.View>
-      <Animated.View
-        style={[
-          {
-            position: 'absolute',
-            height,
-            top,
-            width: screenWidth - gutterSize,
-            alignSelf: 'center',
-            flexDirection: 'row',
-            backgroundColor: colors.p1,
-            borderRadius: 12,
-          },
-          textStyles,
-        ]}
-      >
-        <Pressable
-          onPress={() => {
-            highlightVerseNumber.value = withSpring(0, panActivateConfig)
-          }}
-          style={{
-            flex: 1,
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: gutterSize,
-            borderRightWidth: 1,
-            borderColor: colors.bg3,
-          }}
-        >
-          <Text style={[typography(sizes.body, 'uib', 'l', colors.bg1)]}>
-            {backText}
-          </Text>
-        </Pressable>
-        <Pressable
-          onPress={() => {
-            if (!cameFromChapter) return
-
-            jumpToChapter({
-              chapterId: activeChapter.chapterId,
-              verseNumber: activeChapterIndex.verseIndex,
-              comingFrom: 'reference',
-            })
-            highlightVerseNumber.value = withSpring(0, panActivateConfig)
-          }}
-          style={{
-            flex: 1,
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: gutterSize,
-          }}
-        >
-          <Text style={[typography(sizes.body, 'uib', 'l', colors.bg1)]}>
-            Dismiss
-          </Text>
-        </Pressable>
-      </Animated.View>
-    </>
+    <Animated.View
+      style={[
+        {
+          position: 'absolute',
+          height,
+          top,
+          width: screenWidth - gutterSize,
+          alignSelf: 'center',
+          backgroundColor: colors.p1,
+          borderRadius: 12,
+          zIndex: -10,
+        },
+        verseHighlightStyle,
+      ]}
+    />
   ) : null
 }

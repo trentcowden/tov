@@ -19,8 +19,7 @@ export default function useHighlightVerse({
       verseOffsets !== undefined &&
       activeChapterIndex.highlightVerse
     ) {
-      console.log('beep')
-      highlightVerseNumber.value = withTiming(0.5)
+      highlightVerseNumber.value = withTiming(1)
     } else {
       highlightVerseNumber.value = withTiming(0)
     }

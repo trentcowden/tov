@@ -47,6 +47,7 @@ interface Props {
   overlayOpacity: SharedValue<number>
   scrollOffset: SharedValue<number>
   highlightVerseNumber: SharedValue<number>
+  setVerseNewlines: Dispatch<SetStateAction<boolean[] | undefined>>
 }
 
 export default function useChapterChange({
@@ -61,6 +62,7 @@ export default function useChapterChange({
   overlayOpacity,
   scrollOffset,
   highlightVerseNumber,
+  setVerseNewlines,
 }: Props) {
   const dispatch = useAppDispatch()
   const activeChapterIndex = useAppSelector((state) => state.activeChapterIndex)
@@ -85,8 +87,14 @@ export default function useChapterChange({
       else if (verseNumber === 'bottom')
         scrollViewRef.current?.scrollToEnd({ animated: true })
       else {
-        dispatch(updateVerseIndex(verseNumber))
-        highlightVerseNumber.value = withSequence(withTiming(1))
+        // Determine numVersesToHighlight.
+        // For testing: Psa 137:9 -> Isa 13:1-22 -> Isa 13:1 -> Isa 13:19
+        dispatch(
+          updateVerseIndex({
+            verseIndex: verseNumber,
+            numVersesToHighlight,
+          })
+        )
         scrollViewRef.current?.scrollTo({
           y: verseOffsets[verseNumber] - currentVerseReq,
           animated: true,
@@ -97,6 +105,7 @@ export default function useChapterChange({
 
     // Reset verse offsets.
     setVerseOffsets(undefined)
+    setVerseNewlines(undefined)
     highlightVerseNumber.value = withTiming(0)
     overlayOpacity.value = withTiming(0)
 
@@ -228,6 +237,7 @@ export default function useChapterChange({
 
       // Reset verse offsets.
       setVerseOffsets(undefined)
+      setVerseNewlines(undefined)
 
       if (releaseToChange.value === 0) impactAsync(ImpactFeedbackStyle.Heavy)
 
