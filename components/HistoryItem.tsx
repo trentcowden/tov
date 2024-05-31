@@ -65,7 +65,7 @@ export default function HistoryListItem({
   const panGesture = Gesture.Pan()
     .activeOffsetX(10)
     .onChange((event) => {
-      if (item.chapterId === activeChapter.chapterId) return
+      // if (item.chapterId === activeChapter.chapterId) return
 
       itemTranslateX.value = event.translationX
 
@@ -82,13 +82,16 @@ export default function HistoryListItem({
       }
     })
     .onFinalize((event) => {
-      if (item.chapterId === activeChapter.chapterId) return
+      if (item.chapterId === activeChapter.chapterId) {
+        itemTranslateX.value = withSpring(0, panActivateConfig)
+        return
+      }
 
       if (event.translationX > swipeReq) {
-        itemTranslateX.value = withSpring(swipeReq * 4)
+        itemTranslateX.value = withSpring(swipeReq * 4, panActivateConfig)
         runOnJS(removeHistoryItem)()
       } else {
-        itemTranslateX.value = withSpring(0)
+        itemTranslateX.value = withSpring(0, panActivateConfig)
       }
     })
 
@@ -108,9 +111,10 @@ export default function HistoryListItem({
 
   const textContainerStyles = useAnimatedStyle(() => {
     return {
-      opacity: interpolate(itemTranslateX.value, [0, swipeReq], [1, 0.5]),
-      textDecorationLine:
-        itemTranslateX.value > swipeReq ? 'line-through' : 'none',
+      opacity:
+        item.chapterId === activeChapter.chapterId
+          ? 1
+          : interpolate(itemTranslateX.value, [0, swipeReq], [1, 0.5]),
       transform: [{ scale: interpolate(pressed.value, [0, 1], [1, 0.95]) }],
     }
   })
@@ -118,7 +122,11 @@ export default function HistoryListItem({
   const textStyles = useAnimatedStyle(() => {
     return {
       textDecorationLine:
-        itemTranslateX.value > swipeReq ? 'line-through' : 'none',
+        item.chapterId === activeChapter.chapterId
+          ? 'none'
+          : itemTranslateX.value > swipeReq
+            ? 'line-through'
+            : 'none',
       transform: [{ translateX: textTranslateX.value }],
     }
   })
