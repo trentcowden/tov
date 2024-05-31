@@ -39,7 +39,9 @@ export const history = createSlice({
       )
     },
     clearHistory: (state, action: PayloadAction<string>) => {
-      return state.filter((item) => item.chapterId === action.payload)
+      return state.filter(
+        (item) => item.chapterId === action.payload || item.isFavorite
+      )
     },
     toggleFavorite: (state, action: PayloadAction<string>) => {
       const match = state.find((item) => item.chapterId === action.payload)
