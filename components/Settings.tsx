@@ -1,11 +1,18 @@
 import * as StoreReview from 'expo-store-review'
 import React, { useEffect } from 'react'
-import { Alert, Dimensions, Linking, View } from 'react-native'
+import { Alert, Dimensions, Linking, Text, View } from 'react-native'
 import { ScrollView } from 'react-native-gesture-handler'
 import { SharedValue, withSpring } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Spacer from '../Spacer'
-import { gutterSize, modalWidth, panActivateConfig, shadow } from '../constants'
+import {
+  gutterSize,
+  modalWidth,
+  panActivateConfig,
+  shadow,
+  sizes,
+  typography,
+} from '../constants'
 import { Chapters } from '../data/types/chapters'
 import { JumpToChapter } from '../hooks/useChapterChange'
 import useColors from '../hooks/useColors'
@@ -236,12 +243,12 @@ export default function Settings({
             >
               Buy me a coffee
             </SettingsItem> */}
-            {/* <Spacer units={2} />
-            <Text style={typography(sizes.caption, 'uim', 'c', colors.p1)}>
+            <Spacer units={2} />
+            <Text style={typography(sizes.tiny, 'uim', 'c', colors.p1)}>
               {'Made with 🧡 by Trent Cowden'}
-            </Text> */}
+            </Text>
+            <Spacer units={4} />
           </ScrollView>
-          <Spacer units={4} />
           <Fade place="top" color={colors.bg2} />
         </View>
       </View>
