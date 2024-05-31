@@ -3,6 +3,7 @@ import { NativeScrollEvent, NativeSyntheticEvent } from 'react-native'
 import {
   SharedValue,
   useSharedValue,
+  withSpring,
   withTiming,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -10,6 +11,7 @@ import {
   currentVerseReq,
   getUsableHeight,
   overScrollReq,
+  panActivateConfig,
   screenHeight,
   showOverlayOffset,
 } from '../constants'
@@ -25,6 +27,7 @@ interface Props {
   overScrollAmount: SharedValue<number>
   overlayOpacity: SharedValue<number>
   scrollOffset: SharedValue<number>
+  highlightVerseNumber: SharedValue<number>
 }
 
 export default function useScrollUpdate({
@@ -38,6 +41,7 @@ export default function useScrollUpdate({
   scrollBarActivate,
   overlayOpacity,
   scrollOffset,
+  highlightVerseNumber,
 }: Props) {
   const insets = useSafeAreaInsets()
   const usableHeight = getUsableHeight(insets)
@@ -169,6 +173,8 @@ export default function useScrollUpdate({
     const offset = event.nativeEvent.contentOffset.y
     const contentHeight = event.nativeEvent.contentSize.height
     scrollOffset.value = offset
+    if (highlightVerseNumber.value === 1)
+      highlightVerseNumber.value = withSpring(0.5, panActivateConfig)
     if (textTranslateY.value === 0) {
       if (offset > showOverlayOffset) overlayOpacity.value = withTiming(1)
       else overlayOpacity.value = withTiming(0)

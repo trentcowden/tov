@@ -143,6 +143,7 @@ export default function BibleView() {
     alreadyHaptic,
     overlayOpacity,
     scrollOffset,
+    highlightVerseNumber,
   })
 
   const { panGesture, savedTextTranslateX, textTranslateX } = useHistoryOpen({

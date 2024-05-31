@@ -1,18 +1,15 @@
-import { ImpactFeedbackStyle, impactAsync } from 'expo-haptics'
 import React, { useMemo, useRef, useState } from 'react'
-import { Text } from 'react-native'
-import { Gesture, GestureDetector } from 'react-native-gesture-handler'
+import { Pressable, Text } from 'react-native'
 import Animated, {
+  Extrapolation,
   SharedValue,
   interpolate,
-  interpolateColor,
   runOnJS,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated'
-import { Path, Svg } from 'react-native-svg'
 import {
   gutterSize,
   panActivateConfig,
@@ -49,6 +46,7 @@ export default function VerseHighlight({
   const history = useAppSelector((state) => state.history)
   const alreadyHaptic = useRef(false)
   const itemTranslateX = useSharedValue(0)
+  // const active = useSharedValue(0)
 
   const cameFromChapter = useMemo(() => {
     const thisReferenceIndex = referenceTree.indexOf(activeChapter.chapterId)
@@ -99,238 +97,126 @@ export default function VerseHighlight({
 
   const verseHighlightStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ translateX: itemTranslateX.value }],
-      // opacity: interpolate(
-      //   itemTranslateX.value,
-      //   [-swipeReq, 0, swipeReq],
-      //   [0.5, 1, 0.5]
-      // ),
       zIndex: highlightVerseNumber.value !== 0 ? 3 : -2,
-      backgroundColor:
-        itemTranslateX.value !== 0
-          ? interpolateColor(
-              itemTranslateX.value,
-              [-swipeReq, -20, 0, 20, swipeReq],
-              [colors.p1, colors.ph, colors.ph, colors.ph, colors.p1]
-            )
-          : interpolateColor(
-              highlightVerseNumber.value,
-              [0, 1],
-              [colors.p1 + '00', colors.ph]
-            ),
-    }
-  })
-
-  const extrasStyle = useAnimatedStyle(() => {
-    return {
-      opacity: highlightVerseNumber.value,
-    }
-  })
-
-  const panGesture = Gesture.Pan()
-    .activeOffsetX([-10, 10])
-    .onChange((event) => {
-      itemTranslateX.value = event.translationX
-
-      if (event.translationX > swipeReq && !alreadyHaptic.current) {
-        runOnJS(impactAsync)(ImpactFeedbackStyle.Heavy)
-        alreadyHaptic.current = true
-      } else if (
-        event.translationX > 0 &&
-        event.translationX < swipeReq &&
-        alreadyHaptic.current === true
-      ) {
-        runOnJS(impactAsync)(ImpactFeedbackStyle.Light)
-        alreadyHaptic.current = false
-      }
-    })
-    .onFinalize((event) => {
-      if (event.translationX > swipeReq) {
-        console.log('dismiss')
-        itemTranslateX.value = withSpring(
-          screenWidth,
-          panActivateConfig,
-          () => (itemTranslateX.value = 0)
-        )
-        highlightVerseNumber.value = withSpring(0)
-      } else if (event.translationX < -swipeReq) {
-        if (cameFromChapter) {
-          highlightVerseNumber.value = withSpring(0)
-          runOnJS(jumpToChapter)({
-            chapterId: cameFromChapter.chapterId,
-            verseNumber: cameFromChapter.verseIndex,
-            comingFrom: 'reference',
-          })
-          itemTranslateX.value = withSpring(
-            -screenWidth,
-            panActivateConfig,
-            () => (itemTranslateX.value = 0)
-          )
-        } else itemTranslateX.value = withSpring(0, panActivateConfig)
-      } else itemTranslateX.value = withSpring(0, panActivateConfig)
-    })
-
-  const textStyles = useAnimatedStyle(() => {
-    return {
-      // transform: [{ translateX: itemTranslateX.value }],
-      alignItems: itemTranslateX.value < 0 ? 'flex-end' : 'flex-start',
-      // right: itemTranslateX.value > 0 ? 0 : undefined,
       opacity: interpolate(
-        itemTranslateX.value,
-        [-swipeReq, 0, swipeReq],
-        [1, 0, 1]
+        highlightVerseNumber.value,
+        [0, 0.5],
+        [0, 0.3],
+        Extrapolation.CLAMP
       ),
     }
   })
 
-  return (
-    <>
-      {verseOffsets ? (
-        <GestureDetector gesture={panGesture}>
-          <Animated.View
-            style={[
-              {
-                alignSelf: 'center',
-                position: 'absolute',
-                paddingLeft: gutterSize / 2,
-                paddingTop: gutterSize / 4,
-                // height: settings.lineHeight,
-                borderRadius: 12,
-                padding: gutterSize,
-                height:
-                  typeof activeChapterIndex.verseIndex === 'number'
-                    ? verseOffsets[
-                        activeChapterIndex.verseIndex +
-                          (activeChapterIndex.numVersesToHighlight
-                            ? activeChapterIndex.numVersesToHighlight + 1
-                            : 1)
-                      ] -
-                      verseOffsets[activeChapterIndex.verseIndex] +
-                      settings.lineHeight
-                    : 0,
-                top:
-                  typeof activeChapterIndex.verseIndex === 'number'
-                    ? verseOffsets[activeChapterIndex.verseIndex]
-                    : 0,
-                width: screenWidth - gutterSize,
-              },
-              verseHighlightStyle,
-            ]}
-          >
-            <Animated.View
-              style={[
-                {
-                  width: '100%',
-                  height: '100%',
-                  justifyContent: 'center',
-                  gap: 4,
-                },
-                textStyles,
-              ]}
-            >
-              <Text style={[typography(sizes.body, 'uib', 'l', colors.bg1)]}>
-                {config.text}
-              </Text>
-              <Svg viewBox="0 0 24 24" fill="none" width={32} height={32}>
-                <Path
-                  stroke={colors.bg1}
-                  d={config.iconPath}
-                  strokeWidth={2}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </Svg>
-            </Animated.View>
-          </Animated.View>
-        </GestureDetector>
-      ) : null}
-      {verseOffsets ? (
-        <Animated.View
-          style={[
-            {
-              alignSelf: 'center',
-              width: screenWidth - gutterSize,
-              borderTopLeftRadius: 6,
-              borderTopRightRadius: 6,
-              // height: gutterSize / 2,
-              flexDirection: 'row',
-              position: 'absolute',
-              alignItems: 'flex-end',
-              zIndex: 3,
-              // backgroundColor: colors.p1,
-              top:
-                typeof activeChapterIndex.verseIndex === 'number'
-                  ? verseOffsets[activeChapterIndex.verseIndex]
-                  : 0,
-            },
-            extrasStyle,
-          ]}
-        >
-          {/* <TovPressable
-            disableAnimation={!cameFromChapter}
-            onPress={() => {
-              if (!cameFromChapter) return
+  const textStyles = useAnimatedStyle(() => {
+    return {
+      // transform: [{ translateX: itemTranslateX.value }],
+      // alignItems: itemTranslateX.value < 0 ? 'flex-end' : 'flex-start',
+      // right: itemTranslateX.value > 0 ? 0 : undefined,
+      zIndex: highlightVerseNumber.value > 0.5 ? 4 : -3,
+      opacity: interpolate(highlightVerseNumber.value, [0.5, 1], [0, 1]),
+    }
+  })
 
-              jumpToChapter({
-                chapterId: cameFromChapter.chapterId,
-                verseNumber: cameFromChapter.verseIndex,
-                comingFrom: 'reference',
-              })
-            }}
-            outerOuterStyle={{
-              position: 'absolute',
-              left: 0,
-            }}
-            style={{
-              // flexDirection: 'row',
-              // alignItems: 'center',
-              // gap: 4,
-              // paddingHorizontal: gutterSize / 2,
-              // height: gutterSize * 2,
-              width: gutterSize,
-              height: gutterSize,
-              borderTopLeftRadius: 99,
-              borderTopRightRadius: 99,
-              backgroundColor: colors.bg3,
-              alignItems: 'center',
-              justifyContent: 'center',
-              alignSelf: 'center',
-            }}
-          >
-            {cameFromChapter ? (
-              <TovIcon name="arrowLeft" size={20} color={colors.fg2} />
-            ) : null}
-          </TovPressable>
-          <TovPressable
-            onPress={() => (highlightVerseNumber.value = withTiming(0))}
-            outerOuterStyle={{
-              position: 'absolute',
-              right: 0,
-            }}
-            style={{
-              borderTopLeftRadius: 99,
-              borderTopRightRadius: 99,
-              width: gutterSize,
-              height: gutterSize,
-              backgroundColor: colors.ph,
-              alignItems: 'center',
-              justifyContent: 'center',
-              alignSelf: 'center',
-            }}
-          >
-            <TovIcon name="close" size={20} color={colors.p1} />
-          </TovPressable> */}
-          {/* <Text style={[typography(sizes.tiny, 'uil', 'l', colors.bg1)]}>
-              {cameFromChapter
-                ? ` Back to ${getChapterReference(cameFromChapter.chapterId)}${
-                    typeof cameFromChapter.verseIndex === 'number'
-                      ? `:${cameFromChapter.verseIndex + 1}`
-                      : ''
-                  }`
-                : 'Starting point'}
-            </Text> */}
-        </Animated.View>
-      ) : null}
+  const height = verseOffsets
+    ? typeof activeChapterIndex.verseIndex === 'number'
+      ? verseOffsets[
+          activeChapterIndex.verseIndex +
+            (activeChapterIndex.numVersesToHighlight
+              ? activeChapterIndex.numVersesToHighlight + 1
+              : 1)
+        ] -
+        verseOffsets[activeChapterIndex.verseIndex] +
+        settings.lineHeight
+      : 0
+    : 0
+  const top = verseOffsets
+    ? typeof activeChapterIndex.verseIndex === 'number'
+      ? verseOffsets[activeChapterIndex.verseIndex]
+      : 0
+    : 0
+
+  return verseOffsets ? (
+    <>
+      <Animated.View
+        style={[
+          {
+            position: 'absolute',
+            height,
+            top,
+            width: screenWidth - gutterSize,
+            alignSelf: 'center',
+          },
+          verseHighlightStyle,
+        ]}
+      >
+        <Pressable
+          onPress={() => {
+            highlightVerseNumber.value = withSpring(1, panActivateConfig)
+            console.log('beep')
+          }}
+          style={{
+            width: '100%',
+            height: '100%',
+            backgroundColor: colors.p1,
+            borderRadius: 12,
+          }}
+        />
+      </Animated.View>
+      <Animated.View
+        style={[
+          {
+            position: 'absolute',
+            height,
+            top,
+            width: screenWidth - gutterSize,
+            alignSelf: 'center',
+            flexDirection: 'row',
+            backgroundColor: colors.p1,
+            borderRadius: 12,
+          },
+          textStyles,
+        ]}
+      >
+        <Pressable
+          onPress={() => {
+            highlightVerseNumber.value = withSpring(0, panActivateConfig)
+          }}
+          style={{
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: gutterSize,
+            borderRightWidth: 1,
+            borderColor: colors.bg3,
+          }}
+        >
+          <Text style={[typography(sizes.body, 'uib', 'l', colors.bg1)]}>
+            {backText}
+          </Text>
+        </Pressable>
+        <Pressable
+          onPress={() => {
+            if (!cameFromChapter) return
+
+            jumpToChapter({
+              chapterId: activeChapter.chapterId,
+              verseNumber: activeChapterIndex.verseIndex,
+              comingFrom: 'reference',
+            })
+            highlightVerseNumber.value = withSpring(0, panActivateConfig)
+          }}
+          style={{
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: gutterSize,
+          }}
+        >
+          <Text style={[typography(sizes.body, 'uib', 'l', colors.bg1)]}>
+            Dismiss
+          </Text>
+        </Pressable>
+      </Animated.View>
     </>
-  )
+  ) : null
 }

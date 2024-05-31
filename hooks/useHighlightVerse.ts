@@ -20,7 +20,7 @@ export default function useHighlightVerse({
       activeChapterIndex.highlightVerse
     ) {
       console.log('beep')
-      highlightVerseNumber.value = withTiming(1)
+      highlightVerseNumber.value = withTiming(0.5)
     } else {
       highlightVerseNumber.value = withTiming(0)
     }
