@@ -34,11 +34,13 @@ import Navigator from './components/Navigator'
 import ReferencesModal from './components/ReferencesModal'
 import ScrollBar from './components/ScrollBar'
 import Settings from './components/Settings'
+import TutorialHeader from './components/TutorialHeader'
 import VerseHighlight from './components/VerseHighlight'
 import {
   gutterSize,
   horizTransReq,
   panActivateConfig,
+  screenHeight,
   screenWidth,
 } from './constants'
 import bibles from './data/bibles'
@@ -89,7 +91,10 @@ export default function BibleView() {
 
   const [verseOffsets, setVerseOffsets] = useState<number[]>()
   const [verseNewlines, setVerseNewlines] = useState<boolean[]>()
-  const spaceBeforeTextStarts = insets.top + gutterSize * 5
+  const spaceBeforeTextStarts =
+    activeChapter.chapterId === 'tutorial'
+      ? screenHeight
+      : insets.top + gutterSize * 5
   const currentVerseIndex = useSharedValue<number | 'bottom' | 'top'>(0)
   const fingerDown = useRef(false)
 
@@ -278,14 +283,26 @@ export default function BibleView() {
                 height: spaceBeforeTextStarts,
               }}
             >
-              <Spacer additional={insets.top ?? gutterSize} />
-              <ChapterChangeFeedback
-                place="top"
-                progress={overScrollAmount}
-                textTranslateY={textTranslateY}
-                releaseToChange={releaseToChange}
-              />
-              <Spacer units={2} />
+              {activeChapter.chapterId === 'tutorial' ? null : (
+                <Spacer additional={insets.top ?? gutterSize} />
+              )}
+              {activeChapter.chapterId === 'tutorial' ? null : (
+                <ChapterChangeFeedback
+                  place="top"
+                  progress={overScrollAmount}
+                  textTranslateY={textTranslateY}
+                  releaseToChange={releaseToChange}
+                />
+              )}
+              {activeChapter.chapterId === 'tutorial' ? (
+                <TutorialHeader
+                  scrollViewRef={scrollViewRef}
+                  spaceBeforeTextStarts={spaceBeforeTextStarts}
+                />
+              ) : null}
+              {activeChapter.chapterId !== 'tutorial' ? (
+                <Spacer units={2} />
+              ) : null}
               <ChapterTitle
                 scrollOffset={scrollOffset}
                 focusSearch={focusSearch}

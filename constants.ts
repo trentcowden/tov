@@ -32,7 +32,7 @@ export const shadow: ViewStyle = {
 // }
 
 // export const backdropColor = '#00000055'
-export const gutterSize = 30
+export const gutterSize = 24
 export const showOverlayOffset = gutterSize * 4
 export const screenWidth = Dimensions.get('screen').width
 export const screenHeight = Dimensions.get('screen').height
@@ -55,7 +55,18 @@ export const textBackdropOpacity = 0.5
  */
 export const typography = (
   size: number,
-  weight: 'l' | 'li' | 'ri' | 'r' | 'b' | 'uir' | 'uib' | 'uim' | 'uis' | 'uil',
+  weight:
+    | 'l'
+    | 'li'
+    | 'ri'
+    | 'r'
+    | 'b'
+    | 'uir'
+    | 'uib'
+    | 'uim'
+    | 'uis'
+    | 'uil'
+    | 'eb',
   align: 'l' | 'c',
   color: string
 ): TextStyle => {
@@ -78,6 +89,7 @@ export const typography = (
     ri: 'RegularItalic',
     r: 'Regular',
     b: 'Bold',
+    eb: 'ExtraBold',
     uil: 'UILight',
     uir: 'UIRegular',
     uib: 'UIBold',

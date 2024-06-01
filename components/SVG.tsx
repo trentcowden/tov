@@ -26,6 +26,7 @@ export type IconName =
   | 'checkmarkCircle'
   | 'mail'
   | 'star'
+  | 'tov'
 
 interface ParentProps {
   name: IconName
@@ -74,6 +75,17 @@ export default function TovIcon({ name, size, color, style }: ParentProps) {
 function SVGComponent(props: ChildProps) {
   // For regular icons, make sure to remove any hard-coded fill colors in order to fill with the prop color.
   switch (props.name) {
+    case 'tov':
+      return (
+        <Svg viewBox="0 0 64 64" fill="none" {...props}>
+          <Path
+            d="M21.27 56.771h0l.002.003c1.18 1.922 2.802 3.292 4.866 4.108 2.058.813 4.407 1.218 7.044 1.218 3.987 0 7.28-.956 9.87-2.875 2.582-1.912 4.925-4.547 7.033-7.9l.04-.064-.05-.056-.613-.693-.072-.08-.075.077c-1.103 1.147-2.26 2.004-3.474 2.575a8.849 8.849 0 01-3.812.856c-.403 0-1.006-.066-1.513-.132a32.512 32.512 0 01-.836-.121l-.052-.008-.014-.003h-.003 0-.001 0l-.116-.02v.118c0 .395.162.818.394 1.223.232.406.541.804.848 1.154a12.63 12.63 0 001.053 1.059c-1.121.079-1.971-.35-2.622-1.082-.699-.785-1.17-1.923-1.486-3.167-.632-2.487-.632-5.352-.632-6.535V17.194H48.173V15.609H37.049V1.722l-.05-.03-1.313-.778-.03-.018-.034.005-8.496 1.125-.072.01-.013.07c-.584 2.995-1.312 5.496-2.184 7.507v.001c-.81 1.943-2.053 3.426-3.727 4.452h0l-.001.001c-1.617 1.027-3.993 1.717-7.14 2.062l-.089.01v1.055h5.693v31.74c0 3.241.557 5.856 1.678 7.837z"
+            fill="#D1A17A"
+            stroke="#231B16"
+            strokeWidth={0.2}
+          />
+        </Svg>
+      )
     case 'star':
       return (
         <Svg viewBox="0 0 24 24" fill="none" {...props}>

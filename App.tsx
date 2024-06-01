@@ -20,6 +20,7 @@ export default function App() {
     Light: require('./assets/fonts/Literata_18pt-Light.ttf'),
     'Light-Italic': require('./assets/fonts/Literata_18pt-LightItalic.ttf'),
     Bold: require('./assets/fonts/Literata_18pt-Bold.ttf'),
+    ExtraBold: require('./assets/fonts/Literata_18pt-ExtraBold.ttf'),
     SemiBold: require('./assets/fonts/Literata_18pt-SemiBold.ttf'),
     UILight: require('./assets/fonts/Figtree-Light.ttf'),
     UIRegular: require('./assets/fonts/Figtree-Regular.ttf'),

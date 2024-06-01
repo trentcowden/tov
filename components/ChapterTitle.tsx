@@ -2,8 +2,6 @@ import { ImpactFeedbackStyle, impactAsync } from 'expo-haptics'
 import React, { useEffect, useMemo } from 'react'
 import { Pressable, View } from 'react-native'
 import Animated, {
-  FadeIn,
-  FadeOut,
   SharedValue,
   interpolate,
   interpolateColor,
@@ -20,7 +18,6 @@ import { getChapterReference } from '../functions/bible'
 import useColors from '../hooks/useColors'
 import { toggleFavorite } from '../redux/history'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
-import TovIcon from './SVG'
 
 interface Props {
   scrollOffset: SharedValue<number>
@@ -136,30 +133,23 @@ export default function ChapterTitle({
           borderRadius: 12,
         }}
       >
-        <View style={[{ flexDirection: 'row', alignItems: 'center' }]}>
-          {historyItem?.isFavorite ? (
-            <Animated.View
-              entering={FadeIn}
-              exiting={FadeOut.duration(125)}
-              style={{ position: 'absolute', left: 0 }}
+        {activeChapter.chapterId === 'tutorial' ? null : (
+          <View style={[{ flexDirection: 'row', alignItems: 'center' }]}>
+            <Animated.Text
+              numberOfLines={1}
+              onLayout={(e) => {
+                width.value = e.nativeEvent.layout.width
+              }}
+              adjustsFontSizeToFit
+              style={[
+                typography(sizes.title, 'uib', 'l', colors.p1),
+                textContainerStyles,
+              ]}
             >
-              <TovIcon name="heartFilled" size={heartSize} color={colors.p2} />
-            </Animated.View>
-          ) : null}
-          <Animated.Text
-            numberOfLines={1}
-            onLayout={(e) => {
-              width.value = e.nativeEvent.layout.width
-            }}
-            adjustsFontSizeToFit
-            style={[
-              typography(sizes.title, 'uib', 'l', colors.p1),
-              textContainerStyles,
-            ]}
-          >
-            {getChapterReference(activeChapter.chapterId)}
-          </Animated.Text>
-        </View>
+              {getChapterReference(activeChapter.chapterId)}
+            </Animated.Text>
+          </View>
+        )}
       </Pressable>
     </Animated.View>
   )

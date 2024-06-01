@@ -18,7 +18,8 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.trentcowden.tov",
       "infoPlist": {
-        "CFBundleAllowMixedLocalizations": true
+        "CFBundleAllowMixedLocalizations": true,
+        "LSApplicationQueriesSchemes": ["mailto"]
       }
     },
     "locales": {

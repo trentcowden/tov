@@ -17,7 +17,7 @@ export function getBook(
 export function getChapterReference(
   chapterId: Chapters[number]['chapterId']
 ): string {
-  if (chapterId === 'tutorial') return 'Welcome to Tov!'
+  if (chapterId === 'tutorial') return 'Welcome to tov!'
   const book = getBook(chapterId)
   const [_, chapterNumber] = chapterId.split('.')
   return `${book.name} ${chapterNumber}`

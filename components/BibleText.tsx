@@ -80,6 +80,13 @@ export default function BibleText({
           renderText: renderVerseNumber,
         },
         {
+          pattern: /tov/,
+          style: {
+            fontFamily: 'ExtraBold',
+            color: colors.p1,
+          },
+        },
+        {
           pattern: /\*\*.+\*\*/,
           style: {
             fontFamily: 'SemiBold',

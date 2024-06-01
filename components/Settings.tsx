@@ -1,6 +1,7 @@
+import * as Linking from 'expo-linking'
 import * as StoreReview from 'expo-store-review'
 import React, { useEffect } from 'react'
-import { Alert, Dimensions, Linking, Text, View } from 'react-native'
+import { Alert, Dimensions, Text, View } from 'react-native'
 import { ScrollView } from 'react-native-gesture-handler'
 import { SharedValue, withSpring } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
