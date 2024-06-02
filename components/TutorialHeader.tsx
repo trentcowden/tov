@@ -73,11 +73,15 @@ export default function TutorialHeader({
           </Text>
           <Spacer units={6} />
           <TovIcon name="tov" size={100} />
-          {/* <Spacer units={1} /> */}
+          <Spacer units={1} />
           <Text style={typography(36, 'uis', 'c', colors.p2)}>tov</Text>
           <Spacer units={4} />
           <Text style={typography(sizes.tiny, 'uil', 'c', colors.fg3)}>
-            (a good bible app)
+            {'(a '}
+            <Text style={{ color: colors.p2, fontFamily: 'UIMedium' }}>
+              good
+            </Text>
+            {' bible app)'}
           </Text>
           {/* <Text style={typography(sizes.caption, 'uib', 'c', colors.fg3)}>
               Scroll down
@@ -92,6 +96,7 @@ export default function TutorialHeader({
         }
         onPressColor={colors.bg2}
         style={{
+          backgroundColor: colors.bg2,
           paddingVertical: gutterSize / 2,
           borderRadius: 12,
           width: screenWidth - gutterSize * 2,
