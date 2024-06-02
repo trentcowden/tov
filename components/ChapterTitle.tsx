@@ -2,6 +2,8 @@ import { ImpactFeedbackStyle, impactAsync } from 'expo-haptics'
 import React, { useEffect, useMemo } from 'react'
 import { Pressable, View } from 'react-native'
 import Animated, {
+  FadeIn,
+  FadeOut,
   SharedValue,
   interpolate,
   interpolateColor,
@@ -18,6 +20,7 @@ import { getChapterReference } from '../functions/bible'
 import useColors from '../hooks/useColors'
 import { toggleFavorite } from '../redux/history'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
+import TovIcon from './SVG'
 
 interface Props {
   scrollOffset: SharedValue<number>
@@ -55,7 +58,7 @@ export default function ChapterTitle({
     return {
       transform: [
         {
-          scale: interpolate(pressed.value, [0, 1], [1, 0.95]),
+          scale: interpolate(pressed.value, [0, 1], [1, 0.98]),
         },
       ],
       backgroundColor:
@@ -148,6 +151,19 @@ export default function ChapterTitle({
             >
               {getChapterReference(activeChapter.chapterId)}
             </Animated.Text>
+            {historyItem?.isFavorite ? (
+              <Animated.View
+                entering={FadeIn}
+                exiting={FadeOut.duration(125)}
+                style={{ position: 'absolute', left: 0 }}
+              >
+                <TovIcon
+                  name="heartFilled"
+                  size={heartSize}
+                  color={colors.p1}
+                />
+              </Animated.View>
+            ) : null}
           </View>
         )}
       </Pressable>
