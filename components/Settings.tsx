@@ -150,7 +150,7 @@ export default function Settings({
                 )
               }}
               rightIcon="trash"
-              description="Did you know you can also swipe history items right to remove them individually?"
+              description="Pro tip: you can also swipe history items right to remove them individually."
             >
               Clear History
             </SettingsItem>
@@ -191,7 +191,7 @@ export default function Settings({
                 openSettingsNested.value = withSpring(1, panActivateConfig)
               }}
             >
-              Translation
+              Bible Translation
             </SettingsItem>
             <SettingsItem
               rightIcon="arrowRight"
@@ -221,9 +221,9 @@ export default function Settings({
                 Linking.openURL('mailto:trent.cowden@gmail.com')
               }}
               rightIcon="mail"
-              description="Send me feedback, share a story, or just say hi! I'd love to hear from you."
+              description="Send me feedback, share a story, or just say hi! I'd love to hear from you. Email: trent.cowden@gmail.com."
             >
-              Contact me
+              Contact Me
             </SettingsItem>
             {canReview ? (
               <SettingsItem
@@ -233,7 +233,10 @@ export default function Settings({
                 rightIcon="star"
                 description="If you enjoy using tov, please consider leaving a review. It helps a lot!"
               >
-                Rate tov
+                Rate{' '}
+                <Text style={{ fontFamily: 'UIBold', color: colors.p2 }}>
+                  tov
+                </Text>
               </SettingsItem>
             ) : null}
             {/* <SettingsItem
