@@ -137,9 +137,8 @@ export default function ScrollBar({
 
   const scrollBarAreaStyles = useAnimatedStyle(() => ({
     transform: [
-      {
-        translateY: scrollBarPosition.value,
-      },
+      { translateY: scrollBarPosition.value },
+      { translateX: textTranslateX.value },
     ],
   }))
 
@@ -152,12 +151,6 @@ export default function ScrollBar({
       [colors.bg3, colors.p1]
     ),
     transform: [
-      {
-        translateX: textTranslateX.value,
-        // textTranslateX.value !== 0
-        //   ? textTranslateX.value
-        //   : interpolate(scrollBarActivate.value, [0, 1], [0, -gutterSize]),
-      },
       {
         scale: interpolate(scrollBarActivate.value, [0, 1], [1, 0.9]),
       },
