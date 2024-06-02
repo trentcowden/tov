@@ -69,6 +69,8 @@ export default function HistoryListItem({
 
       itemTranslateX.value = event.translationX
 
+      if (item.chapterId === activeChapter.chapterId) return
+
       if (event.translationX > swipeReq && !alreadyHaptic.current) {
         runOnJS(impactAsync)(ImpactFeedbackStyle.Heavy)
         alreadyHaptic.current = true
