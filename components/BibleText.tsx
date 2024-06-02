@@ -3,7 +3,7 @@ import React, { useMemo } from 'react'
 import { NativeSyntheticEvent, Text, TextLayoutEventData } from 'react-native'
 import ParsedText from 'react-native-parsed-text'
 import { SharedValue, withSpring } from 'react-native-reanimated'
-import { panActivateConfig, typography } from '../constants'
+import { panActivateConfig, sizes, typography } from '../constants'
 import bibles from '../data/bibles'
 import references from '../data/references.json'
 import { References } from '../data/types/references'
@@ -82,7 +82,8 @@ export default function BibleText({
         {
           pattern: /tov/,
           style: {
-            fontFamily: 'ExtraBold',
+            fontFamily: 'UIBold',
+            fontSize: sizes.body + 2,
             color: colors.p1,
           },
         },
