@@ -81,7 +81,7 @@ export default function TutorialHeader({
             <Text style={{ color: colors.p2, fontFamily: 'UIMedium' }}>
               good
             </Text>
-            {' bible app)'}
+            {' Bible app)'}
           </Text>
           {/* <Text style={typography(sizes.caption, 'uib', 'c', colors.fg3)}>
               Scroll down
