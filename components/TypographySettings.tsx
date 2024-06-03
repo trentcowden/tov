@@ -15,8 +15,8 @@ import {
 import BackButton from './BackButton'
 import BibleText from './BibleText'
 import ModalScreenHeader from './ModalScreenHeader'
-import TovIcon from './SVG'
 import TovPressable from './TovPressable'
+import TypographySetting from './TypographySetting'
 
 interface Props {
   openSettings: SharedValue<number>
@@ -78,78 +78,27 @@ export default function TypographySettings({
       </ModalScreenHeader>
       <Spacer units={2} />
       <View style={{ paddingHorizontal: gutterSize, gap: 16 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-          <Text
-            style={{
-              ...typography(sizes.body, 'uim', 'l', colors.fg1),
-              flex: 1,
-            }}
-          >
-            Font Size
-          </Text>
-          <TovPressable onPress={decreaseFontSize} style={buttonStyles}>
-            <TovIcon name="minus" size={22} color={colors.p1} />
-          </TovPressable>
-          <Text
-            style={[
-              typography(sizes.subtitle, 'uib', 'c', colors.fg2),
-              { width: 32 },
-            ]}
-          >
-            {settings.fontSize}
-          </Text>
-          <TovPressable onPress={increaseFontSize} style={buttonStyles}>
-            <TovIcon name="plus" size={22} color={colors.p1} />
-          </TovPressable>
-        </View>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-          <Text
-            style={{
-              ...typography(sizes.body, 'uim', 'l', colors.fg1),
-              flex: 1,
-            }}
-          >
-            Line Height
-          </Text>
-          <TovPressable onPress={decreaseLineHeight} style={buttonStyles}>
-            <TovIcon name="minus" size={22} color={colors.p1} />
-          </TovPressable>
-          <Text
-            style={[
-              typography(sizes.subtitle, 'uib', 'c', colors.fg2),
-              { width: 32 },
-            ]}
-          >
-            {settings.lineHeight}
-          </Text>
-          <TovPressable onPress={increaseLineHeight} style={buttonStyles}>
-            <TovIcon name="plus" size={22} color={colors.p1} />
-          </TovPressable>
-        </View>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-          <Text
-            style={{
-              ...typography(sizes.body, 'uim', 'l', colors.fg1),
-              flex: 1,
-            }}
-          >
-            Paragraph Spacing
-          </Text>
-          <TovPressable onPress={decreaseParagraphSpacing} style={buttonStyles}>
-            <TovIcon name="minus" size={22} color={colors.p1} />
-          </TovPressable>
-          <Text
-            style={[
-              typography(sizes.subtitle, 'uib', 'c', colors.fg2),
-              { width: 32 },
-            ]}
-          >
-            {settings.paragraphSpacing}
-          </Text>
-          <TovPressable onPress={increaseParagraphSpacing} style={buttonStyles}>
-            <TovIcon name="plus" size={22} color={colors.p1} />
-          </TovPressable>
-        </View>
+        <TypographySetting
+          setting="fontSize"
+          decrease={decreaseFontSize}
+          increase={increaseFontSize}
+          max={32}
+          min={12}
+        />
+        <TypographySetting
+          setting="lineHeight"
+          decrease={decreaseLineHeight}
+          increase={increaseLineHeight}
+          max={48}
+          min={24}
+        />
+        <TypographySetting
+          setting="paragraphSpacing"
+          decrease={decreaseParagraphSpacing}
+          increase={increaseParagraphSpacing}
+          max={34}
+          min={2}
+        />
       </View>
       <TovPressable
         onPress={() => {
