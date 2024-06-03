@@ -26,7 +26,9 @@ import Animated, {
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Spacer from './Spacer'
 import BibleText from './components/BibleText'
-import ChapterChangeFeedback from './components/ChapterChangeFeedback'
+import ChapterChangeFeedback, {
+  chapterChangeFeedbackHeight,
+} from './components/ChapterChangeFeedback'
 import ChapterOverlay from './components/ChapterOverlay'
 import ChapterTitle from './components/ChapterTitle'
 import History from './components/History'
@@ -186,7 +188,8 @@ export default function BibleView() {
   })
 
   function onTextLayout(event: NativeSyntheticEvent<TextLayoutEventData>) {
-    const spaceAfterTextEnds = insets.bottom * 2 + gutterSize * 2
+    const spaceAfterTextEnds =
+      gutterSize * 1.5 + chapterChangeFeedbackHeight + insets.bottom
     const localVerseOffsets: number[] = []
     const localVerseNewlines: boolean[] = []
     event.nativeEvent.lines.forEach((line, index) => {
@@ -331,7 +334,7 @@ export default function BibleView() {
               textTranslateY={textTranslateY}
               releaseToChange={releaseToChange}
             />
-            <Spacer additional={insets.bottom ?? gutterSize} />
+            <Spacer additional={insets.bottom} />
           </ScrollView>
         </Animated.View>
         <Navigator
