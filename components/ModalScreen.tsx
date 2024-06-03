@@ -51,7 +51,7 @@ export default function ModalScreen({
   const modalStyle = useAnimatedStyle(() => {
     return {
       opacity: openModal.value,
-      zIndex: openModal.value > 0.2 ? 4 : -1,
+      zIndex: openModal.value > 0.05 ? 4 : -1,
       transform: [
         { translateY: interpolate(openModal.value, [0, 1], [12, 0]) },
         { scale: interpolate(openModal.value, [0, 1], [0.95, 1]) },
