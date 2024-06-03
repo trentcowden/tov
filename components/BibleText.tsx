@@ -39,15 +39,13 @@ export default function BibleText({
       <Text
         style={{
           textDecorationLine:
-            verseId in (references as References) || verseId === 'tutorial.5'
-              ? 'underline'
-              : 'none',
+            verseId in (references as References) ? 'underline' : 'none',
           fontFamily: 'UIBold',
           color: colors.p1,
           fontSize: settings.fontSize - 2,
         }}
         onPress={
-          verseId in (references as References) || verseId === 'tutorial.5'
+          verseId in (references as References)
             ? () => {
                 impactAsync(ImpactFeedbackStyle.Heavy)
                 if (setReferenceState) setReferenceState(verseId)

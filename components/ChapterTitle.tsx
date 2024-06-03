@@ -136,7 +136,7 @@ export default function ChapterTitle({
           borderRadius: 12,
         }}
       >
-        {activeChapter.chapterId === 'tutorial' ? null : (
+        {activeChapter.chapterId === 'TUT.1' ? null : (
           <View style={[{ flexDirection: 'row', alignItems: 'center' }]}>
             <Animated.Text
               numberOfLines={1}

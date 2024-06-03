@@ -9,6 +9,7 @@ export type IconName =
   | 'forwardReference'
   | 'backReference'
   | 'arrowLeft'
+  | 'arrowDown'
   | 'scroll'
   | 'book'
   | 'arrowRightSquare'
@@ -27,6 +28,7 @@ export type IconName =
   | 'mail'
   | 'star'
   | 'tov'
+  | 'help'
 
 interface ParentProps {
   name: IconName
@@ -75,6 +77,30 @@ export default function TovIcon({ name, size, color, style }: ParentProps) {
 function SVGComponent(props: ChildProps) {
   // For regular icons, make sure to remove any hard-coded fill colors in order to fill with the prop color.
   switch (props.name) {
+    case 'arrowDown':
+      return (
+        <Svg viewBox="0 0 24 24" fill="none" {...props}>
+          <Path
+            d="M12 5v14m0 0l7-7m-7 7l-7-7"
+            stroke={props.color}
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </Svg>
+      )
+    case 'help':
+      return (
+        <Svg viewBox="0 0 24 24" fill="none" {...props}>
+          <Path
+            d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3m.08 4h.01M22 12c0 5.523-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2s10 4.477 10 10z"
+            stroke={props.color}
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </Svg>
+      )
     case 'tov':
       return (
         <Svg viewBox="0 0 201 340" fill="none" {...props}>

@@ -125,7 +125,7 @@ export default function ChapterOverlay({
               ...typography(sizes.caption, 'uis', 'l', colors.fg3),
             }}
           >
-            {activeChapter.chapterId === 'tutorial'
+            {activeChapter.chapterId === 'TUT.1'
               ? 'Tutorial'
               : `${activeBook.name.replace(' ', '').slice(0, 3)}. ${activeChapter.chapterId.split('.')[1]}`}
           </Text>

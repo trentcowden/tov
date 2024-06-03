@@ -34,7 +34,7 @@ export default function ChapterBoxes({
           (chapter) =>
             getBook(chapter.chapterId).bookId === navigatorBook?.bookId
         )
-        .filter((chapter) => chapter.chapterId !== 'tutorial'),
+        .filter((chapter) => chapter.chapterId !== 'TUT.1'),
     [navigatorBook]
   )
 

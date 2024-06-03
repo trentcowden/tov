@@ -203,7 +203,7 @@ export default function HistoryListItem({
                 textStyles,
               ]}
             >
-              {item.chapterId === 'tutorial'
+              {item.chapterId === 'TUT.1'
                 ? 'Tutorial'
                 : `${getBook(item.chapterId).name} ${item.chapterId.split('.')[1]}`}
               {/* <Text style={[typography(14, 'uil', 'l', colors.fg4)]}>

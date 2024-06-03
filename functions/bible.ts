@@ -5,6 +5,17 @@ import { Chapters } from '../data/types/chapters'
 export function getBook(
   chapterId: Chapters[number]['chapterId']
 ): Books[number] {
+  if ('TUT.1' === chapterId)
+    return {
+      bookId: 'TUT',
+      chapters: ['TUT.1'],
+      englishDivision: 'pentateuch',
+      hebrewDivision: 'ketuvim',
+      hebrewOrder: 0,
+      name: 'Tutorial',
+      order: 0,
+      testament: 'old',
+    }
   const activeBookId = chapterId.split('.')[0]
 
   const activeBook: Books[number] | undefined = (books as Books).find(
@@ -17,7 +28,7 @@ export function getBook(
 export function getChapterReference(
   chapterId: Chapters[number]['chapterId']
 ): string {
-  if (chapterId === 'tutorial') return 'Tutorial'
+  if (chapterId === 'TUT.1') return 'Tutorial'
   const book = getBook(chapterId)
   const [_, chapterNumber] = chapterId.split('.')
   return `${book.name} ${chapterNumber}`

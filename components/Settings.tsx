@@ -201,7 +201,7 @@ export default function Settings({
                 textTranslateX.value = withSpring(0, panActivateConfig)
                 openSettings.value = withSpring(0, panActivateConfig)
                 jumpToChapter({
-                  chapterId: 'tutorial',
+                  chapterId: 'TUT.1',
                   comingFrom: 'history',
                 })
               }}

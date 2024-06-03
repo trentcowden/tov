@@ -94,7 +94,7 @@ export default function BibleView() {
   const [verseOffsets, setVerseOffsets] = useState<number[]>()
   const [verseNewlines, setVerseNewlines] = useState<boolean[]>()
   const spaceBeforeTextStarts =
-    activeChapter.chapterId === 'tutorial'
+    activeChapter.chapterId === 'TUT.1'
       ? screenHeight
       : insets.top + gutterSize * 5
   const currentVerseIndex = useSharedValue<number | 'bottom' | 'top'>(0)
@@ -287,10 +287,10 @@ export default function BibleView() {
                 height: spaceBeforeTextStarts,
               }}
             >
-              {activeChapter.chapterId === 'tutorial' ? null : (
+              {activeChapter.chapterId === 'TUT.1' ? null : (
                 <Spacer additional={insets.top ?? gutterSize} />
               )}
-              {activeChapter.chapterId === 'tutorial' ? null : (
+              {activeChapter.chapterId === 'TUT.1' ? null : (
                 <ChapterChangeFeedback
                   place="top"
                   progress={overScrollAmount}
@@ -298,13 +298,13 @@ export default function BibleView() {
                   releaseToChange={releaseToChange}
                 />
               )}
-              {activeChapter.chapterId === 'tutorial' ? (
+              {activeChapter.chapterId === 'TUT.1' ? (
                 <TutorialHeader
                   scrollViewRef={scrollViewRef}
                   spaceBeforeTextStarts={spaceBeforeTextStarts}
                 />
               ) : null}
-              {activeChapter.chapterId !== 'tutorial' ? (
+              {activeChapter.chapterId !== 'TUT.1' ? (
                 <Spacer units={2} />
               ) : null}
               <ChapterTitle

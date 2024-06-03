@@ -45,14 +45,13 @@ export default function TranslationSettings({
           <Text style={typography(14, 'uir', 'l', colors.fg1)}>
             Tov currently only contains the World English Bible (WEB). The WEB
             is a public domain translation, meaning that anyone can use and
-            distribute it for free.
+            distribute it for free (which is a wonderful thing)!
           </Text>
           <Spacer units={2} />
           <Text style={typography(14, 'uir', 'l', colors.fg1)}>
-            If you would like to see a different translation in Tov, or if you
-            have connections to Bible licensers who can assist in getting
-            permissions for other translations, please contact me at
-            trent.cowden@gmail.com.
+            If you have connections to Bible licensers who can assist in getting
+            permissions for other translations, please contact me using the
+            button in settings.
           </Text>
         </ScrollView>
         <Fade place="top" color={colors.bg2} />

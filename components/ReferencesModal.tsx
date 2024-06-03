@@ -1,6 +1,5 @@
 import React, { useMemo, useRef } from 'react'
 import { Dimensions, FlatList, Text, View } from 'react-native'
-import { ScrollView } from 'react-native-gesture-handler'
 import { SharedValue, withSpring, withTiming } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Spacer from '../Spacer'
@@ -8,6 +7,7 @@ import {
   gutterSize,
   modalWidth,
   panActivateConfig,
+  screenWidth,
   shadow,
   sizes,
   typography,
@@ -209,47 +209,104 @@ export default function ReferencesModal({
             openReferences.value = withSpring(0, panActivateConfig)
           }}
         >
-          {`${referenceVerse ? (referenceVerse.includes('tutorial') ? 'Cross References' : getVerseReference(referenceVerse)) : ''}`}
+          {`${referenceVerse ? getVerseReference(referenceVerse) : ''}`}
         </ModalScreenHeader>
-        {referenceVerse?.includes('tutorial') ? (
-          <View style={{ paddingHorizontal: gutterSize, flex: 1 }}>
-            <ScrollView style={{ height: '100%' }}>
-              <Spacer units={2} />
-              <Text style={typography(sizes.body, 'uib', 'l', colors.p1)}>
-                Cross references for the verse you tapped on will appear here.
-              </Text>
-              <Spacer units={6} />
-              <Text style={typography(sizes.caption, 'uib', 'l', colors.fg1)}>
-                What are cross references?
-              </Text>
-              <Spacer units={2} />
-              <Text style={typography(sizes.caption, 'uir', 'l', colors.fg1)}>
-                Cross references are different parts of the Bible that share
-                similar themes, words, events, or people. They can help define
-                and contextualize what you’re reading.
-              </Text>
-              <Spacer units={2} />
-              <Text style={typography(sizes.caption, 'uir', 'l', colors.fg1)}>
-                Jesus often alludes to old-testament passages in his teachings.
-                Using the cross references can help you more understand his
-                meaning more deeply.
-              </Text>
-            </ScrollView>
-            <Fade place="top" color={colors.bg2} />
-          </View>
-        ) : (
-          <View style={{ flex: 1 }}>
-            <FlatList
-              ref={referencesRef}
-              data={activeReferences}
-              ListHeaderComponent={<Spacer units={2} />}
-              ListFooterComponent={<Spacer units={4} />}
-              renderItem={renderReference}
-              contentContainerStyle={{ paddingHorizontal: gutterSize / 2 }}
-            />
-            <Fade place="top" color={colors.bg2} />
-          </View>
-        )}
+        <View style={{ flex: 1 }}>
+          <FlatList
+            ref={referencesRef}
+            data={activeReferences}
+            ListFooterComponent={<Spacer units={2} />}
+            ListHeaderComponent={
+              referenceVerse?.includes('TUT') ? (
+                <View style={{ gap: gutterSize / 2 }}>
+                  <View
+                    style={{
+                      marginHorizontal: gutterSize / 2,
+                      width: screenWidth - gutterSize * 4,
+                      marginTop: gutterSize / 2,
+                      backgroundColor: colors.ph,
+                      padding: gutterSize / 2,
+                      borderRadius: 12,
+                    }}
+                  >
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        gap: 4,
+                      }}
+                    >
+                      <TovIcon name={'help'} size={16} color={colors.p1} />
+                      <Text
+                        style={typography(
+                          sizes.caption,
+                          'uib',
+                          'l',
+                          colors.fg1
+                        )}
+                      >
+                        What are cross references?
+                      </Text>
+                    </View>
+                    <Spacer units={2} />
+                    <Text
+                      style={typography(sizes.caption, 'uir', 'l', colors.fg1)}
+                    >
+                      Cross references are different parts of the Bible that
+                      share similar themes, words, events, or people. They can
+                      help define and contextualize what you’re reading for
+                      deeper understanding and study.
+                    </Text>
+                  </View>
+                  <View
+                    style={{
+                      marginHorizontal: gutterSize / 2,
+                      width: screenWidth - gutterSize * 4,
+                      marginBottom: gutterSize,
+                      backgroundColor: colors.ph,
+                      padding: gutterSize / 2,
+                      borderRadius: 12,
+                    }}
+                  >
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        gap: 4,
+                      }}
+                    >
+                      <TovIcon name={'arrowDown'} size={16} color={colors.p1} />
+                      <Text
+                        style={typography(
+                          sizes.caption,
+                          'uib',
+                          'l',
+                          colors.fg1
+                        )}
+                      >
+                        Try it out!
+                      </Text>
+                    </View>
+                    <Spacer units={2} />
+                    <Text
+                      style={typography(sizes.caption, 'uir', 'l', colors.fg1)}
+                    >
+                      Since this "verse" talks about a feature of tov, and tov
+                      is described earlier in the tutorial, there is a cross
+                      reference between the two.{'\n\n'}Click on it to go to the
+                      reference!
+                    </Text>
+                  </View>
+                </View>
+              ) : (
+                <Spacer units={4} />
+              )
+            }
+            renderItem={renderReference}
+            contentContainerStyle={{ paddingHorizontal: gutterSize / 2 }}
+          />
+          <Fade place="top" color={colors.bg2} />
+        </View>
       </View>
     </ModalScreen>
   )

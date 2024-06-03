@@ -1,6 +1,7 @@
 {
   "expo": {
     "name": "tov: a good Bible app",
+    "description": "Inspired by the Hebrew word for \"good,\" tov is a delightfully simple yet powerful Bible app designed to help you enjoy and study Scripture.",
     "slug": "tov",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -15,7 +16,7 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "userInterfaceStyle": "automatic",
-      "supportsTablet": true,
+      "supportsTablet": false,
       "bundleIdentifier": "com.trentcowden.tov",
       "infoPlist": {
         "CFBundleAllowMixedLocalizations": true,
