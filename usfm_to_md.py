@@ -21,6 +21,8 @@ def usfm_to_markdown(book: str, chapter: int, usfm_text: str):
 
     # Convert verses
     usfm_text = re.sub(r"\n\\v (\d+) *", r"[\1] ", usfm_text)
+
+    usfm_text = re.sub(r"\\pi1", "", usfm_text)
     usfm_text = re.sub(r"\\p", "\n", usfm_text)
     usfm_text = re.sub(r"\n ", "\n", usfm_text)
 
