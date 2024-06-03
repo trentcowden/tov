@@ -27,6 +27,7 @@ interface Props {
   overScrollAmount: SharedValue<number>
   overlayOpacity: SharedValue<number>
   scrollOffset: SharedValue<number>
+  openSettings: SharedValue<number>
 }
 
 export default function useScrollUpdate({
@@ -40,6 +41,7 @@ export default function useScrollUpdate({
   scrollBarActivate,
   overlayOpacity,
   scrollOffset,
+  openSettings,
 }: Props) {
   const activeChapterIndex = useAppSelector((state) => state.activeChapterIndex)
   const insets = useSafeAreaInsets()
@@ -178,7 +180,7 @@ export default function useScrollUpdate({
     const offset = event.nativeEvent.contentOffset.y
     const contentHeight = event.nativeEvent.contentSize.height
     scrollOffset.value = offset
-    if (textTranslateY.value === 0) {
+    if (textTranslateY.value === 0 && openSettings.value === 0) {
       if (offset > showOverlayOffset) overlayOpacity.value = withTiming(1)
       else overlayOpacity.value = withTiming(0)
     }

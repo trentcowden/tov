@@ -142,6 +142,7 @@ export default function BibleView() {
     alreadyHaptic,
     overlayOpacity,
     scrollOffset,
+    openSettings,
   })
 
   const { panGesture, savedTextTranslateX, textTranslateX } = useHistoryOpen({
