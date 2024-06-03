@@ -6,7 +6,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Spacer from '../Spacer'
 import {
   gutterSize,
-  iconSize,
   modalWidth,
   panActivateConfig,
   shadow,
@@ -170,17 +169,13 @@ export default function ReferencesModal({
           }}
         >
           {isAfter ? null : (
-            <TovIcon name={'backReference'} size={iconSize} color={colors.p1} />
+            <TovIcon name={'arrowLeft'} size={18} color={colors.p1} />
           )}
           <Text style={[typography(sizes.body, 'uir', 'l', colors.fg1)]}>
             {passageString}
           </Text>
           {isAfter ? (
-            <TovIcon
-              name={'forwardReference'}
-              size={iconSize}
-              color={colors.p1}
-            />
+            <TovIcon name={'arrowRight'} size={18} color={colors.p1} />
           ) : null}
         </TovPressable>
       </View>
