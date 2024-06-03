@@ -69,7 +69,7 @@ export default function HistoryListItem({
 
       itemTranslateX.value = event.translationX
 
-      if (item.chapterId === activeChapter.chapterId) return
+      if (item.chapterId === activeChapter.chapterId || item.isFavorite) return
 
       if (event.translationX > swipeReq && !alreadyHaptic.current) {
         runOnJS(impactAsync)(ImpactFeedbackStyle.Heavy)
@@ -84,7 +84,7 @@ export default function HistoryListItem({
       }
     })
     .onFinalize((event) => {
-      if (item.chapterId === activeChapter.chapterId) {
+      if (item.chapterId === activeChapter.chapterId || item.isFavorite) {
         itemTranslateX.value = withSpring(0, panActivateConfig)
         return
       }
@@ -114,7 +114,7 @@ export default function HistoryListItem({
   const textContainerStyles = useAnimatedStyle(() => {
     return {
       opacity:
-        item.chapterId === activeChapter.chapterId
+        item.chapterId === activeChapter.chapterId || item.isFavorite
           ? 1
           : interpolate(itemTranslateX.value, [0, swipeReq], [1, 0.5]),
       transform: [{ scale: interpolate(pressed.value, [0, 1], [1, 0.95]) }],
@@ -124,7 +124,7 @@ export default function HistoryListItem({
   const textStyles = useAnimatedStyle(() => {
     return {
       textDecorationLine:
-        item.chapterId === activeChapter.chapterId
+        item.chapterId === activeChapter.chapterId || item.isFavorite
           ? 'none'
           : itemTranslateX.value > swipeReq
             ? 'line-through'
