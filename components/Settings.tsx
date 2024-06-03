@@ -1,3 +1,4 @@
+import Clipboard from '@react-native-clipboard/clipboard'
 import * as Linking from 'expo-linking'
 import * as StoreReview from 'expo-store-review'
 import React, { useEffect } from 'react'
@@ -218,7 +219,22 @@ export default function Settings({
             </SettingsItem> */}
             <SettingsItem
               onPress={() => {
-                Linking.openURL('mailto:trent.cowden@gmail.com')
+                Alert.alert('How would you like to contact me?', '', [
+                  {
+                    text: 'Open mail app',
+                    onPress: () =>
+                      Linking.openURL('mailto:trent.cowden@gmail.com'),
+                  },
+                  {
+                    text: 'Copy email to clipboard',
+                    onPress: () =>
+                      Clipboard.setString('trent.cowden@gmail.com'),
+                  },
+                  {
+                    text: 'Cancel',
+                    style: 'cancel',
+                  },
+                ])
               }}
               rightIcon="mail"
               description="Send me feedback, share a story, or just say hi! I'd love to hear from you. Email: trent.cowden@gmail.com."
