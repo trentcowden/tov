@@ -29,6 +29,8 @@ export type IconName =
   | 'star'
   | 'tov'
   | 'help'
+  | 'money'
+  | 'code'
 
 interface ParentProps {
   name: IconName
@@ -77,6 +79,30 @@ export default function TovIcon({ name, size, color, style }: ParentProps) {
 function SVGComponent(props: ChildProps) {
   // For regular icons, make sure to remove any hard-coded fill colors in order to fill with the prop color.
   switch (props.name) {
+    case 'code':
+      return (
+        <Svg viewBox="0 0 24 24" fill="none" {...props}>
+          <Path
+            d="M17 17l5-5-5-5M7 7l-5 5 5 5m7-14l-4 18"
+            stroke={props.color}
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </Svg>
+      )
+    case 'money':
+      return (
+        <Svg viewBox="0 0 24 24" fill="none" {...props}>
+          <Path
+            d="M5 13a6 6 0 016-6m-6 6c0 1.648.665 3.142 1.74 4.226.104.105.156.157.187.207.03.048.046.09.06.144.013.057.013.122.013.253v2.37c0 .28 0 .42.054.527a.5.5 0 00.219.218C7.38 21 7.52 21 7.8 21h1.9c.28 0 .42 0 .527-.055a.5.5 0 00.218-.218c.055-.107.055-.247.055-.527v-.4c0-.28 0-.42.054-.527a.5.5 0 01.219-.218C10.88 19 11.02 19 11.3 19h1.4c.28 0 .42 0 .527.055a.5.5 0 01.218.218c.055.107.055.247.055.527v.4c0 .28 0 .42.054.527a.5.5 0 00.219.218c.107.055.247.055.527.055h1.9c.28 0 .42 0 .527-.055a.5.5 0 00.218-.218C17 20.62 17 20.48 17 20.2v-.976c0-.202 0-.303.029-.384a.462.462 0 01.121-.19c.061-.06.166-.108.374-.205a6.025 6.025 0 002.427-2.055c.107-.155.16-.233.217-.28a.464.464 0 01.17-.089c.07-.021.154-.021.32-.021h.542c.28 0 .42 0 .527-.055a.5.5 0 00.218-.218C22 15.62 22 15.48 22 15.2v-3.414c0-.267 0-.4-.05-.503a.5.5 0 00-.233-.233c-.103-.05-.236-.05-.503-.05-.193 0-.29 0-.367-.026a.463.463 0 01-.203-.13c-.057-.06-.103-.16-.195-.358a6.013 6.013 0 00-1.19-1.712c-.104-.105-.155-.157-.186-.207a.462.462 0 01-.06-.144C19 8.366 19 8.3 19 8.17V7.06c0-.36 0-.54-.075-.66a.5.5 0 00-.288-.218c-.137-.039-.31.01-.657.11l-2.372.677a.498.498 0 01-.136.029C15.45 7 15.43 7 15.387 7H11m-6 6H4a2 2 0 01-1-3.732M11 7h3.965a3.5 3.5 0 10-6.758.688A5.974 5.974 0 0111 7z"
+            stroke={props.color}
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </Svg>
+      )
     case 'arrowDown':
       return (
         <Svg viewBox="0 0 24 24" fill="none" {...props}>

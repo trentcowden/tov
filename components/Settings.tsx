@@ -208,15 +208,14 @@ export default function Settings({
             >
               View Tutorial
             </SettingsItem>
-            {/* <SettingsItem
-              onPress={() => {
-                Linking.openURL('mailto:trent.cowden@gmail.com')
-              }}
-              rightIcon="star"
-              description="Send me feedback, share a story, or just say hi! I'd love to hear from you."
+            <Text
+              style={[
+                typography(sizes.body, 'uib', 'l', colors.fg2),
+                { paddingHorizontal: gutterSize, marginTop: gutterSize },
+              ]}
             >
-              Rate Tov
-            </SettingsItem> */}
+              Contribute
+            </Text>
             <SettingsItem
               onPress={() => {
                 Alert.alert('How would you like to contact me?', '', [
@@ -237,7 +236,7 @@ export default function Settings({
                 ])
               }}
               rightIcon="mail"
-              description="Send me feedback, share a story, or just say hi! I'd love to hear from you. Email: trent.cowden@gmail.com."
+              description="Send me feedback, share a story, or just say hi! I'd love to hear from you."
             >
               Contact Me
             </SettingsItem>
@@ -247,25 +246,51 @@ export default function Settings({
                   StoreReview.requestReview()
                 }}
                 rightIcon="star"
-                description="If you enjoy using tov, please consider leaving a review. It helps a lot!"
+                description="If you enjoy using Tov, please consider leaving a review. It helps a lot!"
               >
                 Rate{' '}
                 <Text style={{ fontFamily: 'UIBold', color: colors.p2 }}>
                   tov
-                </Text>
+                </Text>{' '}
+                on the App Store
               </SettingsItem>
             ) : null}
-            {/* <SettingsItem
-              onPress={() => {}}
+            <SettingsItem
+              onPress={() => {
+                Linking.openURL('https://buymeacoffee.com/trentcowden')
+              }}
               // rightText={'Tov'}
-              rightIcon="arrowRight"
-              description="Support the development of Tov, and also be a friend."
+              rightIcon="money"
+              description="Tov will always be free. Send me a donation to support the project and be a friend!"
             >
-              Buy me a coffee
-            </SettingsItem> */}
+              Donate to{' '}
+              <Text style={{ fontFamily: 'UIBold', color: colors.p2 }}>
+                tov
+              </Text>
+            </SettingsItem>
+            <SettingsItem
+              onPress={() => {
+                Linking.openURL('https://github.com/trentcowden/tov')
+              }}
+              // rightText={'Tov'}
+              rightIcon="code"
+              description="Tov is open-source! Check out the code and contribute on GitHub."
+            >
+              View{' '}
+              <Text style={{ fontFamily: 'UIBold', color: colors.p2 }}>
+                tov
+              </Text>
+              's Source Code
+            </SettingsItem>
             <Spacer units={2} />
             <Text style={typography(sizes.tiny, 'uim', 'c', colors.p1)}>
-              {'Made with 🧡 by Trent Cowden'}
+              {'Made with 🧡 by '}
+              <Text
+                style={{ textDecorationLine: 'underline' }}
+                onPress={() => Linking.openURL('https://trentcowden.com')}
+              >
+                Trent Cowden
+              </Text>
             </Text>
             <Spacer units={4} />
           </ScrollView>
