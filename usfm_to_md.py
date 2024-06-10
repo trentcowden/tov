@@ -28,8 +28,8 @@ def usfm_to_markdown(book: str, chapter: int, usfm_text: str):
 
     # TODO: add footnote support
     # Remove strong's words
-    usfm_text = re.sub(r"\\w (\S*)\|strong=\"\S*\"\\w\*", r"\1", usfm_text)
-    usfm_text = re.sub(r"\\\+w (\S*)\|strong=\"\S*\"\\\+w\*", r"\1", usfm_text)
+    usfm_text = re.sub(r"\\w (.+?)\|strong=\"\S*\"\\w\*", r"\1", usfm_text)
+    usfm_text = re.sub(r"\\\+w (.+?)\|strong=\"\S*\"\\\+w\*", r"\1", usfm_text)
     # usfm_text = re.sub(r"(LORD)", r"**\1**", usfm_text)
 
     # Words of Jesus
@@ -46,6 +46,7 @@ def usfm_to_markdown(book: str, chapter: int, usfm_text: str):
     # usfm_text = re.sub(r"\\d( *)(.+?)( *)\n", r"*\2*\n\n", usfm_text)
     usfm_text = re.sub(r"\\d( *)(.+?)( *)\n", r"*\2*\n\n", usfm_text)
     usfm_text = re.sub(r"\\ms1( *)(.+?)( *)\n", r"", usfm_text)
+    usfm_text = re.sub(r"\\s1( *)(.+?)( *)\n", r"", usfm_text)
 
     # Selahs
     usfm_text = re.sub(r"\\qs ?(.+) ?\\qs\*", r"\n*\1*", usfm_text)
@@ -58,7 +59,7 @@ def usfm_to_markdown(book: str, chapter: int, usfm_text: str):
 
 chapters = []
 
-unsorted_book_files = os.listdir("data/web_usfm")
+unsorted_book_files = os.listdir("data/net_usfm")
 
 # Define the biblical order of the books
 biblical_order = [
@@ -150,7 +151,7 @@ sorted_book_files = sort_books(unsorted_book_files)
 
 # Example usage
 for book_file in sorted_book_files:
-    book_file_path = f"data/web_usfm/{book_file}"
+    book_file_path = f"data/net_usfm/{book_file}"
 
     # Read the USFM file
     with open(book_file_path, "r", encoding="utf-8") as file:
@@ -176,5 +177,5 @@ for book_file in sorted_book_files:
             }
         )
 
-with open("data/web_chapters.json", "w", encoding="utf-8") as file:
+with open("data/net_chapters.json", "w", encoding="utf-8") as file:
     json.dump(chapters, file)
