@@ -4,6 +4,8 @@ import { FlashList } from '@shopify/flash-list'
 import { RefObject, useEffect, useState } from 'react'
 import { Dimensions, KeyboardAvoidingView, TextInput, View } from 'react-native'
 import {
+  FadeIn,
+  FadeOut,
   SharedValue,
   useSharedValue,
   withSpring,
@@ -202,6 +204,7 @@ export default function Navigator({
                   // marginTop: gutterSize / 2,
                   height: 50,
                   paddingLeft: gutterSize + 14,
+                  paddingRight: 18 + gutterSize,
                   backgroundColor: colors.bg3,
                   borderRadius: 12,
                   ...typography(sizes.body, 'uis', 'l', colors.fg1),
@@ -224,6 +227,31 @@ export default function Navigator({
               <View style={{ position: 'absolute', left: gutterSize / 2 }}>
                 <TovIcon name="search" size={18} color={colors.p1} />
               </View>
+              {searchText !== '' ? (
+                <TovPressable
+                  entering={FadeIn}
+                  exiting={FadeOut}
+                  onPress={() => {
+                    setSearchText('')
+                    searchRef.current?.clear()
+                  }}
+                  onPressColor={colors.bg4}
+                  outerOuterStyle={{
+                    zIndex: 5,
+                    position: 'absolute',
+                    right: 0,
+                  }}
+                  style={{
+                    justifyContent: 'center',
+                    height: 50,
+                    padding: gutterSize / 2,
+                    // backgroundColor: colors.bg4,
+                    borderRadius: 12,
+                  }}
+                >
+                  <TovIcon name="delete" size={18} color={colors.fg3} />
+                </TovPressable>
+              ) : null}
             </>
           </ModalScreenHeader>
           <View
