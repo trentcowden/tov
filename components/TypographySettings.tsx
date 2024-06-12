@@ -1,66 +1,43 @@
-import { Text, View, ViewStyle } from 'react-native'
-import { ScrollView } from 'react-native-gesture-handler'
+import { Pressable, Text, View } from 'react-native'
 import { SharedValue, withSpring } from 'react-native-reanimated'
 import Spacer from '../Spacer'
-import { gutterSize, panActivateConfig, sizes, typography } from '../constants'
-import bibles from '../data/bibles'
+import {
+  gutterSize,
+  horizTransReq,
+  panActivateConfig,
+  screenWidth,
+  sizes,
+  typography,
+} from '../constants'
 import useColors from '../hooks/useColors'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
-import {
-  defaultTypography,
-  setFontSize,
-  setLineHeight,
-  setParagraphSpacing,
-} from '../redux/settings'
+import { setTypography, typographyOptions } from '../redux/settings'
 import BackButton from './BackButton'
-import BibleText from './BibleText'
 import ModalScreenHeader from './ModalScreenHeader'
+import TovIcon from './SVG'
 import TovPressable from './TovPressable'
-import TypographySetting from './TypographySetting'
 
 interface Props {
   openSettings: SharedValue<number>
   openSettingsNested: SharedValue<number>
+  textTranslateX: SharedValue<number>
 }
 
 export default function TypographySettings({
   openSettings,
   openSettingsNested,
+  textTranslateX,
 }: Props) {
   const dispatch = useAppDispatch()
   const settings = useAppSelector((state) => state.settings)
   const colors = useColors()
-  const decreaseFontSize = () => {
-    const newFontSize = settings.fontSize - 1
-    dispatch(setFontSize(newFontSize))
-  }
 
-  const increaseFontSize = () => {
-    const newFontSize = settings.fontSize + 1
-    dispatch(setFontSize(newFontSize))
+  const names = {
+    small: 'Tiny 🐞',
+    default: 'Default 🐱',
+    large: 'Quite Big 🐴',
+    xlarge: 'Very Large 🦖',
   }
-
-  const decreaseLineHeight = () => {
-    const newLineHeight = settings.lineHeight - 2
-    dispatch(setLineHeight(newLineHeight))
-  }
-
-  const increaseLineHeight = () => {
-    const newLineHeight = settings.lineHeight + 2
-    dispatch(setLineHeight(newLineHeight))
-  }
-
-  const decreaseParagraphSpacing = () => {
-    const newParagraphSpacing = settings.paragraphSpacing - 2
-    dispatch(setParagraphSpacing(newParagraphSpacing))
-  }
-
-  const increaseParagraphSpacing = () => {
-    const newParagraphSpacing = settings.paragraphSpacing + 2
-    dispatch(setParagraphSpacing(newParagraphSpacing))
-  }
-
-  const buttonStyles: ViewStyle = {}
 
   return (
     <View style={{ flex: 1 }}>
@@ -77,64 +54,76 @@ export default function TypographySettings({
         Typography
       </ModalScreenHeader>
       <Spacer units={2} />
-      <View style={{ paddingHorizontal: gutterSize, gap: 16 }}>
-        <TypographySetting
-          setting="fontSize"
-          decrease={decreaseFontSize}
-          increase={increaseFontSize}
-          max={32}
-          min={12}
-        />
-        <TypographySetting
-          setting="lineHeight"
-          decrease={decreaseLineHeight}
-          increase={increaseLineHeight}
-          max={48}
-          min={24}
-        />
-        <TypographySetting
-          setting="paragraphSpacing"
-          decrease={decreaseParagraphSpacing}
-          increase={increaseParagraphSpacing}
-          max={34}
-          min={2}
-        />
-      </View>
-      <TovPressable
-        onPress={() => {
-          dispatch(setFontSize(defaultTypography.fontSize))
-          dispatch(setLineHeight(defaultTypography.lineHeight))
-          dispatch(setParagraphSpacing(defaultTypography.paragraphSpacing))
-        }}
-        onPressColor={colors.bg3}
-        style={{
-          marginTop: gutterSize,
-          marginHorizontal: gutterSize,
-          padding: gutterSize / 2,
-          backgroundColor: colors.bg3,
-          borderRadius: 999,
-          alignItems: 'center',
-        }}
-      >
-        <Text style={typography(sizes.caption, 'uis', 'c', colors.fg3)}>
-          Reset to Default
-        </Text>
-      </TovPressable>
-      <Spacer units={4} />
-      <ScrollView
+      <View
         style={{
           paddingHorizontal: gutterSize,
-          backgroundColor: colors.bg3,
-          marginHorizontal: gutterSize,
-          borderRadius: 12,
-          overflow: 'hidden',
+          gap: gutterSize / 2,
+          width: screenWidth - gutterSize * 2,
           flex: 1,
         }}
       >
-        <Spacer units={4} />
-        <BibleText>{bibles[settings.translation][1].md}</BibleText>
-        <Spacer units={4} />
-      </ScrollView>
+        {Object.keys(typographyOptions).map((key) => {
+          const option = key as keyof typeof typographyOptions
+          const isActive =
+            settings.fontSize === typographyOptions[option].fontSize
+
+          return (
+            <TovPressable
+              key={key}
+              onPress={() => {
+                dispatch(setTypography(option))
+              }}
+              onPressColor={isActive ? colors.ph : colors.bg3}
+              style={{
+                justifyContent: 'center',
+                padding: gutterSize / 2,
+                backgroundColor: isActive ? colors.ph : colors.bg3,
+                borderRadius: 12,
+                alignItems: 'center',
+              }}
+            >
+              <Text
+                numberOfLines={1}
+                adjustsFontSizeToFit
+                style={typography(
+                  typographyOptions[option].fontSize,
+                  'uis',
+                  'c',
+                  colors.fg2
+                )}
+              >
+                {names[option]}
+              </Text>
+            </TovPressable>
+          )
+        })}
+      </View>
+      <Pressable
+        onPressIn={() => {
+          openSettings.value = withSpring(0, panActivateConfig)
+          textTranslateX.value = withSpring(0, panActivateConfig)
+        }}
+        onPressOut={() => {
+          openSettings.value = withSpring(1, panActivateConfig)
+          textTranslateX.value = withSpring(horizTransReq, panActivateConfig)
+        }}
+        style={{
+          marginTop: gutterSize,
+          marginHorizontal: gutterSize,
+          padding: gutterSize,
+          backgroundColor: colors.ph,
+          borderRadius: 12,
+          alignItems: 'center',
+          // flexDirection: 'row',
+          gap: gutterSize / 2,
+          justifyContent: 'center',
+        }}
+      >
+        <TovIcon name="eye" size={40} color={colors.fg2} />
+        <Text style={typography(sizes.body, 'uib', 'c', colors.fg1)}>
+          Press and Hold to Preview
+        </Text>
+      </Pressable>
       <Spacer units={4} />
     </View>
   )

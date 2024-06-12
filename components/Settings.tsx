@@ -97,6 +97,7 @@ export default function Settings({
           <TypographySettings
             openSettings={openSettings}
             openSettingsNested={openSettingsNested}
+            textTranslateX={textTranslateX}
           />
         ) : nestedSetting === 'theme' ? (
           <ThemeSettings
@@ -162,7 +163,7 @@ export default function Settings({
               }}
               // rightText={settings.fontSize.toString()}
               rightIcon="arrowRight"
-              description="Change the size and spacing of the Bible text. Take it easy on those eyes!"
+              description="Change the size of the Bible text. Take it easy on those eyes!"
             >
               Typography
             </SettingsItem>

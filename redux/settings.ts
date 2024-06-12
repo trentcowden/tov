@@ -1,6 +1,12 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit'
 
-export interface SettingsState {
+export interface TypographySettings {
+  fontSize: number
+  lineHeight: number
+  paragraphSpacing: number
+}
+
+export interface SettingsState extends TypographySettings {
   translation: 'web' | 'net'
   fontSize: number
   lineHeight: number
@@ -8,19 +14,32 @@ export interface SettingsState {
   theme: 'dark' | 'light' | 'auto'
 }
 
-export const defaultTypography: {
-  fontSize: number
-  lineHeight: number
-  paragraphSpacing: number
-} = {
-  fontSize: 17,
-  lineHeight: 38,
-  paragraphSpacing: 18,
+export const typographyOptions = {
+  small: {
+    fontSize: 15,
+    lineHeight: 32,
+    paragraphSpacing: 14,
+  },
+  default: {
+    fontSize: 17,
+    lineHeight: 38,
+    paragraphSpacing: 18,
+  },
+  large: {
+    fontSize: 19,
+    lineHeight: 42,
+    paragraphSpacing: 22,
+  },
+  xlarge: {
+    fontSize: 21,
+    lineHeight: 46,
+    paragraphSpacing: 26,
+  },
 }
 
 const initialState: SettingsState = {
   translation: 'web',
-  ...defaultTypography,
+  ...typographyOptions.default,
   theme: 'dark',
 }
 
@@ -34,39 +53,21 @@ export const settings = createSlice({
     ) => {
       state.translation = action.payload
     },
-    setFontSize: (state, action: PayloadAction<SettingsState['fontSize']>) => {
-      state.fontSize = action.payload
-    },
-    setLineHeight: (
+    setTypography: (
       state,
-      action: PayloadAction<SettingsState['lineHeight']>
+      action: PayloadAction<keyof typeof typographyOptions>
     ) => {
-      state.lineHeight = action.payload
-    },
-    setParagraphSpacing: (
-      state,
-      action: PayloadAction<SettingsState['paragraphSpacing']>
-    ) => {
-      state.paragraphSpacing = action.payload
+      state.fontSize = typographyOptions[action.payload].fontSize
+      state.lineHeight = typographyOptions[action.payload].lineHeight
+      state.paragraphSpacing =
+        typographyOptions[action.payload].paragraphSpacing
     },
     setTheme: (state, action: PayloadAction<SettingsState['theme']>) => {
       state.theme = action.payload
     },
-    resetTypographySettings: (state) => {
-      state.fontSize = initialState.fontSize
-      state.lineHeight = initialState.lineHeight
-      state.paragraphSpacing = initialState.paragraphSpacing
-    },
   },
 })
 
-export const {
-  setFontSize,
-  setTheme,
-  setTranslation,
-  setLineHeight,
-  setParagraphSpacing,
-  resetTypographySettings,
-} = settings.actions
+export const { setTheme, setTranslation, setTypography } = settings.actions
 
 export default settings.reducer
