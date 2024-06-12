@@ -2,7 +2,7 @@ import { Text, View, ViewStyle } from 'react-native'
 import { ScrollView } from 'react-native-gesture-handler'
 import { SharedValue, withSpring } from 'react-native-reanimated'
 import Spacer from '../Spacer'
-import { gutterSize, panActivateConfig, typography } from '../constants'
+import { gutterSize, panActivateConfig, sizes, typography } from '../constants'
 import useColors from '../hooks/useColors'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
 import BackButton from './BackButton'
@@ -42,16 +42,13 @@ export default function TranslationSettings({
       <View style={{ flex: 1 }}>
         <ScrollView style={{ paddingHorizontal: gutterSize }}>
           <Spacer units={2} />
-          <Text style={typography(14, 'uir', 'l', colors.fg1)}>
-            Tov currently only contains the World English Bible (WEB). The WEB
-            is a public domain translation, meaning that anyone can use and
-            distribute it for free (which is a wonderful thing)!
-          </Text>
-          <Spacer units={2} />
-          <Text style={typography(14, 'uir', 'l', colors.fg1)}>
-            If you have connections to Bible licensers who can assist in getting
-            permissions for other translations, please contact me using the
-            button in settings.
+          <Text style={typography(sizes.body, 'uir', 'l', colors.fg1)}>
+            Tov only contains the New English Translation (NET). The NET is a
+            modern translation of the Bible designed to make it accessible and
+            understandable to contemporary readers. It aims to balance accuracy
+            with readability, employing a clear and dynamic language that
+            resonates with today's audience while remaining faithful to the
+            original texts.
           </Text>
         </ScrollView>
         <Fade place="top" color={colors.bg2} />
