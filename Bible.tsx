@@ -55,8 +55,9 @@ import useHistoryOpen from './hooks/useHistoryOpen'
 import useNavigatorOpen from './hooks/useNavigatorOpen'
 import useScrollUpdate from './hooks/useScrollUpdate'
 import { useAppDispatch, useAppSelector } from './redux/hooks'
+import { setTranslation } from './redux/settings'
 
-export default function BibleView() {
+export default function Bible() {
   const colors = useColors()
   const colorScheme = useColorScheme()
   const dispatch = useAppDispatch()
@@ -89,6 +90,7 @@ export default function BibleView() {
 
   const overScrollAmount = useSharedValue(0)
   const [referenceVerse, setReferenceState] = useState<string>()
+  dispatch(setTranslation('net'))
   // Animating the main text area.
 
   const [verseOffsets, setVerseOffsets] = useState<number[]>()
