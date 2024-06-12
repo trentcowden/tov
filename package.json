@@ -30,6 +30,7 @@
     "expo-status-bar": "~1.11.1",
     "expo-store-review": "~6.8.3",
     "expo-system-ui": "^2.9.4",
+    "expo-web-browser": "~12.8.2",
     "fuse.js": "^7.0.0",
     "json-schema-to-typescript": "^13.1.2",
     "prettier": "^3.2.5",
