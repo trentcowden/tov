@@ -5,7 +5,9 @@ from typing import List
 
 
 # Function to convert USFM to Markdown
-def usfm_to_markdown(book: str, chapter: int, usfm_text: str):
+def usfm_to_markdown(usfm_text: str):
+    # Remove weird pluses that some USFM files have.
+    usfm_text = re.sub(r"\\\+", r"\\", usfm_text)
 
     # Remove chapters
     usfm_text = re.sub(r"\\c +(\d+) +", "", usfm_text)
@@ -26,11 +28,11 @@ def usfm_to_markdown(book: str, chapter: int, usfm_text: str):
     usfm_text = re.sub(r"\\p", "\n", usfm_text)
     usfm_text = re.sub(r"\n ", "\n", usfm_text)
 
-    # TODO: add footnote support
     # Remove strong's words
     usfm_text = re.sub(r"\\w (.+?)\|strong=\"\S*\"\\w\*", r"\1", usfm_text)
-    usfm_text = re.sub(r"\\\+w (.+?)\|strong=\"\S*\"\\\+w\*", r"\1", usfm_text)
-    # usfm_text = re.sub(r"(LORD)", r"**\1**", usfm_text)
+
+    # Name of God.
+    usfm_text = re.sub(r"\\\+nd (.+?)\\\+nd\*", r"\1", usfm_text)
 
     # Words of Jesus
     usfm_text = re.sub(r"\\wj( *)(.+?)( *)\\wj\*", r"**\2**", usfm_text)
@@ -40,19 +42,29 @@ def usfm_to_markdown(book: str, chapter: int, usfm_text: str):
 
     # Italics text
     usfm_text = re.sub(r"\\it( *)(.+?)( *)\\it\*", r"*\2*", usfm_text)
+    usfm_text = re.sub(r"\\\+it( *)(.+?)( *)\\\+it\*", r"*\2*", usfm_text)
     usfm_text = re.sub(r"\\sp( *)(.+?)( *)\n", r"*\2*\n", usfm_text)
+    usfm_text = re.sub(r"\\\+qt( *)(.+?)( *)\\\+qt\*", r"*\2*", usfm_text)
 
     # Descriptions (mostly in the psalms)
-    # usfm_text = re.sub(r"\\d( *)(.+?)( *)\n", r"*\2*\n\n", usfm_text)
     usfm_text = re.sub(r"\\d( *)(.+?)( *)\n", r"*\2*\n\n", usfm_text)
+
+    # Section titles.
     usfm_text = re.sub(r"\\ms1( *)(.+?)( *)\n", r"", usfm_text)
     usfm_text = re.sub(r"\\s1( *)(.+?)( *)\n", r"", usfm_text)
 
     # Selahs
     usfm_text = re.sub(r"\\qs ?(.+) ?\\qs\*", r"\n*\1*", usfm_text)
+    usfm_text = re.sub(r"\(Selah\)", "*(Selah)*", usfm_text)
+
+    usfm_text = re.sub(r"‘ ", "‘", usfm_text)
 
     # Remove any remaining USFM tags (simplistic approach)
     usfm_text = re.sub(r"\\[a-z0-9]+\*?", "", usfm_text)
+
+    # Remove any remaining extraneous whitespace.
+    usfm_text = re.sub(r"\s+Lord", " Lord", usfm_text)
+    usfm_text = re.sub(r" +", " ", usfm_text)
 
     return usfm_text.strip()
 
@@ -173,7 +185,7 @@ for book_file in sorted_book_files:
         chapters.append(
             {
                 "chapterId": f"{book_id}.{chapter_number}",
-                "md": usfm_to_markdown(book_id, index, "\\c " + chapter),
+                "md": usfm_to_markdown("\\c " + chapter),
             }
         )
 
