@@ -1,5 +1,7 @@
 import Clipboard from '@react-native-clipboard/clipboard'
 import * as Linking from 'expo-linking'
+import * as WebBrowser from 'expo-web-browser'
+
 import * as StoreReview from 'expo-store-review'
 import React, { useEffect } from 'react'
 import { Alert, Dimensions, Text, View } from 'react-native'
@@ -152,7 +154,7 @@ export default function Settings({
                 )
               }}
               rightIcon="trash"
-              description="Pro tip: you can also swipe history items right to remove them individually."
+              description="A tasty tip: you can also swipe history items right to remove them individually."
             >
               Clear History
             </SettingsItem>
@@ -196,7 +198,7 @@ export default function Settings({
               Bible Translation
             </SettingsItem>
             <SettingsItem
-              rightIcon="arrowRight"
+              rightIcon="help"
               description="Go back to the tutorial screen you saw when you first opened the app."
               onPress={() => {
                 textTranslateX.value = withSpring(0, panActivateConfig)
@@ -258,7 +260,9 @@ export default function Settings({
             ) : null}
             <SettingsItem
               onPress={() => {
-                Linking.openURL('https://buymeacoffee.com/trentcowden')
+                WebBrowser.openBrowserAsync(
+                  'https://buymeacoffee.com/trentcowden'
+                )
               }}
               // rightText={'Tov'}
               rightIcon="money"
@@ -271,7 +275,9 @@ export default function Settings({
             </SettingsItem>
             <SettingsItem
               onPress={() => {
-                Linking.openURL('https://github.com/trentcowden/tov')
+                WebBrowser.openBrowserAsync(
+                  'https://github.com/trentcowden/tov'
+                )
               }}
               // rightText={'Tov'}
               rightIcon="code"
@@ -288,7 +294,9 @@ export default function Settings({
               {'Made with 🧡 by '}
               <Text
                 style={{ textDecorationLine: 'underline' }}
-                onPress={() => Linking.openURL('https://trentcowden.com')}
+                onPress={() =>
+                  WebBrowser.openBrowserAsync('https://trentcowden.com')
+                }
               >
                 Trent Cowden
               </Text>
