@@ -235,7 +235,7 @@ export default function ScrollBar({
               position: 'absolute',
               // right: -scrollBarWidth * 3,
               right: 0,
-              width: scrollBarWidth * 2,
+              width: scrollBarWidth * 3,
               alignItems: 'flex-end',
               justifyContent: 'center',
               zIndex: 3,
