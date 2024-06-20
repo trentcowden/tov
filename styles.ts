@@ -31,7 +31,7 @@ export const themes = [
     p1: tinycolor(pDark).toHexString(),
     p2: tinycolor(pDark).desaturate(8).darken(12).toHexString(),
     ph: tinycolor(pDark).setAlpha(0.3).toHslString(),
-    bd: '#00000044',
+    bd: '#00000055',
   },
   {
     id: 'light',
@@ -49,14 +49,14 @@ export const themes = [
     p1: tinycolor(pLight).toHexString(),
     p2: tinycolor(pLight).desaturate(8).darken(12).toHexString(),
     ph: tinycolor(pLight).setAlpha(0.3).toHslString(),
-    bd: '#00000044',
+    bd: '#00000055',
   },
   {
     id: 'black',
     name: 'Black',
     emoji: '🪐',
     description:
-      'Light text on a black background for maximum contrast and total minimalism.',
+      'Light text on a black background for maximum contrast, minimalism, and immersion.',
     bg1: tinycolor(bgBlack).toHexString(),
     bg2: tinycolor(bgBlack).saturate(4).brighten(4).toHexString(),
     bg3: tinycolor(bgBlack).saturate(8).brighten(8).toHexString(),
@@ -67,7 +67,7 @@ export const themes = [
     p1: tinycolor(pBlack).toHexString(),
     p2: tinycolor(pBlack).desaturate(8).darken(12).toHexString(),
     ph: tinycolor(pBlack).setAlpha(0.3).toHslString(),
-    bd: '#00000044',
+    bd: '#00000055',
   },
 ]
 
