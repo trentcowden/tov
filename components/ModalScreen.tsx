@@ -74,7 +74,7 @@ export default function ModalScreen({
         }
   })
 
-  const navigatorHeight =
+  const height =
     Dimensions.get('window').height -
     insets.top -
     insets.bottom -
@@ -123,10 +123,10 @@ export default function ModalScreen({
           }}
           style={{
             alignSelf: 'center',
-            width: screenWidth + 100,
-            height: screenHeight + 100,
+            width: screenWidth + 200,
+            height: screenHeight + 200,
             position: 'absolute',
-            top: -100,
+            top: -200,
           }}
           disableAnimation
         />
@@ -136,7 +136,7 @@ export default function ModalScreen({
             {
               zIndex: 3,
               top: insets.top + gutterSize,
-              height: navigatorHeight,
+              height: height,
               width: modalWidth,
               borderRadius: 12,
               position: 'absolute',
