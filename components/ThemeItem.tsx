@@ -1,18 +1,14 @@
 import React, { ReactNode } from 'react'
 import { Text, View } from 'react-native'
 import { gutterSize, sizes, typography } from '../constants'
-import useColors from '../hooks/useColors'
 import { useAppSelector } from '../redux/hooks'
-import { SettingsState } from '../redux/settings'
-import TovIcon, { IconName } from './SVG'
+import { themes } from '../styles'
+import TovIcon from './SVG'
 import TovPressable from './TovPressable'
 
 interface Props {
-  theme: SettingsState['theme']
+  theme: (typeof themes)[number]
   children: ReactNode
-  rightSection?: ReactNode
-  rightIcon?: IconName
-  rightText?: string
   description?: string
   onPress: () => void
 }
@@ -20,25 +16,23 @@ interface Props {
 export default function ThemeItem({
   theme,
   children,
-  rightSection,
   description,
-  rightText,
-  rightIcon,
   onPress,
 }: Props) {
   const settings = useAppSelector((state) => state.settings)
-  const colors = useColors()
 
   return (
     <TovPressable
+      bgColor={theme.bg3}
       onPress={onPress}
       style={{
         // paddingVertical: 8,
         marginHorizontal: gutterSize,
-        backgroundColor: colors.bg3,
         borderRadius: 12,
+        borderColor: settings.theme === theme.id ? theme.p1 : 'transparent',
+        borderWidth: 1,
       }}
-      onPressColor={colors.bg3}
+      onPressColor={theme.bg3}
       onPressScale={0.96}
     >
       <View
@@ -59,18 +53,15 @@ export default function ThemeItem({
           <Text
             numberOfLines={1}
             adjustsFontSizeToFit
-            style={[
-              typography(sizes.body, 'uim', 'l', colors.fg2),
-              { flex: 1 },
-            ]}
+            style={[typography(sizes.body, 'uim', 'l', theme.fg2), { flex: 1 }]}
           >
             {children}
           </Text>
-          {settings.theme === theme ? (
-            <TovIcon name={'checkmarkCircle'} size={16} color={colors.p1} />
+          {settings.theme === theme.id ? (
+            <TovIcon name={'checkmarkCircle'} size={20} color={theme.p1} />
           ) : null}
         </View>
-        <Text style={typography(sizes.tiny, 'uil', 'l', colors.fg3)}>
+        <Text style={typography(sizes.tiny, 'uil', 'l', theme.fg3)}>
           {description}
         </Text>
       </View>

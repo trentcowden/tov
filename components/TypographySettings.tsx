@@ -11,7 +11,8 @@ import {
 } from '../constants'
 import useColors from '../hooks/useColors'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
-import { setTypography, typographyOptions } from '../redux/settings'
+import { setTypography } from '../redux/settings'
+import { fontSizes } from '../styles'
 import BackButton from './BackButton'
 import ModalScreenHeader from './ModalScreenHeader'
 import TovIcon from './SVG'
@@ -31,13 +32,6 @@ export default function TypographySettings({
   const dispatch = useAppDispatch()
   const settings = useAppSelector((state) => state.settings)
   const colors = useColors()
-
-  const names = {
-    small: 'Tiny 🐞',
-    default: 'Default 🐱',
-    large: 'Quite Big 🐴',
-    xlarge: 'Very Large 🦖',
-  }
 
   return (
     <View style={{ flex: 1 }}>
@@ -62,38 +56,39 @@ export default function TypographySettings({
           flex: 1,
         }}
       >
-        {Object.keys(typographyOptions).map((key) => {
-          const option = key as keyof typeof typographyOptions
-          const isActive =
-            settings.fontSize === typographyOptions[option].fontSize
+        {fontSizes.map((f) => {
+          const isActive = settings.fontSize === f.fontSize
 
           return (
             <TovPressable
-              key={key}
+              key={f.name}
               onPress={() => {
-                dispatch(setTypography(option))
+                dispatch(setTypography(f))
               }}
-              onPressColor={isActive ? colors.ph : colors.bg3}
+              bgColor={colors.bg3}
+              onPressColor={colors.bg3}
               style={{
                 justifyContent: 'center',
-                padding: gutterSize / 2,
-                backgroundColor: isActive ? colors.ph : colors.bg3,
+                height: 60,
+                paddingHorizontal: gutterSize / 2,
                 borderRadius: 12,
-                alignItems: 'center',
+                borderWidth: 1,
+                borderColor: isActive ? colors.p1 : 'transparent',
+                alignItems: 'flex-start',
               }}
             >
               <Text
                 numberOfLines={1}
                 adjustsFontSizeToFit
-                style={typography(
-                  typographyOptions[option].fontSize,
-                  'uis',
-                  'c',
-                  colors.fg2
-                )}
+                style={typography(f.fontSize, 'uis', 'l', colors.fg2)}
               >
-                {names[option]}
+                {f.name} {f.emoji}
               </Text>
+              {isActive ? (
+                <View style={{ position: 'absolute', right: gutterSize / 2 }}>
+                  <TovIcon name="checkmarkCircle" size={20} color={colors.p1} />
+                </View>
+              ) : null}
             </TovPressable>
           )
         })}

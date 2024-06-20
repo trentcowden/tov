@@ -21,6 +21,7 @@ export default function ModalScreenHeader({
   const colors = useColors()
   const closeButton = close ? (
     <TovPressable
+      bgColor={colors.bg2}
       onPress={close}
       style={{
         paddingLeft: gutterSize / 2,

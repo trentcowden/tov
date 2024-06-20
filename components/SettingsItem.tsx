@@ -26,12 +26,12 @@ export default function SettingsItem({
 
   return (
     <TovPressable
+      bgColor={colors.bg3}
       onPress={onPress ? onPress : () => {}}
       disableAnimation={!onPress}
       style={{
         // paddingVertical: 8,
         marginHorizontal: gutterSize,
-        backgroundColor: colors.bg3,
         borderRadius: 12,
       }}
       onPressColor={colors.bg3}

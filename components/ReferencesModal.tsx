@@ -154,6 +154,7 @@ export default function ReferencesModal({
             borderRadius: 12,
             justifyContent: isAfter ? 'flex-end' : 'flex-start',
           }}
+          bgColor={colors.bg2}
           onPressColor={colors.bg3}
           onPress={() => {
             jumpToChapter({

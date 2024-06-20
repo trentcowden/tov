@@ -1,10 +1,13 @@
-import { View, ViewStyle } from 'react-native'
+import * as SystemUI from 'expo-system-ui'
+import { useEffect } from 'react'
+import { Appearance, View, ViewStyle } from 'react-native'
 import { SharedValue, withSpring } from 'react-native-reanimated'
 import Spacer from '../Spacer'
 import { gutterSize, panActivateConfig } from '../constants'
 import useColors from '../hooks/useColors'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
-import { setTheme } from '../redux/settings'
+import { SettingsState, setTheme } from '../redux/settings'
+import { themes } from '../styles'
 import BackButton from './BackButton'
 import ModalScreenHeader from './ModalScreenHeader'
 import ThemeItem from './ThemeItem'
@@ -24,6 +27,13 @@ export default function ThemeSettings({
 
   const buttonStyles: ViewStyle = {}
 
+  useEffect(() => {
+    if (settings.theme === 'light') Appearance.setColorScheme('light')
+    else Appearance.setColorScheme('dark')
+
+    SystemUI.setBackgroundColorAsync(colors.bg1)
+  }, [settings.theme, colors])
+
   return (
     <View style={{ flex: 1 }}>
       <ModalScreenHeader
@@ -36,31 +46,20 @@ export default function ThemeSettings({
           />
         }
       >
-        Theme
+        Color Theme
       </ModalScreenHeader>
       <Spacer units={2} />
       <View style={{ gap: gutterSize / 2 }}>
-        <ThemeItem
-          theme="dark"
-          onPress={() => dispatch(setTheme('dark'))}
-          description="Light text on a dark background for ease on the eyes and maximum coziness."
-        >
-          Dark
-        </ThemeItem>
-        <ThemeItem
-          theme="light"
-          onPress={() => dispatch(setTheme('light'))}
-          description="Dark text on a light background for ideal visibility and readability."
-        >
-          Light
-        </ThemeItem>
-        <ThemeItem
-          theme="auto"
-          onPress={() => dispatch(setTheme('auto'))}
-          description="Theme will match whatever your phone color theme is set to."
-        >
-          Auto
-        </ThemeItem>
+        {themes.map((t) => (
+          <ThemeItem
+            key={t.id}
+            theme={t}
+            onPress={() => dispatch(setTheme(t.id as SettingsState['theme']))}
+            description={t.description}
+          >
+            {t.name} {t.emoji}
+          </ThemeItem>
+        ))}
       </View>
     </View>
   )

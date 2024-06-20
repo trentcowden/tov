@@ -200,6 +200,7 @@ export default function History({
         ]}
       >
         <TovPressable
+          bgColor={colors.bg2}
           onPress={() => setShowFavorites((current) => !current)}
           onPressColor={colors.bg3}
           style={{
@@ -290,6 +291,7 @@ export default function History({
             }}
           >
             <TovPressable
+              bgColor={colors.bg3}
               onPressColor={colors.bg3}
               style={{
                 borderRadius: 99,
@@ -299,7 +301,6 @@ export default function History({
                 justifyContent: 'center',
                 gap: 8,
                 alignItems: 'center',
-                backgroundColor: colors.bg3,
               }}
               onPress={() => {
                 // textTranslationX.value = withSpring(0, panActivateConfig)

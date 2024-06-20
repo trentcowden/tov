@@ -21,6 +21,7 @@ import {
 import { Books } from '../data/types/books'
 import { Chapters } from '../data/types/chapters'
 import useColors from '../hooks/useColors'
+import { useAppSelector } from '../redux/hooks'
 
 interface Props {
   activeChapter: Chapters[number]
@@ -44,13 +45,13 @@ export default function ChapterOverlay({
   const colors = useColors()
   const insets = useSafeAreaInsets()
   const pressed = useSharedValue(0)
-
+  const settings = useAppSelector((state) => state.settings)
   const overlayAnimatedStyles = useAnimatedStyle(() => ({
     opacity: overlayOpacity.value,
     backgroundColor: interpolateColor(
       pressed.value,
       [0, 2],
-      [colors.bg2, colors.bg3]
+      [settings.theme === 'black' ? colors.bg1 : colors.bg2, colors.bg3]
     ),
     transform: [{ scale: interpolate(pressed.value, [0, 1], [1, 0.95]) }],
   }))

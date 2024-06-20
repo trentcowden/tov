@@ -23,6 +23,7 @@ export default function BackButton({ onPress }: Props) {
         // marginRight: gutterSize / 4,
         // paddingRight: gutterSize / 2,
       }}
+      bgColor={colors.bg2}
       onPressColor={colors.bg3}
     >
       <TovIcon name="arrowLeft" size={iconSize} color={colors.fg3} />

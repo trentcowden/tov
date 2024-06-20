@@ -54,6 +54,7 @@ export default function ScrollBar({
   const colors = useColors()
   const insets = useSafeAreaInsets()
   const startingOffset = useSharedValue(0)
+  const theme = useAppSelector((state) => state.settings.theme)
   const going = useAppSelector((state) => state.activeChapterIndex.transition)
   const usableHeight = screenHeight - insets.top * 1 - insets.bottom * 2
   const textHeight = verseOffsets ? verseOffsets[verseOffsets.length - 1] : 1
@@ -148,7 +149,7 @@ export default function ScrollBar({
     backgroundColor: interpolateColor(
       scrollBarActivate.value,
       [0, 1],
-      [colors.bg3, colors.p1]
+      [colors.ph, colors.p1]
     ),
     transform: [
       {

@@ -94,9 +94,9 @@ export default function TutorialHeader({
             y: spaceBeforeTextStarts - insets.top - gutterSize * 2,
           })
         }
+        bgColor={colors.bg2}
         onPressColor={colors.bg2}
         style={{
-          backgroundColor: colors.bg2,
           paddingVertical: gutterSize / 2,
           borderRadius: 12,
           width: screenWidth - gutterSize * 2,

@@ -22,6 +22,7 @@ import { JumpToChapter } from '../hooks/useChapterChange'
 import useColors from '../hooks/useColors'
 import { clearHistory } from '../redux/history'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
+import { fontSizes } from '../styles'
 import Fade from './Fade'
 import ModalScreen from './ModalScreen'
 import ModalScreenHeader from './ModalScreenHeader'
@@ -154,7 +155,7 @@ export default function Settings({
                 )
               }}
               rightIcon="trash"
-              description="A tasty tip: you can also swipe history items right to remove them individually."
+              description="A tip: you can also swipe history items right to remove them individually."
             >
               Clear History
             </SettingsItem>
@@ -163,29 +164,31 @@ export default function Settings({
                 setNestedSetting('typography')
                 openSettingsNested.value = withSpring(1, panActivateConfig)
               }}
-              // rightText={settings.fontSize.toString()}
+              rightText={
+                fontSizes.find((f) => f.fontSize === settings.fontSize)?.name
+              }
               rightIcon="arrowRight"
-              description="Change the size of the Bible text. Take it easy on those eyes!"
+              description="Increase or decrease the size of the Bible text. Take it easy on those eyes!"
             >
-              Typography
+              Text Size
             </SettingsItem>
-            {/* <SettingsItem
+            <SettingsItem
               onPress={() => {
                 setNestedSetting('theme')
                 openSettingsNested.value = withSpring(1, panActivateConfig)
               }}
               rightText={
-                settings.theme === 'auto'
-                  ? 'Auto'
+                settings.theme === 'black'
+                  ? 'Black'
                   : settings.theme === 'dark'
                     ? 'Dark'
                     : 'Light'
               }
               rightIcon="arrowRight"
-              description="Tov supports dark, light, and auto themes. Choose what's best for you!"
+              description="Find your fashion!"
             >
-              Color theme
-            </SettingsItem> */}
+              Color Theme
+            </SettingsItem>
             <SettingsItem
               rightText={settings.translation}
               rightIcon="arrowRight"

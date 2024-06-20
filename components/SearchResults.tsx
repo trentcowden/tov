@@ -46,6 +46,7 @@ export default function SearchResults({
       <TovPressable
         entering={FadeIn}
         exiting={FadeOut}
+        bgColor={highlight ? colors.ph : colors.bg2}
         style={{
           alignItems: 'center',
           marginHorizontal: gutterSize / 2,
@@ -54,7 +55,6 @@ export default function SearchResults({
           paddingVertical: gutterSize / 3,
           paddingHorizontal: gutterSize / 2,
           borderBottomWidth: 0,
-          backgroundColor: highlight ? colors.ph : colors.bg2,
           marginBottom: 0,
           borderColor: colors.bg3,
           flexDirection: 'row',

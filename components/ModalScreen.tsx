@@ -115,6 +115,7 @@ export default function ModalScreen({
         ]}
       >
         <TovPressable
+          bgColor="transparent"
           onPress={() => {
             if (scrollOffset.value < showOverlayOffset)
               overlayOpacity.value = withTiming(0)

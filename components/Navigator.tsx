@@ -229,6 +229,7 @@ export default function Navigator({
               </View>
               {searchText !== '' ? (
                 <TovPressable
+                  bgColor={colors.bg3}
                   entering={FadeIn}
                   exiting={FadeOut}
                   onPress={() => {
@@ -278,6 +279,7 @@ export default function Navigator({
           </View>
         </View>
         <TovPressable
+          bgColor="transparent"
           style={{ height: gutterSize * 2, width: '100%' }}
           onPress={closeNavigator}
         />

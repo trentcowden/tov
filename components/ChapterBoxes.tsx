@@ -63,10 +63,10 @@ export default function ChapterBoxes({
             borderRadius: 12,
             height: '100%',
             width: '100%',
-            backgroundColor: colors.bg3,
             alignItems: 'center',
             justifyContent: 'center',
           }}
+          bgColor={colors.bg3}
           onPressColor={colors.bg3}
           entering={FadeInRight.duration(200).delay(index * 5)}
           exiting={FadeOut}

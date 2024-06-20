@@ -1,4 +1,5 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit'
+import { fontSizes } from '../styles'
 
 export interface TypographySettings {
   fontSize: number
@@ -11,35 +12,12 @@ export interface SettingsState extends TypographySettings {
   fontSize: number
   lineHeight: number
   paragraphSpacing: number
-  theme: 'dark' | 'light' | 'auto'
-}
-
-export const typographyOptions = {
-  small: {
-    fontSize: 15,
-    lineHeight: 32,
-    paragraphSpacing: 14,
-  },
-  default: {
-    fontSize: 17,
-    lineHeight: 38,
-    paragraphSpacing: 18,
-  },
-  large: {
-    fontSize: 19,
-    lineHeight: 42,
-    paragraphSpacing: 22,
-  },
-  xlarge: {
-    fontSize: 21,
-    lineHeight: 46,
-    paragraphSpacing: 26,
-  },
+  theme: 'dark' | 'light' | 'black'
 }
 
 const initialState: SettingsState = {
   translation: 'web',
-  ...typographyOptions.default,
+  ...fontSizes[1],
   theme: 'dark',
 }
 
@@ -55,12 +33,11 @@ export const settings = createSlice({
     },
     setTypography: (
       state,
-      action: PayloadAction<keyof typeof typographyOptions>
+      action: PayloadAction<(typeof fontSizes)[number]>
     ) => {
-      state.fontSize = typographyOptions[action.payload].fontSize
-      state.lineHeight = typographyOptions[action.payload].lineHeight
-      state.paragraphSpacing =
-        typographyOptions[action.payload].paragraphSpacing
+      state.fontSize = action.payload.fontSize
+      state.lineHeight = action.payload.lineHeight
+      state.paragraphSpacing = action.payload.paragraphSpacing
     },
     setTheme: (state, action: PayloadAction<SettingsState['theme']>) => {
       state.theme = action.payload

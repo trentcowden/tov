@@ -9,7 +9,6 @@ import {
   TextInput,
   TextLayoutEventData,
   View,
-  useColorScheme,
 } from 'react-native'
 import {
   Gesture,
@@ -59,8 +58,9 @@ import { setTranslation } from './redux/settings'
 
 export default function Bible() {
   const colors = useColors()
-  const colorScheme = useColorScheme()
   const dispatch = useAppDispatch()
+  dispatch(setTranslation('net'))
+
   // dispatch(
   //   setActiveChapterIndex({
   //     index: 0,
@@ -90,7 +90,6 @@ export default function Bible() {
 
   const overScrollAmount = useSharedValue(0)
   const [referenceVerse, setReferenceState] = useState<string>()
-  dispatch(setTranslation('net'))
   // Animating the main text area.
 
   const [verseOffsets, setVerseOffsets] = useState<number[]>()

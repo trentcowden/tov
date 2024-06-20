@@ -24,6 +24,7 @@ interface Props {
   onPressColor?: string
   disableAnimation?: boolean
   onPressScale?: number
+  bgColor: string
 }
 
 export default function TovPressable({
@@ -37,6 +38,7 @@ export default function TovPressable({
   disableAnimation,
   outerOuterStyle,
   onPressScale,
+  bgColor,
 }: Props) {
   const colors = useColors()
   const pressed = useSharedValue(0)
@@ -55,14 +57,7 @@ export default function TovPressable({
       backgroundColor:
         // style?.backgroundColor ??
         // outerStyle?.backgroundColor ??
-        interpolateColor(
-          pressed.value,
-          [0, 1],
-          [
-            (style?.backgroundColor ?? 'transparent') as string,
-            (color ?? style?.backgroundColor ?? 'transparent') as string,
-          ]
-        ),
+        interpolateColor(pressed.value, [0, 1], [bgColor, color ?? bgColor]),
     }
   })
 

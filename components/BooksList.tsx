@@ -82,12 +82,13 @@ export default function BooksList({ navigatorBook, goToBook }: Props) {
         entering={FadeIn}
         exiting={FadeOut}
         key={item.bookId}
+        bgColor={
+          navigatorBook?.bookId === item.bookId ? colors.bg3 : colors.bg2
+        }
         style={{
           paddingVertical: 6,
           paddingHorizontal: gutterSize / 2,
           alignItems: 'center',
-          backgroundColor:
-            navigatorBook?.bookId === item.bookId ? colors.bg3 : undefined,
           flexDirection: 'row',
           borderRadius: 12,
           marginHorizontal: gutterSize / 2,
