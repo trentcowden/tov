@@ -242,7 +242,7 @@ export default function History({
             }}
           >
             <TovIcon
-              name={showFavorites ? 'heartFilled' : 'heart'}
+              name={showFavorites ? 'bookmarkFilled' : 'bookmark'}
               color={showFavorites ? colors.bg1 : colors.fg3}
               size={16}
             />
@@ -269,7 +269,7 @@ export default function History({
               <View style={{ paddingHorizontal: gutterSize / 2 }}>
                 <Text style={typography(sizes.body, 'uir', 'l', colors.fg3)}>
                   {showFavorites
-                    ? 'Long press on a chapter to mark it as a favorite.'
+                    ? 'Long press on a history item to add it as a bookmark.'
                     : 'Come back here to return to chapters you were previously reading.'}
                 </Text>
               </View>

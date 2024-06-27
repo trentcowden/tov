@@ -24,6 +24,7 @@ export type IconName =
   | 'minus'
   | 'plus'
   | 'bookmark'
+  | 'bookmarkFilled'
   | 'checkmarkCircle'
   | 'mail'
   | 'star'
@@ -209,6 +210,18 @@ function SVGComponent(props: ChildProps) {
         </Svg>
       )
     case 'bookmark':
+      return (
+        <Svg viewBox="0 0 24 24" fill={'none'} {...props}>
+          <Path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            stroke={props.color}
+            strokeWidth={2}
+            d="M5 7.8c0-1.68 0-2.52.327-3.162a3 3 0 011.311-1.311C7.28 3 8.12 3 9.8 3h4.4c1.68 0 2.52 0 3.162.327a3 3 0 011.311 1.311C19 5.28 19 6.12 19 7.8V21l-7-4-7 4V7.8z"
+          />
+        </Svg>
+      )
+    case 'bookmarkFilled':
       return (
         <Svg viewBox="0 0 24 24" fill={props.color} {...props}>
           <Path d="M5 7.8c0-1.68 0-2.52.327-3.162a3 3 0 011.311-1.311C7.28 3 8.12 3 9.8 3h4.4c1.68 0 2.52 0 3.162.327a3 3 0 011.311 1.311C19 5.28 19 6.12 19 7.8V21l-7-4-7 4V7.8z" />

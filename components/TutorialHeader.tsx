@@ -19,7 +19,7 @@ interface Props {
   scrollViewRef: React.RefObject<ScrollView>
 }
 
-export default function Tutorial({
+export default function TutorialHeader({
   spaceBeforeTextStarts,
   scrollViewRef,
 }: Props) {

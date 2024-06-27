@@ -217,7 +217,7 @@ export default function HistoryListItem({
                 style={{ position: 'absolute', left: 0 }}
               >
                 <TovIcon
-                  name="heartFilled"
+                  name="bookmarkFilled"
                   size={heartSize}
                   color={colors.p1}
                 />

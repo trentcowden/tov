@@ -1,13 +1,7 @@
 import { shift, useFloating } from '@floating-ui/react-native'
 import { ImpactFeedbackStyle, impactAsync } from 'expo-haptics'
-import LottieView from 'lottie-react-native'
 import React, { useMemo } from 'react'
-import {
-  NativeSyntheticEvent,
-  Text,
-  TextLayoutEventData,
-  View,
-} from 'react-native'
+import { NativeSyntheticEvent, Text, TextLayoutEventData } from 'react-native'
 import ParsedText, { ParsedTextProps } from 'react-native-parsed-text'
 import { SharedValue, withSpring } from 'react-native-reanimated'
 import {
@@ -21,6 +15,7 @@ import references from '../data/references.json'
 import { References } from '../data/types/references'
 import useColors from '../hooks/useColors'
 import { useAppSelector } from '../redux/hooks'
+import TutorialItem from './TutorialItem'
 
 interface Props {
   setReferenceState?: React.Dispatch<React.SetStateAction<string | undefined>>
@@ -105,14 +100,14 @@ export default function BibleText({
     //   },
     // },
     {
-      pattern: /\*\*.+\*\*/,
+      pattern: /\*\*.+?\*\*/,
       style: {
         fontFamily: 'SemiBold',
       },
       renderText: renderBoltAndItalicText,
     },
     {
-      pattern: /\*.+\*/,
+      pattern: /\*.+?\*/,
       style: {
         fontFamily: 'Regular-Italic',
       },
@@ -144,122 +139,28 @@ export default function BibleText({
       <ParsedText parse={parse} style={[textStyle]}>
         Inspired by the Hebrew word for "good," **tov** is a delightfully simple
         yet powerful Bible app designed to help you enjoy and study Scripture.
-        {/* <View /> */}
       </ParsedText>
       {'\n\n'}
-      <View
-        style={{
-          width: screenWidth - gutterSize * 2,
-          alignItems: 'center',
-          padding: gutterSize,
-          borderRadius: 12,
-          backgroundColor: colors.bg2,
-        }}
-      >
-        <LottieView
-          autoPlay
-          // ref={animation}
-          style={{
-            width: 120,
-            height: 120,
-            alignSelf: 'center',
-            backgroundColor: 'transparent',
-          }}
-          colorFilters={[
-            {
-              keypath: 'hand',
-              color: colors.fg3,
-            },
-            {
-              keypath: 'tap 1',
-              color: colors.p1,
-            },
-            {
-              keypath: 'tap 2',
-              color: colors.p1,
-            },
-          ]}
-          // Find more Lottie files at https://lottiefiles.com/featured
-          source={require('../assets/lotties/double_tap.json')}
-        />
-        <ParsedText
-          parse={parse}
-          style={textStyle}
-        >{`[1] Double tap anywhere to **view the books** of the Bible.`}</ParsedText>
-      </View>
+      <TutorialItem
+        source={require('../assets/lotties/double_tap.json')}
+        parse={parse}
+        style={textStyle}
+        text={`[1] Double tap anywhere to **view the books of the Bible**.`}
+      />
       {'\n\n'}
-      <View
-        style={{
-          width: screenWidth - gutterSize * 2,
-          alignItems: 'center',
-          padding: gutterSize,
-          borderRadius: 12,
-          backgroundColor: colors.bg2,
-        }}
-      >
-        <LottieView
-          autoPlay
-          // ref={animation}
-          style={{
-            width: 120,
-            height: 120,
-            alignSelf: 'center',
-            backgroundColor: 'transparent',
-          }}
-          colorFilters={[
-            {
-              keypath: 'hand',
-              color: colors.fg3,
-            },
-            {
-              keypath: 'Rectangle 3',
-              color: colors.p1,
-            },
-          ]}
-          // Find more Lottie files at https://lottiefiles.com/featured
-          source={require('../assets/lotties/swipe_right.json')}
-        />
-        <ParsedText parse={parse} style={textStyle}>
-          {`[2] Swipe right to open your **reading history**.`}
-        </ParsedText>
-      </View>
+      <TutorialItem
+        source={require('../assets/lotties/swipe_right.json')}
+        parse={parse}
+        style={textStyle}
+        text={`[2] Swipe right to open your **reading history** and **view your bookmarks**.`}
+      />
       {'\n\n'}
-      <View
-        style={{
-          width: screenWidth - gutterSize * 2,
-          alignItems: 'center',
-          padding: gutterSize,
-          borderRadius: 12,
-          backgroundColor: colors.bg2,
-        }}
-      >
-        <LottieView
-          autoPlay
-          // ref={animation}
-          style={{
-            width: 120,
-            height: 120,
-            alignSelf: 'center',
-            backgroundColor: 'transparent',
-          }}
-          colorFilters={[
-            {
-              keypath: 'hand',
-              color: colors.fg3,
-            },
-            {
-              keypath: 'Rectangle 3',
-              color: colors.p1,
-            },
-          ]}
-          // Find more Lottie files at https://lottiefiles.com/featured
-          source={require('../assets/lotties/scroll_down.json')}
-        />
-        <ParsedText
-          parse={parse}
-          style={textStyle}
-        >{`[3] Keep scrolling downwards to go to the **next chapter**. Happy reading!`}</ParsedText>
-      </View>
+      <TutorialItem
+        source={require('../assets/lotties/scroll_down.json')}
+        text={`[3] Keep scrolling downwards to go to the **next chapter**. Happy reading!`}
+        parse={parse}
+        style={textStyle}
+      />
     </Text>
   ) : (
     <ParsedText
