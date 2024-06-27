@@ -35,7 +35,7 @@ import Navigator from './components/Navigator'
 import ReferencesModal from './components/ReferencesModal'
 import ScrollBar from './components/ScrollBar'
 import Settings from './components/Settings'
-import TutorialHeader from './components/TutorialHeader'
+import Tutorial from './components/Tutorial'
 import VerseHighlight from './components/VerseHighlight'
 import {
   gutterSize,
@@ -300,7 +300,7 @@ export default function Bible() {
                 />
               )}
               {activeChapter.chapterId === 'TUT.1' ? (
-                <TutorialHeader
+                <Tutorial
                   scrollViewRef={scrollViewRef}
                   spaceBeforeTextStarts={spaceBeforeTextStarts}
                 />

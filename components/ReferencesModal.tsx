@@ -1,13 +1,19 @@
 import React, { useMemo, useRef } from 'react'
 import { Dimensions, FlatList, Text, View } from 'react-native'
-import { SharedValue, withSpring, withTiming } from 'react-native-reanimated'
+import Animated, {
+  LinearTransition,
+  SharedValue,
+  runOnJS,
+  useDerivedValue,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Spacer from '../Spacer'
 import {
   gutterSize,
   modalWidth,
   panActivateConfig,
-  screenWidth,
   shadow,
   sizes,
   typography,
@@ -17,7 +23,9 @@ import { References } from '../data/types/references'
 import { getVerseReference, isPassageAfter } from '../functions/bible'
 import { JumpToChapter } from '../hooks/useChapterChange'
 import useColors from '../hooks/useColors'
+import { useAppSelector } from '../redux/hooks'
 import Fade from './Fade'
+import ListBanner from './ListBanner'
 import ModalScreen from './ModalScreen'
 import ModalScreenHeader from './ModalScreenHeader'
 import TovIcon from './SVG'
@@ -42,6 +50,7 @@ export default function ReferencesModal({
 }: Props) {
   const colors = useColors()
   const insets = useSafeAreaInsets()
+  const dismissed = useAppSelector((state) => state.popups.dismissed)
   const referencesRef = useRef<FlatList<References[string][number]>>(null)
   const wordListRef = useRef<FlatList<[string, string, string]>>(null)
   const [view, setView] = React.useState<'references' | 'hebrew'>('references')
@@ -183,6 +192,12 @@ export default function ReferencesModal({
     )
   }
 
+  const [animate, setAnimate] = React.useState(false)
+  useDerivedValue(() => {
+    if (openReferences.value === 0)
+      runOnJS(setAnimate)(!dismissed.includes('referencesHelp'))
+  })
+
   return (
     <ModalScreen
       openModal={openReferences}
@@ -213,95 +228,29 @@ export default function ReferencesModal({
           {`${referenceVerse ? getVerseReference(referenceVerse) : ''}`}
         </ModalScreenHeader>
         <View style={{ flex: 1 }}>
-          <FlatList
+          <Animated.FlatList
+            itemLayoutAnimation={
+              animate
+                ? LinearTransition.springify()
+                    .damping(20)
+                    .mass(0.5)
+                    .stiffness(140)
+                    .restDisplacementThreshold(0)
+                : undefined
+            }
             ref={referencesRef}
             data={activeReferences}
             ListFooterComponent={<Spacer units={2} />}
             ListHeaderComponent={
-              referenceVerse?.includes('TUT') ? (
-                <View style={{ gap: gutterSize / 2 }}>
-                  <View
-                    style={{
-                      marginHorizontal: gutterSize / 2,
-                      width: screenWidth - gutterSize * 4,
-                      marginTop: gutterSize / 2,
-                      backgroundColor: colors.ph,
-                      padding: gutterSize / 2,
-                      borderRadius: 12,
-                    }}
-                  >
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        gap: 4,
-                      }}
-                    >
-                      <TovIcon name={'help'} size={16} color={colors.p1} />
-                      <Text
-                        style={typography(
-                          sizes.caption,
-                          'uib',
-                          'l',
-                          colors.fg1
-                        )}
-                      >
-                        What are cross references?
-                      </Text>
-                    </View>
-                    <Spacer units={2} />
-                    <Text
-                      style={typography(sizes.caption, 'uir', 'l', colors.fg1)}
-                    >
-                      Cross references are different parts of the Bible that
-                      share similar themes, words, events, or people. They can
-                      help define and contextualize what you’re reading for
-                      deeper understanding and study.
-                    </Text>
-                  </View>
-                  <View
-                    style={{
-                      marginHorizontal: gutterSize / 2,
-                      width: screenWidth - gutterSize * 4,
-                      marginBottom: gutterSize,
-                      backgroundColor: colors.ph,
-                      padding: gutterSize / 2,
-                      borderRadius: 12,
-                    }}
-                  >
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        gap: 4,
-                      }}
-                    >
-                      <TovIcon name={'arrowDown'} size={16} color={colors.p1} />
-                      <Text
-                        style={typography(
-                          sizes.caption,
-                          'uib',
-                          'l',
-                          colors.fg1
-                        )}
-                      >
-                        Try it out!
-                      </Text>
-                    </View>
-                    <Spacer units={2} />
-                    <Text
-                      style={typography(sizes.caption, 'uir', 'l', colors.fg1)}
-                    >
-                      Since this "verse" talks about a feature of tov, and tov
-                      is described earlier in the tutorial, there is a cross
-                      reference between the two.{'\n\n'}Click on it to go to the
-                      reference!
-                    </Text>
-                  </View>
-                </View>
-              ) : (
-                <Spacer units={4} />
-              )
+              <ListBanner
+                title="What are cross references?"
+                body="Cross references are different parts of the Bible that share
+                    similar themes, words, events, or people. They can help
+                    define and contextualize what you’re reading for deeper
+                    understanding and study."
+                icon="help"
+                popup="referencesHelp"
+              />
             }
             renderItem={renderReference}
             contentContainerStyle={{ paddingHorizontal: gutterSize / 2 }}

@@ -22,6 +22,7 @@ import { JumpToChapter } from '../hooks/useChapterChange'
 import useColors from '../hooks/useColors'
 import { clearHistory } from '../redux/history'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
+import { resetPopups } from '../redux/popups'
 import { fontSizes } from '../styles'
 import Fade from './Fade'
 import ModalScreen from './ModalScreen'
@@ -149,6 +150,7 @@ export default function Settings({
                       onPress: () => {
                         openSettings.value = withSpring(0, panActivateConfig)
                         dispatch(clearHistory(activeChapter.chapterId))
+                        if (__DEV__) dispatch(resetPopups())
                       },
                     },
                   ]

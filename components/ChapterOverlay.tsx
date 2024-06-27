@@ -53,6 +53,7 @@ export default function ChapterOverlay({
       [0, 2],
       [settings.theme === 'black' ? colors.bg1 : colors.bg2, colors.bg3]
     ),
+    zIndex: overlayOpacity.value === 0 ? -1 : 4,
     transform: [{ scale: interpolate(pressed.value, [0, 1], [1, 0.95]) }],
   }))
 

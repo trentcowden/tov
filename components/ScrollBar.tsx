@@ -77,13 +77,16 @@ export default function ScrollBar({
   useDerivedValue(() => {
     if (scrollBarActivate.value === 1)
       runOnJS(impactAsync)(ImpactFeedbackStyle.Light)
-    runOnJS(setVerseText)(
-      currentVerseIndex.value === 'bottom'
-        ? 'End'
-        : currentVerseIndex.value === 'top'
-          ? 'Beginning'
-          : `Verse ${(currentVerseIndex.value + 1).toString()}`
-    )
+
+    if (verseOffsets?.length === 1) runOnJS(setVerseText)('')
+    else
+      runOnJS(setVerseText)(
+        currentVerseIndex.value === 'bottom'
+          ? 'End'
+          : currentVerseIndex.value === 'top'
+            ? 'Beginning'
+            : `Verse ${(currentVerseIndex.value + 1).toString()}`
+      )
   })
 
   const scrollPanGesture = Gesture.Pan()

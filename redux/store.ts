@@ -13,6 +13,7 @@ import ExpoFileSystemStorage from 'redux-persist-expo-filesystem'
 import activeChapterIndex from './activeChapterIndex'
 import currentReference from './currentReference'
 import history from './history'
+import popups from './popups'
 import referenceTree from './referenceTree'
 import settings from './settings'
 
@@ -28,6 +29,12 @@ const activeChapterPersistConfig = {
   blacklist: ['transition', 'verseIndex'],
 }
 
+const popupsPersistConfig = {
+  key: 'popups',
+  storage: ExpoFileSystemStorage,
+  blacklist: ['visible'],
+}
+
 const rootReducer = combineReducers({
   history,
   settings,
@@ -37,6 +44,7 @@ const rootReducer = combineReducers({
     activeChapterPersistConfig,
     activeChapterIndex
   ),
+  popups: persistReducer(popupsPersistConfig, popups),
 })
 
 const persistedReducer = persistReducer(rootPersistConfig, rootReducer)
