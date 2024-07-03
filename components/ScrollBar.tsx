@@ -25,7 +25,6 @@ import {
   gutterSize,
   panActivateConfig,
   screenHeight,
-  shadow,
   sizes,
   typography,
 } from '../constants'
@@ -100,21 +99,40 @@ export default function ScrollBar({
       )
 
       scrollBarActivate.value = withTiming(1, { duration: 250 })
-      startingOffset.value = event.y
-      scrollBarPosition.value = event.absoluteY - startingOffset.value
-    })
-    .onChange((event) => {
-      if (textHeight < screenHeight) return
-
-      if (event.absoluteY - startingOffset.value < insets.top * 1)
+      // startingOffset.value = event.y
+      // scrollBarPosition.value = event.absoluteY - startingOffset.value
+      if (event.absoluteY - scrollBarHeight / 2 < insets.top * 1)
         scrollBarPosition.value = insets.top * 1
       else if (
-        event.absoluteY - startingOffset.value >
+        event.absoluteY - scrollBarHeight / 2 >
         screenHeight - scrollBarHeight - insets.bottom * 2
       )
         scrollBarPosition.value =
           screenHeight - scrollBarHeight - insets.bottom * 2
-      else scrollBarPosition.value = event.absoluteY - startingOffset.value
+      else scrollBarPosition.value = event.absoluteY - scrollBarHeight / 2
+    })
+    .onChange((event) => {
+      if (textHeight < screenHeight) return
+
+      // if (event.absoluteY - startingOffset.value < insets.top * 1)
+      //   scrollBarPosition.value = insets.top * 1
+      // else if (
+      //   event.absoluteY - startingOffset.value >
+      //   screenHeight - scrollBarHeight - insets.bottom * 2
+      // )
+      //   scrollBarPosition.value =
+      //     screenHeight - scrollBarHeight - insets.bottom * 2
+      // else
+      // scrollBarPosition.value = event.absoluteY - startingOffset.value
+      if (event.absoluteY - scrollBarHeight / 2 < insets.top * 1)
+        scrollBarPosition.value = insets.top * 1
+      else if (
+        event.absoluteY - scrollBarHeight / 2 >
+        screenHeight - scrollBarHeight - insets.bottom * 2
+      )
+        scrollBarPosition.value =
+          screenHeight - scrollBarHeight - insets.bottom * 2
+      else scrollBarPosition.value = event.absoluteY - scrollBarHeight / 2
     })
     .onFinalize((event) => {
       if (textHeight < screenHeight) return
@@ -141,7 +159,7 @@ export default function ScrollBar({
 
   const scrollBarAreaStyles = useAnimatedStyle(() => ({
     transform: [
-      { translateY: scrollBarPosition.value },
+      // { translateY: scrollBarPosition.value },
       { translateX: textTranslateX.value },
     ],
   }))
@@ -155,9 +173,10 @@ export default function ScrollBar({
       [colors.ph, colors.p1]
     ),
     transform: [
-      {
-        scale: interpolate(scrollBarActivate.value, [0, 1], [1, 0.9]),
-      },
+      // {
+      //   scale: interpolate(scrollBarActivate.value, [0, 1], [1, 0.9]),
+      // },
+      { translateY: scrollBarPosition.value },
     ],
   }))
 
@@ -199,7 +218,6 @@ export default function ScrollBar({
             // paddingTop: insets.top,
             // paddingBottom: insets.bottom,
             // alignItems: 'center',
-            ...shadow,
           },
           verseNumberStyles,
         ]}
@@ -239,10 +257,13 @@ export default function ScrollBar({
               position: 'absolute',
               // right: -scrollBarWidth * 3,
               right: 0,
+              top: 0,
+              height: screenHeight,
               width: scrollBarWidth * 3,
-              alignItems: 'flex-end',
-              justifyContent: 'center',
+              // alignItems: 'flex-end',
+              // justifyContent: 'center',
               zIndex: 3,
+              alignItems: 'flex-end',
             },
             scrollBarAreaStyles,
           ]}
@@ -257,7 +278,6 @@ export default function ScrollBar({
                 alignItems: 'center',
                 justifyContent: 'center',
                 display: textHeight < screenHeight ? 'none' : 'flex',
-                ...shadow,
               },
               scrollBarStyles,
             ]}
