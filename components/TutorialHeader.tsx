@@ -98,7 +98,7 @@ export default function TutorialHeader({
         <TovPressable
           onPress={() =>
             scrollViewRef.current?.scrollTo({
-              y: spaceBeforeTextStarts - insets.top - gutterSize * 2,
+              y: spaceBeforeTextStarts - insets.top - gutterSize,
             })
           }
           bgColor={colors.bg2}
