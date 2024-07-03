@@ -97,6 +97,6 @@ export default function ListBanner({ body, icon, title, popup }: Props) {
       </TovPressable>
     </Animated.View>
   ) : (
-    <Spacer units={4} />
+    <Spacer units={2} />
   )
 }
