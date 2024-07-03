@@ -84,17 +84,17 @@ export const typography = (
   }
 
   const weights = {
-    l: 'Light',
-    li: 'LightItalic',
-    ri: 'RegularItalic',
-    r: 'Regular',
-    b: 'Bold',
-    eb: 'ExtraBold',
-    uil: 'UILight',
-    uir: 'UIRegular',
-    uib: 'UIBold',
-    uim: 'UIMedium',
-    uis: 'UISemibold',
+    l: 'Literata18pt-Light',
+    li: 'Literata18pt-LightItalic',
+    ri: 'Literata18pt-RegularItalic',
+    r: 'Literata18pt-Regular',
+    b: 'Literata18pt-Bold',
+    eb: 'Literata18pt-ExtraBold',
+    uil: 'Figtree-Light',
+    uir: 'Figtree-Regular',
+    uim: 'Figtree-Medium',
+    uis: 'Figtree-SemiBold',
+    uib: 'Figtree-Bold',
   }
 
   // Return the completed style object.
@@ -102,7 +102,7 @@ export const typography = (
     fontSize: size,
     textAlign: alignments[align],
     color: color,
-    fontWeight: weight === 'r' ? '400' : '600',
+    // fontWeight: weight === 'r' ? '400' : '600',
     fontFamily: weights[weight],
   }
 }

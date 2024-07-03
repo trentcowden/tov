@@ -1,5 +1,6 @@
+import Aptabase from '@aptabase/react-native'
+import * as Sentry from '@sentry/react-native'
 import Constants from 'expo-constants'
-import { useFonts } from 'expo-font'
 import * as SplashScreen from 'expo-splash-screen'
 import React from 'react'
 import { View } from 'react-native'
@@ -9,6 +10,7 @@ import { Provider as ReduxProvider } from 'react-redux'
 import { PersistGate as ReduxPersistProvider } from 'redux-persist/lib/integration/react'
 import Bible from './Bible'
 import AnimatedAppLoader from './components/AnimatedSplashScreen'
+import useSessionTracker from './hooks/useSessionTracker'
 import { persistor, store } from './redux/store'
 
 // Instruct SplashScreen not to hide yet, we want to do this manually
@@ -16,30 +18,16 @@ SplashScreen.preventAutoHideAsync().catch(() => {
   /* reloading the app might trigger some race conditions, ignore them */
 })
 
-export default function App() {
-  const [fontsLoaded, fontError] = useFonts({
-    // Regular: require('./assets/fonts/HvDTrial_Brandon_Grotesque_regular-BF64a625c9311e1.otf'),
-    // 'Regular-Italic': require('./assets/fonts/HvDTrial_Brandon_Grotesque_regular_italic-BF64a625c94445e.otf'),
-    // Bold: require('./assets/fonts/HvDTrial_Brandon_Grotesque_bold-BF64a625c9151d5.otf'),
-    // 'Bold-Italic': require('./assets/fonts/HvDTrial_Brandon_Grotesque_bold_italic-BF64a625c93b0ce.otf'),
-    // Mono: require('./assets/fonts/iAWriterQuattroV.ttf'),
-    Regular: require('./assets/fonts/Literata_18pt-Regular.ttf'),
-    'Regular-Italic': require('./assets/fonts/Literata_18pt-Italic.ttf'),
-    Light: require('./assets/fonts/Literata_18pt-Light.ttf'),
-    'Light-Italic': require('./assets/fonts/Literata_18pt-LightItalic.ttf'),
-    Bold: require('./assets/fonts/Literata_18pt-Bold.ttf'),
-    ExtraBold: require('./assets/fonts/Literata_18pt-ExtraBold.ttf'),
-    SemiBold: require('./assets/fonts/Literata_18pt-SemiBold.ttf'),
-    UILight: require('./assets/fonts/Figtree-Light.ttf'),
-    UIRegular: require('./assets/fonts/Figtree-Regular.ttf'),
-    UIBold: require('./assets/fonts/Figtree-Bold.ttf'),
-    UIMedium: require('./assets/fonts/Figtree-Medium.ttf'),
-    UISemibold: require('./assets/fonts/Figtree-SemiBold.ttf'),
-  })
+Aptabase.init('A-US-7955042107')
 
-  return !fontsLoaded ? (
-    <View />
-  ) : (
+Sentry.init({
+  dsn: 'https://65192e4b4c7121f684f52e0346ca9f23@o1007561.ingest.us.sentry.io/4507512500977664',
+})
+
+function App() {
+  useSessionTracker()
+
+  return (
     <SafeAreaProvider>
       <ReduxProvider store={store}>
         <ReduxPersistProvider loading={<View />} persistor={persistor}>
@@ -55,3 +43,5 @@ export default function App() {
     </SafeAreaProvider>
   )
 }
+
+export default Sentry.wrap(App)

@@ -3,7 +3,7 @@
     "name": "tov: a good Bible app",
     "description": "Inspired by the Hebrew word for \"good,\" tov is a delightfully simple yet powerful Bible app designed to help you enjoy and study Scripture.",
     "slug": "tov",
-    "version": "1.0.0",
+    "version": "0.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
@@ -34,7 +34,34 @@
       },
       "package": "com.trentcowden.tov"
     },
-    "plugins": ["expo-font"],
+    "plugins": [
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "./assets/fonts/Figtree-Bold.ttf",
+            "./assets/fonts/Figtree-Light.ttf",
+            "./assets/fonts/Figtree-Medium.ttf",
+            "./assets/fonts/Figtree-Regular.ttf",
+            "./assets/fonts/Figtree-SemiBold.ttf",
+            "./assets/fonts/Literata-Bold.ttf",
+            "./assets/fonts/Literata-ExtraBold.ttf",
+            "./assets/fonts/Literata-Italic.ttf",
+            "./assets/fonts/Literata-Light.ttf",
+            "./assets/fonts/Literata-LightItalic.ttf",
+            "./assets/fonts/Literata-Regular.ttf",
+            "./assets/fonts/Literata-SemiBold.ttf"
+          ]
+        }
+      ],
+      [
+        "@sentry/react-native/expo",
+        {
+          "organization": "trentcowden",
+          "project": "tov"
+        }
+      ]
+    ],
     "owner": "tcowden",
     "extra": {
       "eas": {
