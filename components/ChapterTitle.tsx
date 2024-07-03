@@ -1,3 +1,4 @@
+import { trackEvent } from '@aptabase/react-native'
 import { ImpactFeedbackStyle, impactAsync } from 'expo-haptics'
 import React, { useEffect, useMemo } from 'react'
 import { Pressable, View } from 'react-native'
@@ -130,6 +131,7 @@ export default function ChapterTitle({
           openNavigator.value = withSpring(1, panActivateConfig)
           focusSearch()
           impactAsync(ImpactFeedbackStyle.Heavy)
+          trackEvent('Open navigator', { method: 'chapter title' })
         }}
         style={{
           paddingVertical: gutterSize / 2,

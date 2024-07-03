@@ -1,3 +1,4 @@
+import { trackEvent } from '@aptabase/react-native'
 import * as SystemUI from 'expo-system-ui'
 import { useEffect } from 'react'
 import { Appearance, View, ViewStyle } from 'react-native'
@@ -54,7 +55,10 @@ export default function ThemeSettings({
           <ThemeItem
             key={t.id}
             theme={t}
-            onPress={() => dispatch(setTheme(t.id as SettingsState['theme']))}
+            onPress={() => {
+              dispatch(setTheme(t.id as SettingsState['theme']))
+              trackEvent('Change theme', { theme: t.id })
+            }}
             description={t.description}
           >
             {t.name} {t.emoji}

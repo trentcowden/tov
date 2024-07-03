@@ -107,6 +107,7 @@ export default function useChapterChange({
     trackEvent('Chapter change', {
       chapterId,
       comingFrom,
+      verseNumber: verseNumber ?? '',
     })
 
     // Reset verse offsets.
@@ -363,7 +364,7 @@ export default function useChapterChange({
 
 export interface JumpToChapterParams {
   chapterId: Chapters[number]['chapterId']
-  comingFrom: 'history' | 'reference' | 'navigator'
+  comingFrom: 'history' | 'reference' | 'navigator' | 'search'
   verseNumber?: number | 'bottom' | 'top'
   currentVerse?: number
   numVersesToHighlight?: number

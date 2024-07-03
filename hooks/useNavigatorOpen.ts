@@ -1,3 +1,4 @@
+import { trackEvent } from '@aptabase/react-native'
 import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics'
 import { TextInput } from 'react-native'
 import { Gesture } from 'react-native-gesture-handler'
@@ -28,6 +29,10 @@ export default function useNavigatorOpen({
     searchRef.current?.focus()
   }
 
+  const logEvent = () => {
+    trackEvent('Open navigator', { method: 'double tap' })
+  }
+
   const tapGesture = Gesture.Tap()
     .maxDuration(250)
     .numberOfTaps(2)
@@ -43,6 +48,7 @@ export default function useNavigatorOpen({
 
       runOnJS(focusSearch)()
       runOnJS(impactAsync)(ImpactFeedbackStyle.Heavy)
+      runOnJS(logEvent)()
     })
 
   return {

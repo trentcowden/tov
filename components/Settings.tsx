@@ -2,6 +2,7 @@ import Clipboard from '@react-native-clipboard/clipboard'
 import * as Linking from 'expo-linking'
 import * as WebBrowser from 'expo-web-browser'
 
+import { trackEvent } from '@aptabase/react-native'
 import * as StoreReview from 'expo-store-review'
 import React, { useEffect } from 'react'
 import { Alert, Dimensions, Text, View } from 'react-native'
@@ -148,6 +149,7 @@ export default function Settings({
                       text: 'Clear',
                       style: 'destructive',
                       onPress: () => {
+                        trackEvent('Clear history', { items: history.length })
                         openSettings.value = withSpring(0, panActivateConfig)
                         dispatch(clearHistory(activeChapter.chapterId))
                         if (__DEV__) dispatch(resetPopups())
@@ -196,6 +198,7 @@ export default function Settings({
               rightIcon="arrowRight"
               description="Change the Bible translation."
               onPress={() => {
+                trackEvent('Bible translation')
                 setNestedSetting('translation')
                 openSettingsNested.value = withSpring(1, panActivateConfig)
               }}
@@ -212,6 +215,7 @@ export default function Settings({
                   chapterId: 'TUT.1',
                   comingFrom: 'history',
                 })
+                trackEvent('Back to tutorial')
               }}
             >
               View Tutorial
@@ -226,16 +230,21 @@ export default function Settings({
             </Text>
             <SettingsItem
               onPress={() => {
+                trackEvent('Contact open')
                 Alert.alert('How would you like to contact me?', '', [
                   {
                     text: 'Open mail app',
-                    onPress: () =>
-                      Linking.openURL('mailto:trent.cowden@gmail.com'),
+                    onPress: () => {
+                      Linking.openURL('mailto:trent.cowden@gmail.com')
+                      trackEvent('Contact: open mail app')
+                    },
                   },
                   {
                     text: 'Copy email to clipboard',
-                    onPress: () =>
-                      Clipboard.setString('trent.cowden@gmail.com'),
+                    onPress: () => {
+                      Clipboard.setString('trent.cowden@gmail.com')
+                      trackEvent('Contact: copy email to clipboard')
+                    },
                   },
                   {
                     text: 'Cancel',
@@ -252,6 +261,7 @@ export default function Settings({
               <SettingsItem
                 onPress={() => {
                   StoreReview.requestReview()
+                  trackEvent('Clicked rate')
                 }}
                 rightIcon="star"
                 description="If you enjoy using Tov, please consider leaving a review. It helps a lot!"
@@ -268,6 +278,7 @@ export default function Settings({
                 WebBrowser.openBrowserAsync(
                   'https://buymeacoffee.com/trentcowden'
                 )
+                trackEvent('Clicked donate')
               }}
               // rightText={'Tov'}
               rightIcon="money"
@@ -283,6 +294,7 @@ export default function Settings({
                 WebBrowser.openBrowserAsync(
                   'https://github.com/trentcowden/tov'
                 )
+                trackEvent('Clicked source code')
               }}
               // rightText={'Tov'}
               rightIcon="code"
@@ -299,9 +311,10 @@ export default function Settings({
               {'Made with 🧡 by '}
               <Text
                 style={{ textDecorationLine: 'underline' }}
-                onPress={() =>
+                onPress={() => {
                   WebBrowser.openBrowserAsync('https://trentcowden.com')
-                }
+                  trackEvent('Clicked Trent Cowden')
+                }}
               >
                 Trent Cowden
               </Text>

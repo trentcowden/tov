@@ -64,7 +64,7 @@ export default function SearchResults({
         onPress={() => {
           jumpToChapter({
             chapterId: item.item.chapterId,
-            comingFrom: 'navigator',
+            comingFrom: 'search',
           })
           closeNavigator()
         }}

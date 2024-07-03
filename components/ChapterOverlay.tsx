@@ -1,3 +1,4 @@
+import { trackEvent } from '@aptabase/react-native'
 import { BlurView } from '@react-native-community/blur'
 import { ImpactFeedbackStyle, impactAsync } from 'expo-haptics'
 import React from 'react'
@@ -108,6 +109,7 @@ export default function ChapterOverlay({
             openNavigator.value = withSpring(1, panActivateConfig)
             focusSearch()
             impactAsync(ImpactFeedbackStyle.Heavy)
+            trackEvent('Open navigator', { method: 'chapter overlay' })
           }}
           style={[
             {

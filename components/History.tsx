@@ -1,3 +1,4 @@
+import { trackEvent } from '@aptabase/react-native'
 import { formatDistanceToNow, isToday, isYesterday } from 'date-fns'
 import { impactAsync } from 'expo-haptics'
 import { StatusBar } from 'expo-status-bar'
@@ -201,7 +202,10 @@ export default function History({
       >
         <TovPressable
           bgColor={colors.bg2}
-          onPress={() => setShowFavorites((current) => !current)}
+          onPress={() => {
+            setShowFavorites((current) => !current)
+            trackEvent('View favorites', { value: !showFavorites })
+          }}
           onPressColor={colors.bg3}
           style={{
             alignItems: 'center',
@@ -305,6 +309,7 @@ export default function History({
               onPress={() => {
                 // textTranslationX.value = withSpring(0, panActivateConfig)
                 openSettings.value = withSpring(1, panActivateConfig)
+                trackEvent('Open settings')
               }}
             >
               <TovIcon name="settings" size={18} color={colors.fg3} />

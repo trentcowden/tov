@@ -1,3 +1,4 @@
+import { trackEvent } from '@aptabase/react-native'
 import { Pressable, Text, View } from 'react-native'
 import { SharedValue, withSpring } from 'react-native-reanimated'
 import Spacer from '../Spacer'
@@ -64,6 +65,7 @@ export default function TypographySettings({
               key={f.name}
               onPress={() => {
                 dispatch(setTypography(f))
+                trackEvent('Change font size', { fontSize: f.fontSize })
               }}
               bgColor={colors.bg3}
               onPressColor={colors.bg3}

@@ -1,4 +1,4 @@
-import { shift, useFloating } from '@floating-ui/react-native'
+import { trackEvent } from '@aptabase/react-native'
 import { ImpactFeedbackStyle, impactAsync } from 'expo-haptics'
 import React, { useMemo } from 'react'
 import { NativeSyntheticEvent, Text, TextLayoutEventData } from 'react-native'
@@ -39,10 +39,6 @@ export default function BibleText({
     return bibles[settings.translation][activeChapterIndex.index]
   }, [activeChapterIndex.index])
 
-  const { refs, floatingStyles } = useFloating({
-    middleware: [shift()],
-  })
-
   function renderVerseNumber(text: string) {
     const verseNumber = text.replace('[', '').replace(']', '')
     const verseId = `${activeChapter.chapterId}.${verseNumber}`
@@ -62,6 +58,7 @@ export default function BibleText({
                 if (setReferenceState) setReferenceState(verseId)
                 if (openReferences !== undefined)
                   openReferences.value = withSpring(1, panActivateConfig)
+                trackEvent('Open cross references', { verseId })
               }
             : undefined
         }

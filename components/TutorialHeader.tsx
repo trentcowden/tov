@@ -1,4 +1,5 @@
-import { useEffect } from 'react'
+import { trackEvent } from '@aptabase/react-native'
+import { useEffect, useState } from 'react'
 import { Text, View } from 'react-native'
 import { ScrollView } from 'react-native-gesture-handler'
 import Animated, {
@@ -10,7 +11,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Spacer from '../Spacer'
 import { gutterSize, screenWidth, sizes, typography } from '../constants'
 import useColors from '../hooks/useColors'
-import { useAppSelector } from '../redux/hooks'
 import TovIcon from './SVG'
 import TovPressable from './TovPressable'
 
@@ -26,10 +26,17 @@ export default function TutorialHeader({
   const insets = useSafeAreaInsets()
   const colors = useColors()
   const fadeIn = useSharedValue(0)
-  const settings = useAppSelector((state) => state.settings)
+  const [tutorialStart] = useState(Date.now())
 
   useEffect(() => {
     fadeIn.value = withTiming(1, { duration: 1000 })
+
+    return () => {
+      const tutorialEnd = Date.now()
+      const tutorialDuration = tutorialEnd - tutorialStart
+      console.log('Tutorial duration:', tutorialDuration)
+      trackEvent('Tutorial', { duration: tutorialDuration })
+    }
   }, [])
 
   const styles = useAnimatedStyle(() => {
