@@ -394,11 +394,6 @@ export default function Bible() {
           focusSearch={focusSearch}
           overlayOpacity={overlayOpacity}
         />
-        {/* <ReferenceBackButton
-          jumpToChapter={jumpToChapter}
-          openReferences={openReferences}
-          setReferenceState={setReferenceState}
-        /> */}
         {/* <View
           style={{
             position: 'absolute',

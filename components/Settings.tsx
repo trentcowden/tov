@@ -257,7 +257,7 @@ export default function Settings({
                 description="If you enjoy using Tov, please consider leaving a review. It helps a lot!"
               >
                 Rate{' '}
-                <Text style={{ fontFamily: 'UIBold', color: colors.p2 }}>
+                <Text style={{ fontFamily: 'Figtree-Bold', color: colors.p2 }}>
                   tov
                 </Text>{' '}
                 on the App Store
@@ -274,7 +274,7 @@ export default function Settings({
               description="Tov will always be free. Send me a donation to support the project and be a friend!"
             >
               Donate to{' '}
-              <Text style={{ fontFamily: 'UIBold', color: colors.p2 }}>
+              <Text style={{ fontFamily: 'Figtree-Bold', color: colors.p2 }}>
                 tov
               </Text>
             </SettingsItem>
@@ -289,7 +289,7 @@ export default function Settings({
               description="Tov is open-source! Check out the code and contribute on GitHub."
             >
               View{' '}
-              <Text style={{ fontFamily: 'UIBold', color: colors.p2 }}>
+              <Text style={{ fontFamily: 'Figtree-Bold', color: colors.p2 }}>
                 tov
               </Text>
               's Source Code

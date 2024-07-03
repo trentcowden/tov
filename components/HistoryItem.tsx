@@ -1,3 +1,4 @@
+import { trackEvent } from '@aptabase/react-native'
 import { ImpactFeedbackStyle, impactAsync } from 'expo-haptics'
 import React, { useEffect, useRef } from 'react'
 import { Pressable } from 'react-native'
@@ -168,6 +169,11 @@ export default function HistoryListItem({
             impactAsync(ImpactFeedbackStyle.Heavy)
 
             dispatch(toggleFavorite(item.chapterId))
+
+            trackEvent('Toggle favorite', {
+              value: !item.isFavorite,
+              chapter: item.chapterId,
+            })
           }}
           style={{
             borderColor: colors.bg3,

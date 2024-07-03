@@ -51,7 +51,7 @@ export default function BibleText({
         style={{
           textDecorationLine:
             verseId in (references as References) ? 'underline' : 'none',
-          fontFamily: 'UIBold',
+          fontFamily: 'Figtree-Bold',
           color: colors.p1,
           fontSize: settings.fontSize - 2,
         }}
@@ -102,21 +102,21 @@ export default function BibleText({
     {
       pattern: /\*\*.+?\*\*/,
       style: {
-        fontFamily: 'SemiBold',
+        fontFamily: 'Literata18pt-SemiBold',
       },
       renderText: renderBoltAndItalicText,
     },
     {
       pattern: /\*.+?\*/,
       style: {
-        fontFamily: 'Regular-Italic',
+        fontFamily: 'Literata18pt-Italic',
       },
       renderText: renderBoltAndItalicText,
     },
     {
       pattern: /##.*/,
       style: {
-        fontFamily: 'SemiBold',
+        fontFamily: 'Literata18pt-SemiBold',
         fontSize: settings.fontSize + 3,
       },
       renderText: renderSectionHeader,

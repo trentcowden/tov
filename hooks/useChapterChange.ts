@@ -1,3 +1,4 @@
+import { trackEvent } from '@aptabase/react-native'
 import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics'
 import { Dispatch, SetStateAction, useEffect, useRef } from 'react'
 import { NativeScrollEvent, NativeSyntheticEvent } from 'react-native'
@@ -102,6 +103,11 @@ export default function useChapterChange({
       }
       return
     }
+
+    trackEvent('Chapter change', {
+      chapterId,
+      comingFrom,
+    })
 
     // Reset verse offsets.
     setVerseOffsets(undefined)
@@ -260,6 +266,16 @@ export default function useChapterChange({
    */
   useEffect(() => {
     if (!verseOffsets) return
+
+    if (
+      activeChapterIndex.transition === 'back' ||
+      activeChapterIndex.transition === 'forward'
+    ) {
+      trackEvent('Chapter change', {
+        chapterId: activeChapter.chapterId,
+        comingFrom: 'scroll',
+      })
+    }
 
     // Reset some values.
     releaseToChange.value = 0

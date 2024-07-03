@@ -8,5 +8,6 @@
       "fileMatch": ["/data/books.json"],
       "url": "/data/schemas/books.json"
     }
-  ]
+  ],
+  "cSpell.words": ["Figtree", "Literata"]
 }

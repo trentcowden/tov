@@ -85,7 +85,7 @@ export default function TutorialHeader({
             <Spacer units={4} />
             <Text style={typography(sizes.tiny, 'uil', 'c', colors.fg3)}>
               {'(a '}
-              <Text style={{ color: colors.p2, fontFamily: 'UIMedium' }}>
+              <Text style={{ color: colors.p2, fontFamily: 'Figtree-Medium' }}>
                 good
               </Text>
               {' Bible app)'}
