@@ -64,7 +64,7 @@ export default function ChapterOverlay({
           position: 'absolute',
           top: -gutterSize,
           left: -gutterSize,
-
+          backgroundColor: colors.p1 + '55',
           width: screenWidth + gutterSize * 2,
           // // left: gutterSize,
           // // borderRadius: 99,
@@ -90,7 +90,7 @@ export default function ChapterOverlay({
           paddingTop: gutterSize,
           paddingHorizontal: gutterSize,
         }}
-        blurAmount={8}
+        blurAmount={4}
       >
         <Pressable
           onPressIn={() => {
