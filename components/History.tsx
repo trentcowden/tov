@@ -2,8 +2,8 @@ import { trackEvent } from '@aptabase/react-native'
 import { formatDistanceToNow, isToday, isYesterday } from 'date-fns'
 import { impactAsync } from 'expo-haptics'
 import { StatusBar } from 'expo-status-bar'
-import React, { useMemo, useState } from 'react'
-import { Dimensions, Text, View } from 'react-native'
+import React, { useEffect, useMemo, useState } from 'react'
+import { AppState, Dimensions, Text, View } from 'react-native'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import Animated, {
   FadeIn,
@@ -13,7 +13,6 @@ import Animated, {
   interpolate,
   runOnJS,
   useAnimatedStyle,
-  useDerivedValue,
   withSpring,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -65,8 +64,7 @@ export default function History({
   const history = useAppSelector((state) => state.history)
   const insets = useSafeAreaInsets()
   const dispatch = useAppDispatch()
-  const [historyOpening, setHistoryOpening] = useState(false)
-  const [historyOpen, setHistoryOpen] = useState(false)
+  const [updateHistory, setUpdateHistory] = useState(false)
   const historyAnimatedStyles = useAnimatedStyle(() => {
     return {
       transform: [{ translateX: textTranslationX.value }],
@@ -74,37 +72,17 @@ export default function History({
   })
   const [showFavorites, setShowFavorites] = useState(false)
 
-  // const [time, setTime] = useState(new Date().getTime())
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (nextAppState) => {
+      if (nextAppState === 'active') {
+        setUpdateHistory((current) => !current)
+      }
+    })
 
-  // useEffect(() => {
-  //   setInterval(() => setTime(new Date().getTime()), 5000)
-  // }, [])
-
-  useDerivedValue(() => {
-    if (textTranslationX.value > 0) runOnJS(setHistoryOpening)(true)
-    else runOnJS(setHistoryOpening)(false)
-
-    if (textTranslationX.value > horizTransReq - 10)
-      runOnJS(setHistoryOpen)(true)
-    else runOnJS(setHistoryOpen)(false)
-  })
-
-  // useEffect(() => {
-  //   if (historyOpen) {
-  //     const match = history.find(
-  //       (item) => item.chapterId === activeChapter.chapterId
-  //     )
-
-  //     dispatch(
-  //       addToHistory({
-  //         chapterId: activeChapter.chapterId,
-  //         date: Date.now(),
-  //         isFavorite: match?.isFavorite ?? false,
-  //         verseIndex: currentVerseIndex.current,
-  //       })
-  //     )
-  //   }
-  // }, [historyOpen])
+    return () => {
+      subscription.remove()
+    }
+  }, [])
 
   const sections = useMemo(() => {
     const sorted = [...history]
@@ -132,14 +110,10 @@ export default function History({
         groupedHistory.push(historyItem)
 
         return groupedHistory
-
-        // if (existingGroup) existingGroup.data.push(historyItem)
-        // else groupedHistory.push({ distance, data: [historyItem] })
-        // return groupedHistory
       },
       []
     )
-  }, [history, historyOpening, activeChapter, showFavorites])
+  }, [history, activeChapter, showFavorites, updateHistory])
 
   function renderHistoryItem({
     item,
