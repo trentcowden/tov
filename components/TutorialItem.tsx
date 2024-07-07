@@ -3,9 +3,9 @@ import React from 'react'
 import { TextStyle, useWindowDimensions, View } from 'react-native'
 import ParsedText, { ParsedTextProps } from 'react-native-parsed-text'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import Spacer from '../Spacer'
 import { gutterSize } from '../constants'
 import useColors from '../hooks/useColors'
+import Spacer from '../Spacer'
 
 interface Props {
   style: TextStyle
@@ -25,43 +25,54 @@ export default function TutorialItem({ parse, style, text, source }: Props) {
         width: width - gutterSize * 2,
         alignItems: 'center',
         justifyContent: 'center',
-        paddingHorizontal: gutterSize,
+        // padding: gutterSize,
+        flexDirection: 'row',
         // paddingVertical: gutterSize,
         borderRadius: 12,
-        backgroundColor: colors.bg2,
-        height: height * 0.6,
+        // backgroundColor: colors.bg2,
+        // height: height * 0.6,
       }}
     >
-      <LottieView
-        autoPlay
+      <View
         style={{
-          width: 160,
-          height: 160,
-          alignSelf: 'center',
-          backgroundColor: 'transparent',
+          backgroundColor: colors.bg2,
+          padding: gutterSize / 2,
+          borderRadius: 12,
         }}
-        colorFilters={[
-          {
-            keypath: 'hand',
-            color: colors.fg3,
-          },
-          {
-            keypath: 'Rectangle 3',
-            color: colors.p1,
-          },
-          {
-            keypath: 'tap 1',
-            color: colors.p1,
-          },
-          {
-            keypath: 'tap 2',
-            color: colors.p1,
-          },
-        ]}
-        source={source}
-      />
-      <Spacer units={6} />
-      <ParsedText parse={parse} style={[style, { width: '100%' }]}>
+      >
+        <LottieView
+          autoPlay
+          style={{
+            width: 80,
+            height: 80,
+            alignSelf: 'center',
+            backgroundColor: colors.bg2,
+            // backgroundColor: 'transparent',
+            borderRadius: 12,
+          }}
+          colorFilters={[
+            {
+              keypath: 'hand',
+              color: colors.fg3,
+            },
+            {
+              keypath: 'Rectangle 3',
+              color: colors.p1,
+            },
+            {
+              keypath: 'tap 1',
+              color: colors.p1,
+            },
+            {
+              keypath: 'tap 2',
+              color: colors.p1,
+            },
+          ]}
+          source={source}
+        />
+      </View>
+      <Spacer units={3} />
+      <ParsedText parse={parse} style={[style, { flex: 1 }]}>
         {text}
       </ParsedText>
     </View>

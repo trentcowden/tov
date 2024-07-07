@@ -155,10 +155,14 @@ export default function BibleText({
       {'\n\n'}
       <TutorialItem
         source={require('../assets/lotties/scroll_down.json')}
-        text={`[3] Keep scrolling downwards to go to the **next chapter**. Happy reading!`}
+        text={`[3] Keep scrolling downwards to go to the **next chapter**.`}
         parse={parse}
         style={textStyle}
       />
+      {'\n\n'}
+      <ParsedText parse={parse} style={[textStyle]}>
+        **Happy reading!**
+      </ParsedText>
     </Text>
   ) : (
     <ParsedText
