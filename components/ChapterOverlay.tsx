@@ -12,7 +12,13 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { gutterSize, panActivateConfig, sizes, typography } from '../constants'
+import {
+  defaultOnPressScale,
+  gutterSize,
+  panActivateConfig,
+  sizes,
+  typography,
+} from '../constants'
 import { Books } from '../data/types/books'
 import { Chapters } from '../data/types/chapters'
 import { getEdges } from '../functions/utils'
@@ -52,7 +58,9 @@ export default function ChapterOverlay({
     //   [settings.theme === 'black' ? colors.bg1 : colors.bg2, colors.bg3]
     // ),
     zIndex: overlayOpacity.value === 0 ? -1 : 4,
-    transform: [{ scale: interpolate(pressed.value, [0, 1], [1, 0.95]) }],
+    transform: [
+      { scale: interpolate(pressed.value, [0, 1], [1, defaultOnPressScale]) },
+    ],
   }))
 
   return (

@@ -33,7 +33,6 @@ export default function ThemeItem({
         borderWidth: 1,
       }}
       onPressColor={theme.bg3}
-      onPressScale={0.96}
     >
       <View
         style={{

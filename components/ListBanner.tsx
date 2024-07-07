@@ -48,7 +48,6 @@ export default function ListBanner({ body, icon, title, popup }: Props) {
       style={[
         {
           marginHorizontal: gutterSize / 2,
-          width: width - gutterSize * 4,
           marginTop: gutterSize / 2,
           backgroundColor: colors.ph,
           padding: gutterSize / 2,

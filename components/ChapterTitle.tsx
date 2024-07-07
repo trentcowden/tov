@@ -49,7 +49,6 @@ export default function ChapterTitle({
   const activeChapter = useMemo(() => {
     return bibles[settings.translation][activeChapterIndex.index]
   }, [activeChapterIndex.index])
-  const width = useSharedValue(0)
   const pressed = useSharedValue(0)
   const insets = useSafeAreaInsets()
   const history = useAppSelector((state) => state.history)
@@ -74,6 +73,7 @@ export default function ChapterTitle({
   })
 
   const textContainerStyles = useAnimatedStyle(() => {
+    console.log('itemTranslateX', itemTranslateX.value)
     return {
       transform: [
         {
@@ -101,7 +101,7 @@ export default function ChapterTitle({
         {
           marginHorizontal: gutterSize / 2,
           paddingHorizontal: gutterSize / 2,
-          justifyContent: 'flex-start',
+          // justifyContent: 'flex-start',
           borderRadius: 12,
         },
         itemStyles,
@@ -142,9 +142,6 @@ export default function ChapterTitle({
           <View style={[{ flexDirection: 'row', alignItems: 'center' }]}>
             <Animated.Text
               numberOfLines={1}
-              onLayout={(e) => {
-                width.value = e.nativeEvent.layout.width
-              }}
               adjustsFontSizeToFit
               style={[
                 typography(sizes.title, 'uib', 'l', colors.p1),

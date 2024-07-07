@@ -20,6 +20,9 @@ export const shadow: ViewStyle = {
 }
 
 export const gutterSize = deviceType === DeviceType.TABLET ? 32 : 24
+export const chapterRow = deviceType === DeviceType.TABLET ? 10 : 5
+export const defaultOnPressScale =
+  deviceType === DeviceType.TABLET ? 0.98 : 0.95
 export const showOverlayOffset = gutterSize * 4
 
 export const iconSize = 24

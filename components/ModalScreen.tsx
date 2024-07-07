@@ -11,6 +11,7 @@ import Animated, {
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import {
+  defaultOnPressScale,
   gutterSize,
   horizVelocReq,
   panActivateConfig,
@@ -55,7 +56,9 @@ export default function ModalScreen({
       zIndex: openModal.value > 0.05 ? 4 : -1,
       transform: [
         { translateY: interpolate(openModal.value, [0, 1], [12, 0]) },
-        { scale: interpolate(openModal.value, [0, 1], [0.95, 1]) },
+        {
+          scale: interpolate(openModal.value, [0, 1], [defaultOnPressScale, 1]),
+        },
       ],
     }
   })

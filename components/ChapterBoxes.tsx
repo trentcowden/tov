@@ -3,7 +3,7 @@ import { useMemo } from 'react'
 import { Text, View } from 'react-native'
 import { FadeInRight, FadeOut } from 'react-native-reanimated'
 import Spacer from '../Spacer'
-import { gutterSize, sizes, typography } from '../constants'
+import { chapterRow, gutterSize, sizes, typography } from '../constants'
 import bibles from '../data/bibles'
 import { Books } from '../data/types/books'
 import { Chapters } from '../data/types/chapters'
@@ -68,7 +68,7 @@ export default function ChapterBoxes({
           }}
           bgColor={colors.bg3}
           onPressColor={colors.bg3}
-          entering={FadeInRight.duration(200).delay(index * 5)}
+          entering={FadeInRight.duration(200).delay(index * chapterRow)}
           exiting={FadeOut}
           onPress={() => {
             jumpToChapter({
@@ -90,7 +90,7 @@ export default function ChapterBoxes({
     <FlashList
       estimatedItemSize={64}
       keyboardShouldPersistTaps="always"
-      numColumns={5}
+      numColumns={chapterRow}
       renderItem={renderChapterBoxItem}
       data={thisBookChapters}
       ListHeaderComponent={<Spacer units={3} />}

@@ -55,6 +55,7 @@ export default function Settings({
   currentVerseIndex,
 }: Props) {
   const colors = useColors()
+  const history = useAppSelector((state) => state.history)
   const settings = useAppSelector((state) => state.settings)
   const insets = useSafeAreaInsets()
   const { width, height } = useWindowDimensions()

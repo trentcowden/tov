@@ -14,7 +14,13 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated'
-import { gutterSize, panActivateConfig, sizes, typography } from '../constants'
+import {
+  defaultOnPressScale,
+  gutterSize,
+  panActivateConfig,
+  sizes,
+  typography,
+} from '../constants'
 import bibles from '../data/bibles'
 import { Chapters } from '../data/types/chapters'
 import { getBook } from '../functions/bible'
@@ -118,7 +124,9 @@ export default function HistoryListItem({
         item.chapterId === activeChapter.chapterId || item.isFavorite
           ? 1
           : interpolate(itemTranslateX.value, [0, swipeReq], [1, 0.5]),
-      transform: [{ scale: interpolate(pressed.value, [0, 1], [1, 0.95]) }],
+      transform: [
+        { scale: interpolate(pressed.value, [0, 1], [1, defaultOnPressScale]) },
+      ],
     }
   })
 

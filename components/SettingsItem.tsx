@@ -35,7 +35,6 @@ export default function SettingsItem({
         borderRadius: 12,
       }}
       onPressColor={colors.bg3}
-      onPressScale={0.96}
     >
       <View
         style={{

@@ -10,7 +10,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated'
 import tinycolor from 'tinycolor2'
-import { panActivateConfig } from '../constants'
+import { defaultOnPressScale, panActivateConfig } from '../constants'
 import useColors from '../hooks/useColors'
 
 interface Props {
@@ -23,7 +23,6 @@ interface Props {
   outerOuterStyle?: ViewStyle
   onPressColor?: string
   disableAnimation?: boolean
-  onPressScale?: number
   bgColor: string
 }
 
@@ -37,7 +36,6 @@ export default function TovPressable({
   exiting,
   disableAnimation,
   outerOuterStyle,
-  onPressScale,
   bgColor,
 }: Props) {
   const colors = useColors()
@@ -51,7 +49,7 @@ export default function TovPressable({
     return {
       transform: [
         {
-          scale: interpolate(pressed.value, [0, 1], [1, onPressScale ?? 0.95]),
+          scale: interpolate(pressed.value, [0, 1], [1, defaultOnPressScale]),
         },
       ],
       backgroundColor:
