@@ -16,5 +16,5 @@ export const getEdges = (insets: EdgeInsets) => {
   }
 }
 
-export const getModalWidth = (width: number) => width - gutterSize * 4
+export const getModalWidth = (width: number) => width - gutterSize * 2
 export const getHorizTransReq = (width: number) => width * 0.7
