@@ -1,6 +1,6 @@
 import { trackEvent } from '@aptabase/react-native'
 import { useEffect, useState } from 'react'
-import { Text, View } from 'react-native'
+import { Text, useWindowDimensions, View } from 'react-native'
 import { ScrollView } from 'react-native-gesture-handler'
 import Animated, {
   useAnimatedStyle,
@@ -9,7 +9,8 @@ import Animated, {
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Spacer from '../Spacer'
-import { gutterSize, screenWidth, sizes, typography } from '../constants'
+import { gutterSize, sizes, typography } from '../constants'
+import { getEdges } from '../functions/utils'
 import useColors from '../hooks/useColors'
 import TovIcon from './SVG'
 import TovPressable from './TovPressable'
@@ -23,7 +24,9 @@ export default function TutorialHeader({
   spaceBeforeTextStarts,
   scrollViewRef,
 }: Props) {
+  const { width } = useWindowDimensions()
   const insets = useSafeAreaInsets()
+  const { top, bottom } = getEdges(insets)
   const colors = useColors()
   const fadeIn = useSharedValue(0)
   const [tutorialStart] = useState(Date.now())
@@ -59,8 +62,8 @@ export default function TutorialHeader({
             alignItems: 'center',
             padding: gutterSize,
             height: spaceBeforeTextStarts,
-            paddingTop: insets.top + gutterSize,
-            paddingBottom: insets.bottom + gutterSize,
+            paddingTop: top + gutterSize,
+            paddingBottom: bottom + gutterSize,
           },
           styles,
         ]}
@@ -105,7 +108,7 @@ export default function TutorialHeader({
         <TovPressable
           onPress={() =>
             scrollViewRef.current?.scrollTo({
-              y: spaceBeforeTextStarts - insets.top - gutterSize,
+              y: spaceBeforeTextStarts - top - gutterSize,
             })
           }
           bgColor={colors.bg2}
@@ -113,7 +116,7 @@ export default function TutorialHeader({
           style={{
             paddingVertical: gutterSize / 2,
             borderRadius: 12,
-            width: screenWidth - gutterSize * 2,
+            width: width - gutterSize * 2,
             justifyContent: 'center',
             alignItems: 'center',
           }}

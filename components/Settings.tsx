@@ -5,20 +5,20 @@ import * as WebBrowser from 'expo-web-browser'
 import { trackEvent } from '@aptabase/react-native'
 import * as StoreReview from 'expo-store-review'
 import React, { useEffect } from 'react'
-import { Alert, Dimensions, Text, View } from 'react-native'
+import { Alert, Text, useWindowDimensions, View } from 'react-native'
 import { ScrollView } from 'react-native-gesture-handler'
 import { SharedValue, withSpring } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Spacer from '../Spacer'
 import {
   gutterSize,
-  modalWidth,
   panActivateConfig,
   shadow,
   sizes,
   typography,
 } from '../constants'
 import { Chapters } from '../data/types/chapters'
+import { getModalHeight, getModalWidth } from '../functions/utils'
 import { JumpToChapter } from '../hooks/useChapterChange'
 import useColors from '../hooks/useColors'
 import { clearHistory } from '../redux/history'
@@ -57,11 +57,10 @@ export default function Settings({
   const colors = useColors()
   const settings = useAppSelector((state) => state.settings)
   const insets = useSafeAreaInsets()
-  const navigatorHeight =
-    Dimensions.get('window').height -
-    insets.top -
-    insets.bottom -
-    gutterSize * 4
+  const { width, height } = useWindowDimensions()
+  const modalWidth = getModalWidth(width)
+  const modalHeight = getModalHeight(height, insets)
+
   const dispatch = useAppDispatch()
 
   const [canReview, setCanReview] = React.useState(false)
@@ -116,7 +115,7 @@ export default function Settings({
       <View
         style={{
           width: modalWidth,
-          height: navigatorHeight,
+          height: modalHeight,
           backgroundColor: colors.bg2,
           borderRadius: 12,
           paddingTop: gutterSize / 2,

@@ -2,7 +2,12 @@ import { HighlightRanges } from '@nozbe/microfuzz'
 import { useFuzzySearchList } from '@nozbe/microfuzz/react'
 import { FlashList } from '@shopify/flash-list'
 import { RefObject, useEffect, useState } from 'react'
-import { Dimensions, KeyboardAvoidingView, TextInput, View } from 'react-native'
+import {
+  KeyboardAvoidingView,
+  TextInput,
+  useWindowDimensions,
+  View,
+} from 'react-native'
 import {
   FadeIn,
   FadeOut,
@@ -14,7 +19,6 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import {
   gutterSize,
-  modalWidth,
   panActivateConfig,
   shadow,
   showOverlayOffset,
@@ -25,6 +29,7 @@ import bibles from '../data/bibles'
 import { Books } from '../data/types/books'
 import { Chapters } from '../data/types/chapters'
 import { getChapterReference } from '../functions/bible'
+import { getModalHeight, getModalWidth } from '../functions/utils'
 import { JumpToChapter } from '../hooks/useChapterChange'
 import useColors from '../hooks/useColors'
 import { useAppSelector } from '../redux/hooks'
@@ -68,6 +73,8 @@ export default function Navigator({
   const colors = useColors()
   const settings = useAppSelector((state) => state.settings)
   const insets = useSafeAreaInsets()
+  const { height, width } = useWindowDimensions()
+  const modalWidth = getModalWidth(width)
   /**
    * Whether or not new search results should be calculated. We disable it as
    * the user is typing to prevent lag.
@@ -125,11 +132,7 @@ export default function Navigator({
     searchRef.current?.blur()
   }
 
-  const navigatorHeight =
-    Dimensions.get('window').height -
-    insets.top -
-    insets.bottom -
-    gutterSize * 2
+  const modalHeight = getModalHeight(height, insets)
 
   return (
     <ModalScreen
@@ -149,7 +152,7 @@ export default function Navigator({
           >
             {navigatorBook?.name}
           </ModalScreenHeader>
-          <View style={{ height: navigatorHeight - gutterSize * 2 - 50 }}>
+          <View style={{ height: modalHeight - gutterSize * 2 - 50 }}>
             <ChapterBoxes
               jumpToChapter={jumpToChapter}
               navigatorBook={navigatorBook}
@@ -170,7 +173,7 @@ export default function Navigator({
         behavior="height"
         style={{
           width: modalWidth,
-          height: navigatorHeight,
+          height: modalHeight,
         }}
       >
         <View

@@ -1,15 +1,15 @@
 import { trackEvent } from '@aptabase/react-native'
 import { ImpactFeedbackStyle, impactAsync } from 'expo-haptics'
 import React, { useMemo } from 'react'
-import { NativeSyntheticEvent, Text, TextLayoutEventData } from 'react-native'
+import {
+  NativeSyntheticEvent,
+  Text,
+  TextLayoutEventData,
+  useWindowDimensions,
+} from 'react-native'
 import ParsedText, { ParsedTextProps } from 'react-native-parsed-text'
 import { SharedValue, withSpring } from 'react-native-reanimated'
-import {
-  gutterSize,
-  panActivateConfig,
-  screenWidth,
-  typography,
-} from '../constants'
+import { gutterSize, panActivateConfig, typography } from '../constants'
 import bibles from '../data/bibles'
 import references from '../data/references.json'
 import { References } from '../data/types/references'
@@ -32,6 +32,7 @@ export default function BibleText({
   openReferences,
   onTextLayout,
 }: Props) {
+  const { height, width } = useWindowDimensions()
   const colors = useColors()
   const activeChapterIndex = useAppSelector((state) => state.activeChapterIndex)
   const settings = useAppSelector((state) => state.settings)
@@ -86,7 +87,7 @@ export default function BibleText({
   const parse: ParsedTextProps['parse'] = [
     {
       pattern: /\[([0-9]{1,3})\]/,
-      renderText: renderVerseNumber,
+      renderText: renderVerseNumber as any,
     },
     // {
     //   pattern: /tov/,
@@ -130,7 +131,7 @@ export default function BibleText({
   return activeChapter.chapterId === 'TUT.1' ? (
     <Text
       style={{
-        width: screenWidth - gutterSize * 2,
+        width: width - gutterSize * 2,
       }}
     >
       <ParsedText parse={parse} style={[textStyle]}>

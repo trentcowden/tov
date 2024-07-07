@@ -1,8 +1,8 @@
 import { useMemo } from 'react'
-import { SectionList, Text } from 'react-native'
+import { SectionList, Text, useWindowDimensions } from 'react-native'
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated'
 import Spacer from '../Spacer'
-import { gutterSize, screenWidth, sizes, typography } from '../constants'
+import { gutterSize, sizes, typography } from '../constants'
 import books from '../data/books.json'
 import { Books } from '../data/types/books'
 import useColors from '../hooks/useColors'
@@ -19,6 +19,7 @@ type Sections = Array<{
 }>
 
 export default function BooksList({ navigatorBook, goToBook }: Props) {
+  const { width } = useWindowDimensions()
   const colors = useColors()
   const sections = useMemo<Sections>(() => {
     const sections: Sections = []
@@ -60,7 +61,7 @@ export default function BooksList({ navigatorBook, goToBook }: Props) {
         key={section.sectionName}
         style={{
           marginHorizontal: gutterSize,
-          width: screenWidth - gutterSize * 4,
+          width: width - gutterSize * 4,
           // paddingHorizontal: gutterSize,
           // marginTop: index === 0 ? 0 : gutterSize * 1.5,
           paddingBottom: gutterSize / 3,

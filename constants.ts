@@ -1,5 +1,5 @@
-import { Dimensions, TextStyle, ViewStyle } from 'react-native'
-import { EdgeInsets } from 'react-native-safe-area-context'
+import { DeviceType, deviceType } from 'expo-device'
+import { TextStyle, ViewStyle } from 'react-native'
 
 export const sizes = {
   massive: 32,
@@ -18,34 +18,16 @@ export const shadow: ViewStyle = {
   shadowOpacity: 0.4,
   shadowRadius: 10,
 }
-// export const colors = {
-//   bg1: '#252322',
-//   bg2: '#292725',
-//   bg3: '#302e2a',
-//   bg4: '#393632',
-//   fg1: '#efefef',
-//   fg2: '#d8d8d8',
-//   fg3: '#9b9b9b',
-//   b: 'rgba(134, 126, 118, 0.15)',
-//   p1: '#d8c2b0',
-//   p2: '#beaca0',
-// }
 
-// export const backdropColor = '#00000055'
-export const gutterSize = 24
+export const gutterSize = deviceType === DeviceType.TABLET ? 32 : 24
 export const showOverlayOffset = gutterSize * 4
-export const screenWidth = Dimensions.get('screen').width
-export const screenHeight = Dimensions.get('screen').height
-export const currentVerseReq = screenHeight / 3
 
 export const iconSize = 24
-export const modalWidth = Dimensions.get('screen').width - gutterSize * 2
 
 export const chapterChangeDuration = 200
 export const overScrollReq = 75
 export const overScrollVelocityReq = 1
 export const zoomOutReq = 0.3
-export const horizTransReq = Dimensions.get('window').width * 0.7
 export const horizVelocReq = 500
 
 export const textBackdropOpacity = 0.5
@@ -108,7 +90,3 @@ export const typography = (
 }
 
 export const panActivateConfig = { mass: 0.5, damping: 20, stiffness: 140 }
-
-export function getUsableHeight(insets: EdgeInsets) {
-  return screenHeight - insets.top * 1 - insets.bottom * 2
-}

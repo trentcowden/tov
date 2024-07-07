@@ -1,4 +1,5 @@
 import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics'
+import { useWindowDimensions } from 'react-native'
 import { Gesture } from 'react-native-gesture-handler'
 import {
   runOnJS,
@@ -9,11 +10,11 @@ import {
 } from 'react-native-reanimated'
 import {
   gutterSize,
-  horizTransReq,
   horizVelocReq,
   panActivateConfig,
   showOverlayOffset,
 } from '../constants'
+import { getHorizTransReq } from '../functions/utils'
 
 interface Props {
   navigatorTransition: SharedValue<number>
@@ -28,6 +29,8 @@ export default function useHistoryOpen({
   overlayOpacity,
   scrollOffset,
 }: Props) {
+  const { width } = useWindowDimensions()
+  const horizTransReq = getHorizTransReq(width)
   const textTranslateX = useSharedValue(0)
   const savedTextTranslateX = useSharedValue(0)
 

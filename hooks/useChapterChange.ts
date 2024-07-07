@@ -1,7 +1,11 @@
 import { trackEvent } from '@aptabase/react-native'
 import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics'
 import { Dispatch, SetStateAction, useEffect, useRef } from 'react'
-import { NativeScrollEvent, NativeSyntheticEvent } from 'react-native'
+import {
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  useWindowDimensions,
+} from 'react-native'
 import { ScrollView } from 'react-native-gesture-handler'
 import {
   SharedValue,
@@ -13,7 +17,6 @@ import {
 } from 'react-native-reanimated'
 import {
   chapterChangeDuration,
-  currentVerseReq,
   overScrollReq,
   panActivateConfig,
 } from '../constants'
@@ -66,6 +69,8 @@ export default function useChapterChange({
   setVerseNewlines,
 }: Props) {
   const dispatch = useAppDispatch()
+  const { height } = useWindowDimensions()
+  const currentVerseReq = height / 3
   const activeChapterIndex = useAppSelector((state) => state.activeChapterIndex)
   const textTranslateY = useSharedValue(0)
   const referenceTree = useAppSelector((state) => state.referenceTree)

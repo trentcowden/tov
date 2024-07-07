@@ -1,19 +1,18 @@
 import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics'
-import { NativeScrollEvent, NativeSyntheticEvent } from 'react-native'
+import {
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  useWindowDimensions,
+} from 'react-native'
 import {
   SharedValue,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import {
-  currentVerseReq,
-  getUsableHeight,
-  overScrollReq,
-  screenHeight,
-  showOverlayOffset,
-} from '../constants'
+import { overScrollReq, showOverlayOffset } from '../constants'
 import bibles from '../data/bibles'
+import { getEdges } from '../functions/utils'
 import { useAppSelector } from '../redux/hooks'
 
 interface Props {
@@ -45,8 +44,12 @@ export default function useScrollUpdate({
 }: Props) {
   const activeChapterIndex = useAppSelector((state) => state.activeChapterIndex)
   const insets = useSafeAreaInsets()
-  const usableHeight = getUsableHeight(insets)
-  const scrollBarPosition = useSharedValue(insets.top * 1)
+  const { top, bottom } = getEdges(insets)
+  const { height } = useWindowDimensions()
+  const usableHeight = height - top * 1 - bottom * 2
+  const currentVerseReq = height / 3
+
+  const scrollBarPosition = useSharedValue(top)
   const settings = useAppSelector((state) => state.settings)
 
   function handleScrollHaptics(offset: number, contentHeight: number) {
@@ -63,7 +66,7 @@ export default function useScrollUpdate({
       impactAsync(ImpactFeedbackStyle.Heavy)
       alreadyHaptic.current = true
     } else if (
-      offset > contentHeight - screenHeight + overScrollReq &&
+      offset > contentHeight - height + overScrollReq &&
       !alreadyHaptic.current &&
       activeChapterIndex.index < bibles[settings.translation].length - 1
     ) {
@@ -82,8 +85,8 @@ export default function useScrollUpdate({
       alreadyHaptic.current = false
     } else if (
       textTranslateY.value === 0 &&
-      offset > contentHeight - screenHeight &&
-      offset < contentHeight - screenHeight + overScrollReq &&
+      offset > contentHeight - height &&
+      offset < contentHeight - height + overScrollReq &&
       alreadyHaptic.current === true
     ) {
       impactAsync(ImpactFeedbackStyle.Light)
@@ -100,7 +103,7 @@ export default function useScrollUpdate({
     if (offset < -overScrollReq && releaseToChange.value === 0) {
       releaseToChange.value = withTiming(1)
     } else if (
-      offset > contentHeight - screenHeight + overScrollReq &&
+      offset > contentHeight - height + overScrollReq &&
       releaseToChange.value === 0
     ) {
       releaseToChange.value = withTiming(1)
@@ -116,8 +119,8 @@ export default function useScrollUpdate({
       releaseToChange.value = withTiming(0)
     } else if (
       textTranslateY.value === 0 &&
-      offset > contentHeight - screenHeight &&
-      offset < contentHeight - screenHeight + overScrollReq &&
+      offset > contentHeight - height &&
+      offset < contentHeight - height + overScrollReq &&
       releaseToChange.value !== 0
     ) {
       releaseToChange.value = withTiming(0)
@@ -127,7 +130,7 @@ export default function useScrollUpdate({
   function getVerseIndex(offset: number) {
     if (!verseOffsets) return -1
 
-    if (offset + 50 > verseOffsets[verseOffsets.length - 1] - screenHeight) {
+    if (offset + 50 > verseOffsets[verseOffsets.length - 1] - height) {
       return 'bottom'
     } else if (offset < 50) return 'top'
 
@@ -154,11 +157,10 @@ export default function useScrollUpdate({
     const textHeight = verseOffsets[verseOffsets.length - 1]
     // This shit is crazy. Thanks chat gpt.
     const scrollBarHeight = usableHeight * (usableHeight / textHeight)
-    const scrollRatio = offset / (textHeight - screenHeight)
-    const maxTopPos = screenHeight - insets.bottom * 2 - scrollBarHeight
+    const scrollRatio = offset / (textHeight - height)
+    const maxTopPos = height - bottom * 2 - scrollBarHeight
 
-    scrollBarPosition.value =
-      insets.top * 1 + scrollRatio * (maxTopPos - insets.top * 1)
+    scrollBarPosition.value = top * 1 + scrollRatio * (maxTopPos - top * 1)
   }
 
   function handleScrollVersePosition(offset: number) {
@@ -171,8 +173,8 @@ export default function useScrollUpdate({
 
   function handleOverScrollAmount(offset: number, contentHeight: number) {
     if (offset < 0) overScrollAmount.value = offset
-    else if (offset > contentHeight - screenHeight)
-      overScrollAmount.value = Math.abs(contentHeight - screenHeight - offset)
+    else if (offset > contentHeight - height)
+      overScrollAmount.value = Math.abs(contentHeight - height - offset)
     else overScrollAmount.value = 0
   }
 

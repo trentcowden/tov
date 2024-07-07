@@ -3,15 +3,15 @@ import { formatDistanceToNow, isToday, isYesterday } from 'date-fns'
 import { impactAsync } from 'expo-haptics'
 import { StatusBar } from 'expo-status-bar'
 import React, { useEffect, useMemo, useState } from 'react'
-import { AppState, Dimensions, Text, View } from 'react-native'
+import { AppState, Text, useWindowDimensions, View } from 'react-native'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import Animated, {
   FadeIn,
   FadeOut,
-  LinearTransition,
-  SharedValue,
   interpolate,
+  LinearTransition,
   runOnJS,
+  SharedValue,
   useAnimatedStyle,
   withSpring,
 } from 'react-native-reanimated'
@@ -19,16 +19,14 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Spacer from '../Spacer'
 import {
   gutterSize,
-  horizTransReq,
   iconSize,
   panActivateConfig,
-  screenHeight,
-  screenWidth,
   shadow,
   sizes,
   typography,
 } from '../constants'
 import { Chapters } from '../data/types/chapters'
+import { getEdges, getHorizTransReq } from '../functions/utils'
 import { JumpToChapter } from '../hooks/useChapterChange'
 import useColors from '../hooks/useColors'
 import { HistoryItem } from '../redux/history'
@@ -37,6 +35,7 @@ import Fade from './Fade'
 import HistoryListItem from './HistoryItem'
 import TovIcon from './SVG'
 import TovPressable from './TovPressable'
+
 interface Props {
   activeChapter: Chapters[number]
   textTranslationX: SharedValue<number>
@@ -44,11 +43,6 @@ interface Props {
   closeHistory: () => void
   jumpToChapter: JumpToChapter
   openSettings: SharedValue<number>
-}
-
-interface HistorySection {
-  distance: string
-  data: HistoryItem[]
 }
 
 export default function History({
@@ -59,10 +53,13 @@ export default function History({
   jumpToChapter,
   openSettings,
 }: Props) {
+  const { height, width } = useWindowDimensions()
+  const horizTransReq = getHorizTransReq(width)
   const colors = useColors()
   const activeChapterIndex = useAppSelector((state) => state.activeChapterIndex)
   const history = useAppSelector((state) => state.history)
   const insets = useSafeAreaInsets()
+  const { top, bottom } = getEdges(insets)
   const dispatch = useAppDispatch()
   const [updateHistory, setUpdateHistory] = useState(false)
   const historyAnimatedStyles = useAnimatedStyle(() => {
@@ -161,14 +158,14 @@ export default function History({
       <Animated.View
         style={[
           {
-            width: Dimensions.get('window').width * 2,
-            height: Dimensions.get('window').height,
+            width: width * 2,
+            height,
             backgroundColor: colors.bg2,
             position: 'absolute',
-            left: -Dimensions.get('window').width * 2,
+            left: -width * 2,
             zIndex: 3,
-            paddingTop: insets.top ? insets.top + gutterSize / 4 : gutterSize,
-            paddingLeft: Dimensions.get('window').width * 1.3,
+            paddingTop: top + gutterSize / 4,
+            paddingLeft: width * 1.3,
             ...shadow,
           },
           historyAnimatedStyles,
@@ -253,15 +250,13 @@ export default function History({
               </View>
             }
             ListHeaderComponent={<Spacer units={2} />}
-            ListFooterComponent={
-              <Spacer units={14} additional={insets.bottom} />
-            }
+            ListFooterComponent={<Spacer units={14} additional={bottom} />}
           />
           <Fade place="top" color={colors.bg2} />
           <View
             style={{
               position: 'absolute',
-              bottom: insets.bottom + gutterSize,
+              bottom: bottom + gutterSize,
               width: '100%',
               alignItems: 'center',
               justifyContent: 'center',
@@ -304,8 +299,8 @@ export default function History({
       <Animated.View
         style={[
           {
-            width: screenWidth,
-            height: screenHeight,
+            width,
+            height,
             position: 'absolute',
           },
           returnTapStyles,
@@ -319,7 +314,8 @@ export default function History({
             savedTextTranslationX.value = 0
           }}
           style={{
-            ...Dimensions.get('window'),
+            width,
+            height,
           }}
         />
       </Animated.View>

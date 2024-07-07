@@ -1,5 +1,5 @@
 import { ReactNode } from 'react'
-import { Dimensions } from 'react-native'
+import { Dimensions, useWindowDimensions } from 'react-native'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 import Animated, {
   SharedValue,
@@ -13,12 +13,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import {
   gutterSize,
   horizVelocReq,
-  modalWidth,
   panActivateConfig,
-  screenHeight,
-  screenWidth,
   showOverlayOffset,
 } from '../constants'
+import { getEdges, getModalHeight, getModalWidth } from '../functions/utils'
 import useColors from '../hooks/useColors'
 import { useAppDispatch } from '../redux/hooks'
 import TovPressable from './TovPressable'
@@ -44,8 +42,11 @@ export default function ModalScreen({
   scrollOffset,
   overlayOpacity,
 }: Props) {
+  const { height, width } = useWindowDimensions()
+  const modalWidth = getModalWidth(width)
   const colors = useColors()
   const insets = useSafeAreaInsets()
+  const { top, bottom } = getEdges(insets)
   const dispatch = useAppDispatch()
 
   const modalStyle = useAnimatedStyle(() => {
@@ -74,11 +75,7 @@ export default function ModalScreen({
         }
   })
 
-  const height =
-    Dimensions.get('window').height -
-    insets.top -
-    insets.bottom -
-    gutterSize * 4
+  const modalHeight = getModalHeight(height, insets)
 
   const panGesture = Gesture.Pan()
     .onChange((event) => {
@@ -108,7 +105,7 @@ export default function ModalScreen({
             height: Dimensions.get('window').height,
             position: 'absolute',
             alignItems: 'center',
-            paddingTop: insets.top + gutterSize,
+            paddingTop: top + gutterSize,
             justifyContent: 'flex-start',
           },
           modalStyle,
@@ -123,8 +120,8 @@ export default function ModalScreen({
           }}
           style={{
             alignSelf: 'center',
-            width: screenWidth + 200,
-            height: screenHeight + 200,
+            width: width + 200,
+            height: height + 200,
             position: 'absolute',
             top: -200,
           }}
@@ -135,8 +132,8 @@ export default function ModalScreen({
           style={[
             {
               zIndex: 3,
-              top: insets.top + gutterSize,
-              height: height,
+              top: top + gutterSize,
+              height: modalHeight,
               width: modalWidth,
               borderRadius: 12,
               position: 'absolute',

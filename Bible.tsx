@@ -8,6 +8,7 @@ import {
   Text,
   TextInput,
   TextLayoutEventData,
+  useWindowDimensions,
   View,
 } from 'react-native'
 import {
@@ -37,16 +38,11 @@ import ScrollBar from './components/ScrollBar'
 import Settings from './components/Settings'
 import TutorialHeader from './components/TutorialHeader'
 import VerseHighlight from './components/VerseHighlight'
-import {
-  gutterSize,
-  horizTransReq,
-  panActivateConfig,
-  screenHeight,
-  screenWidth,
-} from './constants'
+import { gutterSize, panActivateConfig } from './constants'
 import bibles from './data/bibles'
 import { Chapters } from './data/types/chapters'
 import { getBook } from './functions/bible'
+import { getEdges, getHorizTransReq } from './functions/utils'
 import useChapterChange from './hooks/useChapterChange'
 import useColors from './hooks/useColors'
 import useHighlightVerse from './hooks/useHighlightVerse'
@@ -60,6 +56,8 @@ export default function Bible() {
   const colors = useColors()
   const dispatch = useAppDispatch()
   dispatch(setTranslation('net'))
+  const { height, width } = useWindowDimensions()
+  const horizTransReq = getHorizTransReq(width)
 
   // dispatch(
   //   setActiveChapterIndex({
@@ -72,6 +70,7 @@ export default function Bible() {
   const activeChapterIndex = useAppSelector((state) => state.activeChapterIndex)
   const settings = useAppSelector((state) => state.settings)
   const insets = useSafeAreaInsets()
+  const { top, bottom } = getEdges(insets)
   const activeChapter = useMemo(() => {
     return bibles[settings.translation][activeChapterIndex.index]
   }, [activeChapterIndex.index])
@@ -95,9 +94,7 @@ export default function Bible() {
   const [verseOffsets, setVerseOffsets] = useState<number[]>()
   const [verseNewlines, setVerseNewlines] = useState<boolean[]>()
   const spaceBeforeTextStarts =
-    activeChapter.chapterId === 'TUT.1'
-      ? screenHeight
-      : insets.top + gutterSize * 5
+    activeChapter.chapterId === 'TUT.1' ? height : top + gutterSize * 5
   const currentVerseIndex = useSharedValue<number | 'bottom' | 'top'>(0)
   const fingerDown = useRef(false)
 
@@ -190,7 +187,7 @@ export default function Bible() {
 
   function onTextLayout(event: NativeSyntheticEvent<TextLayoutEventData>) {
     const spaceAfterTextEnds =
-      gutterSize * 1.5 + chapterChangeFeedbackHeight + insets.bottom
+      gutterSize * 1.5 + chapterChangeFeedbackHeight + bottom
     const localVerseOffsets: number[] = []
     const localVerseNewlines: boolean[] = []
     event.nativeEvent.lines.forEach((line, index) => {
@@ -239,7 +236,7 @@ export default function Bible() {
       >
         <Animated.View
           style={[
-            { flex: 1, backgroundColor: colors.bg1, width: screenWidth },
+            { flex: 1, backgroundColor: colors.bg1, width: width },
             textStyles,
           ]}
         >
@@ -289,7 +286,7 @@ export default function Bible() {
               }}
             >
               {activeChapter.chapterId === 'TUT.1' ? null : (
-                <Spacer additional={insets.top ?? gutterSize} />
+                <Spacer additional={top} />
               )}
               {activeChapter.chapterId === 'TUT.1' ? null : (
                 <ChapterChangeFeedback
@@ -335,7 +332,7 @@ export default function Bible() {
               textTranslateY={textTranslateY}
               releaseToChange={releaseToChange}
             />
-            <Spacer additional={insets.bottom} />
+            <Spacer additional={bottom} />
           </ScrollView>
         </Animated.View>
         <Navigator
@@ -397,7 +394,7 @@ export default function Bible() {
         {/* <View
           style={{
             position: 'absolute',
-            bottom: insets.bottom * 2 - 1,
+            bottom: bottom * 2 - 1,
             width: '100%',
             height: 1,
             backgroundColor: 'purple',
@@ -406,7 +403,7 @@ export default function Bible() {
         <View
           style={{
             position: 'absolute',
-            top: insets.top - 1,
+            top: top - 1,
             width: '100%',
             height: 1,
             backgroundColor: 'yellow',

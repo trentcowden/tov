@@ -1,10 +1,10 @@
 import LottieView from 'lottie-react-native'
 import React from 'react'
-import { TextStyle, View } from 'react-native'
+import { TextStyle, useWindowDimensions, View } from 'react-native'
 import ParsedText, { ParsedTextProps } from 'react-native-parsed-text'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Spacer from '../Spacer'
-import { gutterSize, screenHeight, screenWidth } from '../constants'
+import { gutterSize } from '../constants'
 import useColors from '../hooks/useColors'
 
 interface Props {
@@ -17,18 +17,19 @@ interface Props {
 export default function TutorialItem({ parse, style, text, source }: Props) {
   const colors = useColors()
   const insets = useSafeAreaInsets()
+  const { height, width } = useWindowDimensions()
 
   return (
     <View
       style={{
-        width: screenWidth - gutterSize * 2,
+        width: width - gutterSize * 2,
         alignItems: 'center',
         justifyContent: 'center',
         paddingHorizontal: gutterSize,
         // paddingVertical: gutterSize,
         borderRadius: 12,
         backgroundColor: colors.bg2,
-        height: screenHeight * 0.6,
+        height: height * 0.6,
       }}
     >
       <LottieView

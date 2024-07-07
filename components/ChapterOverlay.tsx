@@ -2,7 +2,7 @@ import { trackEvent } from '@aptabase/react-native'
 import { BlurView } from '@react-native-community/blur'
 import { ImpactFeedbackStyle, impactAsync } from 'expo-haptics'
 import React from 'react'
-import { Pressable, Text, View } from 'react-native'
+import { Pressable, Text, View, useWindowDimensions } from 'react-native'
 import Animated, {
   SharedValue,
   interpolate,
@@ -12,15 +12,10 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import {
-  gutterSize,
-  panActivateConfig,
-  screenWidth,
-  sizes,
-  typography,
-} from '../constants'
+import { gutterSize, panActivateConfig, sizes, typography } from '../constants'
 import { Books } from '../data/types/books'
 import { Chapters } from '../data/types/chapters'
+import { getEdges } from '../functions/utils'
 import useColors from '../hooks/useColors'
 import { useAppSelector } from '../redux/hooks'
 
@@ -45,6 +40,8 @@ export default function ChapterOverlay({
 }: Props) {
   const colors = useColors()
   const insets = useSafeAreaInsets()
+  const { top, bottom } = getEdges(insets)
+  const { width } = useWindowDimensions()
   const pressed = useSharedValue(0)
   const settings = useAppSelector((state) => state.settings)
   const overlayAnimatedStyles = useAnimatedStyle(() => ({
@@ -65,15 +62,8 @@ export default function ChapterOverlay({
           position: 'absolute',
           top: -gutterSize,
           left: -gutterSize,
-          backgroundColor: colors.p1 + '55',
-          width: screenWidth + gutterSize * 2,
-          // // left: gutterSize,
-          // // borderRadius: 99,
-          // zIndex: 4,
-          // borderBottomRightRadius: 24,
-          // borderBottomLeftRadius: 24,
-          // paddingTop: gutterSize,
-          // ...shadow,
+          backgroundColor: colors.p1 + '22',
+          width: width + gutterSize * 2,
         },
         overlayAnimatedStyles,
       ]}
@@ -85,71 +75,79 @@ export default function ChapterOverlay({
           width: '100%',
           // left: gutterSize,
           // borderRadius: 99,
-          zIndex: 4,
-          borderBottomRightRadius: 24,
-          borderBottomLeftRadius: 24,
-          paddingTop: gutterSize,
-          paddingHorizontal: gutterSize,
+          position: 'absolute',
+          top: 0,
+          height: top + gutterSize,
         }}
         blurAmount={4}
+      />
+      <View
+        style={{
+          width: '100%',
+          position: 'absolute',
+          top: 0,
+          height: top + gutterSize,
+          backgroundColor: colors.p1 + '11',
+        }}
+      />
+      <Pressable
+        onPressIn={() => {
+          if (overlayOpacity.value === 0) return
+          pressed.value = withTiming(1, { duration: 75 })
+        }}
+        onPressOut={() => {
+          if (overlayOpacity.value === 0) return
+          pressed.value = withSpring(0, panActivateConfig)
+        }}
+        onPress={() => {
+          if (overlayOpacity.value === 0) return
+          textTranslateX.value = withSpring(0, panActivateConfig)
+          savedTextTranslateX.value = 0
+          openNavigator.value = withSpring(1, panActivateConfig)
+          focusSearch()
+          impactAsync(ImpactFeedbackStyle.Heavy)
+          trackEvent('Open navigator', { method: 'chapter overlay' })
+        }}
+        style={[
+          {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            width: '100%',
+            gap: 6,
+            paddingHorizontal: gutterSize * 2,
+            // paddingVertical: gutterSize / 2,
+            height: top + gutterSize,
+            paddingTop: gutterSize,
+            // backgroundColor: colors.bg2,
+          },
+        ]}
       >
-        <Pressable
-          onPressIn={() => {
-            if (overlayOpacity.value === 0) return
-            pressed.value = withTiming(1, { duration: 75 })
-          }}
-          onPressOut={() => {
-            if (overlayOpacity.value === 0) return
-            pressed.value = withSpring(0, panActivateConfig)
-          }}
-          onPress={() => {
-            if (overlayOpacity.value === 0) return
-            textTranslateX.value = withSpring(0, panActivateConfig)
-            savedTextTranslateX.value = 0
-            openNavigator.value = withSpring(1, panActivateConfig)
-            focusSearch()
-            impactAsync(ImpactFeedbackStyle.Heavy)
-            trackEvent('Open navigator', { method: 'chapter overlay' })
-          }}
-          style={[
-            {
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              width: '100%',
-              gap: 6,
-              paddingHorizontal: gutterSize,
-              // paddingVertical: gutterSize / 2,
-              height: insets.top,
-              // backgroundColor: colors.bg2,
-            },
-          ]}
-        >
-          {/* <TouchableOpacity style={{ paddingHorizontal: gutterSize }}>
+        {/* <TouchableOpacity style={{ paddingHorizontal: gutterSize }}>
         <Ionicons name="settings-outline" size={20} color={colors.fg3} />
       </TouchableOpacity> */}
-          <View
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 6,
+            width: 100,
+          }}
+        >
+          {/* <TovIcon name={icon} size={14} /> */}
+          <Text
+            numberOfLines={1}
+            adjustsFontSizeToFit
+            maxFontSizeMultiplier={1}
             style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              gap: 6,
-              width: 100,
+              ...typography(sizes.caption, 'uib', 'l', colors.p1),
             }}
           >
-            {/* <TovIcon name={icon} size={14} /> */}
-            <Text
-              numberOfLines={1}
-              adjustsFontSizeToFit
-              maxFontSizeMultiplier={1}
-              style={{
-                ...typography(sizes.caption, 'uib', 'l', colors.p1),
-              }}
-            >
-              {activeChapter.chapterId === 'TUT.1'
-                ? 'Tutorial'
-                : `${activeBook.name.replace(' ', '').slice(0, 3)}. ${activeChapter.chapterId.split('.')[1]}`}
-            </Text>
-            {/* <Text
+            {activeChapter.chapterId === 'TUT.1'
+              ? 'Tutorial'
+              : `${activeBook.name.replace(' ', '').slice(0, 3)}. ${activeChapter.chapterId.split('.')[1]}`}
+          </Text>
+          {/* <Text
             numberOfLines={1}
             adjustsFontSizeToFit
             maxFontSizeMultiplier={1}
@@ -160,13 +158,12 @@ export default function ChapterOverlay({
           >
             {activeBook.name}
           </Text> */}
-          </View>
+        </View>
 
-          {/* <TouchableOpacity style={{ paddingHorizontal: gutterSize }}>
+        {/* <TouchableOpacity style={{ paddingHorizontal: gutterSize }}>
         <FontAwesome5 name="history" size={20} color={colors.fg3} />
       </TouchableOpacity> */}
-        </Pressable>
-      </BlurView>
+      </Pressable>
     </Animated.View>
   )
 }

@@ -1,4 +1,5 @@
 import React, { useMemo, useRef, useState } from 'react'
+import { useWindowDimensions } from 'react-native'
 import Animated, {
   Extrapolation,
   SharedValue,
@@ -9,9 +10,10 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { gutterSize, screenWidth } from '../constants'
+import { gutterSize } from '../constants'
 import { Chapters } from '../data/types/chapters'
 import { getChapterReference } from '../functions/bible'
+import { getEdges } from '../functions/utils'
 import { JumpToChapter } from '../hooks/useChapterChange'
 import useColors from '../hooks/useColors'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
@@ -24,8 +26,6 @@ interface Props {
   verseNewlines: boolean[] | undefined
 }
 
-const swipeReq = 75
-
 export default function VerseHighlight({
   verseOffsets,
   highlightVerseNumber,
@@ -33,7 +33,9 @@ export default function VerseHighlight({
   jumpToChapter,
   verseNewlines,
 }: Props) {
+  const { width } = useWindowDimensions()
   const insets = useSafeAreaInsets()
+  const { bottom } = getEdges(insets)
   const colors = useColors()
   const activeChapterIndex = useAppSelector((state) => state.activeChapterIndex)
   const settings = useAppSelector((state) => state.settings)
@@ -118,8 +120,7 @@ export default function VerseHighlight({
     // The last offset extends past the last verse, so we need to adjust the height so
     // it doesn't go past the bottom of the screen.
     if (endOffset === verseOffsets.length - 1) {
-      height -=
-        gutterSize * 6 + insets.bottom - settings.lineHeight - gutterSize / 2
+      height -= gutterSize * 6 + bottom - settings.lineHeight - gutterSize / 2
       // If the last verse is a newline, we need to adjust the height so that it doesn't
       // extend into the next verse.
     } else if (verseNewlines && verseNewlines[endOffset]) {
@@ -142,7 +143,7 @@ export default function VerseHighlight({
           position: 'absolute',
           height,
           top,
-          width: screenWidth - gutterSize,
+          width: width - gutterSize,
           alignSelf: 'center',
           backgroundColor: colors.p1,
           borderRadius: 12,

@@ -1,15 +1,9 @@
 import { trackEvent } from '@aptabase/react-native'
-import { Pressable, Text, View } from 'react-native'
+import { Pressable, Text, useWindowDimensions, View } from 'react-native'
 import { SharedValue, withSpring } from 'react-native-reanimated'
 import Spacer from '../Spacer'
-import {
-  gutterSize,
-  horizTransReq,
-  panActivateConfig,
-  screenWidth,
-  sizes,
-  typography,
-} from '../constants'
+import { gutterSize, panActivateConfig, sizes, typography } from '../constants'
+import { getHorizTransReq } from '../functions/utils'
 import useColors from '../hooks/useColors'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
 import { setTypography } from '../redux/settings'
@@ -30,6 +24,8 @@ export default function TypographySettings({
   openSettingsNested,
   textTranslateX,
 }: Props) {
+  const { width } = useWindowDimensions()
+  const horizTransReq = getHorizTransReq(width)
   const dispatch = useAppDispatch()
   const settings = useAppSelector((state) => state.settings)
   const colors = useColors()
@@ -53,7 +49,6 @@ export default function TypographySettings({
         style={{
           paddingHorizontal: gutterSize,
           gap: gutterSize / 2,
-          width: screenWidth - gutterSize * 2,
           flex: 1,
         }}
       >

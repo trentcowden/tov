@@ -1,18 +1,19 @@
 import React, { useMemo, useRef } from 'react'
-import { Dimensions, FlatList, View } from 'react-native'
+import { FlatList, useWindowDimensions, View } from 'react-native'
 import Animated, {
   LinearTransition,
-  SharedValue,
   runOnJS,
+  SharedValue,
   useDerivedValue,
   withSpring,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Spacer from '../Spacer'
-import { gutterSize, modalWidth, panActivateConfig, shadow } from '../constants'
+import { gutterSize, panActivateConfig, shadow } from '../constants'
 import references from '../data/references.json'
 import { References } from '../data/types/references'
 import { getVerseReference, isPassageAfter } from '../functions/bible'
+import { getEdges, getModalHeight, getModalWidth } from '../functions/utils'
 import { JumpToChapter } from '../hooks/useChapterChange'
 import useColors from '../hooks/useColors'
 import { useAppSelector } from '../redux/hooks'
@@ -41,6 +42,9 @@ export default function ReferencesModal({
 }: Props) {
   const colors = useColors()
   const insets = useSafeAreaInsets()
+  const { bottom, top } = getEdges(insets)
+  const { width, height } = useWindowDimensions()
+  const modalWidth = getModalWidth(width)
   const dismissed = useAppSelector((state) => state.popups.dismissed)
   const referencesRef = useRef<FlatList<References[string][number]>>(null)
   const wordListRef = useRef<FlatList<[string, string, string]>>(null)
@@ -57,11 +61,7 @@ export default function ReferencesModal({
     return activeReferences.sort((r1, r2) => isPassageAfter(r1[0], r2[0]))
   }, [referenceVerse])
 
-  const navigatorHeight =
-    Dimensions.get('window').height -
-    insets.top -
-    insets.bottom -
-    gutterSize * 4
+  const modalHeight = getModalHeight(height, insets)
 
   function renderReference({
     item,
@@ -104,7 +104,7 @@ export default function ReferencesModal({
       <View
         style={{
           width: modalWidth,
-          height: navigatorHeight,
+          height: modalHeight,
           backgroundColor: colors.bg2,
           borderRadius: 12,
           paddingTop: gutterSize / 2,

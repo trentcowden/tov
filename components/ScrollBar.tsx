@@ -1,6 +1,6 @@
 import { ImpactFeedbackStyle, impactAsync } from 'expo-haptics'
 import React, { RefObject, useEffect, useMemo, useRef } from 'react'
-import { Text, View } from 'react-native'
+import { Text, View, useWindowDimensions } from 'react-native'
 import {
   Gesture,
   GestureDetector,
@@ -20,14 +20,8 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import {
-  currentVerseReq,
-  gutterSize,
-  panActivateConfig,
-  screenHeight,
-  sizes,
-  typography,
-} from '../constants'
+import { gutterSize, panActivateConfig, sizes, typography } from '../constants'
+import { getEdges } from '../functions/utils'
 import useColors from '../hooks/useColors'
 import { useAppSelector } from '../redux/hooks'
 
@@ -55,7 +49,11 @@ export default function ScrollBar({
   const startingOffset = useSharedValue(0)
   const theme = useAppSelector((state) => state.settings.theme)
   const going = useAppSelector((state) => state.activeChapterIndex.transition)
-  const usableHeight = screenHeight - insets.top * 1 - insets.bottom * 2
+  const { height } = useWindowDimensions()
+  const currentVerseReq = height / 3
+  const { top, bottom } = getEdges(insets)
+
+  const usableHeight = height - top - bottom * 2
   const textHeight = verseOffsets ? verseOffsets[verseOffsets.length - 1] : 1
   const recentOffset = useRef<number>()
   const [verseText, setVerseText] = React.useState<string>('')
@@ -90,7 +88,7 @@ export default function ScrollBar({
 
   const scrollPanGesture = Gesture.Pan()
     .onBegin((event) => {
-      if (textHeight < screenHeight) return
+      if (textHeight < height) return
 
       runOnJS(impactAsync)(ImpactFeedbackStyle.Heavy)
       pop.value = withSequence(
@@ -101,41 +99,29 @@ export default function ScrollBar({
       scrollBarActivate.value = withTiming(1, { duration: 250 })
       // startingOffset.value = event.y
       // scrollBarPosition.value = event.absoluteY - startingOffset.value
-      if (event.absoluteY - scrollBarHeight / 2 < insets.top * 1)
-        scrollBarPosition.value = insets.top * 1
+      if (event.absoluteY - scrollBarHeight / 2 < top)
+        scrollBarPosition.value = top
       else if (
         event.absoluteY - scrollBarHeight / 2 >
-        screenHeight - scrollBarHeight - insets.bottom * 2
+        height - scrollBarHeight - bottom * 2
       )
-        scrollBarPosition.value =
-          screenHeight - scrollBarHeight - insets.bottom * 2
+        scrollBarPosition.value = height - scrollBarHeight - bottom * 2
       else scrollBarPosition.value = event.absoluteY - scrollBarHeight / 2
     })
     .onChange((event) => {
-      if (textHeight < screenHeight) return
+      if (textHeight < height) return
 
-      // if (event.absoluteY - startingOffset.value < insets.top * 1)
-      //   scrollBarPosition.value = insets.top * 1
-      // else if (
-      //   event.absoluteY - startingOffset.value >
-      //   screenHeight - scrollBarHeight - insets.bottom * 2
-      // )
-      //   scrollBarPosition.value =
-      //     screenHeight - scrollBarHeight - insets.bottom * 2
-      // else
-      // scrollBarPosition.value = event.absoluteY - startingOffset.value
-      if (event.absoluteY - scrollBarHeight / 2 < insets.top * 1)
-        scrollBarPosition.value = insets.top * 1
+      if (event.absoluteY - scrollBarHeight / 2 < top)
+        scrollBarPosition.value = top
       else if (
         event.absoluteY - scrollBarHeight / 2 >
-        screenHeight - scrollBarHeight - insets.bottom * 2
+        height - scrollBarHeight - bottom * 2
       )
-        scrollBarPosition.value =
-          screenHeight - scrollBarHeight - insets.bottom * 2
+        scrollBarPosition.value = height - scrollBarHeight - bottom * 2
       else scrollBarPosition.value = event.absoluteY - scrollBarHeight / 2
     })
     .onFinalize((event) => {
-      if (textHeight < screenHeight) return
+      if (textHeight < height) return
 
       runOnJS(impactAsync)(ImpactFeedbackStyle.Light)
 
@@ -150,10 +136,9 @@ export default function ScrollBar({
     if (scrollBarActivate.value > 0 && verseOffsets) {
       // This shit is crazy. Thanks chat gpt.
       const normalizedFingerPos =
-        (scrollBarPosition.value - insets.top * 1) /
-        (usableHeight - scrollBarHeight)
+        (scrollBarPosition.value - top) / (usableHeight - scrollBarHeight)
 
-      runOnJS(scrollTo)(normalizedFingerPos * (textHeight - screenHeight))
+      runOnJS(scrollTo)(normalizedFingerPos * (textHeight - height))
     }
   })
 
@@ -207,17 +192,10 @@ export default function ScrollBar({
           {
             position: 'absolute',
             right: 0,
-            // top: insets.top,
-            top: insets.top,
+            top: top,
             height: usableHeight,
-            // height: screenHeight,
             zIndex: 1,
-            // width: activeScrollBarWidth,
             width: scrollBarWidth,
-            // backgroundColor: colors.bg2,
-            // paddingTop: insets.top,
-            // paddingBottom: insets.bottom,
-            // alignItems: 'center',
           },
           verseNumberStyles,
         ]}
@@ -258,7 +236,7 @@ export default function ScrollBar({
               // right: -scrollBarWidth * 3,
               right: 0,
               top: 0,
-              height: screenHeight,
+              height: height,
               width: scrollBarWidth * 3,
               // alignItems: 'flex-end',
               // justifyContent: 'center',
@@ -277,7 +255,7 @@ export default function ScrollBar({
                 zIndex: 5,
                 alignItems: 'center',
                 justifyContent: 'center',
-                display: textHeight < screenHeight ? 'none' : 'flex',
+                display: textHeight < height ? 'none' : 'flex',
               },
               scrollBarStyles,
             ]}

@@ -1,15 +1,17 @@
+import { useWindowDimensions } from 'react-native'
 import Svg, { ClipPath, Defs, G, Path } from 'react-native-svg'
-import { gutterSize, screenWidth } from '../constants'
+import { gutterSize } from '../constants'
 import useColors from '../hooks/useColors'
 
 export default function ReadingGraphic() {
+  const { width } = useWindowDimensions()
   const aspectRatio = 649 / 502
-  const width = screenWidth - gutterSize * 5
-  const height = width / aspectRatio
+  const graphicWidth = width - gutterSize * 5
+  const height = graphicWidth / aspectRatio
   const colors = useColors()
 
   return (
-    <Svg width={width} height={height} viewBox="0 0 649 502" fill="none">
+    <Svg width={graphicWidth} height={height} viewBox="0 0 649 502" fill="none">
       <G clipPath="url(#clip0_59_2)">
         <Path
           d="M591.27 382.502l-52.684-78.255s79.785 27.853 70.73 78.255H591.27zM45.162 383.021l-2-.039a463.84 463.84 0 017.1-66.287c8.648-46.881 23.029-77.67 42.743-91.512l1.148 1.637c-46.051 32.334-48.968 154.966-48.99 156.201zM70.162 382.542l-2-.039c.043-2.214 1.293-54.414 21.843-68.841l1.148 1.636c-19.72 13.846-20.981 66.712-20.99 67.244z"

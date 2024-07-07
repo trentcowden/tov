@@ -1,5 +1,5 @@
 import React from 'react'
-import { Text, View } from 'react-native'
+import { Text, useWindowDimensions, View } from 'react-native'
 import Animated, {
   interpolate,
   runOnJS,
@@ -9,13 +9,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated'
 import Spacer from '../Spacer'
-import {
-  gutterSize,
-  panActivateConfig,
-  screenWidth,
-  sizes,
-  typography,
-} from '../constants'
+import { gutterSize, panActivateConfig, sizes, typography } from '../constants'
 import useColors from '../hooks/useColors'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
 import { dismissPopup } from '../redux/popups'
@@ -30,6 +24,7 @@ interface Props {
 }
 
 export default function ListBanner({ body, icon, title, popup }: Props) {
+  const { width } = useWindowDimensions()
   const colors = useColors()
   const dismissed = useAppSelector((state) => state.popups.dismissed)
   const dispatch = useAppDispatch()
@@ -53,7 +48,7 @@ export default function ListBanner({ body, icon, title, popup }: Props) {
       style={[
         {
           marginHorizontal: gutterSize / 2,
-          width: screenWidth - gutterSize * 4,
+          width: width - gutterSize * 4,
           marginTop: gutterSize / 2,
           backgroundColor: colors.ph,
           padding: gutterSize / 2,

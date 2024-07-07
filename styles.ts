@@ -20,7 +20,7 @@ export const themes = [
     name: 'Dark',
     emoji: '🌙',
     description:
-      "Light text on a dark background for ease on the eyes and maximum coziness. Developer's choice!",
+      'Light text on a dark background for ease on the eyes and maximum coziness.',
     bg1: tinycolor(bgDark).toHexString(),
     bg2: tinycolor(bgDark).saturate(4).brighten(3).toHexString(),
     bg3: tinycolor(bgDark).saturate(8).brighten(6).toHexString(),
@@ -56,7 +56,7 @@ export const themes = [
     name: 'Black',
     emoji: '🪐',
     description:
-      'Light text on a black background for maximum contrast, minimalism, and immersion.',
+      "Light text on a black background for maximum contrast, minimalism, and immersion. Developer's choice!",
     bg1: tinycolor(bgBlack).toHexString(),
     bg2: tinycolor(bgBlack).saturate(4).brighten(4).toHexString(),
     bg3: tinycolor(bgBlack).saturate(8).brighten(8).toHexString(),
