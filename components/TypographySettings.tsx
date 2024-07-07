@@ -1,4 +1,5 @@
 import { trackEvent } from '@aptabase/react-native'
+import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics'
 import { Pressable, Text, useWindowDimensions, View } from 'react-native'
 import { SharedValue, withSpring } from 'react-native-reanimated'
 import Spacer from '../Spacer'
@@ -94,10 +95,12 @@ export default function TypographySettings({
         onPressIn={() => {
           openSettings.value = withSpring(0, panActivateConfig)
           textTranslateX.value = withSpring(0, panActivateConfig)
+          impactAsync(ImpactFeedbackStyle.Heavy)
         }}
         onPressOut={() => {
           openSettings.value = withSpring(1, panActivateConfig)
           textTranslateX.value = withSpring(horizTransReq, panActivateConfig)
+          impactAsync(ImpactFeedbackStyle.Light)
         }}
         style={{
           marginTop: gutterSize,
