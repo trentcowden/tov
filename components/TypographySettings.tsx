@@ -43,7 +43,7 @@ export default function TypographySettings({
           />
         }
       >
-        Typography
+        Bible Text Size
       </ModalScreenHeader>
       <Spacer units={2} />
       <View

@@ -1,7 +1,6 @@
 import React, { useMemo, useRef } from 'react'
 import { FlatList, useWindowDimensions, View } from 'react-native'
-import Animated, {
-  LinearTransition,
+import {
   runOnJS,
   SharedValue,
   useDerivedValue,
@@ -119,16 +118,7 @@ export default function ReferencesModal({
           {`${referenceVerse ? getVerseReference(referenceVerse) : ''}`}
         </ModalScreenHeader>
         <View style={{ flex: 1 }}>
-          <Animated.FlatList
-            itemLayoutAnimation={
-              animate
-                ? LinearTransition.springify()
-                    .damping(20)
-                    .mass(0.5)
-                    .stiffness(140)
-                    .restDisplacementThreshold(0)
-                : undefined
-            }
+          <FlatList
             ref={referencesRef}
             data={activeReferences}
             ListFooterComponent={<Spacer units={2} />}

@@ -10,7 +10,6 @@ import { ScrollView } from 'react-native-gesture-handler'
 import {
   runOnJS,
   SharedValue,
-  useDerivedValue,
   useSharedValue,
   withDelay,
   withSequence,
@@ -82,6 +81,11 @@ export default function useChapterChange({
   const alreadyHaptic = useRef(false)
   const goPrev = useSharedValue(0)
   const goNext = useSharedValue(0)
+  const goJump = useSharedValue(0)
+  const chapterIndexA = useSharedValue(0)
+  const verseIndexA = useSharedValue(0)
+  const highlightVerseA = useSharedValue(0)
+  const numVersesToHighlightA = useSharedValue(0)
 
   const jumpToChapter: JumpToChapter = ({
     chapterId,
@@ -133,23 +137,6 @@ export default function useChapterChange({
     // Match the starting text opacity when history is open.
     if (comingFrom === 'history') textFadeOut.value = 0.7
 
-    // Fade out text.
-    textFadeOut.value = withTiming(1, { duration: chapterChangeDuration })
-
-    // Fade out scroll bar.
-    scrollBarActivate.value = withTiming(-1, {
-      duration: chapterChangeDuration,
-    })
-
-    // Add the current chapter to the history.
-    dispatch(
-      addToHistory({
-        chapterId: activeChapter.chapterId,
-        verseIndex:
-          currentVerse !== undefined ? currentVerse : currentVerseIndex.value,
-      })
-    )
-
     // Handle reference tree stuff.
     if (comingFrom === 'reference') {
       if (referenceTree.indexOf(activeChapter.chapterId) === -1) {
@@ -172,26 +159,44 @@ export default function useChapterChange({
       dispatch(removeAfterInReferenceTree(chapterId))
     }
 
-    // After the fade out, go to the new chapter.
-    setTimeout(
-      () =>
-        dispatch(
-          setActiveChapterIndex({
-            transition: 'fade',
-            index: chapterIndex,
-            verseIndex: verseNumber,
-            highlightVerse:
-              comingFrom === 'reference'
+    const jump = () =>
+      dispatch(
+        setActiveChapterIndex({
+          transition: 'fade',
+          index: chapterIndex,
+          verseIndex: verseNumber,
+          highlightVerse:
+            comingFrom === 'reference'
+              ? true
+              : referenceTree.indexOf(chapterId) !== -1
                 ? true
-                : referenceTree.indexOf(chapterId) !== -1
-                  ? true
-                  : false,
-            numVersesToHighlight,
-          })
-        ),
-      chapterChangeDuration
+                : false,
+          numVersesToHighlight,
+        })
+      )
+
+    // Fade out text.
+    textFadeOut.value = withTiming(1, { duration: chapterChangeDuration }, () =>
+      runOnJS(jump)()
+    )
+
+    // Fade out scroll bar.
+    scrollBarActivate.value = withTiming(-1, {
+      duration: chapterChangeDuration,
+    })
+
+    // Add the current chapter to the history.
+    dispatch(
+      addToHistory({
+        chapterId: activeChapter.chapterId,
+        verseIndex:
+          currentVerse !== undefined ? currentVerse : currentVerseIndex.value,
+      })
     )
   }
+
+  const prev = () => dispatch(goToPreviousChapter())
+  const next = () => dispatch(goToNextChapter())
 
   function handleDragEnd(event: NativeSyntheticEvent<NativeScrollEvent>) {
     fingerDown.current = false
@@ -256,41 +261,17 @@ export default function useChapterChange({
     if (shouldGoPrev) {
       textTranslateY.value = withSequence(
         withTiming(screenHeight, { duration: chapterChangeDuration }),
-        withTiming(-screenHeight, { duration: 0 })
-      )
-
-      goPrev.value = withDelay(
-        chapterChangeDuration,
-        withTiming(1, { duration: 0 })
+        withTiming(-screenHeight, { duration: 0 }, () => runOnJS(prev)())
       )
     } else if (shouldGoNext) {
       textTranslateY.value = withSequence(
         withTiming(-screenHeight, {
           duration: chapterChangeDuration,
         }),
-        withTiming(screenHeight, { duration: 0 })
-      )
-      goNext.value = withDelay(
-        chapterChangeDuration,
-        withTiming(1, { duration: 0 })
+        withTiming(screenHeight, { duration: 0 }, () => runOnJS(next)())
       )
     } else if (releaseToChange.value) impactAsync(ImpactFeedbackStyle.Light)
   }
-
-  const prev = () => dispatch(goToPreviousChapter())
-  const next = () => dispatch(goToNextChapter())
-
-  useDerivedValue(() => {
-    if (goPrev.value === 0 && goNext.value === 0) return
-
-    if (goPrev.value === 1) {
-      goPrev.value = 0
-      runOnJS(prev)()
-    } else if (goNext.value === 1) {
-      goNext.value = 0
-      runOnJS(next)()
-    }
-  })
 
   /**
    * This useEffect handles transitioning the new chapter in after the old chapter has left.

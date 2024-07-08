@@ -73,7 +73,6 @@ export default function ChapterTitle({
   })
 
   const textContainerStyles = useAnimatedStyle(() => {
-    console.log('itemTranslateX', itemTranslateX.value)
     return {
       transform: [
         {
