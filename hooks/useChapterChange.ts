@@ -8,7 +8,9 @@ import {
 } from 'react-native'
 import { ScrollView } from 'react-native-gesture-handler'
 import {
+  runOnJS,
   SharedValue,
+  useDerivedValue,
   useSharedValue,
   withDelay,
   withSequence,
@@ -72,12 +74,14 @@ export default function useChapterChange({
   const { height } = useWindowDimensions()
   const currentVerseReq = height / 3
   const activeChapterIndex = useAppSelector((state) => state.activeChapterIndex)
+  const settings = useAppSelector((state) => state.settings)
   const textTranslateY = useSharedValue(0)
   const referenceTree = useAppSelector((state) => state.referenceTree)
   const textFadeOut = useSharedValue(1)
   const releaseToChange = useSharedValue(0)
   const alreadyHaptic = useRef(false)
-  const settings = useAppSelector((state) => state.settings)
+  const goPrev = useSharedValue(0)
+  const goNext = useSharedValue(0)
 
   const jumpToChapter: JumpToChapter = ({
     chapterId,
@@ -255,7 +259,10 @@ export default function useChapterChange({
         withTiming(-screenHeight, { duration: 0 })
       )
 
-      setTimeout(() => dispatch(goToPreviousChapter()), chapterChangeDuration)
+      goPrev.value = withDelay(
+        chapterChangeDuration,
+        withTiming(1, { duration: 0 })
+      )
     } else if (shouldGoNext) {
       textTranslateY.value = withSequence(
         withTiming(-screenHeight, {
@@ -263,9 +270,27 @@ export default function useChapterChange({
         }),
         withTiming(screenHeight, { duration: 0 })
       )
-      setTimeout(() => dispatch(goToNextChapter()), chapterChangeDuration)
+      goNext.value = withDelay(
+        chapterChangeDuration,
+        withTiming(1, { duration: 0 })
+      )
     } else if (releaseToChange.value) impactAsync(ImpactFeedbackStyle.Light)
   }
+
+  const prev = () => dispatch(goToPreviousChapter())
+  const next = () => dispatch(goToNextChapter())
+
+  useDerivedValue(() => {
+    if (goPrev.value === 0 && goNext.value === 0) return
+
+    if (goPrev.value === 1) {
+      goPrev.value = 0
+      runOnJS(prev)()
+    } else if (goNext.value === 1) {
+      goNext.value = 0
+      runOnJS(next)()
+    }
+  })
 
   /**
    * This useEffect handles transitioning the new chapter in after the old chapter has left.

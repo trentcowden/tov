@@ -65,6 +65,7 @@ export default function Bible() {
   //     highlightVerse: false,
   //     transition: 'fade',
   //     verseIndex: 0,
+  //     numVersesToHighlight: 0,
   //   })
   // )
   const activeChapterIndex = useAppSelector((state) => state.activeChapterIndex)
