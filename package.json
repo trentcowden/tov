@@ -6,7 +6,8 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "build-preview": "eas build --profile preview --platform ios --local"
+    "build-preview": "eas build --profile preview --platform ios --local",
+    "build-prod": "eas build --profile production --platform ios --local"
   },
   "dependencies": {
     "@aptabase/react-native": "^0.3.9",
