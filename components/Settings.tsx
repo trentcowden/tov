@@ -166,7 +166,7 @@ export default function Settings({
               Clear History
             </SettingsItem>
             <SettingsItem
-              rightText={settings.translation}
+              rightText={settings.translation.toUpperCase()}
               rightIcon="arrowRight"
               // description="Change the Bible translation."
               onPress={() => {
