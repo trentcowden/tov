@@ -36,7 +36,9 @@ export const horizVelocReq = 500
 export const textBackdropOpacity = 0.5
 
 /**
- * Takes in some text style settings and returns a filled out text style object. This is used simply to save space in components and simplify things overall. Used within the style prop of a text component.
+ * Takes in some text style settings and returns a filled out text style object. This is
+ * used simply to save space in components and simplify things overall. Used within the
+ * style prop of a text component.
  */
 export const typography = (
   size: number,
@@ -55,15 +57,11 @@ export const typography = (
   align: 'l' | 'c',
   color: string
 ): TextStyle => {
-  // A font size modifier that makes all Arabic script a point smaller and increases the font size on tablets.
-  var fontSizeModifier = 0
-
   // The options for font alignments.
   const alignments: {
     l: 'left' | 'right'
     c: 'center'
   } = {
-    // left: languageInfo.isRTL ? 'right' : 'left',
     l: 'left',
     c: 'center',
   }
@@ -87,7 +85,6 @@ export const typography = (
     fontSize: size,
     textAlign: alignments[align],
     color: color,
-    // fontWeight: weight === 'r' ? '400' : '600',
     fontFamily: weights[weight],
   }
 }

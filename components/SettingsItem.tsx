@@ -30,7 +30,6 @@ export default function SettingsItem({
       onPress={onPress ? onPress : () => {}}
       disableAnimation={!onPress}
       style={{
-        // paddingVertical: 8,
         marginHorizontal: gutterSize,
         borderRadius: 12,
       }}
