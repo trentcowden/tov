@@ -234,7 +234,7 @@ export default function Settings({
                 ])
               }}
               rightIcon="mail"
-              description="Send me feedback, share a story, or just say hi! I'd love to hear from you."
+              description="Report a bug, send me feedback, or just say hi! I'd love to hear from you."
             >
               Contact Me
             </SettingsItem>
