@@ -3,6 +3,7 @@ import * as SystemUI from 'expo-system-ui'
 import { useEffect } from 'react'
 import { Appearance, View, ViewStyle } from 'react-native'
 import { SharedValue, withSpring } from 'react-native-reanimated'
+import RNRestart from 'react-native-restart' // Import package from node modules
 import Spacer from '../Spacer'
 import { gutterSize, panActivateConfig } from '../constants'
 import useColors from '../hooks/useColors'
@@ -58,6 +59,7 @@ export default function ThemeSettings({
             onPress={() => {
               dispatch(setTheme(t.id as SettingsState['theme']))
               trackEvent('Change theme', { theme: t.id })
+              setTimeout(RNRestart.restart, 250)
             }}
             description={t.description}
           >
