@@ -29,6 +29,7 @@ import Fade from './Fade'
 import ModalScreen from './ModalScreen'
 import ModalScreenHeader from './ModalScreenHeader'
 import SettingsItem from './SettingsItem'
+import SettingsSection from './SettingsSection'
 import ThemeSettings from './ThemeSettings'
 import TranslationSettings from './TranslationSettings'
 import TypographySettings from './TypographySettings'
@@ -138,6 +139,7 @@ export default function Settings({
               paddingTop: gutterSize / 2,
             }}
           >
+            <SettingsSection disableTopMargin>General</SettingsSection>
             <SettingsItem
               onPress={() => {
                 Alert.alert(
@@ -159,10 +161,23 @@ export default function Settings({
                 )
               }}
               rightIcon="trash"
-              description="A tip: you can also swipe history items right to remove them individually."
+              description="You can also swipe history items right to remove them individually."
             >
               Clear History
             </SettingsItem>
+            <SettingsItem
+              rightText={settings.translation}
+              rightIcon="arrowRight"
+              // description="Change the Bible translation."
+              onPress={() => {
+                trackEvent('Bible translation')
+                setNestedSetting('translation')
+                openSettingsNested.value = withSpring(1, panActivateConfig)
+              }}
+            >
+              Bible Translation
+            </SettingsItem>
+            <SettingsSection>Appearance</SettingsSection>
             <SettingsItem
               onPress={() => {
                 setNestedSetting('typography')
@@ -172,9 +187,9 @@ export default function Settings({
                 fontSizes.find((f) => f.fontSize === settings.fontSize)?.name
               }
               rightIcon="arrowRight"
-              description="Increase or decrease the size of the Bible text. Take it easy on those eyes!"
+              description="Take it easy on those eyes!"
             >
-              Text Size
+              Bible Text Size
             </SettingsItem>
             <SettingsItem
               onPress={() => {
@@ -193,41 +208,7 @@ export default function Settings({
             >
               Color Theme
             </SettingsItem>
-            <SettingsItem
-              rightText={settings.translation}
-              rightIcon="arrowRight"
-              description="Change the Bible translation."
-              onPress={() => {
-                trackEvent('Bible translation')
-                setNestedSetting('translation')
-                openSettingsNested.value = withSpring(1, panActivateConfig)
-              }}
-            >
-              Bible Translation
-            </SettingsItem>
-            <SettingsItem
-              rightIcon="help"
-              description="Go back to the tutorial screen you saw when you first opened the app."
-              onPress={() => {
-                textTranslateX.value = withSpring(0, panActivateConfig)
-                openSettings.value = withSpring(0, panActivateConfig)
-                jumpToChapter({
-                  chapterId: 'TUT.1',
-                  comingFrom: 'history',
-                })
-                trackEvent('Back to tutorial')
-              }}
-            >
-              View Tutorial
-            </SettingsItem>
-            <Text
-              style={[
-                typography(sizes.body, 'uib', 'l', colors.fg2),
-                { paddingHorizontal: gutterSize, marginTop: gutterSize },
-              ]}
-            >
-              Contribute
-            </Text>
+            <SettingsSection>Help</SettingsSection>
             <SettingsItem
               onPress={() => {
                 trackEvent('Contact open')
@@ -257,6 +238,22 @@ export default function Settings({
             >
               Contact Me
             </SettingsItem>
+            <SettingsItem
+              rightIcon="help"
+              description="Go back to the tutorial screen you saw when you first opened the app."
+              onPress={() => {
+                textTranslateX.value = withSpring(0, panActivateConfig)
+                openSettings.value = withSpring(0, panActivateConfig)
+                jumpToChapter({
+                  chapterId: 'TUT.1',
+                  comingFrom: 'history',
+                })
+                trackEvent('Back to tutorial')
+              }}
+            >
+              View Tutorial
+            </SettingsItem>
+            <SettingsSection>Contribute</SettingsSection>
             {canReview ? (
               <SettingsItem
                 onPress={() => {

@@ -71,9 +71,11 @@ export default function SettingsItem({
             <TovIcon name={rightIcon} size={16} color={colors.p1} />
           ) : null}
         </View>
-        <Text style={typography(sizes.tiny, 'uil', 'l', colors.fg3)}>
-          {description}
-        </Text>
+        {description ? (
+          <Text style={typography(sizes.tiny, 'uil', 'l', colors.fg3)}>
+            {description}
+          </Text>
+        ) : null}
       </View>
     </TovPressable>
   )
