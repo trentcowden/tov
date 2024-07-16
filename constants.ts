@@ -42,18 +42,7 @@ export const textBackdropOpacity = 0.5
  */
 export const typography = (
   size: number,
-  weight:
-    | 'l'
-    | 'li'
-    | 'ri'
-    | 'r'
-    | 'b'
-    | 'uir'
-    | 'uib'
-    | 'uim'
-    | 'uis'
-    | 'uil'
-    | 'eb',
+  weight: 'ri' | 'r' | 'b' | 'uir' | 'uib' | 'uim' | 'uis' | 'uil',
   align: 'l' | 'c',
   color: string
 ): TextStyle => {
@@ -67,12 +56,12 @@ export const typography = (
   }
 
   const weights = {
-    l: 'Literata18pt-Light',
-    li: 'Literata18pt-LightItalic',
-    ri: 'Literata18pt-RegularItalic',
-    r: 'Literata18pt-Regular',
-    b: 'Literata18pt-Bold',
-    eb: 'Literata18pt-ExtraBold',
+    // ri: 'Literata18pt-RegularItalic',
+    // r: 'Literata18pt-Regular',
+    // b: 'Literata18pt-Bold',
+    ri: 'Bookerly-Italic',
+    r: 'Bookerly-Regular',
+    b: 'Bookerly-Bold',
     uil: 'Figtree-Light',
     uir: 'Figtree-Regular',
     uim: 'Figtree-Medium',
