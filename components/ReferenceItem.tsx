@@ -74,18 +74,18 @@ export default function ReferenceItem({
     passageString += endingVerse.toString()
   }
   return (
-    <View style={{}}>
-      {index === 0 && !isAfter ? (
+    <>
+      {/* {index === 0 && !isAfter ? (
         <Text
           style={[
-            typography(sizes.body, 'uis', 'l', colors.p1),
+            typography(sizes.caption, 'uil', 'l', colors.fg3),
             {
               paddingHorizontal: gutterSize / 2,
               marginBottom: gutterSize / 2,
             },
           ]}
         >
-          Cross references before this verse
+          Earlier in the Bible
         </Text>
       ) : isAfter && !prevIsAfter ? (
         <View
@@ -106,7 +106,7 @@ export default function ReferenceItem({
           ) : null}
           <Text
             style={[
-              typography(sizes.body, 'uis', 'l', colors.p1),
+              typography(sizes.caption, 'uil', 'l', colors.fg3),
               {
                 marginBottom: gutterSize / 2,
                 marginTop: index !== 0 ? gutterSize : 0,
@@ -114,9 +114,21 @@ export default function ReferenceItem({
               },
             ]}
           >
-            Cross references after this verse
+            Later in the Bible
           </Text>
         </View>
+      ) : null} */}
+      {isAfter && !prevIsAfter && index !== 0 ? (
+        <View
+          style={{
+            width: 6,
+            height: 6,
+            borderRadius: 3,
+            alignSelf: 'center',
+            backgroundColor: colors.ph,
+            marginVertical: gutterSize,
+          }}
+        />
       ) : null}
       <TovPressable
         style={{
@@ -165,6 +177,6 @@ export default function ReferenceItem({
           {verse.trim()}
         </Text>
       </TovPressable>
-    </View>
+    </>
   )
 }
