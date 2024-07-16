@@ -114,8 +114,9 @@ export default function ReferencesModal({
           close={() => {
             openReferences.value = withSpring(0, panActivateConfig)
           }}
+          height={72}
         >
-          {`${referenceVerse ? getVerseReference(referenceVerse) : ''}`}
+          {`Cross References for ${referenceVerse ? getVerseReference(referenceVerse) : ''}`}
         </ModalScreenHeader>
         <View style={{ flex: 1 }}>
           <FlatList
