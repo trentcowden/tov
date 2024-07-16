@@ -1,5 +1,5 @@
 import { ImpactFeedbackStyle, impactAsync } from 'expo-haptics'
-import React, { RefObject, useEffect, useMemo, useRef } from 'react'
+import React, { RefObject, useEffect, useMemo, useState } from 'react'
 import { Text, View, useWindowDimensions } from 'react-native'
 import {
   Gesture,
@@ -14,7 +14,6 @@ import Animated, {
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
-  withDelay,
   withSequence,
   withSpring,
   withTiming,
@@ -23,7 +22,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { gutterSize, panActivateConfig, sizes, typography } from '../constants'
 import { getEdges } from '../functions/utils'
 import useColors from '../hooks/useColors'
-import { useAppSelector } from '../redux/hooks'
 
 interface Props {
   verseOffsets: number[] | undefined
@@ -46,21 +44,24 @@ export default function ScrollBar({
 }: Props) {
   const colors = useColors()
   const insets = useSafeAreaInsets()
-  const startingOffset = useSharedValue(0)
-  const theme = useAppSelector((state) => state.settings.theme)
-  const going = useAppSelector((state) => state.activeChapterIndex.transition)
   const { height } = useWindowDimensions()
   const currentVerseReq = height / 3
   const { top, bottom } = getEdges(insets)
 
   const usableHeight = height - top - bottom * 2
-  const textHeight = verseOffsets ? verseOffsets[verseOffsets.length - 1] : 1
-  const recentOffset = useRef<number>()
+  const textHeight = verseOffsets
+    ? verseOffsets[verseOffsets.length - 1]
+    : height
   const [verseText, setVerseText] = React.useState<string>('')
   const pop = useSharedValue(0)
 
-  const scrollBarHeight = useMemo(() => {
-    return usableHeight * (usableHeight / textHeight)
+  const [scrollBarHeight, setScrollBarHeight] = useState(
+    usableHeight * (usableHeight / textHeight)
+  )
+
+  useEffect(() => {
+    if (verseOffsets)
+      setScrollBarHeight(usableHeight * (usableHeight / textHeight))
   }, [verseOffsets])
 
   const relativeVerseOffsets = useMemo<number[] | undefined>(() => {
@@ -171,10 +172,10 @@ export default function ScrollBar({
     }
   })
 
-  useEffect(() => {
-    if (!going)
-      scrollBarActivate.value = withDelay(200, withTiming(0, { duration: 500 }))
-  }, [going])
+  // useEffect(() => {
+  //   if (!going)
+  //     scrollBarActivate.value = withDelay(200, withTiming(0, { duration: 500 }))
+  // }, [going])
 
   const verseNumberStyles = useAnimatedStyle(() => ({
     opacity: scrollBarActivate.value,
