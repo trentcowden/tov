@@ -1,7 +1,7 @@
 import { FlashList } from '@shopify/flash-list'
 import { impactAsync } from 'expo-haptics'
 import { useKeepAwake } from 'expo-keep-awake'
-import React, { useMemo, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import {
   Dimensions,
   NativeSyntheticEvent,
@@ -55,21 +55,16 @@ import { setTranslation } from './redux/settings'
 export default function Bible() {
   const colors = useColors()
   const dispatch = useAppDispatch()
-  dispatch(setTranslation('net'))
   const { height, width } = useWindowDimensions()
   const horizTransReq = getHorizTransReq(width)
 
-  // dispatch(
-  //   setActiveChapterIndex({
-  //     index: 0,
-  //     highlightVerse: false,
-  //     transition: 'fade',
-  //     verseIndex: 0,
-  //     numVersesToHighlight: 0,
-  //   })
-  // )
+  // dispatch(createFakeHistory())
   const activeChapterIndex = useAppSelector((state) => state.activeChapterIndex)
   const settings = useAppSelector((state) => state.settings)
+
+  useEffect(() => {
+    dispatch(setTranslation('net'))
+  }, [])
   const insets = useSafeAreaInsets()
   const { top, bottom } = getEdges(insets)
   const activeChapter = useMemo(() => {
