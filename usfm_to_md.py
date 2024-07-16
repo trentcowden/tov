@@ -71,7 +71,7 @@ def usfm_to_markdown(usfm_text: str):
 
 chapters = []
 
-unsorted_book_files = os.listdir("data/net_usfm")
+unsorted_book_files = os.listdir("data/bsb_usfm")
 
 # Define the biblical order of the books
 biblical_order = [
@@ -163,13 +163,14 @@ sorted_book_files = sort_books(unsorted_book_files)
 
 # Example usage
 for book_file in sorted_book_files:
-    book_file_path = f"data/net_usfm/{book_file}"
+    book_file_path = f"data/bsb_usfm/{book_file}"
 
     # Read the USFM file
     with open(book_file_path, "r", encoding="utf-8") as file:
         usfm_content = file.read()
 
-    book_id = os.path.basename(book_file)[:3]
+    book_id = os.path.basename(book_file)[2:5]
+    print(f"Processing {book_id}...")
 
     chapters_raw = usfm_content.split("\\c ")
 
@@ -189,5 +190,5 @@ for book_file in sorted_book_files:
             }
         )
 
-with open("data/net_chapters.json", "w", encoding="utf-8") as file:
+with open("data/bsb_chapters.json", "w", encoding="utf-8") as file:
     json.dump(chapters, file)
