@@ -10,6 +10,7 @@ interface Props {
   close?: () => void
   icon?: ReactNode
   paddingLeft?: number
+  height?: number
 }
 
 export default function ModalScreenHeader({
@@ -17,6 +18,7 @@ export default function ModalScreenHeader({
   close,
   icon,
   paddingLeft,
+  height,
 }: Props) {
   const colors = useColors()
   const closeButton = close ? (
@@ -48,7 +50,7 @@ export default function ModalScreenHeader({
       style={{
         width: '100%',
         flexDirection: 'row',
-        height: 50,
+        height: height ?? 50,
         alignItems: 'center',
         zIndex: 5,
         paddingLeft: paddingLeft ?? gutterSize,
