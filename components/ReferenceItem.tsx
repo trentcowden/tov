@@ -1,3 +1,4 @@
+import { trackEvent } from '@aptabase/react-native'
 import React, { useMemo } from 'react'
 import { Text, View } from 'react-native'
 import { SharedValue, withSpring, withTiming } from 'react-native-reanimated'
@@ -43,7 +44,19 @@ export default function ReferenceItem({
 
     const chapter = bibles[settings.translation][chapterIndex]
     const verses = chapter.md.split('[')
-    return verses[parseInt(verseNumber)].replace(']', '')
+    if (parseInt(verseNumber) >= verses.length) {
+      console.log('Verse number out of range:', verseId)
+      trackEvent('Verse number out of range', { verseId })
+      return ''
+    }
+    const verse = verses.find((verse) => verse.startsWith(verseNumber))
+    if (!verse) {
+      console.log('Verse not found:', verseId)
+      // trackEvent('Verse not found', { verseId })
+      return ''
+    }
+    return verse.replace(']', '').replace(verseNumber, '').replace(/\*/g, '')
+    // return verses[parseInt(verseNumber)].replace(']', '')
   }, [item])
 
   const start = typeof item === 'string' ? item : item[0]
@@ -73,7 +86,7 @@ export default function ReferenceItem({
 
     passageString += endingVerse.toString()
   }
-  return (
+  return verse === '' ? null : (
     <>
       {/* {index === 0 && !isAfter ? (
         <Text

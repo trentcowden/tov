@@ -89,6 +89,7 @@ export default function Bible() {
 
   const [verseOffsets, setVerseOffsets] = useState<number[]>()
   const [verseNewlines, setVerseNewlines] = useState<boolean[]>()
+  const [paragraphs, setParagraphs] = useState<boolean[]>()
   const spaceBeforeTextStarts =
     activeChapter.chapterId === 'TUT.1' ? height : top + gutterSize * 5
   const currentVerseIndex = useSharedValue<number | 'bottom' | 'top'>(0)
@@ -186,6 +187,7 @@ export default function Bible() {
       gutterSize * 1.5 + chapterChangeFeedbackHeight + bottom
     const localVerseOffsets: number[] = []
     const localVerseNewlines: boolean[] = []
+    const localParagraphs: boolean[] = []
     event.nativeEvent.lines.forEach((line, index) => {
       // if (/\[[0-9]{1,3}\]/.test(line.text)) {
       // const matches = /[0-9]{1,3} /g.exec(line.text)
@@ -196,6 +198,11 @@ export default function Bible() {
         else if (event.nativeEvent.lines[index - 1].text.endsWith('\n'))
           localVerseNewlines.push(true)
         else localVerseNewlines.push(false)
+
+        if (index === 0) localParagraphs.push(true)
+        else if (event.nativeEvent.lines[index - 1].text === '\n')
+          localParagraphs.push(true)
+        else localParagraphs.push(false)
 
         localVerseOffsets.push(spaceBeforeTextStarts + line.y)
       })
@@ -215,6 +222,7 @@ export default function Bible() {
     if (!verseOffsets || !arraysEqual(localVerseOffsets, verseOffsets)) {
       setVerseOffsets(localVerseOffsets)
       setVerseNewlines(localVerseNewlines)
+      setParagraphs(localParagraphs)
     }
   }
 
@@ -274,6 +282,7 @@ export default function Bible() {
               highlightVerseNumber={highlightVerseNumber}
               jumpToChapter={jumpToChapter}
               verseNewlines={verseNewlines}
+              paragraphs={paragraphs}
             />
             <View
               style={{

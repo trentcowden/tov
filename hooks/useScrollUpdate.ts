@@ -187,7 +187,8 @@ export default function useScrollUpdate({
       openSettings.value === 0 &&
       alreadyHaptic.current === false
     ) {
-      if (offset > showOverlayOffset) overlayOpacity.value = withTiming(1)
+      if (offset > showOverlayOffset && openSettings.value === 0)
+        overlayOpacity.value = withTiming(1)
       else overlayOpacity.value = withTiming(0)
     }
 

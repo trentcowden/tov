@@ -24,6 +24,7 @@ interface Props {
   activeChapter: Chapters[number]
   jumpToChapter: JumpToChapter
   verseNewlines: boolean[] | undefined
+  paragraphs: boolean[] | undefined
 }
 
 export default function VerseHighlight({
@@ -32,6 +33,7 @@ export default function VerseHighlight({
   activeChapter,
   jumpToChapter,
   verseNewlines,
+  paragraphs,
 }: Props) {
   const { width } = useWindowDimensions()
   const insets = useSafeAreaInsets()
@@ -120,9 +122,13 @@ export default function VerseHighlight({
     // The last offset extends past the last verse, so we need to adjust the height so
     // it doesn't go past the bottom of the screen.
     if (endOffset === verseOffsets.length - 1) {
-      height -= gutterSize * 6 + bottom - settings.lineHeight - gutterSize / 2
+      height -=
+        gutterSize * 6 + bottom - settings.paragraphSpacing - gutterSize / 2
       // If the last verse is a newline, we need to adjust the height so that it doesn't
       // extend into the next verse.
+    } else if (paragraphs && paragraphs[endOffset]) {
+      console.log('paragraph')
+      height -= settings.lineHeight * 1.4
     } else if (verseNewlines && verseNewlines[endOffset]) {
       height -= settings.lineHeight
     }

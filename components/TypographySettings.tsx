@@ -1,9 +1,8 @@
 import { trackEvent } from '@aptabase/react-native'
-import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics'
-import { Pressable, Text, useWindowDimensions, View } from 'react-native'
+import { Text, useWindowDimensions, View } from 'react-native'
 import { SharedValue, withSpring } from 'react-native-reanimated'
 import Spacer from '../Spacer'
-import { gutterSize, panActivateConfig, sizes, typography } from '../constants'
+import { gutterSize, panActivateConfig, typography } from '../constants'
 import { getHorizTransReq } from '../functions/utils'
 import useColors from '../hooks/useColors'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
@@ -91,7 +90,7 @@ export default function TypographySettings({
           )
         })}
       </View>
-      <Pressable
+      {/* <Pressable
         onPressIn={() => {
           openSettings.value = withSpring(0, panActivateConfig)
           textTranslateX.value = withSpring(0, panActivateConfig)
@@ -118,7 +117,7 @@ export default function TypographySettings({
         <Text style={typography(sizes.body, 'uib', 'c', colors.fg1)}>
           Press and Hold to Preview
         </Text>
-      </Pressable>
+      </Pressable> */}
       <Spacer units={4} />
     </View>
   )

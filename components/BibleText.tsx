@@ -5,6 +5,7 @@ import {
   NativeSyntheticEvent,
   Text,
   TextLayoutEventData,
+  TextStyle,
   useWindowDimensions,
 } from 'react-native'
 import ParsedText, { ParsedTextProps } from 'react-native-parsed-text'
@@ -70,16 +71,22 @@ export default function BibleText({
     )
   }
 
-  function renderBoltAndItalicText(text: string) {
+  function renderItalic(text: string) {
+    // return text
     return text.replace(/\*/g, '')
   }
 
-  function renderSectionHeader(text: string) {
-    // return text.replace(/## /g, '')
-    return ''
+  function renderBold(text: string) {
+    return text
+    return text.replace(/__/g, '')
   }
 
-  const textStyle = {
+  function renderSectionHeader(text: string) {
+    return text.replace(/## /g, '')
+    // return ''
+  }
+
+  const textStyle: TextStyle = {
     ...typography(settings.fontSize, 'r', 'l', colors.fg1),
     lineHeight: settings.lineHeight,
   }
@@ -97,25 +104,26 @@ export default function BibleText({
     //     color: colors.p1,
     //   },
     // },
-    {
-      pattern: /\*\*.+?\*\*/,
-      style: {
-        fontFamily: 'Literata18pt-SemiBold',
-      },
-      renderText: renderBoltAndItalicText,
-    },
+    // {
+    //   pattern: /__.+?__/,
+    //   style: {
+    //     fontFamily: 'Literata18pt-SemiBold',
+    //   },
+    //   renderText: renderBold,
+    // },
     {
       pattern: /\*.+?\*/,
       style: {
         fontFamily: 'Literata18pt-Italic',
       },
-      renderText: renderBoltAndItalicText,
+      renderText: renderItalic,
     },
     {
       pattern: /##.*/,
       style: {
-        fontFamily: 'Literata18pt-SemiBold',
-        fontSize: settings.fontSize + 3,
+        fontFamily: 'Figtree-Bold',
+        fontSize: settings.fontSize,
+        color: colors.fg3,
       },
       renderText: renderSectionHeader,
     },
