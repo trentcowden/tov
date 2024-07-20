@@ -122,7 +122,6 @@ export default function ChapterOverlay({
           alignItems: 'center',
           flexDirection: 'row',
           gap: gutterSize / 2,
-          paddingRight: gutterSize / 2,
         },
         overlayAnimatedStyles,
       ]}
