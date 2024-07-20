@@ -14,14 +14,12 @@ import {
   SharedValue,
   useSharedValue,
   withSpring,
-  withTiming,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import {
   gutterSize,
   panActivateConfig,
   shadow,
-  showOverlayOffset,
   sizes,
   typography,
 } from '../constants'
@@ -75,6 +73,8 @@ export default function Navigator({
   const insets = useSafeAreaInsets()
   const { height, width } = useWindowDimensions()
   const modalWidth = getModalWidth(width)
+  const modalHeight = getModalHeight(height, insets)
+  const navigatorHeight = modalHeight - gutterSize * 2
   /**
    * Whether or not new search results should be calculated. We disable it as
    * the user is typing to prevent lag.
@@ -107,9 +107,9 @@ export default function Navigator({
   }
 
   function closeNavigator() {
-    if (scrollOffset.value < showOverlayOffset) {
-      overlayOpacity.value = withTiming(0)
-    }
+    // if (scrollOffset.value < showOverlayOffset) {
+    //   overlayOpacity.value = withTiming(0)
+    // }
 
     setTimeout(() => searchRef.current?.blur(), 200)
     openNavigator.value = withSpring(
@@ -132,12 +132,14 @@ export default function Navigator({
     searchRef.current?.blur()
   }
 
-  const modalHeight = getModalHeight(height, insets)
-
   return (
     <ModalScreen
       nestedScreen={
-        <>
+        <View
+          style={{
+            height: navigatorHeight,
+          }}
+        >
           <ModalScreenHeader
             paddingLeft={0}
             icon={
@@ -152,7 +154,7 @@ export default function Navigator({
           >
             {navigatorBook?.name}
           </ModalScreenHeader>
-          <View style={{ height: modalHeight - gutterSize * 2 - 50 }}>
+          <View style={{ flex: 1 }}>
             <ChapterBoxes
               jumpToChapter={jumpToChapter}
               navigatorBook={navigatorBook}
@@ -160,8 +162,9 @@ export default function Navigator({
             />
             <Fade place="top" color={colors.bg2} />
           </View>
-        </>
+        </View>
       }
+      nestedHeight={navigatorHeight}
       close={closeNavigator}
       openModal={openNavigator}
       openNested={openNavigatorNested}
@@ -182,8 +185,6 @@ export default function Navigator({
             backgroundColor: colors.bg2,
             borderRadius: 12,
             flex: 1,
-            // height: '100%',
-            // overflow: 'hidden',
             paddingTop: gutterSize,
             ...shadow,
           }}

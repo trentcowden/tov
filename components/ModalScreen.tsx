@@ -7,15 +7,14 @@ import Animated, {
   runOnJS,
   useAnimatedStyle,
   withSpring,
-  withTiming,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import {
   defaultOnPressScale,
   gutterSize,
   horizVelocReq,
+  overlayHeight,
   panActivateConfig,
-  showOverlayOffset,
 } from '../constants'
 import { getEdges, getModalHeight, getModalWidth } from '../functions/utils'
 import useColors from '../hooks/useColors'
@@ -31,6 +30,7 @@ interface Props {
   onBack: () => void
   scrollOffset: SharedValue<number>
   overlayOpacity: SharedValue<number>
+  nestedHeight?: number
 }
 
 export default function ModalScreen({
@@ -42,11 +42,13 @@ export default function ModalScreen({
   onBack,
   scrollOffset,
   overlayOpacity,
+  nestedHeight,
 }: Props) {
   const { height, width } = useWindowDimensions()
-  const modalWidth = getModalWidth(width)
-  const colors = useColors()
   const insets = useSafeAreaInsets()
+  const modalWidth = getModalWidth(width)
+  const modalHeight = getModalHeight(height, insets)
+  const colors = useColors()
   const { top, bottom } = getEdges(insets)
   const dispatch = useAppDispatch()
 
@@ -78,8 +80,6 @@ export default function ModalScreen({
         }
   })
 
-  const modalHeight = getModalHeight(height, insets)
-
   const panGesture = Gesture.Pan()
     .onChange((event) => {
       if (!openNested || openNested.value === 0) return
@@ -99,6 +99,13 @@ export default function ModalScreen({
       }
     })
 
+  const mainStyles = useAnimatedStyle(() => {
+    return {
+      opacity: openNested?.value ?? 0,
+      zIndex: openNested && openNested?.value !== 0 ? 2 : -1,
+    }
+  })
+
   return (
     <GestureDetector gesture={panGesture}>
       <Animated.View
@@ -108,7 +115,7 @@ export default function ModalScreen({
             height: Dimensions.get('window').height,
             position: 'absolute',
             alignItems: 'center',
-            paddingTop: top + gutterSize,
+            paddingTop: top + gutterSize / 2 + overlayHeight,
             justifyContent: 'flex-start',
           },
           modalStyle,
@@ -117,8 +124,8 @@ export default function ModalScreen({
         <TovPressable
           bgColor={colors.bd}
           onPress={() => {
-            if (scrollOffset.value < showOverlayOffset)
-              overlayOpacity.value = withTiming(0)
+            // if (scrollOffset.value < showOverlayOffset)
+            //   overlayOpacity.value = withTiming(0)
             close()
           }}
           style={{
@@ -134,15 +141,28 @@ export default function ModalScreen({
         <Animated.View
           style={[
             {
-              zIndex: 3,
-              top: top + gutterSize,
-              height: modalHeight,
+              height: nestedHeight ?? modalHeight,
               width: modalWidth,
-              borderRadius: 12,
+              backgroundColor: colors.bd,
               position: 'absolute',
+              top: top + gutterSize / 2 + overlayHeight,
+              borderRadius: 12,
+            },
+            mainStyles,
+          ]}
+        />
+        <Animated.View
+          style={[
+            {
+              zIndex: 3,
+              top: top + gutterSize / 2 + overlayHeight,
+              height: nestedHeight ?? modalHeight,
+              width: modalWidth,
+              position: 'absolute',
+              overflow: 'hidden',
               paddingTop: gutterSize / 2,
               backgroundColor: colors.bg2,
-              overflow: 'hidden',
+              borderRadius: 12,
             },
             nestedStyle,
           ]}

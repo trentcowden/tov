@@ -19,7 +19,13 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { gutterSize, panActivateConfig, sizes, typography } from '../constants'
+import {
+  gutterSize,
+  panActivateConfig,
+  shadow,
+  sizes,
+  typography,
+} from '../constants'
 import { getEdges } from '../functions/utils'
 import useColors from '../hooks/useColors'
 
@@ -107,7 +113,11 @@ export default function ScrollBar({
         height - scrollBarHeight - bottom * 2
       )
         scrollBarPosition.value = height - scrollBarHeight - bottom * 2
-      else scrollBarPosition.value = event.absoluteY - scrollBarHeight / 2
+      else
+        scrollBarPosition.value = withTiming(
+          event.absoluteY - scrollBarHeight / 2,
+          { duration: 150 }
+        )
     })
     .onChange((event) => {
       if (textHeight < height) return
@@ -156,7 +166,7 @@ export default function ScrollBar({
     backgroundColor: interpolateColor(
       scrollBarActivate.value,
       [0, 1],
-      [colors.ph, colors.p1]
+      [colors.p3, colors.p1]
     ),
     transform: [
       // {
@@ -257,6 +267,7 @@ export default function ScrollBar({
                 alignItems: 'center',
                 justifyContent: 'center',
                 display: textHeight < height ? 'none' : 'flex',
+                ...shadow,
               },
               scrollBarStyles,
             ]}

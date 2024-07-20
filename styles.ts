@@ -32,6 +32,7 @@ export const themes = [
     p2: tinycolor(pDark).desaturate(8).darken(12).toHexString(),
     ph: tinycolor(pDark).setAlpha(0.3).toHslString(),
     bd: '#00000055',
+    p3: tinycolor(pDark).desaturate(25).darken(40).toHexString(),
   },
   {
     id: 'light',
@@ -50,6 +51,7 @@ export const themes = [
     p2: tinycolor(pLight).desaturate(8).darken(12).toHexString(),
     ph: tinycolor(pLight).setAlpha(0.3).toHslString(),
     bd: '#00000055',
+    p3: tinycolor(pLight).desaturate(17).brighten(16).toHexString(),
   },
   {
     id: 'black',
@@ -68,6 +70,7 @@ export const themes = [
     p2: tinycolor(pBlack).desaturate(8).darken(12).toHexString(),
     ph: tinycolor(pBlack).setAlpha(0.3).toHslString(),
     bd: '#00000055',
+    p3: tinycolor(pBlack).desaturate(25).darken(40).toHexString(),
   },
 ]
 

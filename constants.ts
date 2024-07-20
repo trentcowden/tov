@@ -23,7 +23,7 @@ export const gutterSize = deviceType === DeviceType.TABLET ? 32 : 24
 export const chapterRow = deviceType === DeviceType.TABLET ? 10 : 5
 export const defaultOnPressScale =
   deviceType === DeviceType.TABLET ? 0.98 : 0.95
-export const showOverlayOffset = gutterSize * 4
+// export const showOverlayOffset = gutterSize * 4
 
 export const iconSize = 24
 
@@ -34,7 +34,7 @@ export const zoomOutReq = 0.3
 export const horizVelocReq = 500
 
 export const textBackdropOpacity = 0.5
-
+export const overlayHeight = 32
 /**
  * Takes in some text style settings and returns a filled out text style object. This is
  * used simply to save space in components and simplify things overall. Used within the

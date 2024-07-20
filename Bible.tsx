@@ -1,8 +1,10 @@
 import { FlashList } from '@shopify/flash-list'
 import { impactAsync } from 'expo-haptics'
 import { useKeepAwake } from 'expo-keep-awake'
+import * as SystemUI from 'expo-system-ui'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import {
+  Appearance,
   Dimensions,
   NativeSyntheticEvent,
   Text,
@@ -30,7 +32,6 @@ import ChapterChangeFeedback, {
   chapterChangeFeedbackHeight,
 } from './components/ChapterChangeFeedback'
 import ChapterOverlay from './components/ChapterOverlay'
-import ChapterTitle from './components/ChapterTitle'
 import History from './components/History'
 import Navigator from './components/Navigator'
 import ReferencesModal from './components/ReferencesModal'
@@ -53,21 +54,20 @@ import { useAppDispatch, useAppSelector } from './redux/hooks'
 import { setTranslation } from './redux/settings'
 
 export default function Bible() {
-  const colors = useColors()
   const dispatch = useAppDispatch()
+  dispatch(setTranslation('net'))
+  const colors = useColors()
   const { height, width } = useWindowDimensions()
   const horizTransReq = getHorizTransReq(width)
-
+  console.log(colors.bg1, colors.p1)
   // dispatch(createFakeHistory())
   const activeChapterIndex = useAppSelector((state) => state.activeChapterIndex)
   const settings = useAppSelector((state) => state.settings)
 
-  useEffect(() => {
-    dispatch(setTranslation('net'))
-  }, [])
   const insets = useSafeAreaInsets()
   const { top, bottom } = getEdges(insets)
   const activeChapter = useMemo(() => {
+    console.log(settings.translation)
     return bibles[settings.translation][activeChapterIndex.index]
   }, [activeChapterIndex.index])
 
@@ -75,7 +75,7 @@ export default function Bible() {
     () => getBook(activeChapter.chapterId),
     [activeChapter]
   )
-  const overlayOpacity = useSharedValue(0)
+  const overlayOpacity = useSharedValue(1)
   const highlightVerseNumber = useSharedValue(0)
   const referenceTree = useAppSelector((state) => state.referenceTree)
 
@@ -91,7 +91,7 @@ export default function Bible() {
   const [verseNewlines, setVerseNewlines] = useState<boolean[]>()
   const [paragraphs, setParagraphs] = useState<boolean[]>()
   const spaceBeforeTextStarts =
-    activeChapter.chapterId === 'TUT.1' ? height : top + gutterSize * 5
+    activeChapter.chapterId === 'TUT.1' ? height : top + gutterSize * 3
   const currentVerseIndex = useSharedValue<number | 'bottom' | 'top'>(0)
   const fingerDown = useRef(false)
 
@@ -228,6 +228,13 @@ export default function Bible() {
 
   useKeepAwake()
 
+  useEffect(() => {
+    if (settings.theme === 'light') Appearance.setColorScheme('light')
+    else Appearance.setColorScheme('dark')
+
+    SystemUI.setBackgroundColorAsync(colors.bg1)
+  }, [settings.theme, colors])
+
   return (
     <GestureDetector gesture={composedGestures}>
       <View
@@ -310,14 +317,14 @@ export default function Bible() {
               {activeChapter.chapterId !== 'TUT.1' ? (
                 <Spacer units={2} />
               ) : null}
-              <ChapterTitle
+              {/* <ChapterTitle
                 scrollOffset={scrollOffset}
                 focusSearch={focusSearch}
                 openNavigator={openNavigator}
                 savedTextTranslateX={savedTextTranslateX}
                 textTranslateX={textTranslateX}
                 overlayOpacity={overlayOpacity}
-              />
+              /> */}
             </View>
             <View style={{ paddingHorizontal: gutterSize }}>
               <Text onTextLayout={onTextLayout}>
@@ -395,6 +402,10 @@ export default function Bible() {
           savedTextTranslateX={savedTextTranslateX}
           focusSearch={focusSearch}
           overlayOpacity={overlayOpacity}
+          scrollValue={scrollOffset}
+          setReferenceState={setReferenceState}
+          jumpToChapter={jumpToChapter}
+          openReferences={openReferences}
         />
         {/* <View
           style={{

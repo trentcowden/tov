@@ -127,7 +127,7 @@ export default function useChapterChange({
     setVerseOffsets(undefined)
     setVerseNewlines(undefined)
     highlightVerseNumber.value = withTiming(0)
-    overlayOpacity.value = withTiming(0)
+    // overlayOpacity.value = withTiming(0)
 
     // Find the index of the chapter to go to.
     const chapterIndex = bibles[settings.translation].findIndex(
@@ -193,6 +193,7 @@ export default function useChapterChange({
           currentVerse !== undefined ? currentVerse : currentVerseIndex.value,
       })
     )
+    overlayOpacity.value = withTiming(1)
   }
 
   const prev = () => dispatch(goToPreviousChapter())
@@ -233,7 +234,7 @@ export default function useChapterChange({
 
     /** A few things to do if the chapter is changing, whether prev or next. */
     if (shouldGoPrev || shouldGoNext) {
-      overlayOpacity.value = withTiming(0)
+      // overlayOpacity.value = withTiming(0)
 
       // Hide scroll bar.
       scrollBarActivate.value = withTiming(-1, {
@@ -316,7 +317,6 @@ export default function useChapterChange({
         scrollViewRef.current?.scrollToEnd({ animated: false })
         textTranslateY.value = withSpring(0, panActivateConfig)
         textFadeOut.value = withSpring(0, panActivateConfig)
-        overlayOpacity.value = withTiming(1)
         break
       case 'fade':
         if (

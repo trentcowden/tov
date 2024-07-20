@@ -114,7 +114,7 @@ export default function BibleText({
     {
       pattern: /\*.+?\*/,
       style: {
-        fontFamily: 'Literata18pt-Italic',
+        fontFamily: 'Bookerly-Italic',
       },
       renderText: renderItalic,
     },

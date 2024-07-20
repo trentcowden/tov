@@ -10,7 +10,7 @@ import {
   withTiming,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { overScrollReq, showOverlayOffset } from '../constants'
+import { overScrollReq } from '../constants'
 import bibles from '../data/bibles'
 import { getEdges } from '../functions/utils'
 import { useAppSelector } from '../redux/hooks'
@@ -187,9 +187,9 @@ export default function useScrollUpdate({
       openSettings.value === 0 &&
       alreadyHaptic.current === false
     ) {
-      if (offset > showOverlayOffset && openSettings.value === 0)
-        overlayOpacity.value = withTiming(1)
-      else overlayOpacity.value = withTiming(0)
+      // if (offset > showOverlayOffset && openSettings.value === 0)
+      //   overlayOpacity.value = withTiming(1)
+      // else overlayOpacity.value = withTiming(0)
     }
 
     handleScrollBarUpdate(offset)

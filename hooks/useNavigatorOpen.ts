@@ -2,12 +2,7 @@ import { trackEvent } from '@aptabase/react-native'
 import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics'
 import { TextInput } from 'react-native'
 import { Gesture } from 'react-native-gesture-handler'
-import {
-  runOnJS,
-  SharedValue,
-  withSpring,
-  withTiming,
-} from 'react-native-reanimated'
+import { runOnJS, SharedValue, withSpring } from 'react-native-reanimated'
 import { panActivateConfig } from '../constants'
 
 interface Props {
@@ -43,7 +38,7 @@ export default function useNavigatorOpen({
       else if (openNavigator.value !== 0) return
       else if (openReferences.value !== 0) return
 
-      overlayOpacity.value = withTiming(1)
+      // overlayOpacity.value = withTiming(1)
       openNavigator.value = withSpring(1, panActivateConfig)
 
       runOnJS(focusSearch)()

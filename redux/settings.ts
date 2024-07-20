@@ -8,7 +8,7 @@ export interface TypographySettings {
 }
 
 export interface SettingsState extends TypographySettings {
-  translation: 'web' | 'net'
+  translation: 'net'
   fontSize: number
   lineHeight: number
   paragraphSpacing: number
@@ -16,7 +16,7 @@ export interface SettingsState extends TypographySettings {
 }
 
 const initialState: SettingsState = {
-  translation: 'web',
+  translation: 'net',
   ...fontSizes[1],
   theme: 'dark',
 }

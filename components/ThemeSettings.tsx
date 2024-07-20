@@ -1,7 +1,5 @@
 import { trackEvent } from '@aptabase/react-native'
-import * as SystemUI from 'expo-system-ui'
-import { useEffect } from 'react'
-import { Appearance, View, ViewStyle } from 'react-native'
+import { View, ViewStyle } from 'react-native'
 import { SharedValue, withSpring } from 'react-native-reanimated'
 import RNRestart from 'react-native-restart' // Import package from node modules
 import Spacer from '../Spacer'
@@ -28,13 +26,6 @@ export default function ThemeSettings({
   const colors = useColors()
 
   const buttonStyles: ViewStyle = {}
-
-  useEffect(() => {
-    if (settings.theme === 'light') Appearance.setColorScheme('light')
-    else Appearance.setColorScheme('dark')
-
-    SystemUI.setBackgroundColorAsync(colors.bg1)
-  }, [settings.theme, colors])
 
   return (
     <View style={{ flex: 1 }}>
