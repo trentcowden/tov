@@ -1,5 +1,5 @@
 import { ImpactFeedbackStyle, impactAsync } from 'expo-haptics'
-import React, { RefObject, useEffect, useMemo, useState } from 'react'
+import React, { RefObject, useMemo } from 'react'
 import { Text, View, useWindowDimensions } from 'react-native'
 import {
   Gesture,
@@ -14,14 +14,17 @@ import Animated, {
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
+  withDecay,
+  withDelay,
   withSequence,
   withSpring,
   withTiming,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import {
-  gutterSize,
   panActivateConfig,
+  scrollBarHeight,
+  scrollBarWidth,
   shadow,
   sizes,
   typography,
@@ -38,8 +41,6 @@ interface Props {
   currentVerseIndex: SharedValue<number | 'bottom' | 'top'>
 }
 
-const scrollBarWidth = gutterSize / 3
-
 export default function ScrollBar({
   verseOffsets,
   scrollBarActivate,
@@ -54,25 +55,16 @@ export default function ScrollBar({
   const currentVerseReq = height / 3
   const { top, bottom } = getEdges(insets)
 
-  const usableHeight = height - top - bottom * 2
+  const usableHeight = height - top - bottom * 1.5
   const textHeight = verseOffsets
     ? verseOffsets[verseOffsets.length - 1]
     : height
   const [verseText, setVerseText] = React.useState<string>('')
   const pop = useSharedValue(0)
 
-  const [scrollBarHeight, setScrollBarHeight] = useState(
-    usableHeight * (usableHeight / textHeight)
-  )
-
-  useEffect(() => {
-    if (verseOffsets)
-      setScrollBarHeight(usableHeight * (usableHeight / textHeight))
-  }, [verseOffsets])
-
   const relativeVerseOffsets = useMemo<number[] | undefined>(() => {
     if (!verseOffsets) return
-
+    console.log(verseOffsets)
     return verseOffsets.map(
       (verseOffset) => (verseOffset / textHeight) * usableHeight
     )
@@ -86,17 +78,16 @@ export default function ScrollBar({
     else
       runOnJS(setVerseText)(
         currentVerseIndex.value === 'bottom'
-          ? 'End'
+          ? 'Bottom'
           : currentVerseIndex.value === 'top'
-            ? 'Beginning'
-            : `Verse ${(currentVerseIndex.value + 1).toString()}`
+            ? 'Top'
+            : `${(currentVerseIndex.value + 1).toString()}`
       )
   })
 
   const scrollPanGesture = Gesture.Pan()
     .onBegin((event) => {
       if (textHeight < height) return
-
       runOnJS(impactAsync)(ImpactFeedbackStyle.Heavy)
       pop.value = withSequence(
         withTiming(1, { duration: 75 }),
@@ -110,9 +101,9 @@ export default function ScrollBar({
         scrollBarPosition.value = top
       else if (
         event.absoluteY - scrollBarHeight / 2 >
-        height - scrollBarHeight - bottom * 2
+        height - scrollBarHeight - bottom * 1.5
       )
-        scrollBarPosition.value = height - scrollBarHeight - bottom * 2
+        scrollBarPosition.value = height - scrollBarHeight - bottom * 1.5
       else
         scrollBarPosition.value = withTiming(
           event.absoluteY - scrollBarHeight / 2,
@@ -126,17 +117,37 @@ export default function ScrollBar({
         scrollBarPosition.value = top
       else if (
         event.absoluteY - scrollBarHeight / 2 >
-        height - scrollBarHeight - bottom * 2
+        height - scrollBarHeight - bottom * 1.5
       )
-        scrollBarPosition.value = height - scrollBarHeight - bottom * 2
+        scrollBarPosition.value = height - scrollBarHeight - bottom * 1.5
       else scrollBarPosition.value = event.absoluteY - scrollBarHeight / 2
     })
     .onFinalize((event) => {
       if (textHeight < height) return
 
-      runOnJS(impactAsync)(ImpactFeedbackStyle.Light)
+      // Fling!
+      console.log(event.velocityY)
+      if (Math.abs(event.velocityY) > 700) {
+        console.log('fling!')
+        scrollBarPosition.value = withDecay(
+          {
+            deceleration: 0.98,
+            velocity: event.velocityY,
+            clamp: [top, height - scrollBarHeight - bottom * 1.5],
+          }
+          // () => {
+          //   scrollBarActivate.value = withTiming(0, { duration: 250 })
+          // }
+        )
+        scrollBarActivate.value = withDelay(
+          100,
+          withTiming(0, { duration: 250 })
+        )
+      } else {
+        scrollBarActivate.value = withTiming(0, { duration: 250 })
+      }
 
-      scrollBarActivate.value = withTiming(0, { duration: 250 })
+      runOnJS(impactAsync)(ImpactFeedbackStyle.Light)
     })
 
   function scrollTo(offset: number) {
@@ -160,23 +171,33 @@ export default function ScrollBar({
     ],
   }))
 
-  const scrollBarStyles = useAnimatedStyle(() => ({
-    height: scrollBarHeight,
-    opacity: interpolate(scrollBarActivate.value, [-1, 0], [0, 1]),
-    backgroundColor: interpolateColor(
-      scrollBarActivate.value,
-      [0, 1],
-      [colors.p3, colors.p1]
-    ),
-    transform: [
-      // {
-      //   scale: interpolate(scrollBarActivate.value, [0, 1], [1, 0.9]),
-      // },
-      { translateY: scrollBarPosition.value },
-    ],
-  }))
+  const scrollBarStyles = useAnimatedStyle(() => {
+    return {
+      height: scrollBarHeight,
+      opacity: interpolate(scrollBarActivate.value, [-1, 0], [0, 1]),
+      backgroundColor: interpolateColor(
+        scrollBarActivate.value,
+        [0, 1],
+        [colors.bg3, colors.p1]
+      ),
+      transform: [
+        {
+          translateY: interpolate(
+            scrollBarPosition.value,
+            [0, height - scrollBarHeight],
+            [0, height - scrollBarHeight],
+            {
+              extrapolateLeft: 'clamp',
+              extrapolateRight: 'clamp',
+            }
+          ),
+        },
+      ],
+    }
+  })
 
   const verseNumStyles = useAnimatedStyle(() => {
+    console.log(scrollBarPosition.value)
     return {
       opacity: scrollBarActivate.value,
     }
@@ -198,7 +219,7 @@ export default function ScrollBar({
 
   return (
     <>
-      <Animated.View
+      {/* <Animated.View
         style={[
           {
             position: 'absolute',
@@ -207,6 +228,7 @@ export default function ScrollBar({
             height: usableHeight,
             zIndex: 1,
             width: scrollBarWidth,
+            backgroundColor: 'green',
           },
           verseNumberStyles,
         ]}
@@ -218,6 +240,7 @@ export default function ScrollBar({
               <View
                 key={offset * index}
                 style={{
+                  borderTopWidth: 1,
                   width: scrollBarWidth,
                   // height: verseHeight,
                   position: 'absolute',
@@ -238,17 +261,17 @@ export default function ScrollBar({
             )
           })}
         </View>
-      </Animated.View>
+      </Animated.View> */}
       <GestureDetector gesture={scrollPanGesture}>
         <Animated.View
           style={[
             {
               position: 'absolute',
               // right: -scrollBarWidth * 3,
-              right: 0,
+              right: 2,
               top: 0,
               height: height,
-              width: scrollBarWidth * 3,
+              width: scrollBarWidth * 1.5,
               // alignItems: 'flex-end',
               // justifyContent: 'center',
               zIndex: 3,
@@ -296,7 +319,10 @@ export default function ScrollBar({
           <Text
             numberOfLines={1}
             adjustsFontSizeToFit
-            style={[typography(sizes.massive, 'uib', 'c', colors.p1)]}
+            style={[
+              typography(sizes.massive, 'uib', 'c', colors.p1),
+              { fontFamily: 'iAWriterMonoS-Bold' },
+            ]}
           >
             {verseText}
           </Text>

@@ -1,10 +1,8 @@
 import { FlashList } from '@shopify/flash-list'
 import { impactAsync } from 'expo-haptics'
 import { useKeepAwake } from 'expo-keep-awake'
-import * as SystemUI from 'expo-system-ui'
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useMemo, useRef, useState } from 'react'
 import {
-  Appearance,
   Dimensions,
   NativeSyntheticEvent,
   Text,
@@ -50,17 +48,13 @@ import useHighlightVerse from './hooks/useHighlightVerse'
 import useHistoryOpen from './hooks/useHistoryOpen'
 import useNavigatorOpen from './hooks/useNavigatorOpen'
 import useScrollUpdate from './hooks/useScrollUpdate'
-import { useAppDispatch, useAppSelector } from './redux/hooks'
-import { setTranslation } from './redux/settings'
+import { useAppSelector } from './redux/hooks'
+import { sp } from './styles'
 
 export default function Bible() {
-  const dispatch = useAppDispatch()
-  dispatch(setTranslation('net'))
   const colors = useColors()
   const { height, width } = useWindowDimensions()
   const horizTransReq = getHorizTransReq(width)
-  console.log(colors.bg1, colors.p1)
-  // dispatch(createFakeHistory())
   const activeChapterIndex = useAppSelector((state) => state.activeChapterIndex)
   const settings = useAppSelector((state) => state.settings)
 
@@ -91,7 +85,9 @@ export default function Bible() {
   const [verseNewlines, setVerseNewlines] = useState<boolean[]>()
   const [paragraphs, setParagraphs] = useState<boolean[]>()
   const spaceBeforeTextStarts =
-    activeChapter.chapterId === 'TUT.1' ? height : top + gutterSize * 3
+    activeChapter.chapterId === 'TUT.1'
+      ? height
+      : top - gutterSize + chapterChangeFeedbackHeight + gutterSize * 0.75
   const currentVerseIndex = useSharedValue<number | 'bottom' | 'top'>(0)
   const fingerDown = useRef(false)
 
@@ -183,11 +179,13 @@ export default function Bible() {
   })
 
   function onTextLayout(event: NativeSyntheticEvent<TextLayoutEventData>) {
-    const spaceAfterTextEnds =
-      gutterSize * 1.5 + chapterChangeFeedbackHeight + bottom
+    const spaceAfterTextEnds = gutterSize + chapterChangeFeedbackHeight + bottom
     const localVerseOffsets: number[] = []
     const localVerseNewlines: boolean[] = []
     const localParagraphs: boolean[] = []
+
+    if (event.nativeEvent.lines.length === 0) return
+
     event.nativeEvent.lines.forEach((line, index) => {
       // if (/\[[0-9]{1,3}\]/.test(line.text)) {
       // const matches = /[0-9]{1,3} /g.exec(line.text)
@@ -228,13 +226,6 @@ export default function Bible() {
 
   useKeepAwake()
 
-  useEffect(() => {
-    if (settings.theme === 'light') Appearance.setColorScheme('light')
-    else Appearance.setColorScheme('dark')
-
-    SystemUI.setBackgroundColorAsync(colors.bg1)
-  }, [settings.theme, colors])
-
   return (
     <GestureDetector gesture={composedGestures}>
       <View
@@ -246,10 +237,7 @@ export default function Bible() {
         }}
       >
         <Animated.View
-          style={[
-            { flex: 1, backgroundColor: colors.bg1, width: width },
-            textStyles,
-          ]}
+          style={[{ flex: 1, backgroundColor: colors.bg1, width }, textStyles]}
         >
           <ScrollView
             showsVerticalScrollIndicator={false}
@@ -269,20 +257,34 @@ export default function Bible() {
               fingerDown.current = true
             }}
           >
-            {/* {verseOffsets?.map((offset, index) => (
-              <View
-                key={offset}
-                style={{
-                  position: 'absolute',
-                  top: offset,
-                  width: '50%',
-                  borderTopWidth: 1,
-                  borderColor: 'green',
-                }}
-              >
-                <Text style={{ color: 'green', fontSize: 20 }}>{index}</Text>
-              </View>
-            ))} */}
+            {/* {verseOffsets?.map((offset, index) => {
+              const isDuplicate =
+                index !== 0 && offset === verseOffsets[index - 1]
+              return (
+                <View
+                  key={offset * index}
+                  style={{
+                    position: 'absolute',
+                    top: offset,
+                    // left: isDuplicate ? 10 : 4,
+                    left: textGutterSize / 2 - 8,
+                    width: '50%',
+                    borderTopWidth: 1,
+                    borderColor: 'green',
+                  }}
+                >
+                  <Text
+                    style={[
+                      typography(sizes.tiny, 'uil', 'l', colors.p3),
+                      { fontFamily: 'iAWriterMonoS-Bold' },
+                    ]}
+                  >
+                    {isDuplicate ? '\n,' : ''}
+                    {index + 1}
+                  </Text>
+                </View>
+              )
+            })} */}
             <VerseHighlight
               verseOffsets={verseOffsets}
               activeChapter={activeChapter}
@@ -294,11 +296,11 @@ export default function Bible() {
             <View
               style={{
                 width: '100%',
-                height: spaceBeforeTextStarts,
+                // height: spaceBeforeTextStarts,
               }}
             >
               {activeChapter.chapterId === 'TUT.1' ? null : (
-                <Spacer additional={top} />
+                <Spacer additional={top - gutterSize} />
               )}
               {activeChapter.chapterId === 'TUT.1' ? null : (
                 <ChapterChangeFeedback
@@ -315,18 +317,10 @@ export default function Bible() {
                 />
               ) : null}
               {activeChapter.chapterId !== 'TUT.1' ? (
-                <Spacer units={2} />
+                <Spacer units={3} />
               ) : null}
-              {/* <ChapterTitle
-                scrollOffset={scrollOffset}
-                focusSearch={focusSearch}
-                openNavigator={openNavigator}
-                savedTextTranslateX={savedTextTranslateX}
-                textTranslateX={textTranslateX}
-                overlayOpacity={overlayOpacity}
-              /> */}
             </View>
-            <View style={{ paddingHorizontal: gutterSize }}>
+            <View style={{ paddingHorizontal: sp.xx }}>
               <Text onTextLayout={onTextLayout}>
                 <BibleText
                   openReferences={openReferences}
@@ -337,7 +331,7 @@ export default function Bible() {
                 </BibleText>
               </Text>
             </View>
-            <Spacer units={6} />
+            <Spacer units={3} />
             <ChapterChangeFeedback
               place="bottom"
               progress={overScrollAmount}
@@ -406,6 +400,7 @@ export default function Bible() {
           setReferenceState={setReferenceState}
           jumpToChapter={jumpToChapter}
           openReferences={openReferences}
+          textFadeOut={textFadeOut}
         />
         {/* <View
           style={{

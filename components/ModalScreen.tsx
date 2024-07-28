@@ -13,7 +13,6 @@ import {
   defaultOnPressScale,
   gutterSize,
   horizVelocReq,
-  overlayHeight,
   panActivateConfig,
 } from '../constants'
 import { getEdges, getModalHeight, getModalWidth } from '../functions/utils'
@@ -115,7 +114,7 @@ export default function ModalScreen({
             height: Dimensions.get('window').height,
             position: 'absolute',
             alignItems: 'center',
-            paddingTop: top + gutterSize / 2 + overlayHeight,
+            paddingTop: top + gutterSize / 2,
             justifyContent: 'flex-start',
           },
           modalStyle,
@@ -145,7 +144,7 @@ export default function ModalScreen({
               width: modalWidth,
               backgroundColor: colors.bd,
               position: 'absolute',
-              top: top + gutterSize / 2 + overlayHeight,
+              top: top + gutterSize / 2,
               borderRadius: 12,
             },
             mainStyles,
@@ -155,7 +154,7 @@ export default function ModalScreen({
           style={[
             {
               zIndex: 3,
-              top: top + gutterSize / 2 + overlayHeight,
+              top: top + gutterSize / 2,
               height: nestedHeight ?? modalHeight,
               width: modalWidth,
               position: 'absolute',

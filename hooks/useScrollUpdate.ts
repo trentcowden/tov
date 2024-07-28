@@ -10,7 +10,7 @@ import {
   withTiming,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { overScrollReq } from '../constants'
+import { overScrollReq, scrollBarHeight } from '../constants'
 import bibles from '../data/bibles'
 import { getEdges } from '../functions/utils'
 import { useAppSelector } from '../redux/hooks'
@@ -46,7 +46,7 @@ export default function useScrollUpdate({
   const insets = useSafeAreaInsets()
   const { top, bottom } = getEdges(insets)
   const { height } = useWindowDimensions()
-  const usableHeight = height - top * 1 - bottom * 2
+  const usableHeight = height - top * 1 - bottom * 1.5
   const currentVerseReq = height / 3
 
   const scrollBarPosition = useSharedValue(top)
@@ -156,9 +156,8 @@ export default function useScrollUpdate({
 
     const textHeight = verseOffsets[verseOffsets.length - 1]
     // This shit is crazy. Thanks chat gpt.
-    const scrollBarHeight = usableHeight * (usableHeight / textHeight)
     const scrollRatio = offset / (textHeight - height)
-    const maxTopPos = height - bottom * 2 - scrollBarHeight
+    const maxTopPos = height - bottom * 1.5 - scrollBarHeight
 
     scrollBarPosition.value = top * 1 + scrollRatio * (maxTopPos - top * 1)
   }

@@ -16,17 +16,12 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated'
 import Svg, { Circle, Path } from 'react-native-svg'
-import {
-  gutterSize,
-  overScrollReq,
-  panActivateConfig,
-  sizes,
-  typography,
-} from '../constants'
+import { gutterSize, overScrollReq, panActivateConfig } from '../constants'
 import bibles from '../data/bibles'
 import { getChapterReference } from '../functions/bible'
 import useColors from '../hooks/useColors'
 import { useAppSelector } from '../redux/hooks'
+import { sp } from '../styles'
 
 interface Props {
   place: 'top' | 'bottom'
@@ -174,7 +169,7 @@ export default function ChapterChangeFeedback({
         {
           alignItems: 'center',
           alignSelf: 'flex-start',
-          paddingHorizontal: gutterSize,
+          paddingHorizontal: sp.xx,
           flexDirection: 'row',
           gap: gutterSize * 0.66,
         },
@@ -217,14 +212,6 @@ export default function ChapterChangeFeedback({
           </Svg>
         </View>
       </Animated.View>
-      {config.text ? (
-        <Animated.Text
-          style={[typography(sizes.body, 'uim', 'c', colors.fg2), textStyles]}
-        >
-          {/* {`${text.split(' ').slice(0, -1).join('').slice(0, 3)}. ${text.split(' ').slice(-1)[0]}`} */}
-          {config.text}
-        </Animated.Text>
-      ) : null}
     </Animated.View>
   )
 }

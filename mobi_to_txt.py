@@ -85,11 +85,11 @@ class MyConverter(MarkdownConverter):
         elif "bodyblock" in el.get("class"):
             return "\n" + text.strip() + "\n"
         elif "poetry" in el.get("class"):
-            return text
+            return "\n" + text.strip() + "\n"
         elif "otpoetry" in el.get("class"):
-            return text
+            return "\n" + text.strip() + "\n"
         elif "quote" in el.get("class"):
-            return text + "\n"
+            return "\n" + text.strip() + "\n"
         elif "poetrybreak" in el.get("class"):
             return "\n" + text
         elif "psasuper" in el.get("class"):

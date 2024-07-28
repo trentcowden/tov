@@ -24,6 +24,7 @@ interface Props {
   onPressColor?: string
   disableAnimation?: boolean
   bgColor: string
+  hitSlop?: number
 }
 
 export default function TovPressable({
@@ -37,6 +38,7 @@ export default function TovPressable({
   disableAnimation,
   outerOuterStyle,
   bgColor,
+  hitSlop,
 }: Props) {
   const colors = useColors()
   const pressed = useSharedValue(0)
@@ -79,6 +81,7 @@ export default function TovPressable({
           impactAsync(ImpactFeedbackStyle.Light)
           onPress()
         }}
+        hitSlop={hitSlop}
         style={outerStyle}
       >
         <Animated.View style={[style, itemStyles]}>{children}</Animated.View>

@@ -10,7 +10,7 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { gutterSize } from '../constants'
+import { gutterSize, shadow } from '../constants'
 import { Chapters } from '../data/types/chapters'
 import { getChapterReference } from '../functions/bible'
 import { getEdges } from '../functions/utils'
@@ -154,6 +154,7 @@ export default function VerseHighlight({
           backgroundColor: colors.p1,
           borderRadius: 12,
           zIndex: -10,
+          ...shadow,
         },
         verseHighlightStyle,
       ]}

@@ -42,31 +42,34 @@ export default function BibleText({
   }, [activeChapterIndex.index])
 
   function renderVerseNumber(text: string) {
-    const verseNumber = text.replace('[', '').replace(']', '')
+    const verseNumber = text.replace('[', '').replace(']', '').trim()
     const verseId = `${activeChapter.chapterId}.${verseNumber}`
+
     return (
-      <Text
-        style={{
-          textDecorationLine:
-            verseId in (references as References) ? 'underline' : 'none',
-          fontFamily: 'Figtree-Bold',
-          color: colors.p1,
-          fontSize: settings.fontSize - 2,
-        }}
-        onPress={
-          verseId in (references as References)
-            ? () => {
-                impactAsync(ImpactFeedbackStyle.Heavy)
-                if (setReferenceState) setReferenceState(verseId)
-                if (openReferences !== undefined)
-                  openReferences.value = withSpring(1, panActivateConfig)
-                trackEvent('Open cross references', { verseId })
-              }
-            : undefined
-        }
-      >
-        {' ' + verseNumber + ' '}
-        {/* {verseNumber + ' '} */}
+      <Text>
+        <Text
+          style={{
+            textDecorationLine:
+              verseId in (references as References) ? 'underline' : 'none',
+            ...typography(settings.fontSize - 4, 'uil', 'l', colors.p2),
+          }}
+          onPress={
+            verseId in (references as References)
+              ? () => {
+                  impactAsync(ImpactFeedbackStyle.Heavy)
+                  if (setReferenceState) setReferenceState(verseId)
+                  if (openReferences !== undefined)
+                    openReferences.value = withSpring(1, panActivateConfig)
+                  trackEvent('Open cross references', { verseId })
+                }
+              : undefined
+          }
+        >
+          {verseId in references ? ' ' : ''}
+          {verseNumber + ' '}
+          {/* {verseNumber + ' '} */}
+        </Text>
+        {' '}
       </Text>
     )
   }
@@ -93,7 +96,7 @@ export default function BibleText({
 
   const parse: ParsedTextProps['parse'] = [
     {
-      pattern: /\[([0-9]{1,3})\]/,
+      pattern: /\[([0-9]{1,3})\] /,
       renderText: renderVerseNumber as any,
     },
     // {
@@ -143,7 +146,7 @@ export default function BibleText({
       }}
     >
       <ParsedText parse={parse} style={[textStyle]}>
-        Inspired by the Hebrew word for "good," **tov** is a delightfully simple
+        Inspired by the Hebrew word for "good," *tov* is a delightfully simple
         yet powerful Bible app designed to help you enjoy and study Scripture.
       </ParsedText>
       {'\n\n'}
@@ -151,25 +154,25 @@ export default function BibleText({
         source={require('../assets/lotties/double_tap.json')}
         parse={parse}
         style={textStyle}
-        text={`[1] Double tap anywhere to **view the books of the Bible**.`}
+        text={`[1] Double tap anywhere to *view the books of the Bible*.`}
       />
       {'\n\n'}
       <TutorialItem
         source={require('../assets/lotties/swipe_right.json')}
         parse={parse}
         style={textStyle}
-        text={`[2] Swipe right to open your **reading history** and **view your bookmarks**.`}
+        text={`[2] Swipe right to open your *reading history* and *view your bookmarks*.`}
       />
       {'\n\n'}
       <TutorialItem
         source={require('../assets/lotties/scroll_down.json')}
-        text={`[3] Keep scrolling downwards to go to the **next chapter**.`}
+        text={`[3] Keep scrolling downwards to go to the *next chapter*.`}
         parse={parse}
         style={textStyle}
       />
       {'\n\n'}
       <ParsedText parse={parse} style={[textStyle]}>
-        **Happy reading!**
+        Happy reading!
       </ParsedText>
     </Text>
   ) : (

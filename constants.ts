@@ -5,7 +5,7 @@ export const sizes = {
   massive: 32,
   title: 23,
   subtitle: 19,
-  body: 17,
+  body: 16,
   caption: 14,
   tiny: 12,
 }
@@ -19,8 +19,14 @@ export const shadow: ViewStyle = {
   shadowRadius: 10,
 }
 
-export const gutterSize = deviceType === DeviceType.TABLET ? 32 : 24
+export const gutterSize = deviceType === DeviceType.TABLET ? 32 : 28
+export const textGutterSize = deviceType === DeviceType.TABLET ? 38 : 34
 export const chapterRow = deviceType === DeviceType.TABLET ? 10 : 5
+export const scrollBarWidth = gutterSize
+export const scrollBarHeight = gutterSize
+export const overlayWidth = gutterSize * 3
+export const overlayHeight = gutterSize
+
 export const defaultOnPressScale =
   deviceType === DeviceType.TABLET ? 0.98 : 0.95
 // export const showOverlayOffset = gutterSize * 4
@@ -34,7 +40,6 @@ export const zoomOutReq = 0.3
 export const horizVelocReq = 500
 
 export const textBackdropOpacity = 0.5
-export const overlayHeight = 32
 /**
  * Takes in some text style settings and returns a filled out text style object. This is
  * used simply to save space in components and simplify things overall. Used within the

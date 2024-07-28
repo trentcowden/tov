@@ -1,12 +1,17 @@
 import { trackEvent } from '@aptabase/react-native'
 import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics'
-import React, { useEffect } from 'react'
-import { useWindowDimensions } from 'react-native'
+import React, { useEffect, useMemo } from 'react'
+import { Pressable, useWindowDimensions } from 'react-native'
 import Animated, {
+  FadeIn,
+  FadeOut,
+  interpolate,
+  interpolateColor,
   runOnJS,
   SharedValue,
   useAnimatedStyle,
   useSharedValue,
+  withSequence,
   withSpring,
   withTiming,
 } from 'react-native-reanimated'
@@ -14,6 +19,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import {
   gutterSize,
   overlayHeight,
+  overlayWidth,
   panActivateConfig,
   shadow,
   sizes,
@@ -24,9 +30,12 @@ import { Chapters } from '../data/types/chapters'
 import { getEdges } from '../functions/utils'
 import { JumpToChapter } from '../hooks/useChapterChange'
 import useColors from '../hooks/useColors'
-import { useAppSelector } from '../redux/hooks'
-import TovPressable from './TovPressable'
+import { toggleFavorite } from '../redux/history'
+import { useAppDispatch, useAppSelector } from '../redux/hooks'
+import { sp } from '../styles'
+import TovIcon from './SVG'
 
+const heartSize = 12
 interface Props {
   activeChapter: Chapters[number]
   activeBook: Books[number]
@@ -39,6 +48,7 @@ interface Props {
   jumpToChapter: JumpToChapter
   openReferences: SharedValue<number>
   setReferenceState: React.Dispatch<React.SetStateAction<string | undefined>>
+  textFadeOut: SharedValue<number>
 }
 
 export default function ChapterOverlay({
@@ -53,7 +63,9 @@ export default function ChapterOverlay({
   jumpToChapter,
   openReferences,
   setReferenceState,
+  textFadeOut,
 }: Props) {
+  const dispatch = useAppDispatch()
   const colors = useColors()
   const insets = useSafeAreaInsets()
   const { top, bottom } = getEdges(insets)
@@ -61,11 +73,22 @@ export default function ChapterOverlay({
   const pressed = useSharedValue(0)
   const settings = useAppSelector((state) => state.settings)
   const [text, setText] = React.useState(
-    `${activeBook.name} ${activeChapter.chapterId.split('.')[1]}`
+    `${activeBook.name.replace(/ /g, '').slice(0, 3)} ${activeChapter.chapterId.split('.')[1]}`
   )
+  const [isFavorite, setIsFavorite] = React.useState(false)
+
+  const history = useAppSelector((state) => state.history)
+
+  const itemTranslateX = useSharedValue(0)
+
   const textOpacity = useSharedValue(1)
   const overlayAnimatedStyles = useAnimatedStyle(() => ({
-    opacity: activeChapter.chapterId === 'TUT.1' ? 0 : overlayOpacity.value,
+    opacity:
+      textOpacity.value !== 1
+        ? textOpacity.value
+        : activeChapter.chapterId === 'TUT.1'
+          ? 0
+          : overlayOpacity.value,
     // backgroundColor: interpolateColor(
     //   pressed.value,
     //   [0, 2],
@@ -76,15 +99,34 @@ export default function ChapterOverlay({
     //     translateY: scrollValue.value < 0 ? -scrollValue.value : 0,
     //   },
     // ],
+    transform: [
+      { translateX: textTranslateX.value },
+      {
+        scale: interpolate(pressed.value, [0, 1], [1, 0.95]),
+      },
+    ],
     zIndex: overlayOpacity.value === 0 ? -1 : 4,
+    backgroundColor:
+      // style?.backgroundColor ??
+      // outerStyle?.backgroundColor ??
+      interpolateColor(pressed.value, [0, 1], [colors.bg3, colors.bg3]),
   }))
 
-  const textStyles = useAnimatedStyle(() => ({
-    opacity: textOpacity.value,
-  }))
+  const textContainerStyles = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {
+          translateX: itemTranslateX.value,
+        },
+      ],
+    }
+  })
 
   function changeChapter() {
-    setText(`${activeBook.name} ${activeChapter.chapterId.split('.')[1]}`)
+    // setText(`${activeBook.name} ${activeChapter.chapterId.split('.')[1]}`)
+    setText(
+      `${activeBook.name.replace(/ /g, '').slice(0, 3)} ${activeChapter.chapterId.split('.')[1]}`
+    )
   }
 
   useEffect(() => {
@@ -98,6 +140,17 @@ export default function ChapterOverlay({
     textOpacity.value = withTiming(1, { duration: 150 })
   }, [text])
 
+  const historyItem = useMemo(() => {
+    return history.find((item) => item.chapterId === activeChapter.chapterId)
+  }, [history, activeChapter])
+
+  useEffect(() => {
+    if (historyItem?.isFavorite) {
+      itemTranslateX.value = withSpring(heartSize, panActivateConfig)
+    } else {
+      itemTranslateX.value = withSpring(0, panActivateConfig)
+    }
+  }, [historyItem?.isFavorite])
   // const dimensions = {
   //   width: 80,
   //   height: 32,
@@ -108,7 +161,7 @@ export default function ChapterOverlay({
       style={[
         {
           position: 'absolute',
-          top,
+          bottom: bottom * 1.5,
           // left: gutterSize,
           // top: gutterSize / 2,
           // left: gutterSize / 2,
@@ -122,6 +175,8 @@ export default function ChapterOverlay({
           alignItems: 'center',
           flexDirection: 'row',
           gap: gutterSize / 2,
+          borderRadius: 999,
+          ...shadow,
         },
         overlayAnimatedStyles,
       ]}
@@ -163,7 +218,24 @@ export default function ChapterOverlay({
           backgroundColor: colors.bg3,
         }}
       /> */}
-      <TovPressable
+      <Pressable
+        onPressIn={() => {
+          pressed.value = withTiming(1, { duration: 75 })
+        }}
+        onPressOut={() => {
+          pressed.value = withSpring(0, panActivateConfig)
+        }}
+        delayLongPress={250}
+        onLongPress={() => {
+          pressed.value = withSequence(
+            withTiming(-2, { duration: 75 }),
+            withSpring(0, panActivateConfig)
+          )
+          impactAsync(ImpactFeedbackStyle.Heavy)
+
+          dispatch(toggleFavorite(activeChapter.chapterId))
+        }}
+        hitSlop={gutterSize / 2}
         // onPressIn={() => {
         //   if (overlayOpacity.value === 0) return
         //   pressed.value = withTiming(1, { duration: 75 })
@@ -172,8 +244,6 @@ export default function ChapterOverlay({
         //   if (overlayOpacity.value === 0) return
         //   pressed.value = withSpring(0, panActivateConfig)
         // }}
-        bgColor={colors.p3}
-        onPressColor={colors.p3}
         onPress={() => {
           if (overlayOpacity.value === 0) return
           textTranslateX.value = withSpring(0, panActivateConfig)
@@ -191,12 +261,11 @@ export default function ChapterOverlay({
           // paddingHorizontal: gutterSize * 2,
           // paddingVertical: gutterSize / 2,
           // paddingTop: gutterSize,
-          gap: 2,
-          width: 150,
+          gap: sp.xs,
+          width: overlayWidth,
           height: overlayHeight,
-          borderRadius: 999,
           paddingHorizontal: gutterSize / 1.5,
-          ...shadow,
+          flexDirection: 'row',
         }}
       >
         {/* <TouchableOpacity style={{ paddingHorizontal: gutterSize }}>
@@ -211,21 +280,39 @@ export default function ChapterOverlay({
           }}
         > */}
         {/* <TovIcon name={icon} size={14} /> */}
+        {/* {historyItem?.isFavorite ? (
+          <Animated.View
+            entering={FadeIn}
+            exiting={FadeOut.duration(125)}
+            style={{ position: 'absolute', left: sp.sm }}
+          >
+            <TovIcon name="bookmarkFilled" size={heartSize} color={colors.p1} />
+          </Animated.View>
+        ) : null} */}
+        {historyItem?.isFavorite ? (
+          <Animated.View entering={FadeIn} exiting={FadeOut.duration(125)}>
+            <TovIcon name="bookmarkFilled" size={heartSize} color={colors.p1} />
+          </Animated.View>
+        ) : null}
         <Animated.Text
           numberOfLines={1}
           adjustsFontSizeToFit
           maxFontSizeMultiplier={1}
           style={[
             typography(
-              sizes.tiny,
-              'uib',
+              sizes.tiny - 2,
+              'uil',
               'l',
-              colors.id === 'light' ? colors.fg3 : colors.p1
+              colors.id === 'light' ? colors.fg3 : colors.fg3
             ),
-            textStyles,
+            // textStyles,
+            {
+              fontFamily: 'iAWriterMonoS-Bold',
+            },
+            // textContainerStyles,
           ]}
         >
-          {activeChapter.chapterId === 'TUT.1' ? 'Tutorial' : text}
+          {text.toUpperCase()}
           {/* `${activeBook.name.replace(' ', '').slice(0, 3)}.`} */}
         </Animated.Text>
         {/* <Animated.Text
@@ -252,7 +339,7 @@ export default function ChapterOverlay({
         {/* <TouchableOpacity style={{ paddingHorizontal: gutterSize }}>
         <FontAwesome5 name="history" size={20} color={colors.fg3} />
       </TouchableOpacity> */}
-      </TovPressable>
+      </Pressable>
     </Animated.View>
   )
 }

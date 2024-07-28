@@ -78,29 +78,38 @@ export const fontSizes = [
   {
     name: 'Tiny',
     emoji: '🐞',
-    fontSize: 15,
-    lineHeight: 32,
+    fontSize: 13,
+    lineHeight: 26,
     paragraphSpacing: 14,
   },
   {
     name: 'Default',
     emoji: '🐱',
-    fontSize: 17,
-    lineHeight: 38,
-    paragraphSpacing: 18,
+    fontSize: 16,
+    lineHeight: 32,
+    paragraphSpacing: 11,
   },
   {
     name: 'Quite Big',
     emoji: '🐴',
     fontSize: 19,
-    lineHeight: 42,
+    lineHeight: 38,
     paragraphSpacing: 22,
   },
   {
     name: 'Very Large',
     emoji: '🦖',
-    fontSize: 21,
-    lineHeight: 46,
+    fontSize: 22,
+    lineHeight: 44,
     paragraphSpacing: 26,
   },
 ]
+
+export const sp = {
+  xs: 3.5,
+  sm: 7,
+  md: 14,
+  lg: 21,
+  xl: 28,
+  xx: 34,
+}
