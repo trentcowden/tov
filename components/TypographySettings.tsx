@@ -6,7 +6,7 @@ import { gutterSize, panActivateConfig, typography } from '../constants'
 import { getHorizTransReq } from '../functions/utils'
 import useColors from '../hooks/useColors'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
-import { setTypography } from '../redux/settings'
+import { setBibleTextSize } from '../redux/settings'
 import { fontSizes } from '../styles'
 import BackButton from './BackButton'
 import ModalScreenHeader from './ModalScreenHeader'
@@ -59,7 +59,7 @@ export default function TypographySettings({
             <TovPressable
               key={f.name}
               onPress={() => {
-                dispatch(setTypography(f))
+                dispatch(setBibleTextSize(f))
                 trackEvent('Change font size', { fontSize: f.fontSize })
               }}
               bgColor={colors.bg3}

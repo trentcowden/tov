@@ -17,7 +17,9 @@ export interface SettingsState extends TypographySettings {
 
 const initialState: SettingsState = {
   translation: 'net',
-  ...fontSizes[1],
+  fontSize: 16,
+  lineHeight: 32,
+  paragraphSpacing: 11,
   theme: 'dark',
 }
 
@@ -31,13 +33,34 @@ export const settings = createSlice({
     ) => {
       state.translation = action.payload
     },
-    setTypography: (
-      state,
-      action: PayloadAction<(typeof fontSizes)[number]>
-    ) => {
-      state.fontSize = action.payload.fontSize
-      state.lineHeight = action.payload.lineHeight
-      state.paragraphSpacing = action.payload.paragraphSpacing
+    setBibleTextSize: (state, action: PayloadAction<number>) => {
+      state.fontSize = action.payload
+      state.lineHeight = action.payload * 2
+      state.paragraphSpacing = action.payload * 0.6875
+    },
+    increaseTextSize: (state) => {
+      const currentIndex = fontSizes.findIndex(
+        (size) => size === state.fontSize
+      )
+      if (currentIndex === fontSizes.length - 1) return
+      const newValue =
+        currentIndex === -1 ? fontSizes[2] : fontSizes[currentIndex + 1]
+
+      state.fontSize = newValue
+      state.lineHeight = newValue * 2
+      state.paragraphSpacing = newValue * 0.6875
+    },
+    decreaseTextSize: (state) => {
+      const currentIndex = fontSizes.findIndex(
+        (size) => size === state.fontSize
+      )
+      if (currentIndex === 0) return
+      const newValue =
+        currentIndex === -1 ? fontSizes[2] : fontSizes[currentIndex - 1]
+
+      state.fontSize = newValue
+      state.lineHeight = newValue * 2
+      state.paragraphSpacing = newValue * 0.6875
     },
     setTheme: (state, action: PayloadAction<SettingsState['theme']>) => {
       state.theme = action.payload
@@ -45,6 +68,12 @@ export const settings = createSlice({
   },
 })
 
-export const { setTheme, setTranslation, setTypography } = settings.actions
+export const {
+  setTheme,
+  setTranslation,
+  setBibleTextSize,
+  decreaseTextSize,
+  increaseTextSize,
+} = settings.actions
 
 export default settings.reducer

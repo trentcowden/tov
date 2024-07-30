@@ -74,36 +74,7 @@ export const themes = [
   },
 ]
 
-export const fontSizes = [
-  {
-    name: 'Tiny',
-    emoji: '🐞',
-    fontSize: 13,
-    lineHeight: 26,
-    paragraphSpacing: 14,
-  },
-  {
-    name: 'Default',
-    emoji: '🐱',
-    fontSize: 16,
-    lineHeight: 32,
-    paragraphSpacing: 11,
-  },
-  {
-    name: 'Quite Big',
-    emoji: '🐴',
-    fontSize: 19,
-    lineHeight: 38,
-    paragraphSpacing: 22,
-  },
-  {
-    name: 'Very Large',
-    emoji: '🦖',
-    fontSize: 22,
-    lineHeight: 44,
-    paragraphSpacing: 26,
-  },
-]
+export const fontSizes = [10, 13, 16, 19, 22, 25]
 
 export const sp = {
   xs: 3.5,
@@ -111,5 +82,5 @@ export const sp = {
   md: 14,
   lg: 21,
   xl: 28,
-  xx: 34,
+  xx: 36,
 }

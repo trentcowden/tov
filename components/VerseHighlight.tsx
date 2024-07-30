@@ -17,6 +17,7 @@ import { getEdges } from '../functions/utils'
 import { JumpToChapter } from '../hooks/useChapterChange'
 import useColors from '../hooks/useColors'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
+import { sp } from '../styles'
 
 interface Props {
   verseOffsets: number[] | undefined
@@ -25,6 +26,7 @@ interface Props {
   jumpToChapter: JumpToChapter
   verseNewlines: boolean[] | undefined
   paragraphs: boolean[] | undefined
+  spaceAfterTextEnds: number
 }
 
 export default function VerseHighlight({
@@ -34,6 +36,7 @@ export default function VerseHighlight({
   jumpToChapter,
   verseNewlines,
   paragraphs,
+  spaceAfterTextEnds,
 }: Props) {
   const { width } = useWindowDimensions()
   const insets = useSafeAreaInsets()
@@ -117,18 +120,18 @@ export default function VerseHighlight({
         ? activeChapterIndex.numVersesToHighlight + 1
         : 1)
 
-    let height = verseOffsets[endOffset] - start + settings.lineHeight
+    let height = verseOffsets[endOffset] - start + settings.lineHeight + 3
 
     // The last offset extends past the last verse, so we need to adjust the height so
     // it doesn't go past the bottom of the screen.
     if (endOffset === verseOffsets.length - 1) {
-      height -=
-        gutterSize * 6 + bottom - settings.paragraphSpacing - gutterSize / 2
+      height -= settings.lineHeight
+      height -= spaceAfterTextEnds
       // If the last verse is a newline, we need to adjust the height so that it doesn't
       // extend into the next verse.
     } else if (paragraphs && paragraphs[endOffset]) {
       console.log('paragraph')
-      height -= settings.lineHeight * 1.4
+      height -= settings.lineHeight * 1.3
     } else if (verseNewlines && verseNewlines[endOffset]) {
       height -= settings.lineHeight
     }
@@ -149,7 +152,7 @@ export default function VerseHighlight({
           position: 'absolute',
           height,
           top,
-          width: width - gutterSize,
+          width: width - sp.xx * 2 + gutterSize,
           alignSelf: 'center',
           backgroundColor: colors.p1,
           borderRadius: 12,

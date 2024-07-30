@@ -15,11 +15,13 @@ interface Props {
   textFadeOut: SharedValue<number>
   scrollOffset: SharedValue<number>
   overlayOpacity: SharedValue<number>
+  scale: SharedValue<number>
 }
 
 export default function useHistoryOpen({
   navigatorTransition,
   textFadeOut,
+  scale,
   overlayOpacity,
   scrollOffset,
 }: Props) {
@@ -30,7 +32,12 @@ export default function useHistoryOpen({
 
   const panGesture = Gesture.Pan()
     .onChange((event) => {
-      if (navigatorTransition.value !== 0 || textFadeOut.value !== 0) return
+      if (
+        navigatorTransition.value !== 0 ||
+        textFadeOut.value !== 0 ||
+        scale.value !== 0
+      )
+        return
 
       // if (textTranslateX.value > gutterSize) {
       //   overlayOpacity.value = withTiming(0)
@@ -44,7 +51,12 @@ export default function useHistoryOpen({
       }
     })
     .onFinalize((e) => {
-      if (navigatorTransition.value !== 0 || textFadeOut.value !== 0) return
+      if (
+        navigatorTransition.value !== 0 ||
+        textFadeOut.value !== 0 ||
+        scale.value !== 0
+      )
+        return
 
       const comingFrom =
         savedTextTranslateX.value === 0

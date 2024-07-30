@@ -11,6 +11,7 @@ interface Props {
   openReferences: SharedValue<number>
   searchRef: React.RefObject<TextInput>
   overlayOpacity: SharedValue<number>
+  scale: SharedValue<number>
 }
 
 export default function useNavigatorOpen({
@@ -19,6 +20,7 @@ export default function useNavigatorOpen({
   textTranslateX,
   searchRef,
   overlayOpacity,
+  scale,
 }: Props) {
   function focusSearch() {
     searchRef.current?.focus()
@@ -32,6 +34,8 @@ export default function useNavigatorOpen({
     .maxDuration(250)
     .numberOfTaps(2)
     .onStart(() => {
+      if (scale.value !== 0) return
+
       // If we are viewing history/verse info, ignore taps.
       if (Math.abs(textTranslateX.value) > 10) return
       // If the navigator is already open, ignore taps.

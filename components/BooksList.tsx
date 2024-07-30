@@ -64,7 +64,7 @@ export default function BooksList({ navigatorBook, goToBook }: Props) {
           width: width - gutterSize * 4,
           // paddingHorizontal: gutterSize,
           // marginTop: index === 0 ? 0 : gutterSize * 1.5,
-          paddingBottom: gutterSize / 3,
+          paddingBottom: gutterSize / 8,
           backgroundColor: colors.bg2,
         }}
       >

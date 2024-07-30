@@ -1,5 +1,5 @@
 import { ImpactFeedbackStyle, impactAsync } from 'expo-haptics'
-import React, { RefObject, useMemo } from 'react'
+import React, { RefObject } from 'react'
 import { Text, View, useWindowDimensions } from 'react-native'
 import {
   Gesture,
@@ -62,14 +62,6 @@ export default function ScrollBar({
   const [verseText, setVerseText] = React.useState<string>('')
   const pop = useSharedValue(0)
 
-  const relativeVerseOffsets = useMemo<number[] | undefined>(() => {
-    if (!verseOffsets) return
-    console.log(verseOffsets)
-    return verseOffsets.map(
-      (verseOffset) => (verseOffset / textHeight) * usableHeight
-    )
-  }, [verseOffsets])
-
   useDerivedValue(() => {
     if (scrollBarActivate.value === 1)
       runOnJS(impactAsync)(ImpactFeedbackStyle.Light)
@@ -126,9 +118,7 @@ export default function ScrollBar({
       if (textHeight < height) return
 
       // Fling!
-      console.log(event.velocityY)
       if (Math.abs(event.velocityY) > 700) {
-        console.log('fling!')
         scrollBarPosition.value = withDecay(
           {
             deceleration: 0.98,
@@ -197,16 +187,10 @@ export default function ScrollBar({
   })
 
   const verseNumStyles = useAnimatedStyle(() => {
-    console.log(scrollBarPosition.value)
     return {
       opacity: scrollBarActivate.value,
     }
   })
-
-  // useEffect(() => {
-  //   if (!going)
-  //     scrollBarActivate.value = withDelay(200, withTiming(0, { duration: 500 }))
-  // }, [going])
 
   const verseNumberStyles = useAnimatedStyle(() => ({
     opacity: scrollBarActivate.value,
@@ -219,56 +203,13 @@ export default function ScrollBar({
 
   return (
     <>
-      {/* <Animated.View
-        style={[
-          {
-            position: 'absolute',
-            right: 0,
-            top: top,
-            height: usableHeight,
-            zIndex: 1,
-            width: scrollBarWidth,
-            backgroundColor: 'green',
-          },
-          verseNumberStyles,
-        ]}
-        pointerEvents={'none'}
-      >
-        <View style={{ height: '100%' }}>
-          {relativeVerseOffsets?.slice(0, -1).map((offset, index) => {
-            return (
-              <View
-                key={offset * index}
-                style={{
-                  borderTopWidth: 1,
-                  width: scrollBarWidth,
-                  // height: verseHeight,
-                  position: 'absolute',
-                  top: offset,
-                }}
-              >
-                <Text
-                  numberOfLines={1}
-                  adjustsFontSizeToFit
-                  style={{
-                    ...typography(7, 'uil', 'c', colors.fg3),
-                    // width: verseColumnWidth,
-                  }}
-                >
-                  {index + 1}
-                </Text>
-              </View>
-            )
-          })}
-        </View>
-      </Animated.View> */}
       <GestureDetector gesture={scrollPanGesture}>
         <Animated.View
           style={[
             {
               position: 'absolute',
               // right: -scrollBarWidth * 3,
-              right: 2,
+              right: 0,
               top: 0,
               height: height,
               width: scrollBarWidth * 1.5,

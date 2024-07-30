@@ -71,54 +71,28 @@ export default function ChapterOverlay({
   const { top, bottom } = getEdges(insets)
   const { width } = useWindowDimensions()
   const pressed = useSharedValue(0)
-  const settings = useAppSelector((state) => state.settings)
   const [text, setText] = React.useState(
     `${activeBook.name.replace(/ /g, '').slice(0, 3)} ${activeChapter.chapterId.split('.')[1]}`
   )
-  const [isFavorite, setIsFavorite] = React.useState(false)
 
   const history = useAppSelector((state) => state.history)
 
   const itemTranslateX = useSharedValue(0)
 
   const textOpacity = useSharedValue(1)
-  const overlayAnimatedStyles = useAnimatedStyle(() => ({
-    opacity:
-      textOpacity.value !== 1
-        ? textOpacity.value
-        : activeChapter.chapterId === 'TUT.1'
-          ? 0
-          : overlayOpacity.value,
-    // backgroundColor: interpolateColor(
-    //   pressed.value,
-    //   [0, 2],
-    //   [settings.theme === 'black' ? colors.bg1 : colors.bg2, colors.bg3]
-    // ),
-    // transform: [
-    //   {
-    //     translateY: scrollValue.value < 0 ? -scrollValue.value : 0,
-    //   },
-    // ],
-    transform: [
-      { translateX: textTranslateX.value },
-      {
-        scale: interpolate(pressed.value, [0, 1], [1, 0.95]),
-      },
-    ],
-    zIndex: overlayOpacity.value === 0 ? -1 : 4,
-    backgroundColor:
-      // style?.backgroundColor ??
-      // outerStyle?.backgroundColor ??
-      interpolateColor(pressed.value, [0, 1], [colors.bg3, colors.bg3]),
-  }))
-
-  const textContainerStyles = useAnimatedStyle(() => {
+  const overlayAnimatedStyles = useAnimatedStyle(() => {
     return {
+      opacity: textOpacity.value,
+
       transform: [
-        {
-          translateX: itemTranslateX.value,
-        },
+        { translateX: textTranslateX.value },
+        { scale: interpolate(pressed.value, [0, 1], [1, 0.95]) },
       ],
+      backgroundColor: interpolateColor(
+        pressed.value,
+        [0, 1],
+        [colors.bg3, colors.bg3]
+      ),
     }
   })
 
@@ -171,7 +145,7 @@ export default function ChapterOverlay({
           // backgroundColor: colors.p1 + '22',
           // width: width,
           justifyContent: 'center',
-          zIndex: 4,
+          zIndex: 1,
           alignItems: 'center',
           flexDirection: 'row',
           gap: gutterSize / 2,

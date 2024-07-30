@@ -47,11 +47,13 @@ import useColors from './hooks/useColors'
 import useHighlightVerse from './hooks/useHighlightVerse'
 import useHistoryOpen from './hooks/useHistoryOpen'
 import useNavigatorOpen from './hooks/useNavigatorOpen'
+import usePinch from './hooks/usePinch'
 import useScrollUpdate from './hooks/useScrollUpdate'
-import { useAppSelector } from './redux/hooks'
+import { useAppDispatch, useAppSelector } from './redux/hooks'
 import { sp } from './styles'
 
 export default function Bible() {
+  const dispatch = useAppDispatch()
   const colors = useColors()
   const { height, width } = useWindowDimensions()
   const horizTransReq = getHorizTransReq(width)
@@ -61,7 +63,6 @@ export default function Bible() {
   const insets = useSafeAreaInsets()
   const { top, bottom } = getEdges(insets)
   const activeChapter = useMemo(() => {
-    console.log(settings.translation)
     return bibles[settings.translation][activeChapterIndex.index]
   }, [activeChapterIndex.index])
 
@@ -88,6 +89,8 @@ export default function Bible() {
     activeChapter.chapterId === 'TUT.1'
       ? height
       : top - gutterSize + chapterChangeFeedbackHeight + gutterSize * 0.75
+  const spaceAfterTextEnds =
+    gutterSize * 0.75 + chapterChangeFeedbackHeight + bottom
   const currentVerseIndex = useSharedValue<number | 'bottom' | 'top'>(0)
   const fingerDown = useRef(false)
 
@@ -101,6 +104,8 @@ export default function Bible() {
 
   const scrollBarActivate = useSharedValue(-1)
   const scrollOffset = useSharedValue(0)
+
+  const { scale, pinchGesture } = usePinch()
 
   const {
     alreadyHaptic,
@@ -143,6 +148,7 @@ export default function Bible() {
     textFadeOut,
     overlayOpacity,
     scrollOffset,
+    scale,
   })
 
   const { tapGesture, focusSearch } = useNavigatorOpen({
@@ -151,35 +157,42 @@ export default function Bible() {
     openReferences,
     searchRef,
     overlayOpacity,
+    scale,
   })
 
   useHighlightVerse({ verseOffsets, highlightVerseNumber })
 
-  const composedGestures = Gesture.Simultaneous(panGesture, tapGesture)
+  const composedGestures = Gesture.Simultaneous(
+    panGesture,
+    tapGesture,
+    pinchGesture
+  )
 
   const textStyles = useAnimatedStyle(() => {
     return {
       transform: [
         { translateY: textTranslateY.value },
         { translateX: textTranslateX.value },
+        { scale: 1 + scale.value / 10 },
       ],
       opacity:
-        textFadeOut.value !== 0
-          ? interpolate(textFadeOut.value, [0, 1], [1, 0])
-          : scrollBarActivate.value > 0
-            ? interpolate(scrollBarActivate.value, [0, 1], [1, 0.3])
-            : textTranslateX.value !== 0
-              ? interpolate(
-                  textTranslateX.value,
-                  [-horizTransReq, 0, horizTransReq],
-                  [0.7, 1, 0.7]
-                )
-              : 1,
+        scale.value !== 0
+          ? interpolate(scale.value, [-0.5, 0, 1], [0.7, 1, 0.7])
+          : textFadeOut.value !== 0
+            ? interpolate(textFadeOut.value, [0, 1], [1, 0])
+            : scrollBarActivate.value > 0
+              ? interpolate(scrollBarActivate.value, [0, 1], [1, 0.3])
+              : textTranslateX.value !== 0
+                ? interpolate(
+                    textTranslateX.value,
+                    [-horizTransReq, 0, horizTransReq],
+                    [0.7, 1, 0.7]
+                  )
+                : 1,
     }
   })
 
   function onTextLayout(event: NativeSyntheticEvent<TextLayoutEventData>) {
-    const spaceAfterTextEnds = gutterSize + chapterChangeFeedbackHeight + bottom
     const localVerseOffsets: number[] = []
     const localVerseNewlines: boolean[] = []
     const localParagraphs: boolean[] = []
@@ -292,13 +305,9 @@ export default function Bible() {
               jumpToChapter={jumpToChapter}
               verseNewlines={verseNewlines}
               paragraphs={paragraphs}
+              spaceAfterTextEnds={spaceAfterTextEnds}
             />
-            <View
-              style={{
-                width: '100%',
-                // height: spaceBeforeTextStarts,
-              }}
-            >
+            <View style={{ width: '100%' }}>
               {activeChapter.chapterId === 'TUT.1' ? null : (
                 <Spacer additional={top - gutterSize} />
               )}
