@@ -92,6 +92,7 @@ export default function Bible() {
   const spaceAfterTextEnds =
     gutterSize * 0.75 + chapterChangeFeedbackHeight + bottom
   const currentVerseIndex = useSharedValue<number | 'bottom' | 'top'>(0)
+  const currentVerseIndexNum = useSharedValue<number>(0)
   const fingerDown = useRef(false)
 
   const openNavigator = useSharedValue(0)
@@ -141,6 +142,7 @@ export default function Bible() {
     overlayOpacity,
     scrollOffset,
     openSettings,
+    currentVerseIndexNum,
   })
 
   const { panGesture, savedTextTranslateX, textTranslateX } = useHistoryOpen({
@@ -378,6 +380,7 @@ export default function Bible() {
           scrollBarPosition={scrollBarPosition}
           currentVerseIndex={currentVerseIndex}
           textTranslateX={textTranslateX}
+          currentVerseIndexNum={currentVerseIndexNum}
         />
         <Settings
           openSettings={openSettings}

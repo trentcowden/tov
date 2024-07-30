@@ -39,6 +39,7 @@ interface Props {
   textTranslateX: SharedValue<number>
   scrollBarPosition: SharedValue<number>
   currentVerseIndex: SharedValue<number | 'bottom' | 'top'>
+  currentVerseIndexNum: SharedValue<number>
 }
 
 export default function ScrollBar({
@@ -48,6 +49,7 @@ export default function ScrollBar({
   textTranslateX,
   scrollBarPosition,
   currentVerseIndex,
+  currentVerseIndexNum,
 }: Props) {
   const colors = useColors()
   const insets = useSafeAreaInsets()
@@ -67,14 +69,7 @@ export default function ScrollBar({
       runOnJS(impactAsync)(ImpactFeedbackStyle.Light)
 
     if (verseOffsets?.length === 1) runOnJS(setVerseText)('')
-    else
-      runOnJS(setVerseText)(
-        currentVerseIndex.value === 'bottom'
-          ? 'Bottom'
-          : currentVerseIndex.value === 'top'
-            ? 'Top'
-            : `${(currentVerseIndex.value + 1).toString()}`
-      )
+    else runOnJS(setVerseText)(`${(currentVerseIndexNum.value + 1).toString()}`)
   })
 
   const scrollPanGesture = Gesture.Pan()

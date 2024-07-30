@@ -23,6 +23,7 @@ interface Props {
   releaseToChange: SharedValue<number>
   scrollBarActivate: SharedValue<number>
   currentVerseIndex: SharedValue<number | 'top' | 'bottom'>
+  currentVerseIndexNum: SharedValue<number>
   overScrollAmount: SharedValue<number>
   overlayOpacity: SharedValue<number>
   scrollOffset: SharedValue<number>
@@ -36,6 +37,7 @@ export default function useScrollUpdate({
   verseOffsets,
   releaseToChange,
   currentVerseIndex,
+  currentVerseIndexNum,
   overScrollAmount,
   scrollBarActivate,
   overlayOpacity,
@@ -127,12 +129,14 @@ export default function useScrollUpdate({
     }
   }
 
-  function getVerseIndex(offset: number) {
+  function getVerseIndex(offset: number, useTopBottom: boolean) {
     if (!verseOffsets) return -1
 
-    if (offset + 50 > verseOffsets[verseOffsets.length - 1] - height) {
-      return 'bottom'
-    } else if (offset < 50) return 'top'
+    if (useTopBottom) {
+      if (offset + 50 > verseOffsets[verseOffsets.length - 1] - height) {
+        return 'bottom'
+      } else if (offset < 50) return 'top'
+    }
 
     let low = 0
     let high = verseOffsets.length - 1
@@ -163,11 +167,13 @@ export default function useScrollUpdate({
   }
 
   function handleScrollVersePosition(offset: number) {
-    const result = getVerseIndex(offset)
+    const result = getVerseIndex(offset, true)
+    const resultNum = getVerseIndex(offset, false)
 
     if (result === 'bottom' || result === 'top' || result >= 0) {
       currentVerseIndex.value = result
     }
+    currentVerseIndexNum.value = resultNum as number
   }
 
   function handleOverScrollAmount(offset: number, contentHeight: number) {
