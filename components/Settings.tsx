@@ -92,7 +92,7 @@ export default function Settings({
           width: modalWidth,
           height: modalHeight,
           backgroundColor: colors.bg2,
-          borderRadius: br.xx,
+          borderRadius: br.xl,
           paddingTop: gutterSize / 2,
           overflow: 'hidden',
           ...shadow,

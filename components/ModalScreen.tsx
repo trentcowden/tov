@@ -146,7 +146,7 @@ export default function ModalScreen({
               backgroundColor: colors.bd,
               position: 'absolute',
               top: top + gutterSize / 2,
-              borderRadius: br.xx,
+              borderRadius: br.xl,
             },
             mainStyles,
           ]}
@@ -162,7 +162,7 @@ export default function ModalScreen({
               overflow: 'hidden',
               paddingTop: gutterSize / 2,
               backgroundColor: colors.bg2,
-              borderRadius: br.xx,
+              borderRadius: br.xl,
             },
             nestedStyle,
           ]}

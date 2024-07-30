@@ -184,7 +184,7 @@ export default function Navigator({
           style={{
             width: modalWidth,
             backgroundColor: colors.bg2,
-            borderRadius: br.xx,
+            borderRadius: br.xl,
             flex: 1,
             paddingTop: gutterSize,
             ...shadow,
@@ -269,7 +269,7 @@ export default function Navigator({
               paddingTop:
                 searchText === '' ? gutterSize * 0.66 : gutterSize / 2,
               overflow: 'hidden',
-              borderRadius: br.xx,
+              borderRadius: br.xl,
             }}
           >
             {searchText === '' ? (

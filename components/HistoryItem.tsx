@@ -192,7 +192,7 @@ export default function HistoryListItem({
             paddingHorizontal: gutterSize / 2,
             gap: gutterSize / 2,
             flexDirection: 'row',
-            borderRadius: br.lg,
+            borderRadius: br.md,
             backgroundColor:
               item.chapterId === activeChapter.chapterId
                 ? colors.ph

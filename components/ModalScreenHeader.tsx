@@ -2,6 +2,7 @@ import { ReactNode } from 'react'
 import { Text, View } from 'react-native'
 import { gutterSize, iconSize, sizes, typography } from '../constants'
 import useColors from '../hooks/useColors'
+import { br } from '../styles'
 import TovIcon from './SVG'
 import TovPressable from './TovPressable'
 
@@ -30,7 +31,7 @@ export default function ModalScreenHeader({
         paddingRight: gutterSize / 2,
         marginRight: gutterSize / 2,
         marginLeft: gutterSize / 4,
-        borderRadius: 99,
+        borderRadius: br.lg,
         alignItems: 'center',
         justifyContent: 'center',
         height: '100%',

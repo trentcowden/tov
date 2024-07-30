@@ -61,7 +61,7 @@ export default function ChapterBoxes({
         <TovPressable
           style={{
             // flex: 1,
-            borderRadius: br.lg,
+            borderRadius: br.md,
             height: '100%',
             width: '100%',
             alignItems: 'center',

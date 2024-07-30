@@ -92,7 +92,7 @@ export default function BooksList({ navigatorBook, goToBook }: Props) {
           paddingHorizontal: gutterSize / 2,
           alignItems: 'center',
           flexDirection: 'row',
-          borderRadius: br.fu,
+          borderRadius: br.md,
           marginHorizontal: gutterSize / 2,
           justifyContent: 'space-between',
         }}

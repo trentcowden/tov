@@ -31,7 +31,7 @@ import {
 } from '../constants'
 import { getEdges } from '../functions/utils'
 import useColors from '../hooks/useColors'
-import { br, sp } from '../styles'
+import { sp } from '../styles'
 
 interface Props {
   verseOffsets: number[] | undefined
@@ -240,7 +240,7 @@ export default function ScrollBar({
           justifyContent: 'center',
           width: '100%',
           position: 'absolute',
-          top: currentVerseReq,
+          top: currentVerseReq - 32,
         }}
         pointerEvents="none"
       >
@@ -250,32 +250,53 @@ export default function ScrollBar({
             {
               alignItems: 'center',
               justifyContent: 'center',
-              flexDirection: 'row',
-              gap: sp.sm,
+              gap: sp.xs,
             },
           ]}
         >
-          <View
-            style={{
-              width: sp.xl,
-              height: 2,
-              borderRadius: br.fu,
-              backgroundColor: colors.ph,
-            }}
-          />
           <Text
-            numberOfLines={1}
-            adjustsFontSizeToFit
             style={[
-              typography(sizes.massive, 'uib', 'c', colors.p1),
-              { fontFamily: 'iAWriterMonoS-Bold' },
+              typography(sizes.tiny, 'uib', 'c', colors.p2),
+              // { fontFamily: 'iAWriterMonoS-Bold' },
             ]}
           >
-            {verseText}
+            Verse
           </Text>
           <View
-            style={{ width: sp.xl, height: 2, backgroundColor: colors.ph }}
-          />
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: sp.sm,
+            }}
+          >
+            {/* <View
+              style={{
+                width: sp.xl,
+                height: 2,
+                borderRadius: br.fu,
+                backgroundColor: colors.ph,
+              }}
+            /> */}
+            <Text
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              style={[
+                typography(sizes.massive, 'uib', 'c', colors.p1),
+                { fontFamily: 'iAWriterMonoS-Bold' },
+              ]}
+            >
+              {verseText}
+            </Text>
+            {/* <View
+              style={{
+                width: sp.xl,
+                height: 2,
+                borderRadius: br.fu,
+                backgroundColor: colors.ph,
+              }}
+            /> */}
+          </View>
         </Animated.View>
       </View>
     </>
