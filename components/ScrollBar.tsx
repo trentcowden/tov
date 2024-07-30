@@ -31,6 +31,7 @@ import {
 } from '../constants'
 import { getEdges } from '../functions/utils'
 import useColors from '../hooks/useColors'
+import { br, sp } from '../styles'
 
 interface Props {
   verseOffsets: number[] | undefined
@@ -249,9 +250,19 @@ export default function ScrollBar({
             {
               alignItems: 'center',
               justifyContent: 'center',
+              flexDirection: 'row',
+              gap: sp.sm,
             },
           ]}
         >
+          <View
+            style={{
+              width: sp.xl,
+              height: 2,
+              borderRadius: br.fu,
+              backgroundColor: colors.ph,
+            }}
+          />
           <Text
             numberOfLines={1}
             adjustsFontSizeToFit
@@ -262,6 +273,9 @@ export default function ScrollBar({
           >
             {verseText}
           </Text>
+          <View
+            style={{ width: sp.xl, height: 2, backgroundColor: colors.ph }}
+          />
         </Animated.View>
       </View>
     </>
