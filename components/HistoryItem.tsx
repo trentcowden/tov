@@ -32,6 +32,7 @@ import {
   toggleFavorite,
 } from '../redux/history'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
+import { br } from '../styles'
 import TovIcon from './SVG'
 
 interface Props {
@@ -191,7 +192,7 @@ export default function HistoryListItem({
             paddingHorizontal: gutterSize / 2,
             gap: gutterSize / 2,
             flexDirection: 'row',
-            borderRadius: 12,
+            borderRadius: br.lg,
             backgroundColor:
               item.chapterId === activeChapter.chapterId
                 ? colors.ph

@@ -84,3 +84,12 @@ export const sp = {
   xl: 28,
   xx: 36,
 }
+
+export const br = {
+  sm: 4,
+  md: 8,
+  lg: 16,
+  xl: 24,
+  xx: 32,
+  fu: 999,
+}

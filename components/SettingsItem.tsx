@@ -2,6 +2,7 @@ import React, { ReactNode } from 'react'
 import { Text, View } from 'react-native'
 import { gutterSize, sizes, typography } from '../constants'
 import useColors from '../hooks/useColors'
+import { br } from '../styles'
 import TovIcon, { IconName } from './SVG'
 import TovPressable from './TovPressable'
 
@@ -31,7 +32,7 @@ export default function SettingsItem({
       disableAnimation={!onPress}
       style={{
         marginHorizontal: gutterSize,
-        borderRadius: 12,
+        borderRadius: br.lg,
       }}
       onPressColor={colors.bg3}
     >

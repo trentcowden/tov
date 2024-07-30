@@ -1,6 +1,6 @@
 import { FlashList } from '@shopify/flash-list'
 import { RefObject } from 'react'
-import { Text } from 'react-native'
+import { Text, View } from 'react-native'
 import { FlatList } from 'react-native-gesture-handler'
 import { FadeIn, FadeOut } from 'react-native-reanimated'
 import Spacer from '../Spacer'
@@ -10,6 +10,8 @@ import { Chapters } from '../data/types/chapters'
 import { getBook, getChapterReference } from '../functions/bible'
 import { JumpToChapter } from '../hooks/useChapterChange'
 import useColors from '../hooks/useColors'
+import { br } from '../styles'
+import Fade from './Fade'
 import { SearchResult } from './Navigator'
 import TovIcon from './SVG'
 import TovPressable from './TovPressable'
@@ -50,7 +52,7 @@ export default function SearchResults({
         style={{
           alignItems: 'center',
           marginHorizontal: gutterSize / 2,
-          borderRadius: 12,
+          borderRadius: br.lg,
           // height: 48,
           paddingVertical: gutterSize / 3,
           paddingHorizontal: gutterSize / 2,
@@ -80,22 +82,26 @@ export default function SearchResults({
   }
 
   return (
-    <FlatList
-      ref={searchResultsRef as any}
-      keyboardShouldPersistTaps="always"
-      keyExtractor={(item) => item.item.chapterId}
-      renderItem={renderSearchResultItem}
-      ListFooterComponent={<Spacer units={4} />}
-      ItemSeparatorComponent={() => <Spacer units={1} />}
-      data={searchResults.sort((a, b) =>
-        getBook(a.item.chapterId).bookId === activeBook.bookId &&
-        getBook(b.item.chapterId).bookId !== activeBook.bookId
-          ? -1
-          : getBook(b.item.chapterId).bookId === activeBook.bookId &&
-              getBook(a.item.chapterId).bookId !== activeBook.bookId
-            ? 1
-            : 0
-      )}
-    />
+    <View style={{ flex: 1 }}>
+      <FlatList
+        ref={searchResultsRef as any}
+        keyboardShouldPersistTaps="always"
+        keyExtractor={(item) => item.item.chapterId}
+        renderItem={renderSearchResultItem}
+        ListFooterComponent={<Spacer units={4} />}
+        ListHeaderComponent={<Spacer units={2} />}
+        ItemSeparatorComponent={() => <Spacer units={1} />}
+        data={searchResults.sort((a, b) =>
+          getBook(a.item.chapterId).bookId === activeBook.bookId &&
+          getBook(b.item.chapterId).bookId !== activeBook.bookId
+            ? -1
+            : getBook(b.item.chapterId).bookId === activeBook.bookId &&
+                getBook(a.item.chapterId).bookId !== activeBook.bookId
+              ? 1
+              : 0
+        )}
+      />
+      <Fade place="top" color={colors.bg2} />
+    </View>
   )
 }

@@ -31,6 +31,7 @@ import { JumpToChapter } from '../hooks/useChapterChange'
 import useColors from '../hooks/useColors'
 import { HistoryItem } from '../redux/history'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
+import { br } from '../styles'
 import Fade from './Fade'
 import HistoryListItem from './HistoryItem'
 import TovIcon from './SVG'
@@ -183,7 +184,7 @@ export default function History({
             flexDirection: 'row',
             marginHorizontal: gutterSize / 2,
             gap: 8,
-            borderRadius: 12,
+            borderRadius: br.lg,
           }}
         >
           <View
@@ -212,7 +213,7 @@ export default function History({
               flexDirection: 'row',
               justifyContent: 'center',
               alignItems: 'center',
-              borderRadius: 12,
+              borderRadius: br.fu,
               backgroundColor: showFavorites ? colors.p1 : colors.bg3,
             }}
           >

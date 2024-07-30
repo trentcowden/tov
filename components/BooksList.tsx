@@ -6,6 +6,7 @@ import { gutterSize, sizes, typography } from '../constants'
 import books from '../data/books.json'
 import { Books } from '../data/types/books'
 import useColors from '../hooks/useColors'
+import { br } from '../styles'
 import TovPressable from './TovPressable'
 
 interface Props {
@@ -91,7 +92,7 @@ export default function BooksList({ navigatorBook, goToBook }: Props) {
           paddingHorizontal: gutterSize / 2,
           alignItems: 'center',
           flexDirection: 'row',
-          borderRadius: 12,
+          borderRadius: br.fu,
           marginHorizontal: gutterSize / 2,
           justifyContent: 'space-between',
         }}

@@ -18,6 +18,7 @@ import {
 import { getEdges, getModalHeight, getModalWidth } from '../functions/utils'
 import useColors from '../hooks/useColors'
 import { useAppDispatch } from '../redux/hooks'
+import { br } from '../styles'
 import TovPressable from './TovPressable'
 
 interface Props {
@@ -145,7 +146,7 @@ export default function ModalScreen({
               backgroundColor: colors.bd,
               position: 'absolute',
               top: top + gutterSize / 2,
-              borderRadius: 12,
+              borderRadius: br.xx,
             },
             mainStyles,
           ]}
@@ -161,7 +162,7 @@ export default function ModalScreen({
               overflow: 'hidden',
               paddingTop: gutterSize / 2,
               backgroundColor: colors.bg2,
-              borderRadius: 12,
+              borderRadius: br.xx,
             },
             nestedStyle,
           ]}

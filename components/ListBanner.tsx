@@ -13,6 +13,7 @@ import { gutterSize, panActivateConfig, sizes, typography } from '../constants'
 import useColors from '../hooks/useColors'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
 import { dismissPopup } from '../redux/popups'
+import { br } from '../styles'
 import TovIcon, { IconName } from './SVG'
 import TovPressable from './TovPressable'
 
@@ -51,7 +52,7 @@ export default function ListBanner({ body, icon, title, popup }: Props) {
           marginTop: gutterSize / 2,
           backgroundColor: colors.ph,
           padding: gutterSize / 2,
-          borderRadius: 12,
+          borderRadius: br.lg,
           marginBottom: gutterSize,
         },
         styles,
@@ -83,7 +84,7 @@ export default function ListBanner({ body, icon, title, popup }: Props) {
           top: 0,
         }}
         bgColor={colors.p1 + '00'}
-        style={{ borderRadius: 12, padding: gutterSize / 2 }}
+        style={{ borderRadius: br.lg, padding: gutterSize / 2 }}
         onPressColor={colors.p1}
         onPress={() => (dismiss.value = withSpring(1, panActivateConfig))}
       >

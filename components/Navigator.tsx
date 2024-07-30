@@ -31,6 +31,7 @@ import { getModalHeight, getModalWidth } from '../functions/utils'
 import { JumpToChapter } from '../hooks/useChapterChange'
 import useColors from '../hooks/useColors'
 import { useAppSelector } from '../redux/hooks'
+import { br } from '../styles'
 import BackButton from './BackButton'
 import BooksList from './BooksList'
 import ChapterBoxes from './ChapterBoxes'
@@ -183,7 +184,7 @@ export default function Navigator({
           style={{
             width: modalWidth,
             backgroundColor: colors.bg2,
-            borderRadius: 12,
+            borderRadius: br.xx,
             flex: 1,
             paddingTop: gutterSize,
             ...shadow,
@@ -210,7 +211,7 @@ export default function Navigator({
                   paddingLeft: gutterSize + 14,
                   paddingRight: 18 + gutterSize,
                   backgroundColor: colors.bg3,
-                  borderRadius: 12,
+                  borderRadius: br.lg,
                   ...typography(sizes.body, 'uis', 'l', colors.fg1),
                 }}
                 returnKeyType={'done'}
@@ -251,7 +252,7 @@ export default function Navigator({
                     height: 50,
                     padding: gutterSize / 2,
                     // backgroundColor: colors.bg4,
-                    borderRadius: 12,
+                    borderRadius: br.lg,
                   }}
                 >
                   <TovIcon name="delete" size={18} color={colors.fg3} />
@@ -265,7 +266,10 @@ export default function Navigator({
               flex: 1,
               width: modalWidth,
               justifyContent: 'center',
-              paddingTop: gutterSize,
+              paddingTop:
+                searchText === '' ? gutterSize * 0.66 : gutterSize / 2,
+              overflow: 'hidden',
+              borderRadius: br.xx,
             }}
           >
             {searchText === '' ? (

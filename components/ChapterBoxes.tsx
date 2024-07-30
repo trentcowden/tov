@@ -11,6 +11,7 @@ import { getBook } from '../functions/bible'
 import { JumpToChapter } from '../hooks/useChapterChange'
 import useColors from '../hooks/useColors'
 import { useAppSelector } from '../redux/hooks'
+import { br } from '../styles'
 import TovPressable from './TovPressable'
 
 interface Props {
@@ -60,7 +61,7 @@ export default function ChapterBoxes({
         <TovPressable
           style={{
             // flex: 1,
-            borderRadius: 12,
+            borderRadius: br.lg,
             height: '100%',
             width: '100%',
             alignItems: 'center',

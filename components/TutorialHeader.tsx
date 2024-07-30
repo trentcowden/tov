@@ -12,6 +12,7 @@ import Spacer from '../Spacer'
 import { gutterSize, sizes, typography } from '../constants'
 import { getEdges } from '../functions/utils'
 import useColors from '../hooks/useColors'
+import { br } from '../styles'
 import TovIcon from './SVG'
 import TovPressable from './TovPressable'
 
@@ -115,7 +116,7 @@ export default function TutorialHeader({
           onPressColor={colors.bg2}
           style={{
             paddingVertical: gutterSize / 2,
-            borderRadius: 12,
+            borderRadius: br.lg,
             width: width - gutterSize * 2,
             justifyContent: 'center',
             alignItems: 'center',

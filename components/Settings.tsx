@@ -24,15 +24,12 @@ import useColors from '../hooks/useColors'
 import { clearHistory } from '../redux/history'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
 import { resetPopups } from '../redux/popups'
-import { fontSizes } from '../styles'
+import { br } from '../styles'
 import Fade from './Fade'
 import ModalScreen from './ModalScreen'
 import ModalScreenHeader from './ModalScreenHeader'
 import SettingsItem from './SettingsItem'
 import SettingsSection from './SettingsSection'
-import ThemeSettings from './ThemeSettings'
-import TranslationSettings from './TranslationSettings'
-import TypographySettings from './TypographySettings'
 
 interface Props {
   openSettings: SharedValue<number>
@@ -75,10 +72,6 @@ export default function Settings({
     check()
   }, [])
 
-  const [nestedSetting, setNestedSetting] = React.useState<
-    'translation' | 'typography' | 'theme'
-  >()
-
   return (
     <ModalScreen
       openModal={openSettings}
@@ -91,27 +84,7 @@ export default function Settings({
           panActivateConfig,
           () => (openSettingsNested.value = 0)
         )
-        setTimeout(() => setNestedSetting(undefined), 200)
       }}
-      nestedScreen={
-        nestedSetting === 'translation' ? (
-          <TranslationSettings
-            openSettings={openSettings}
-            openSettingsNested={openSettingsNested}
-          />
-        ) : nestedSetting === 'typography' ? (
-          <TypographySettings
-            openSettings={openSettings}
-            openSettingsNested={openSettingsNested}
-            textTranslateX={textTranslateX}
-          />
-        ) : nestedSetting === 'theme' ? (
-          <ThemeSettings
-            openSettings={openSettings}
-            openSettingsNested={openSettingsNested}
-          />
-        ) : undefined
-      }
       onBack={() => {}}
     >
       <View
@@ -119,8 +92,9 @@ export default function Settings({
           width: modalWidth,
           height: modalHeight,
           backgroundColor: colors.bg2,
-          borderRadius: 12,
+          borderRadius: br.xx,
           paddingTop: gutterSize / 2,
+          overflow: 'hidden',
           ...shadow,
         }}
       >
@@ -164,49 +138,6 @@ export default function Settings({
               description="You can also swipe history items right to remove them individually."
             >
               Clear History
-            </SettingsItem>
-            <SettingsItem
-              rightText={settings.translation.toUpperCase()}
-              rightIcon="arrowRight"
-              // description="Change the Bible translation."
-              onPress={() => {
-                trackEvent('Bible translation')
-                setNestedSetting('translation')
-                openSettingsNested.value = withSpring(1, panActivateConfig)
-              }}
-            >
-              Bible Translation
-            </SettingsItem>
-            <SettingsSection>Appearance</SettingsSection>
-            <SettingsItem
-              onPress={() => {
-                setNestedSetting('typography')
-                openSettingsNested.value = withSpring(1, panActivateConfig)
-              }}
-              rightText={
-                fontSizes.find((f) => f.fontSize === settings.fontSize)?.name
-              }
-              rightIcon="arrowRight"
-              description="Take it easy on those eyes!"
-            >
-              Bible Text Size
-            </SettingsItem>
-            <SettingsItem
-              onPress={() => {
-                setNestedSetting('theme')
-                openSettingsNested.value = withSpring(1, panActivateConfig)
-              }}
-              rightText={
-                settings.theme === 'black'
-                  ? 'Black'
-                  : settings.theme === 'dark'
-                    ? 'Dark'
-                    : 'Light'
-              }
-              rightIcon="arrowRight"
-              description="Find your fashion!"
-            >
-              Color Theme
             </SettingsItem>
             <SettingsSection>Help</SettingsSection>
             <SettingsItem

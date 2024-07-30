@@ -16,6 +16,7 @@ import { getEdges, getModalHeight, getModalWidth } from '../functions/utils'
 import { JumpToChapter } from '../hooks/useChapterChange'
 import useColors from '../hooks/useColors'
 import { useAppSelector } from '../redux/hooks'
+import { br } from '../styles'
 import Fade from './Fade'
 import ListBanner from './ListBanner'
 import ModalScreen from './ModalScreen'
@@ -105,8 +106,9 @@ export default function ReferencesModal({
           width: modalWidth,
           height: modalHeight,
           backgroundColor: colors.bg2,
-          borderRadius: 12,
+          borderRadius: br.xx,
           paddingTop: gutterSize / 2,
+          overflow: 'hidden',
           ...shadow,
         }}
       >

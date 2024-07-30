@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { gutterSize } from '../constants'
 import useColors from '../hooks/useColors'
 import Spacer from '../Spacer'
+import { br } from '../styles'
 
 interface Props {
   style: TextStyle
@@ -28,7 +29,6 @@ export default function TutorialItem({ parse, style, text, source }: Props) {
         // padding: gutterSize,
         flexDirection: 'row',
         // paddingVertical: gutterSize,
-        borderRadius: 12,
         // backgroundColor: colors.bg2,
         // height: height * 0.6,
       }}
@@ -37,7 +37,7 @@ export default function TutorialItem({ parse, style, text, source }: Props) {
         style={{
           backgroundColor: colors.bg2,
           padding: gutterSize / 2,
-          borderRadius: 12,
+          borderRadius: br.lg,
         }}
       >
         <LottieView
@@ -46,9 +46,6 @@ export default function TutorialItem({ parse, style, text, source }: Props) {
             width: 80,
             height: 80,
             alignSelf: 'center',
-            backgroundColor: colors.bg2,
-            // backgroundColor: 'transparent',
-            borderRadius: 12,
           }}
           colorFilters={[
             {

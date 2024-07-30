@@ -8,6 +8,7 @@ import { getVerseReference, isPassageAfter } from '../functions/bible'
 import { JumpToChapter } from '../hooks/useChapterChange'
 import useColors from '../hooks/useColors'
 import { useAppSelector } from '../redux/hooks'
+import { br } from '../styles'
 import TovIcon from './SVG'
 import TovPressable from './TovPressable'
 
@@ -147,7 +148,7 @@ export default function ReferenceItem({
         style={{
           paddingHorizontal: gutterSize / 2,
           paddingVertical: gutterSize * 0.66,
-          borderRadius: 12,
+          borderRadius: br.lg,
           gap: 8,
           // justifyContent: isAfter ? 'flex-end' : 'flex-start',
         }}
