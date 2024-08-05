@@ -1,5 +1,6 @@
 import { DeviceType, deviceType } from 'expo-device'
 import { TextStyle, ViewStyle } from 'react-native'
+import { sp } from './styles'
 
 export const sizes = {
   massive: 32,
@@ -12,18 +13,26 @@ export const sizes = {
 
 export const headerHeight = 48
 
-export const shadow: ViewStyle = {
-  shadowColor: '#000',
-  shadowOffset: { width: 0, height: 6 },
-  shadowOpacity: 0.4,
-  shadowRadius: 10,
-}
+export const shadows: ViewStyle[] = [
+  {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.4,
+    shadowRadius: 10,
+  },
+  {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.6,
+    shadowRadius: 14,
+  },
+]
 
 export const gutterSize = deviceType === DeviceType.TABLET ? 32 : 28
 export const textGutterSize = deviceType === DeviceType.TABLET ? 38 : 34
 export const chapterRow = deviceType === DeviceType.TABLET ? 10 : 5
-export const scrollBarWidth = gutterSize
-export const scrollBarHeight = gutterSize
+export const scrollBarWidth = sp.lg
+export const scrollBarHeight = sp.xl
 export const overlayWidth = gutterSize * 3
 export const overlayHeight = gutterSize
 

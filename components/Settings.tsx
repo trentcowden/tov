@@ -10,10 +10,16 @@ import { ScrollView } from 'react-native-gesture-handler'
 import { SharedValue, withSpring } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Spacer from '../Spacer'
+import Code from '../assets/icons/duotone/code-browser.svg'
+import Help from '../assets/icons/duotone/help-circle.svg'
+import Mail from '../assets/icons/duotone/mail-01.svg'
+import Money from '../assets/icons/duotone/piggy-bank-01.svg'
+import Star from '../assets/icons/duotone/star-01.svg'
+import Trash from '../assets/icons/duotone/trash-04.svg'
 import {
   gutterSize,
   panActivateConfig,
-  shadow,
+  shadows,
   sizes,
   typography,
 } from '../constants'
@@ -24,7 +30,7 @@ import useColors from '../hooks/useColors'
 import { clearHistory } from '../redux/history'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
 import { resetPopups } from '../redux/popups'
-import { br } from '../styles'
+import { br, ic } from '../styles'
 import Fade from './Fade'
 import ModalScreen from './ModalScreen'
 import ModalScreenHeader from './ModalScreenHeader'
@@ -95,7 +101,7 @@ export default function Settings({
           borderRadius: br.xl,
           paddingTop: gutterSize / 2,
           overflow: 'hidden',
-          ...shadow,
+          ...shadows[1],
         }}
       >
         <ModalScreenHeader
@@ -134,7 +140,7 @@ export default function Settings({
                   ]
                 )
               }}
-              rightIcon="trash"
+              rightIcon={<Trash {...ic.md} color={colors.p1} />}
               description="You can also swipe history items right to remove them individually."
             >
               Clear History
@@ -164,13 +170,13 @@ export default function Settings({
                   },
                 ])
               }}
-              rightIcon="mail"
+              rightIcon={<Mail {...ic.md} color={colors.p1} />}
               description="Report a bug, send me feedback, or just say hi! I'd love to hear from you."
             >
               Contact Me
             </SettingsItem>
             <SettingsItem
-              rightIcon="help"
+              rightIcon={<Help {...ic.md} color={colors.p1} />}
               description="Go back to the tutorial screen you saw when you first opened the app."
               onPress={() => {
                 textTranslateX.value = withSpring(0, panActivateConfig)
@@ -191,7 +197,7 @@ export default function Settings({
                   StoreReview.requestReview()
                   trackEvent('Clicked rate')
                 }}
-                rightIcon="star"
+                rightIcon={<Star {...ic.md} color={colors.p1} />}
                 description="If you enjoy using Tov, please consider leaving a review. It helps a lot!"
               >
                 Rate{' '}
@@ -209,7 +215,7 @@ export default function Settings({
                 trackEvent('Clicked donate')
               }}
               // rightText={'Tov'}
-              rightIcon="money"
+              rightIcon={<Money {...ic.md} color={colors.p1} />}
               description="Tov will always be free. Send me a donation to support the project and be a friend!"
             >
               Donate to{' '}
@@ -225,7 +231,7 @@ export default function Settings({
                 trackEvent('Clicked source code')
               }}
               // rightText={'Tov'}
-              rightIcon="code"
+              rightIcon={<Code {...ic.md} color={colors.p1} />}
               description="Tov is open-source! Check out the code and contribute on GitHub."
             >
               View{' '}

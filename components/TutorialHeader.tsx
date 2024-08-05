@@ -9,23 +9,20 @@ import Animated, {
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Spacer from '../Spacer'
+import ArrowDown from '../assets/icons/duotone/arrow-narrow-down.svg'
+import Tov from '../assets/icons/tov.svg'
 import { gutterSize, sizes, typography } from '../constants'
 import { getEdges } from '../functions/utils'
 import useColors from '../hooks/useColors'
-import { br } from '../styles'
-import TovIcon from './SVG'
+import { br, ic, sp } from '../styles'
 import TovPressable from './TovPressable'
 
 interface Props {
-  spaceBeforeTextStarts: number
   scrollViewRef: React.RefObject<ScrollView>
 }
 
-export default function TutorialHeader({
-  spaceBeforeTextStarts,
-  scrollViewRef,
-}: Props) {
-  const { width } = useWindowDimensions()
+export default function TutorialHeader({ scrollViewRef }: Props) {
+  const { width, height } = useWindowDimensions()
   const insets = useSafeAreaInsets()
   const { top, bottom } = getEdges(insets)
   const colors = useColors()
@@ -62,7 +59,7 @@ export default function TutorialHeader({
             justifyContent: 'center',
             alignItems: 'center',
             padding: gutterSize,
-            height: spaceBeforeTextStarts,
+            height,
             paddingTop: top + gutterSize,
             paddingBottom: bottom + gutterSize,
           },
@@ -90,7 +87,7 @@ export default function TutorialHeader({
               Welcome to
             </Text>
             <Spacer units={6} />
-            <TovIcon name="tov" size={100} color={colors.p1} />
+            <Tov width={100} height={100} color={colors.p1} />
             <Spacer units={1} />
             <Text style={typography(36, 'uis', 'c', colors.p2)}>tov</Text>
             <Spacer units={4} />
@@ -109,20 +106,20 @@ export default function TutorialHeader({
         <TovPressable
           onPress={() =>
             scrollViewRef.current?.scrollTo({
-              y: spaceBeforeTextStarts - top - gutterSize,
+              y: height - top - gutterSize,
             })
           }
           bgColor={colors.bg2}
           onPressColor={colors.bg2}
           style={{
-            paddingVertical: gutterSize / 2,
+            paddingVertical: sp.lg,
             borderRadius: br.lg,
             width: width - gutterSize * 2,
             justifyContent: 'center',
             alignItems: 'center',
           }}
         >
-          <TovIcon name="chevronDown" size={48} color={colors.fg3} />
+          <ArrowDown {...ic.lg} color={colors.fg3} />
         </TovPressable>
       </Animated.View>
     </View>

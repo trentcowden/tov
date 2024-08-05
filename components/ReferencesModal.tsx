@@ -8,7 +8,8 @@ import {
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Spacer from '../Spacer'
-import { gutterSize, panActivateConfig, shadow } from '../constants'
+import Help from '../assets/icons/duotone/help-circle.svg'
+import { gutterSize, panActivateConfig, shadows } from '../constants'
 import references from '../data/references.json'
 import { References } from '../data/types/references'
 import { getVerseReference, isPassageAfter } from '../functions/bible'
@@ -16,7 +17,7 @@ import { getEdges, getModalHeight, getModalWidth } from '../functions/utils'
 import { JumpToChapter } from '../hooks/useChapterChange'
 import useColors from '../hooks/useColors'
 import { useAppSelector } from '../redux/hooks'
-import { br } from '../styles'
+import { br, ic } from '../styles'
 import Fade from './Fade'
 import ListBanner from './ListBanner'
 import ModalScreen from './ModalScreen'
@@ -109,7 +110,7 @@ export default function ReferencesModal({
           borderRadius: br.xl,
           paddingTop: gutterSize / 2,
           overflow: 'hidden',
-          ...shadow,
+          ...shadows[1],
         }}
       >
         <ModalScreenHeader
@@ -132,7 +133,7 @@ export default function ReferencesModal({
                     similar themes, words, events, or people. They can help
                     define and contextualize what you’re reading for deeper
                     understanding and study."
-                icon="help"
+                icon={<Help {...ic.md} color={colors.p1} />}
                 popup="referencesHelp"
               />
             }

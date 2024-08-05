@@ -14,6 +14,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated'
+import BookmarkFilled from '../assets/icons/solid/bookmark.svg'
 import {
   defaultOnPressScale,
   gutterSize,
@@ -32,8 +33,7 @@ import {
   toggleFavorite,
 } from '../redux/history'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
-import { br } from '../styles'
-import TovIcon from './SVG'
+import { br, ic, sp } from '../styles'
 
 interface Props {
   item: HistoryItem
@@ -44,7 +44,6 @@ interface Props {
   showFavorites: boolean
 }
 
-const heartSize = 14
 const swipeReq = 75
 
 export default function HistoryListItem({
@@ -106,11 +105,9 @@ export default function HistoryListItem({
     })
 
   useEffect(() => {
-    if (item.isFavorite) {
-      textTranslateX.value = withSpring(heartSize + 4, panActivateConfig)
-    } else {
-      textTranslateX.value = withSpring(0, panActivateConfig)
-    }
+    if (item.isFavorite)
+      textTranslateX.value = withSpring(ic.sm.width + sp.sm, panActivateConfig)
+    else textTranslateX.value = withSpring(0, panActivateConfig)
   }, [item.isFavorite])
 
   const historyItemStyles = useAnimatedStyle(() => {
@@ -195,13 +192,16 @@ export default function HistoryListItem({
             borderRadius: br.md,
             backgroundColor:
               item.chapterId === activeChapter.chapterId
-                ? colors.ph
+                ? colors.bg3
                 : undefined,
           }}
         >
           <Animated.View
             style={[
-              { flexDirection: 'row', alignItems: 'center' },
+              {
+                flexDirection: 'row',
+                alignItems: 'center',
+              },
               textContainerStyles,
             ]}
           >
@@ -221,9 +221,7 @@ export default function HistoryListItem({
               {item.chapterId === 'TUT.1'
                 ? 'Tutorial'
                 : `${getBook(item.chapterId).name} ${item.chapterId.split('.')[1]}`}
-              {/* <Text style={[typography(14, 'uil', 'l', colors.fg4)]}>
-              {`:${item.verseIndex + 1}`}
-            </Text> */}
+              {item.chapterId === activeChapter.chapterId ? ' ' : ''}
             </Animated.Text>
             {item.isFavorite ? (
               <Animated.View
@@ -231,11 +229,7 @@ export default function HistoryListItem({
                 exiting={FadeOut.duration(125)}
                 style={{ position: 'absolute', left: 0 }}
               >
-                <TovIcon
-                  name="bookmarkFilled"
-                  size={heartSize}
-                  color={colors.p1}
-                />
+                <BookmarkFilled {...ic.sm} color={colors.p1} />
               </Animated.View>
             ) : null}
           </Animated.View>

@@ -21,7 +21,7 @@ import bibles from '../data/bibles'
 import { getChapterReference } from '../functions/bible'
 import useColors from '../hooks/useColors'
 import { useAppSelector } from '../redux/hooks'
-import { sp } from '../styles'
+import { ic, sp } from '../styles'
 
 interface Props {
   place: 'top' | 'bottom'
@@ -201,7 +201,7 @@ export default function ChapterChangeFeedback({
           />
         </Svg>
         <View style={{ position: 'absolute' }}>
-          <Svg viewBox="0 0 24 24" fill="none" width={22} height={22}>
+          <Svg viewBox="0 0 24 24" fill="none" {...ic.lg}>
             <AnimatedPath
               d={config.iconPath}
               animatedProps={pathAnimatedProps}

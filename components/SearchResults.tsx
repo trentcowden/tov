@@ -4,16 +4,16 @@ import { Text, View } from 'react-native'
 import { FlatList } from 'react-native-gesture-handler'
 import { FadeIn, FadeOut } from 'react-native-reanimated'
 import Spacer from '../Spacer'
+import ArrowRightSquare from '../assets/icons/duotone/arrow-square-right.svg'
 import { gutterSize, sizes, typography } from '../constants'
 import { Books } from '../data/types/books'
 import { Chapters } from '../data/types/chapters'
 import { getBook, getChapterReference } from '../functions/bible'
 import { JumpToChapter } from '../hooks/useChapterChange'
 import useColors from '../hooks/useColors'
-import { br } from '../styles'
+import { br, ic } from '../styles'
 import Fade from './Fade'
 import { SearchResult } from './Navigator'
-import TovIcon from './SVG'
 import TovPressable from './TovPressable'
 
 interface Props {
@@ -52,7 +52,7 @@ export default function SearchResults({
         style={{
           alignItems: 'center',
           marginHorizontal: gutterSize / 2,
-          borderRadius: br.lg,
+          borderRadius: br.md,
           // height: 48,
           paddingVertical: gutterSize / 3,
           paddingHorizontal: gutterSize / 2,
@@ -74,9 +74,7 @@ export default function SearchResults({
         <Text style={typography(sizes.body, 'uir', 'l', colors.fg1)}>
           {getChapterReference(item.item.chapterId)}
         </Text>
-        {highlight ? (
-          <TovIcon name="arrowRightSquare" size={24} color={colors.p1} />
-        ) : null}
+        {highlight ? <ArrowRightSquare {...ic.lg} color={colors.p1} /> : null}
       </TovPressable>
     )
   }

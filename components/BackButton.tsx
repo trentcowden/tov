@@ -1,8 +1,8 @@
-import { gutterSize, iconSize } from '../constants'
+import ArrowLeft from '../assets/icons/duotone/arrow-narrow-left.svg'
+import { gutterSize } from '../constants'
 import useColors from '../hooks/useColors'
-import TovIcon from './SVG'
+import { ic } from '../styles'
 import TovPressable from './TovPressable'
-
 interface Props {
   onPress: () => void
 }
@@ -20,13 +20,11 @@ export default function BackButton({ onPress }: Props) {
         paddingHorizontal: gutterSize / 2,
         marginLeft: gutterSize / 2,
         borderRadius: 99,
-        // marginRight: gutterSize / 4,
-        // paddingRight: gutterSize / 2,
       }}
       bgColor={colors.bg2}
       onPressColor={colors.bg3}
     >
-      <TovIcon name="arrowLeft" size={iconSize} color={colors.fg3} />
+      <ArrowLeft {...ic.lg} color={colors.fg3} />
     </TovPressable>
   )
 }

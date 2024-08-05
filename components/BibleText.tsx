@@ -10,13 +10,12 @@ import {
 } from 'react-native'
 import ParsedText, { ParsedTextProps } from 'react-native-parsed-text'
 import { SharedValue, withSpring } from 'react-native-reanimated'
-import { gutterSize, panActivateConfig, typography } from '../constants'
+import { panActivateConfig, typography } from '../constants'
 import bibles from '../data/bibles'
 import references from '../data/references.json'
 import { References } from '../data/types/references'
 import useColors from '../hooks/useColors'
 import { useAppSelector } from '../redux/hooks'
-import TutorialItem from './TutorialItem'
 
 interface Props {
   setReferenceState?: React.Dispatch<React.SetStateAction<string | undefined>>
@@ -139,43 +138,7 @@ export default function BibleText({
     },
   ]
 
-  return activeChapter.chapterId === 'TUT.1' ? (
-    <Text
-      style={{
-        width: width - gutterSize * 2,
-      }}
-    >
-      <ParsedText parse={parse} style={[textStyle]}>
-        Inspired by the Hebrew word for "good," *tov* is a delightfully simple
-        yet powerful Bible app designed to help you enjoy and study Scripture.
-      </ParsedText>
-      {'\n\n'}
-      <TutorialItem
-        source={require('../assets/lotties/double_tap.json')}
-        parse={parse}
-        style={textStyle}
-        text={`[1] Double tap anywhere to *view the books of the Bible*.`}
-      />
-      {'\n\n'}
-      <TutorialItem
-        source={require('../assets/lotties/swipe_right.json')}
-        parse={parse}
-        style={textStyle}
-        text={`[2] Swipe right to open your *reading history* and *view your bookmarks*.`}
-      />
-      {'\n\n'}
-      <TutorialItem
-        source={require('../assets/lotties/scroll_down.json')}
-        text={`[3] Keep scrolling downwards to go to the *next chapter*.`}
-        parse={parse}
-        style={textStyle}
-      />
-      {'\n\n'}
-      <ParsedText parse={parse} style={[textStyle]}>
-        Happy reading!
-      </ParsedText>
-    </Text>
-  ) : (
+  return (
     <ParsedText
       parse={parse}
       style={{

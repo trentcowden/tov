@@ -16,12 +16,13 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import BookmarkFilled from '../assets/icons/solid/bookmark.svg'
 import {
   gutterSize,
   overlayHeight,
   overlayWidth,
   panActivateConfig,
-  shadow,
+  shadows,
   sizes,
   typography,
 } from '../constants'
@@ -32,10 +33,8 @@ import { JumpToChapter } from '../hooks/useChapterChange'
 import useColors from '../hooks/useColors'
 import { toggleFavorite } from '../redux/history'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
-import { sp } from '../styles'
-import TovIcon from './SVG'
+import { br, ic, sp } from '../styles'
 
-const heartSize = 12
 interface Props {
   activeChapter: Chapters[number]
   activeBook: Books[number]
@@ -120,7 +119,7 @@ export default function ChapterOverlay({
 
   useEffect(() => {
     if (historyItem?.isFavorite) {
-      itemTranslateX.value = withSpring(heartSize, panActivateConfig)
+      itemTranslateX.value = withSpring(ic.xs.width, panActivateConfig)
     } else {
       itemTranslateX.value = withSpring(0, panActivateConfig)
     }
@@ -132,6 +131,8 @@ export default function ChapterOverlay({
 
   return (
     <Animated.View
+      entering={FadeIn}
+      exiting={FadeOut}
       style={[
         {
           position: 'absolute',
@@ -149,8 +150,8 @@ export default function ChapterOverlay({
           alignItems: 'center',
           flexDirection: 'row',
           gap: gutterSize / 2,
-          borderRadius: 999,
-          ...shadow,
+          borderRadius: br.fu,
+          ...shadows[1],
         },
         overlayAnimatedStyles,
       ]}
@@ -242,30 +243,9 @@ export default function ChapterOverlay({
           flexDirection: 'row',
         }}
       >
-        {/* <TouchableOpacity style={{ paddingHorizontal: gutterSize }}>
-        <Ionicons name="settings-outline" size={20} color={colors.fg3} />
-      </TouchableOpacity> */}
-        {/* <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: 6,
-            width: 100,
-          }}
-        > */}
-        {/* <TovIcon name={icon} size={14} /> */}
-        {/* {historyItem?.isFavorite ? (
-          <Animated.View
-            entering={FadeIn}
-            exiting={FadeOut.duration(125)}
-            style={{ position: 'absolute', left: sp.sm }}
-          >
-            <TovIcon name="bookmarkFilled" size={heartSize} color={colors.p1} />
-          </Animated.View>
-        ) : null} */}
         {historyItem?.isFavorite ? (
           <Animated.View entering={FadeIn} exiting={FadeOut.duration(125)}>
-            <TovIcon name="bookmarkFilled" size={heartSize} color={colors.p1} />
+            <BookmarkFilled {...ic.xs} color={colors.p1} />
           </Animated.View>
         ) : null}
         <Animated.Text

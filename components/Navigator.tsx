@@ -16,10 +16,12 @@ import {
   withSpring,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import Delete from '../assets/icons/duotone/delete.svg'
+import Search from '../assets/icons/duotone/search-lg.svg'
 import {
   gutterSize,
   panActivateConfig,
-  shadow,
+  shadows,
   sizes,
   typography,
 } from '../constants'
@@ -31,14 +33,13 @@ import { getModalHeight, getModalWidth } from '../functions/utils'
 import { JumpToChapter } from '../hooks/useChapterChange'
 import useColors from '../hooks/useColors'
 import { useAppSelector } from '../redux/hooks'
-import { br } from '../styles'
+import { br, ic } from '../styles'
 import BackButton from './BackButton'
 import BooksList from './BooksList'
 import ChapterBoxes from './ChapterBoxes'
 import Fade from './Fade'
 import ModalScreen from './ModalScreen'
 import ModalScreenHeader from './ModalScreenHeader'
-import TovIcon from './SVG'
 import SearchResults from './SearchResults'
 import TovPressable from './TovPressable'
 
@@ -187,13 +188,10 @@ export default function Navigator({
             borderRadius: br.xl,
             flex: 1,
             paddingTop: gutterSize,
-            ...shadow,
+            ...shadows[1],
           }}
         >
-          <ModalScreenHeader
-            close={closeNavigator}
-            // icon={<TovIcon name="search" size={iconSize} />}
-          >
+          <ModalScreenHeader close={closeNavigator}>
             <>
               <TextInput
                 placeholder="Find a chapter"
@@ -230,7 +228,7 @@ export default function Navigator({
                 }}
               />
               <View style={{ position: 'absolute', left: gutterSize / 2 }}>
-                <TovIcon name="search" size={18} color={colors.p1} />
+                <Search {...ic.md} color={colors.p1} />
               </View>
               {searchText !== '' ? (
                 <TovPressable
@@ -255,7 +253,7 @@ export default function Navigator({
                     borderRadius: br.lg,
                   }}
                 >
-                  <TovIcon name="delete" size={18} color={colors.fg3} />
+                  <Delete {...ic.md} color={colors.fg3} />
                 </TovPressable>
               ) : null}
             </>

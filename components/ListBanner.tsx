@@ -9,19 +9,19 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated'
 import Spacer from '../Spacer'
+import Close from '../assets/icons/duotone/x-close.svg'
 import { gutterSize, panActivateConfig, sizes, typography } from '../constants'
 import useColors from '../hooks/useColors'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
 import { dismissPopup } from '../redux/popups'
-import { br } from '../styles'
-import TovIcon, { IconName } from './SVG'
+import { br, ic } from '../styles'
 import TovPressable from './TovPressable'
 
 interface Props {
   popup: string
   title: string
   body: string
-  icon: IconName
+  icon: React.ReactNode
 }
 
 export default function ListBanner({ body, icon, title, popup }: Props) {
@@ -64,7 +64,7 @@ export default function ListBanner({ body, icon, title, popup }: Props) {
           alignItems: 'center',
         }}
       >
-        <TovIcon name={icon} size={16} color={colors.p1} />
+        {icon}
         <Spacer units={1} />
         <Text
           style={[typography(sizes.body, 'uib', 'l', colors.fg1), { flex: 1 }]}
@@ -88,7 +88,7 @@ export default function ListBanner({ body, icon, title, popup }: Props) {
         onPressColor={colors.p1}
         onPress={() => (dismiss.value = withSpring(1, panActivateConfig))}
       >
-        <TovIcon name="close" size={16} color={colors.fg3} />
+        <Close {...ic.md} color={colors.fg3} />
       </TovPressable>
     </Animated.View>
   ) : (

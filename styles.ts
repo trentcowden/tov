@@ -92,3 +92,10 @@ export const br = {
   xl: 24,
   fu: 999,
 }
+
+export const ic = {
+  xs: { width: 10, height: 10 },
+  sm: { width: 14, height: 14 },
+  md: { width: 18, height: 18 },
+  lg: { width: 22, height: 22 },
+}

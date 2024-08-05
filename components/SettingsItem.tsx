@@ -3,13 +3,12 @@ import { Text, View } from 'react-native'
 import { gutterSize, sizes, typography } from '../constants'
 import useColors from '../hooks/useColors'
 import { br } from '../styles'
-import TovIcon, { IconName } from './SVG'
 import TovPressable from './TovPressable'
 
 interface Props {
   children: ReactNode
   rightSection?: ReactNode
-  rightIcon?: IconName
+  rightIcon?: React.ReactNode
   rightText?: string
   description?: string
   onPress?: () => void
@@ -51,13 +50,11 @@ export default function SettingsItem({
             gap: 8,
           }}
         >
+          {rightIcon}
           <Text
             numberOfLines={1}
             adjustsFontSizeToFit
-            style={[
-              typography(sizes.body, 'uim', 'l', colors.fg2),
-              { flex: 1 },
-            ]}
+            style={[typography(sizes.body, 'uim', 'l', colors.fg2)]}
           >
             {children}
           </Text>
@@ -66,9 +63,6 @@ export default function SettingsItem({
             <Text style={typography(sizes.caption, 'uis', 'c', colors.p1)}>
               {rightText}
             </Text>
-          ) : null}
-          {rightIcon ? (
-            <TovIcon name={rightIcon} size={16} color={colors.p1} />
           ) : null}
         </View>
         {description ? (

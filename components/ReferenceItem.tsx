@@ -2,14 +2,15 @@ import { trackEvent } from '@aptabase/react-native'
 import React, { useMemo } from 'react'
 import { Text, View } from 'react-native'
 import { SharedValue, withSpring, withTiming } from 'react-native-reanimated'
+import ArrowLeft from '../assets/icons/duotone/arrow-narrow-left.svg'
+import ArrowRight from '../assets/icons/duotone/arrow-narrow-right.svg'
 import { gutterSize, panActivateConfig, sizes, typography } from '../constants'
 import bibles from '../data/bibles'
 import { getVerseReference, isPassageAfter } from '../functions/bible'
 import { JumpToChapter } from '../hooks/useChapterChange'
 import useColors from '../hooks/useColors'
 import { useAppSelector } from '../redux/hooks'
-import { br } from '../styles'
-import TovIcon from './SVG'
+import { br, ic } from '../styles'
 import TovPressable from './TovPressable'
 
 interface Props {
@@ -174,15 +175,11 @@ export default function ReferenceItem({
             flexDirection: 'row',
           }}
         >
-          {isAfter ? null : (
-            <TovIcon name={'arrowLeft'} size={18} color={colors.p1} />
-          )}
+          {isAfter ? null : <ArrowLeft {...ic.md} color={colors.p1} />}
           <Text style={[typography(sizes.body, 'uir', 'l', colors.fg1)]}>
             {passageString}
           </Text>
-          {isAfter ? (
-            <TovIcon name={'arrowRight'} size={18} color={colors.p1} />
-          ) : null}
+          {isAfter ? <ArrowRight {...ic.md} color={colors.p1} /> : null}
         </View>
         <Text
           style={[typography(sizes.tiny, 'uil', 'l', colors.fg3)]}

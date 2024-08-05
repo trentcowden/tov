@@ -7,6 +7,8 @@ import {
   ScrollView,
 } from 'react-native-gesture-handler'
 import Animated, {
+  FadeIn,
+  FadeOut,
   SharedValue,
   interpolate,
   interpolateColor,
@@ -25,7 +27,7 @@ import {
   panActivateConfig,
   scrollBarHeight,
   scrollBarWidth,
-  shadow,
+  shadows,
   sizes,
   typography,
 } from '../constants'
@@ -218,6 +220,8 @@ export default function ScrollBar({
           ]}
         >
           <Animated.View
+            entering={FadeIn}
+            exiting={FadeOut}
             style={[
               {
                 // width: gutterSize,
@@ -227,7 +231,7 @@ export default function ScrollBar({
                 alignItems: 'center',
                 justifyContent: 'center',
                 display: textHeight < height ? 'none' : 'flex',
-                ...shadow,
+                ...shadows[1],
               },
               scrollBarStyles,
             ]}
@@ -254,14 +258,16 @@ export default function ScrollBar({
             },
           ]}
         >
-          <Text
-            style={[
-              typography(sizes.tiny, 'uib', 'c', colors.p2),
-              // { fontFamily: 'iAWriterMonoS-Bold' },
-            ]}
-          >
-            Verse
-          </Text>
+          {verseOffsets?.length !== 1 ? (
+            <Text
+              style={[
+                typography(sizes.tiny, 'uib', 'c', colors.p2),
+                // { fontFamily: 'iAWriterMonoS-Bold' },
+              ]}
+            >
+              Verse
+            </Text>
+          ) : null}
           <View
             style={{
               flexDirection: 'row',

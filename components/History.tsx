@@ -17,8 +17,10 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import Svg, { Path } from 'react-native-svg'
 import Spacer from '../Spacer'
+import Bookmark from '../assets/icons/duotone/bookmark.svg'
+import Settings from '../assets/icons/duotone/settings-02.svg'
+import BookmarkFilled from '../assets/icons/solid/bookmark.svg'
 import {
   gutterSize,
   panActivateConfig,
@@ -32,9 +34,8 @@ import { JumpToChapter } from '../hooks/useChapterChange'
 import useColors from '../hooks/useColors'
 import { HistoryItem } from '../redux/history'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
-import { br, sp } from '../styles'
+import { br, ic, sp } from '../styles'
 import HistoryListItem from './HistoryItem'
-import TovIcon from './SVG'
 import TovPressable from './TovPressable'
 
 interface Props {
@@ -46,8 +47,6 @@ interface Props {
   openSettings: SharedValue<number>
   spaceBeforeTextStarts: number
 }
-
-const AnimatedSvg = Animated.createAnimatedComponent(Svg)
 
 export default function History({
   textTranslationX,
@@ -61,7 +60,7 @@ export default function History({
   const { height, width } = useWindowDimensions()
   const horizTransReq = getHorizTransReq(width)
   const colors = useColors()
-  const activeChapterIndex = useAppSelector((state) => state.activeChapterIndex)
+  const popups = useAppSelector((state) => state.popups)
   const history = useAppSelector((state) => state.history)
   const insets = useSafeAreaInsets()
   const { top, bottom } = getEdges(insets)
@@ -94,7 +93,7 @@ export default function History({
 
     if (showFavorites) {
       const favorites = sorted.filter((item) => item.isFavorite)
-      if (favorites.length) return favorites
+      if (favorites.length) return ['Bookmarks', ...favorites]
       else return []
     }
 
@@ -160,21 +159,30 @@ export default function History({
 
   const bookmarkHeight = useSharedValue(top)
   const bookmarkPressed = useSharedValue(0)
+  const startH = gutterSize * 1.5
+  const endH = gutterSize * 3
 
   useEffect(() => {
     if (showFavorites) {
-      bookmarkHeight.value = withSpring(br.md * 1.5 + gutterSize, {
+      bookmarkHeight.value = withSpring(endH, {
         mass: 0.5,
         damping: 10,
         stiffness: 140,
       })
     } else {
-      bookmarkHeight.value = withSpring(br.md * 1.5, panActivateConfig)
+      bookmarkHeight.value = withSpring(startH, panActivateConfig)
     }
   }, [showFavorites])
 
   const bookmarkTopStyles = useAnimatedStyle(() => ({
     height: bookmarkHeight.value,
+  }))
+  const bookmarkStyles = useAnimatedStyle(() => ({
+    transform: [
+      {
+        scale: interpolate(bookmarkHeight.value, [startH, endH], [1, 1.2]),
+      },
+    ],
   }))
 
   return (
@@ -195,98 +203,6 @@ export default function History({
           historyAnimatedStyles,
         ]}
       >
-        {/* <TovPressable
-          bgColor={colors.bg2}
-          onPress={() => {
-            setShowFavorites((current) => !current)
-            trackEvent('View favorites', { value: !showFavorites })
-          }}
-          onPressColor={colors.bg3}
-          style={{
-            alignItems: 'center',
-            flexDirection: 'row',
-            marginHorizontal: gutterSize / 2,
-            gap: 8,
-            borderRadius: br.lg,
-          }}
-        >
-          <View
-            style={{
-              padding: gutterSize / 2,
-              flex: 1,
-              flexDirection: 'row',
-              alignItems: 'center',
-              gap: 8,
-            }}
-          >
-            <TovIcon name="history" size={iconSize} color={colors.p1} />
-            <Text
-              style={[
-                typography(sizes.title, 'uib', 'l', colors.fg2),
-                { flex: 1 },
-              ]}
-            >
-              History
-            </Text>
-          </View>
-          <View
-            style={{
-              width: 32,
-              height: '100%',
-              flexDirection: 'row',
-              justifyContent: 'center',
-              alignItems: 'center',
-              borderRadius: br.fu,
-              backgroundColor: showFavorites ? colors.p1 : colors.bg3,
-            }}
-          >
-            <TovIcon
-              name={showFavorites ? 'bookmarkFilled' : 'bookmark'}
-              color={showFavorites ? colors.bg1 : colors.fg3}
-              size={16}
-            />
-          </View>
-        </TovPressable> */}
-        <TovPressable
-          bgColor={colors.p3}
-          onPress={() => {
-            setShowFavorites((current) => !current)
-            trackEvent('View favorites', { value: !showFavorites })
-          }}
-          outerOuterStyle={{
-            position: 'absolute',
-            top: top,
-            right: sp.md,
-            zIndex: 1,
-            ...shadows[0],
-          }}
-          style={{
-            padding: sp.md,
-            borderRadius: br.md,
-          }}
-          hitSlop={gutterSize / 2}
-        >
-          <Animated.View
-            style={[
-              {
-                width: 32,
-                height: top,
-                backgroundColor: showFavorites ? colors.p1 : colors.p2,
-                borderTopRightRadius: br.md,
-                borderTopLeftRadius: br.md,
-              },
-              bookmarkTopStyles,
-            ]}
-          />
-          <Svg
-            width={32}
-            height={18}
-            viewBox="0 0 16 9"
-            fill={showFavorites ? colors.p1 : colors.p2}
-          >
-            <Path d="M1 5.8V1h14v6.137a.7.7 0 01-1.227.46L8.753 1.86a1 1 0 00-1.506 0l-5.02 5.738A.7.7 0 011 7.137V5.8z" />
-          </Svg>
-        </TovPressable>
         <View style={{ flex: 1 }}>
           <Animated.FlatList
             itemLayoutAnimation={LinearTransition.springify()
@@ -318,13 +234,9 @@ export default function History({
                 </Text>
               </View>
             }
-            // Plus 2 to account for the line height of the text.
-            ListHeaderComponent={
-              <Spacer additional={spaceBeforeTextStarts + 6} />
-            }
+            ListHeaderComponent={<Spacer additional={spaceBeforeTextStarts} />}
             ListFooterComponent={<Spacer units={14} additional={bottom} />}
           />
-          {/* <Fade place="top" color={colors.bg2} /> */}
           <View
             style={{
               position: 'absolute',
@@ -339,8 +251,7 @@ export default function History({
               bgColor={colors.p3}
               onPressColor={colors.p3}
               style={{
-                width: 48,
-                height: 48,
+                padding: sp.md,
                 borderRadius: br.fu,
                 justifyContent: 'center',
                 alignItems: 'center',
@@ -353,12 +264,39 @@ export default function History({
                 trackEvent('Open settings')
               }}
             >
-              <TovIcon name="settings" size={18} color={colors.fg3} />
+              <Settings {...ic.md} color={colors.fg2} />
               {/* <Text style={typography(sizes.caption, 'uis', 'c', colors.fg3)}>
                 Settings
               </Text> */}
             </TovPressable>
           </View>
+          <TovPressable
+            bgColor={showFavorites ? colors.p1 : colors.p3}
+            onPress={() => {
+              setShowFavorites((current) => !current)
+              trackEvent('View favorites', { value: !showFavorites })
+            }}
+            onPressColor={showFavorites ? colors.p1 : colors.p3}
+            outerOuterStyle={{
+              position: 'absolute',
+              top,
+              right: sp.md,
+            }}
+            style={{
+              alignItems: 'center',
+              zIndex: 100,
+              borderRadius: br.fu,
+              padding: sp.md,
+              justifyContent: 'center',
+              ...shadows[0],
+            }}
+          >
+            {showFavorites ? (
+              <BookmarkFilled color={colors.bg3} {...ic.md} />
+            ) : (
+              <Bookmark color={colors.fg2} {...ic.md} />
+            )}
+          </TovPressable>
         </View>
         <StatusBar
           hidden

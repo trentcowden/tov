@@ -72,7 +72,6 @@ export default function Bible() {
   )
   const overlayOpacity = useSharedValue(1)
   const highlightVerseNumber = useSharedValue(0)
-  const referenceTree = useAppSelector((state) => state.referenceTree)
 
   const searchRef = useRef<TextInput>(null)
   const scrollViewRef = useRef<ScrollView>(null)
@@ -86,9 +85,7 @@ export default function Bible() {
   const [verseNewlines, setVerseNewlines] = useState<boolean[]>()
   const [paragraphs, setParagraphs] = useState<boolean[]>()
   const spaceBeforeTextStarts =
-    activeChapter.chapterId === 'TUT.1'
-      ? height
-      : top - gutterSize + chapterChangeFeedbackHeight + gutterSize * 0.75
+    top - gutterSize + chapterChangeFeedbackHeight + (gutterSize / 4) * 3
   const spaceAfterTextEnds =
     gutterSize * 0.75 + chapterChangeFeedbackHeight + bottom
   const currentVerseIndex = useSharedValue<number | 'bottom' | 'top'>(0)
@@ -309,7 +306,11 @@ export default function Bible() {
               paragraphs={paragraphs}
               spaceAfterTextEnds={spaceAfterTextEnds}
             />
-            <View style={{ width: '100%' }}>
+            <View
+              style={{
+                width: '100%',
+              }}
+            >
               {activeChapter.chapterId === 'TUT.1' ? null : (
                 <Spacer additional={top - gutterSize} />
               )}
@@ -322,10 +323,7 @@ export default function Bible() {
                 />
               )}
               {activeChapter.chapterId === 'TUT.1' ? (
-                <TutorialHeader
-                  scrollViewRef={scrollViewRef}
-                  spaceBeforeTextStarts={spaceBeforeTextStarts}
-                />
+                <TutorialHeader scrollViewRef={scrollViewRef} />
               ) : null}
               {activeChapter.chapterId !== 'TUT.1' ? (
                 <Spacer units={3} />
@@ -372,6 +370,7 @@ export default function Bible() {
           jumpToChapter={jumpToChapter}
           openSettings={openSettings}
           savedTextTranslationX={savedTextTranslateX}
+          spaceBeforeTextStarts={spaceBeforeTextStarts}
         />
         <ScrollBar
           scrollBarActivate={scrollBarActivate}
@@ -400,20 +399,22 @@ export default function Bible() {
           overlayOpacity={overlayOpacity}
           scrollOffset={scrollOffset}
         />
-        <ChapterOverlay
-          activeBook={activeBook}
-          activeChapter={activeChapter}
-          textTranslateX={textTranslateX}
-          openNavigator={openNavigator}
-          savedTextTranslateX={savedTextTranslateX}
-          focusSearch={focusSearch}
-          overlayOpacity={overlayOpacity}
-          scrollValue={scrollOffset}
-          setReferenceState={setReferenceState}
-          jumpToChapter={jumpToChapter}
-          openReferences={openReferences}
-          textFadeOut={textFadeOut}
-        />
+        {activeChapter.chapterId !== 'TUT.1' ? (
+          <ChapterOverlay
+            activeBook={activeBook}
+            activeChapter={activeChapter}
+            textTranslateX={textTranslateX}
+            openNavigator={openNavigator}
+            savedTextTranslateX={savedTextTranslateX}
+            focusSearch={focusSearch}
+            overlayOpacity={overlayOpacity}
+            scrollValue={scrollOffset}
+            setReferenceState={setReferenceState}
+            jumpToChapter={jumpToChapter}
+            openReferences={openReferences}
+            textFadeOut={textFadeOut}
+          />
+        ) : null}
         {/* <View
           style={{
             position: 'absolute',
