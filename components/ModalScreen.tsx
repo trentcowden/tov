@@ -11,14 +11,13 @@ import Animated, {
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import {
   defaultOnPressScale,
-  gutterSize,
   horizVelocReq,
   panActivateConfig,
 } from '../constants'
 import { getEdges, getModalHeight, getModalWidth } from '../functions/utils'
 import useColors from '../hooks/useColors'
 import { useAppDispatch } from '../redux/hooks'
-import { br } from '../styles'
+import { br, sp } from '../styles'
 import TovPressable from './TovPressable'
 
 interface Props {
@@ -115,7 +114,7 @@ export default function ModalScreen({
             height: Dimensions.get('window').height,
             position: 'absolute',
             alignItems: 'center',
-            paddingTop: top + gutterSize / 2,
+            paddingTop: top + sp.md,
             justifyContent: 'flex-start',
           },
           modalStyle,
@@ -145,7 +144,7 @@ export default function ModalScreen({
               width: modalWidth,
               backgroundColor: colors.bd,
               position: 'absolute',
-              top: top + gutterSize / 2,
+              top: top + sp.md,
               borderRadius: br.xl,
             },
             mainStyles,
@@ -155,12 +154,12 @@ export default function ModalScreen({
           style={[
             {
               zIndex: 3,
-              top: top + gutterSize / 2,
+              top: top + sp.md,
               height: nestedHeight ?? modalHeight,
               width: modalWidth,
               position: 'absolute',
               overflow: 'hidden',
-              paddingTop: gutterSize / 2,
+              paddingTop: sp.md,
               backgroundColor: colors.bg2,
               borderRadius: br.xl,
             },

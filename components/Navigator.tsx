@@ -18,13 +18,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Delete from '../assets/icons/duotone/delete.svg'
 import Search from '../assets/icons/duotone/search-lg.svg'
-import {
-  gutterSize,
-  panActivateConfig,
-  shadows,
-  sizes,
-  typography,
-} from '../constants'
+import { panActivateConfig } from '../constants'
 import bibles from '../data/bibles'
 import { Books } from '../data/types/books'
 import { Chapters } from '../data/types/chapters'
@@ -33,7 +27,7 @@ import { getModalHeight, getModalWidth } from '../functions/utils'
 import { JumpToChapter } from '../hooks/useChapterChange'
 import useColors from '../hooks/useColors'
 import { useAppSelector } from '../redux/hooks'
-import { br, ic } from '../styles'
+import { br, ic, shadows, sp, tx, typography } from '../styles'
 import BackButton from './BackButton'
 import BooksList from './BooksList'
 import ChapterBoxes from './ChapterBoxes'
@@ -76,7 +70,7 @@ export default function Navigator({
   const { height, width } = useWindowDimensions()
   const modalWidth = getModalWidth(width)
   const modalHeight = getModalHeight(height, insets)
-  const navigatorHeight = modalHeight - gutterSize * 2
+  const navigatorHeight = modalHeight - sp.xl * 2
   /**
    * Whether or not new search results should be calculated. We disable it as
    * the user is typing to prevent lag.
@@ -187,7 +181,7 @@ export default function Navigator({
             backgroundColor: colors.bg2,
             borderRadius: br.xl,
             flex: 1,
-            paddingTop: gutterSize,
+            paddingTop: sp.xl,
             ...shadows[1],
           }}
         >
@@ -204,13 +198,13 @@ export default function Navigator({
                 autoCorrect={false}
                 style={{
                   // flex: 1,
-                  // marginTop: gutterSize / 2,
+                  // marginTop: sp.md,
                   height: 50,
-                  paddingLeft: gutterSize + 14,
-                  paddingRight: 18 + gutterSize,
+                  paddingLeft: sp.xl + 14,
+                  paddingRight: 18 + sp.xl,
                   backgroundColor: colors.bg3,
                   borderRadius: br.lg,
-                  ...typography(sizes.body, 'uis', 'l', colors.fg1),
+                  ...typography(tx.body, 'uis', 'l', colors.fg1),
                 }}
                 returnKeyType={'done'}
                 onSubmitEditing={() => {
@@ -227,7 +221,7 @@ export default function Navigator({
                   }
                 }}
               />
-              <View style={{ position: 'absolute', left: gutterSize / 2 }}>
+              <View style={{ position: 'absolute', left: sp.md }}>
                 <Search {...ic.md} color={colors.p1} />
               </View>
               {searchText !== '' ? (
@@ -248,7 +242,7 @@ export default function Navigator({
                   style={{
                     justifyContent: 'center',
                     height: 50,
-                    padding: gutterSize / 2,
+                    padding: sp.md,
                     // backgroundColor: colors.bg4,
                     borderRadius: br.lg,
                   }}
@@ -260,12 +254,10 @@ export default function Navigator({
           </ModalScreenHeader>
           <View
             style={{
-              // height: navigatorHeight - 50 - gutterSize,
               flex: 1,
               width: modalWidth,
               justifyContent: 'center',
-              paddingTop:
-                searchText === '' ? gutterSize * 0.66 : gutterSize / 2,
+              paddingTop: searchText === '' ? sp.lg : sp.md,
               overflow: 'hidden',
               borderRadius: br.xl,
             }}
@@ -286,7 +278,7 @@ export default function Navigator({
         </View>
         <TovPressable
           bgColor="transparent"
-          style={{ height: gutterSize * 2, width: '100%' }}
+          style={{ height: sp.xl * 2, width: '100%' }}
           onPress={closeNavigator}
         />
       </KeyboardAvoidingView>

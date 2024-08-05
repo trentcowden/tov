@@ -16,13 +16,7 @@ import Mail from '../assets/icons/duotone/mail-01.svg'
 import Money from '../assets/icons/duotone/piggy-bank-01.svg'
 import Star from '../assets/icons/duotone/star-01.svg'
 import Trash from '../assets/icons/duotone/trash-04.svg'
-import {
-  gutterSize,
-  panActivateConfig,
-  shadows,
-  sizes,
-  typography,
-} from '../constants'
+import { panActivateConfig } from '../constants'
 import { Chapters } from '../data/types/chapters'
 import { getModalHeight, getModalWidth } from '../functions/utils'
 import { JumpToChapter } from '../hooks/useChapterChange'
@@ -30,7 +24,7 @@ import useColors from '../hooks/useColors'
 import { clearHistory } from '../redux/history'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
 import { resetPopups } from '../redux/popups'
-import { br, ic } from '../styles'
+import { br, ic, shadows, sp, tx, typography } from '../styles'
 import Fade from './Fade'
 import ModalScreen from './ModalScreen'
 import ModalScreenHeader from './ModalScreenHeader'
@@ -99,7 +93,7 @@ export default function Settings({
           height: modalHeight,
           backgroundColor: colors.bg2,
           borderRadius: br.xl,
-          paddingTop: gutterSize / 2,
+          paddingTop: sp.md,
           overflow: 'hidden',
           ...shadows[1],
         }}
@@ -115,8 +109,8 @@ export default function Settings({
         <View style={{ flex: 1, width: '100%' }}>
           <ScrollView
             contentContainerStyle={{
-              gap: gutterSize / 2,
-              paddingTop: gutterSize / 2,
+              gap: sp.md,
+              paddingTop: sp.md,
             }}
           >
             <SettingsSection disableTopMargin>General</SettingsSection>
@@ -240,8 +234,8 @@ export default function Settings({
               </Text>
               's Source Code
             </SettingsItem>
-            <Spacer units={2} />
-            <Text style={typography(sizes.tiny, 'uim', 'c', colors.p1)}>
+            <Spacer s={sp.md} />
+            <Text style={typography(tx.tiny, 'uim', 'c', colors.p1)}>
               {'Made with 🧡 by '}
               <Text
                 style={{ textDecorationLine: 'underline' }}
@@ -253,7 +247,7 @@ export default function Settings({
                 Trent Cowden
               </Text>
             </Text>
-            <Spacer units={4} />
+            <Spacer s={sp.xl} />
           </ScrollView>
           <Fade place="top" color={colors.bg2} />
         </View>

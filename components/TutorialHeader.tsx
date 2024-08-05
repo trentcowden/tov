@@ -11,10 +11,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Spacer from '../Spacer'
 import ArrowDown from '../assets/icons/duotone/arrow-narrow-down.svg'
 import Tov from '../assets/icons/tov.svg'
-import { gutterSize, sizes, typography } from '../constants'
 import { getEdges } from '../functions/utils'
 import useColors from '../hooks/useColors'
-import { br, ic, sp } from '../styles'
+import { br, ic, sp, tx, typography } from '../styles'
 import TovPressable from './TovPressable'
 
 interface Props {
@@ -58,10 +57,10 @@ export default function TutorialHeader({ scrollViewRef }: Props) {
             width: '100%',
             justifyContent: 'center',
             alignItems: 'center',
-            padding: gutterSize,
+            padding: sp.xl,
             height,
-            paddingTop: top + gutterSize,
-            paddingBottom: bottom + gutterSize,
+            paddingTop: top + sp.xl,
+            paddingBottom: bottom + sp.xl,
           },
           styles,
         ]}
@@ -73,8 +72,6 @@ export default function TutorialHeader({ scrollViewRef }: Props) {
             justifyContent: 'center',
           }}
         >
-          {/* <ReadingGraphic /> */}
-          {/* <Spacer units={12} /> */}
           <View
             style={{
               alignItems: 'center',
@@ -82,16 +79,15 @@ export default function TutorialHeader({ scrollViewRef }: Props) {
               justifyContent: 'center',
             }}
           >
-            {/* <Spacer units={4} /> */}
-            <Text style={typography(sizes.subtitle, 'uir', 'c', colors.fg3)}>
+            <Text style={typography(tx.subtitle, 'uir', 'c', colors.fg3)}>
               Welcome to
             </Text>
-            <Spacer units={6} />
+            <Spacer s={sp.xx} />
             <Tov width={100} height={100} color={colors.p1} />
-            <Spacer units={1} />
+            <Spacer s={sp.sm} />
             <Text style={typography(36, 'uis', 'c', colors.p2)}>tov</Text>
-            <Spacer units={4} />
-            <Text style={typography(sizes.tiny, 'uil', 'c', colors.fg3)}>
+            <Spacer s={sp.xl} />
+            <Text style={typography(tx.tiny, 'uil', 'c', colors.fg3)}>
               {'(a '}
               <Text style={{ color: colors.p2, fontFamily: 'Figtree-Medium' }}>
                 good
@@ -106,7 +102,7 @@ export default function TutorialHeader({ scrollViewRef }: Props) {
         <TovPressable
           onPress={() =>
             scrollViewRef.current?.scrollTo({
-              y: height - top - gutterSize,
+              y: height - top - sp.xl,
             })
           }
           bgColor={colors.bg2}
@@ -114,7 +110,7 @@ export default function TutorialHeader({ scrollViewRef }: Props) {
           style={{
             paddingVertical: sp.lg,
             borderRadius: br.lg,
-            width: width - gutterSize * 2,
+            width: width - sp.xl * 2,
             justifyContent: 'center',
             alignItems: 'center',
           }}

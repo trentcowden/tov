@@ -10,14 +10,13 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { gutterSize, shadows } from '../constants'
 import { Chapters } from '../data/types/chapters'
 import { getChapterReference } from '../functions/bible'
 import { getEdges } from '../functions/utils'
 import { JumpToChapter } from '../hooks/useChapterChange'
 import useColors from '../hooks/useColors'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
-import { br, sp } from '../styles'
+import { br, shadows, sp } from '../styles'
 
 interface Props {
   verseOffsets: number[] | undefined
@@ -152,7 +151,7 @@ export default function VerseHighlight({
           position: 'absolute',
           height,
           top,
-          width: width - sp.xx * 2 + gutterSize,
+          width: width - sp.xx * 2 + sp.lg,
           alignSelf: 'center',
           backgroundColor: colors.p1,
           borderRadius: br.lg,

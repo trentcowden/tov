@@ -1,9 +1,8 @@
 import { ReactNode } from 'react'
 import { Text, View } from 'react-native'
 import Close from '../assets/icons/duotone/x-close.svg'
-import { gutterSize, sizes, typography } from '../constants'
 import useColors from '../hooks/useColors'
-import { br, ic } from '../styles'
+import { br, ic, sp, tx, typography } from '../styles'
 import TovPressable from './TovPressable'
 
 interface Props {
@@ -27,10 +26,10 @@ export default function ModalScreenHeader({
       bgColor={colors.bg2}
       onPress={close}
       style={{
-        paddingLeft: gutterSize / 2,
-        paddingRight: gutterSize / 2,
-        marginRight: gutterSize / 2,
-        marginLeft: gutterSize / 4,
+        paddingLeft: sp.md,
+        paddingRight: sp.md,
+        marginRight: sp.md,
+        marginLeft: sp.sm,
         borderRadius: br.lg,
         alignItems: 'center',
         justifyContent: 'center',
@@ -53,11 +52,10 @@ export default function ModalScreenHeader({
         height: height ?? 50,
         alignItems: 'center',
         zIndex: 5,
-        paddingLeft: paddingLeft ?? gutterSize,
+        paddingLeft: paddingLeft ?? sp.xl,
       }}
     >
       {icon}
-      {/* <Spacer units={icon ? 2 : 0} /> */}
       <View
         style={{
           flex: 1,
@@ -69,7 +67,7 @@ export default function ModalScreenHeader({
           <Text
             adjustsFontSizeToFit
             numberOfLines={2}
-            style={[typography(sizes.title, 'uib', 'l', colors.fg2)]}
+            style={[typography(tx.title, 'uib', 'l', colors.fg2)]}
           >
             {children}
           </Text>

@@ -3,7 +3,7 @@ import { useMemo } from 'react'
 import { Text, View } from 'react-native'
 import { FadeInRight, FadeOut } from 'react-native-reanimated'
 import Spacer from '../Spacer'
-import { chapterRow, gutterSize, sizes, typography } from '../constants'
+import { chapterRow } from '../constants'
 import bibles from '../data/bibles'
 import { Books } from '../data/types/books'
 import { Chapters } from '../data/types/chapters'
@@ -11,7 +11,7 @@ import { getBook } from '../functions/bible'
 import { JumpToChapter } from '../hooks/useChapterChange'
 import useColors from '../hooks/useColors'
 import { useAppSelector } from '../redux/hooks'
-import { br } from '../styles'
+import { br, sp, tx, typography } from '../styles'
 import TovPressable from './TovPressable'
 
 interface Props {
@@ -52,7 +52,7 @@ export default function ChapterBoxes({
         style={{
           flex: 1,
           aspectRatio: 1,
-          marginHorizontal: gutterSize / 5,
+          marginHorizontal: sp.sm,
           // flexDirection: 'row',
           // justifyContent: 'center',
           // alignItems: 'center',
@@ -79,7 +79,7 @@ export default function ChapterBoxes({
             closeNavigator()
           }}
         >
-          <Text style={typography(sizes.body, 'uib', 'c', colors.fg1)}>
+          <Text style={typography(tx.body, 'uib', 'c', colors.fg1)}>
             {item.chapterId.split('.')[1]}
           </Text>
         </TovPressable>
@@ -94,12 +94,10 @@ export default function ChapterBoxes({
       numColumns={chapterRow}
       renderItem={renderChapterBoxItem}
       data={thisBookChapters}
-      ListHeaderComponent={<Spacer units={3} />}
-      contentContainerStyle={{
-        paddingHorizontal: (gutterSize * 3) / 4,
-      }}
-      ItemSeparatorComponent={() => <Spacer units={2} />}
-      ListFooterComponent={<Spacer units={4} />}
+      ListHeaderComponent={<Spacer s={sp.lg} />}
+      contentContainerStyle={{ paddingHorizontal: sp.lg }}
+      ItemSeparatorComponent={() => <Spacer s={sp.md} />}
+      ListFooterComponent={<Spacer s={sp.xl} />}
     />
   )
 }

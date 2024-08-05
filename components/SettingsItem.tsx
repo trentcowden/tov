@@ -1,8 +1,7 @@
 import React, { ReactNode } from 'react'
 import { Text, View } from 'react-native'
-import { gutterSize, sizes, typography } from '../constants'
 import useColors from '../hooks/useColors'
-import { br } from '../styles'
+import { br, sp, tx, typography } from '../styles'
 import TovPressable from './TovPressable'
 
 interface Props {
@@ -30,16 +29,16 @@ export default function SettingsItem({
       onPress={onPress ? onPress : () => {}}
       disableAnimation={!onPress}
       style={{
-        marginHorizontal: gutterSize,
+        marginHorizontal: sp.xl,
         borderRadius: br.lg,
       }}
       onPressColor={colors.bg3}
     >
       <View
         style={{
-          paddingVertical: gutterSize / 2,
-          paddingHorizontal: gutterSize / 2,
-          gap: gutterSize / 2,
+          paddingVertical: sp.md,
+          paddingHorizontal: sp.md,
+          gap: sp.md,
         }}
       >
         <View
@@ -54,19 +53,19 @@ export default function SettingsItem({
           <Text
             numberOfLines={1}
             adjustsFontSizeToFit
-            style={[typography(sizes.body, 'uim', 'l', colors.fg2)]}
+            style={[typography(tx.body, 'uim', 'l', colors.fg2)]}
           >
             {children}
           </Text>
           {rightSection}
           {rightText ? (
-            <Text style={typography(sizes.caption, 'uis', 'c', colors.p1)}>
+            <Text style={typography(tx.caption, 'uis', 'c', colors.p1)}>
               {rightText}
             </Text>
           ) : null}
         </View>
         {description ? (
-          <Text style={typography(sizes.tiny, 'uil', 'l', colors.fg3)}>
+          <Text style={typography(tx.tiny, 'uil', 'l', colors.fg3)}>
             {description}
           </Text>
         ) : null}

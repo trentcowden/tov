@@ -2,11 +2,10 @@ import { useMemo } from 'react'
 import { SectionList, Text, useWindowDimensions } from 'react-native'
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated'
 import Spacer from '../Spacer'
-import { gutterSize, sizes, typography } from '../constants'
 import books from '../data/books.json'
 import { Books } from '../data/types/books'
 import useColors from '../hooks/useColors'
-import { br } from '../styles'
+import { br, sp, tx, typography } from '../styles'
 import TovPressable from './TovPressable'
 
 interface Props {
@@ -61,19 +60,15 @@ export default function BooksList({ navigatorBook, goToBook }: Props) {
         exiting={FadeOut}
         key={section.sectionName}
         style={{
-          marginHorizontal: gutterSize,
-          width: width - gutterSize * 4,
-          // paddingHorizontal: gutterSize,
-          // marginTop: index === 0 ? 0 : gutterSize * 1.5,
-          paddingBottom: gutterSize / 8,
+          marginHorizontal: sp.xl,
+          width: width - sp.xl * 4,
+          paddingBottom: sp.sm,
           backgroundColor: colors.bg2,
         }}
       >
-        <Text style={typography(sizes.caption, 'uil', 'l', colors.fg3)}>
+        <Text style={typography(tx.caption, 'uil', 'l', colors.fg3)}>
           {sectionNames[section.sectionName]}
         </Text>
-        {/* <Spacer units={1.5} />
-        <View style={{ width: '100%', height: 1, backgroundColor: colors.b }} /> */}
       </Animated.View>
     )
   }
@@ -89,11 +84,11 @@ export default function BooksList({ navigatorBook, goToBook }: Props) {
         }
         style={{
           paddingVertical: 6,
-          paddingHorizontal: gutterSize / 2,
+          paddingHorizontal: sp.md,
           alignItems: 'center',
           flexDirection: 'row',
           borderRadius: br.md,
-          marginHorizontal: gutterSize / 2,
+          marginHorizontal: sp.md,
           justifyContent: 'space-between',
         }}
         onPressColor={colors.bg3}
@@ -101,7 +96,7 @@ export default function BooksList({ navigatorBook, goToBook }: Props) {
           goToBook(item)
         }}
       >
-        <Text style={typography(sizes.body, 'uir', 'l', colors.fg1)}>
+        <Text style={typography(tx.body, 'uir', 'l', colors.fg1)}>
           {item.name}
         </Text>
       </TovPressable>
@@ -110,11 +105,11 @@ export default function BooksList({ navigatorBook, goToBook }: Props) {
 
   return (
     <SectionList
-      ListFooterComponent={<Spacer units={4} />}
+      ListFooterComponent={<Spacer s={sp.xl} />}
       sections={sections}
       renderItem={renderBookItem}
       renderSectionHeader={renderSectionHeader}
-      renderSectionFooter={() => <Spacer units={4} />}
+      renderSectionFooter={() => <Spacer s={sp.xl} />}
       keyboardShouldPersistTaps="always"
     />
   )

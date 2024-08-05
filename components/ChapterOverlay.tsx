@@ -17,15 +17,7 @@ import Animated, {
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import BookmarkFilled from '../assets/icons/solid/bookmark.svg'
-import {
-  gutterSize,
-  overlayHeight,
-  overlayWidth,
-  panActivateConfig,
-  shadows,
-  sizes,
-  typography,
-} from '../constants'
+import { overlayHeight, overlayWidth, panActivateConfig } from '../constants'
 import { Books } from '../data/types/books'
 import { Chapters } from '../data/types/chapters'
 import { getEdges } from '../functions/utils'
@@ -33,7 +25,7 @@ import { JumpToChapter } from '../hooks/useChapterChange'
 import useColors from '../hooks/useColors'
 import { toggleFavorite } from '../redux/history'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
-import { br, ic, sp } from '../styles'
+import { br, ic, shadows, sp, tx, typography } from '../styles'
 
 interface Props {
   activeChapter: Chapters[number]
@@ -96,7 +88,6 @@ export default function ChapterOverlay({
   })
 
   function changeChapter() {
-    // setText(`${activeBook.name} ${activeChapter.chapterId.split('.')[1]}`)
     setText(
       `${activeBook.name.replace(/ /g, '').slice(0, 3)} ${activeChapter.chapterId.split('.')[1]}`
     )
@@ -106,7 +97,6 @@ export default function ChapterOverlay({
     textOpacity.value = withTiming(0, { duration: 150 }, () =>
       runOnJS(changeChapter)()
     )
-    // textOpacity.value = withTiming(1, { duration: 200 })
   }, [activeChapter])
 
   useEffect(() => {
@@ -124,10 +114,6 @@ export default function ChapterOverlay({
       itemTranslateX.value = withSpring(0, panActivateConfig)
     }
   }, [historyItem?.isFavorite])
-  // const dimensions = {
-  //   width: 80,
-  //   height: 32,
-  // }
 
   return (
     <Animated.View
@@ -137,62 +123,17 @@ export default function ChapterOverlay({
         {
           position: 'absolute',
           bottom: bottom * 1.5,
-          // left: gutterSize,
-          // top: gutterSize / 2,
-          // left: gutterSize / 2,
-          // bottom: bottom + gutterSize / 2,
-          // right: gutterSize / 2,
-          // left: -gutterSize,
-          // backgroundColor: colors.p1 + '22',
-          // width: width,
           justifyContent: 'center',
           zIndex: 1,
           alignItems: 'center',
           flexDirection: 'row',
-          gap: gutterSize / 2,
+          gap: sp.md,
           borderRadius: br.fu,
           ...shadows[1],
         },
         overlayAnimatedStyles,
       ]}
     >
-      {/* <ReferenceBackButton
-        jumpToChapter={jumpToChapter}
-        openReferences={openReferences}
-        setReferenceState={setReferenceState}
-      /> */}
-      {/* <View
-        style={{
-          position: 'absolute',
-          top: 0,
-          ...dimensions,
-          borderRadius: 999,
-          overflow: 'hidden',
-        }}
-      >
-        <BlurView
-          reducedTransparencyFallbackColor={colors.bg2}
-          blurType={settings.theme === 'light' ? 'light' : 'extraDark'}
-          style={{
-            ...dimensions,
-            // left: gutterSize,
-            // borderRadius: 99,
-            // position: 'absolute',
-            // top: 0,
-            // height: top + gutterSize,
-          }}
-          blurAmount={4}
-        />
-      </View> */}
-      {/* <View
-        style={{
-          ...dimensions,
-          borderRadius: 999,
-          position: 'absolute',
-          top: 0,
-          backgroundColor: colors.bg3,
-        }}
-      /> */}
       <Pressable
         onPressIn={() => {
           pressed.value = withTiming(1, { duration: 75 })
@@ -210,15 +151,7 @@ export default function ChapterOverlay({
 
           dispatch(toggleFavorite(activeChapter.chapterId))
         }}
-        hitSlop={gutterSize / 2}
-        // onPressIn={() => {
-        //   if (overlayOpacity.value === 0) return
-        //   pressed.value = withTiming(1, { duration: 75 })
-        // }}
-        // onPressOut={() => {
-        //   if (overlayOpacity.value === 0) return
-        //   pressed.value = withSpring(0, panActivateConfig)
-        // }}
+        hitSlop={sp.md}
         onPress={() => {
           if (overlayOpacity.value === 0) return
           textTranslateX.value = withSpring(0, panActivateConfig)
@@ -231,15 +164,9 @@ export default function ChapterOverlay({
         style={{
           justifyContent: 'center',
           alignItems: 'center',
-          // aspectRatio: 1,
-          // ...dimensions,
-          // paddingHorizontal: gutterSize * 2,
-          // paddingVertical: gutterSize / 2,
-          // paddingTop: gutterSize,
           gap: sp.xs,
           width: overlayWidth,
           height: overlayHeight,
-          paddingHorizontal: gutterSize / 1.5,
           flexDirection: 'row',
         }}
       >
@@ -254,7 +181,7 @@ export default function ChapterOverlay({
           maxFontSizeMultiplier={1}
           style={[
             typography(
-              sizes.tiny - 2,
+              tx.tiny - 2,
               'uil',
               'l',
               colors.id === 'light' ? colors.fg3 : colors.fg3
@@ -267,32 +194,7 @@ export default function ChapterOverlay({
           ]}
         >
           {text.toUpperCase()}
-          {/* `${activeBook.name.replace(' ', '').slice(0, 3)}.`} */}
         </Animated.Text>
-        {/* <Animated.Text
-          style={{
-            ...typography(sizes.subtitle, 'uis', 'l', colors.p1),
-          }}
-          entering={FadeIn}
-        >
-          {activeChapter.chapterId.split('.')[1]}
-        </Animated.Text> */}
-        {/* <Text
-            numberOfLines={1}
-            adjustsFontSizeToFit
-            maxFontSizeMultiplier={1}
-            style={{
-              ...typography(11, 'uib', 'l', colors.fg2),
-              flex: 1,
-            }}
-          >
-            {activeBook.name}
-          </Text> */}
-        {/* </View> */}
-
-        {/* <TouchableOpacity style={{ paddingHorizontal: gutterSize }}>
-        <FontAwesome5 name="history" size={20} color={colors.fg3} />
-      </TouchableOpacity> */}
       </Pressable>
     </Animated.View>
   )

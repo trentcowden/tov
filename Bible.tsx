@@ -37,7 +37,7 @@ import ScrollBar from './components/ScrollBar'
 import Settings from './components/Settings'
 import TutorialHeader from './components/TutorialHeader'
 import VerseHighlight from './components/VerseHighlight'
-import { gutterSize, panActivateConfig } from './constants'
+import { panActivateConfig } from './constants'
 import bibles from './data/bibles'
 import { Chapters } from './data/types/chapters'
 import { getBook } from './functions/bible'
@@ -85,9 +85,8 @@ export default function Bible() {
   const [verseNewlines, setVerseNewlines] = useState<boolean[]>()
   const [paragraphs, setParagraphs] = useState<boolean[]>()
   const spaceBeforeTextStarts =
-    top - gutterSize + chapterChangeFeedbackHeight + (gutterSize / 4) * 3
-  const spaceAfterTextEnds =
-    gutterSize * 0.75 + chapterChangeFeedbackHeight + bottom
+    top - sp.xl + chapterChangeFeedbackHeight + sp.lg
+  const spaceAfterTextEnds = sp.lg + chapterChangeFeedbackHeight + bottom
   const currentVerseIndex = useSharedValue<number | 'bottom' | 'top'>(0)
   const currentVerseIndexNum = useSharedValue<number>(0)
   const fingerDown = useRef(false)
@@ -306,13 +305,9 @@ export default function Bible() {
               paragraphs={paragraphs}
               spaceAfterTextEnds={spaceAfterTextEnds}
             />
-            <View
-              style={{
-                width: '100%',
-              }}
-            >
+            <View style={{ width: '100%' }}>
               {activeChapter.chapterId === 'TUT.1' ? null : (
-                <Spacer additional={top - gutterSize} />
+                <Spacer s={top - sp.xl} />
               )}
               {activeChapter.chapterId === 'TUT.1' ? null : (
                 <ChapterChangeFeedback
@@ -326,7 +321,7 @@ export default function Bible() {
                 <TutorialHeader scrollViewRef={scrollViewRef} />
               ) : null}
               {activeChapter.chapterId !== 'TUT.1' ? (
-                <Spacer units={3} />
+                <Spacer s={sp.lg} />
               ) : null}
             </View>
             <View style={{ paddingHorizontal: sp.xx }}>
@@ -340,14 +335,14 @@ export default function Bible() {
                 </BibleText>
               </Text>
             </View>
-            <Spacer units={3} />
+            <Spacer s={sp.lg} />
             <ChapterChangeFeedback
               place="bottom"
               progress={overScrollAmount}
               textTranslateY={textTranslateY}
               releaseToChange={releaseToChange}
             />
-            <Spacer additional={bottom} />
+            <Spacer s={bottom} />
           </ScrollView>
         </Animated.View>
         <Navigator

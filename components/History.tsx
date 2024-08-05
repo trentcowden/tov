@@ -13,7 +13,6 @@ import Animated, {
   runOnJS,
   SharedValue,
   useAnimatedStyle,
-  useSharedValue,
   withSpring,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -21,20 +20,14 @@ import Spacer from '../Spacer'
 import Bookmark from '../assets/icons/duotone/bookmark.svg'
 import Settings from '../assets/icons/duotone/settings-02.svg'
 import BookmarkFilled from '../assets/icons/solid/bookmark.svg'
-import {
-  gutterSize,
-  panActivateConfig,
-  shadows,
-  sizes,
-  typography,
-} from '../constants'
+import { panActivateConfig } from '../constants'
 import { Chapters } from '../data/types/chapters'
 import { getEdges, getHorizTransReq } from '../functions/utils'
 import { JumpToChapter } from '../hooks/useChapterChange'
 import useColors from '../hooks/useColors'
 import { HistoryItem } from '../redux/history'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
-import { br, ic, sp } from '../styles'
+import { br, ic, shadows, sp, tx, typography } from '../styles'
 import HistoryListItem from './HistoryItem'
 import TovPressable from './TovPressable'
 
@@ -130,13 +123,13 @@ export default function History({
         key={item}
         style={{
           width: '100%',
-          paddingHorizontal: gutterSize / 2,
-          marginTop: index === 0 ? 0 : gutterSize,
-          paddingBottom: gutterSize / 3,
+          paddingHorizontal: sp.md,
+          marginTop: index === 0 ? 0 : sp.xl,
+          paddingBottom: sp.sm,
           backgroundColor: colors.bg2,
         }}
       >
-        <Text style={typography(sizes.caption, 'uil', 'l', colors.fg3)}>
+        <Text style={typography(tx.caption, 'uil', 'l', colors.fg3)}>
           {item}
         </Text>
       </Animated.View>
@@ -157,34 +150,6 @@ export default function History({
     zIndex: Math.abs(textTranslationX.value) < 10 ? -1 : 1,
   }))
 
-  const bookmarkHeight = useSharedValue(top)
-  const bookmarkPressed = useSharedValue(0)
-  const startH = gutterSize * 1.5
-  const endH = gutterSize * 3
-
-  useEffect(() => {
-    if (showFavorites) {
-      bookmarkHeight.value = withSpring(endH, {
-        mass: 0.5,
-        damping: 10,
-        stiffness: 140,
-      })
-    } else {
-      bookmarkHeight.value = withSpring(startH, panActivateConfig)
-    }
-  }, [showFavorites])
-
-  const bookmarkTopStyles = useAnimatedStyle(() => ({
-    height: bookmarkHeight.value,
-  }))
-  const bookmarkStyles = useAnimatedStyle(() => ({
-    transform: [
-      {
-        scale: interpolate(bookmarkHeight.value, [startH, endH], [1, 1.2]),
-      },
-    ],
-  }))
-
   return (
     <>
       <Animated.View
@@ -196,7 +161,6 @@ export default function History({
             position: 'absolute',
             left: -width * 2,
             zIndex: 3,
-            // paddingTop: top + gutterSize / 4,
             paddingLeft: width * 1.3,
             ...shadows[0],
           },
@@ -211,36 +175,33 @@ export default function History({
               .stiffness(140)
               .restDisplacementThreshold(0)}
             data={sections}
-            contentContainerStyle={{ paddingHorizontal: gutterSize / 2 }}
+            contentContainerStyle={{ paddingHorizontal: sp.md }}
             renderItem={renderHistoryItem}
-            // renderSectionHeader={renderSectionHeader}
             keyExtractor={(item) =>
               typeof item === 'string' ? item : item.date.toString()
             }
             showsVerticalScrollIndicator={false}
-            // renderSectionFooter={() => <Spacer units={4} />}
-            // estimatedItemSize={28}
             ListEmptyComponent={
               <View
                 style={{
-                  paddingLeft: gutterSize / 2,
-                  paddingRight: gutterSize + 40,
+                  paddingLeft: sp.md,
+                  paddingRight: ic.md.width + sp.md * 4,
                 }}
               >
-                <Text style={typography(sizes.body, 'uir', 'l', colors.fg3)}>
+                <Text style={typography(tx.body, 'uir', 'l', colors.fg3)}>
                   {showFavorites
                     ? 'Long press on a history item to add it as a bookmark.'
                     : 'Come back here to return to chapters you were previously reading.'}
                 </Text>
               </View>
             }
-            ListHeaderComponent={<Spacer additional={spaceBeforeTextStarts} />}
-            ListFooterComponent={<Spacer units={14} additional={bottom} />}
+            ListHeaderComponent={<Spacer s={spaceBeforeTextStarts} />}
+            ListFooterComponent={<Spacer s={bottom + sp.xl * 3} />}
           />
           <View
             style={{
               position: 'absolute',
-              bottom: bottom + gutterSize,
+              bottom: bottom + sp.xl,
               width: '100%',
               alignItems: 'flex-end',
               justifyContent: 'center',
@@ -257,14 +218,14 @@ export default function History({
                 alignItems: 'center',
                 ...shadows[0],
               }}
-              hitSlop={gutterSize / 2}
+              hitSlop={sp.md}
               onPress={() => {
                 // textTranslationX.value = withSpring(0, panActivateConfig)
                 openSettings.value = withSpring(1, panActivateConfig)
                 trackEvent('Open settings')
               }}
             >
-              <Settings {...ic.md} color={colors.fg2} />
+              <Settings {...ic.md} color={colors.fg3} />
               {/* <Text style={typography(sizes.caption, 'uis', 'c', colors.fg3)}>
                 Settings
               </Text> */}
@@ -294,7 +255,7 @@ export default function History({
             {showFavorites ? (
               <BookmarkFilled color={colors.bg3} {...ic.md} />
             ) : (
-              <Bookmark color={colors.fg2} {...ic.md} />
+              <Bookmark color={colors.fg3} {...ic.md} />
             )}
           </TovPressable>
         </View>

@@ -1,3 +1,4 @@
+import { TextStyle, ViewStyle } from 'react-native'
 import tinycolor from 'tinycolor2'
 
 const tovHue = 27
@@ -99,3 +100,70 @@ export const ic = {
   md: { width: 18, height: 18 },
   lg: { width: 22, height: 22 },
 }
+
+export const tx = {
+  massive: 32,
+  title: 23,
+  subtitle: 19,
+  body: 16,
+  caption: 14,
+  tiny: 12,
+}
+
+/**
+ * Takes in some text style settings and returns a filled out text style object. This is
+ * used simply to save space in components and simplify things overall. Used within the
+ * style prop of a text component.
+ */
+export const typography = (
+  size: number,
+  weight: 'ri' | 'r' | 'b' | 'uir' | 'uib' | 'uim' | 'uis' | 'uil',
+  align: 'l' | 'c',
+  color: string
+): TextStyle => {
+  // The options for font alignments.
+  const alignments: {
+    l: 'left' | 'right'
+    c: 'center'
+  } = {
+    l: 'left',
+    c: 'center',
+  }
+
+  const weights = {
+    // ri: 'Literata18pt-RegularItalic',
+    // r: 'Literata18pt-Regular',
+    // b: 'Literata18pt-Bold',
+    ri: 'Bookerly-Italic',
+    r: 'Bookerly-Regular',
+    b: 'Bookerly-Bold',
+    uil: 'Figtree-Light',
+    uir: 'Figtree-Regular',
+    uim: 'Figtree-Medium',
+    uis: 'Figtree-SemiBold',
+    uib: 'Figtree-Bold',
+  }
+
+  // Return the completed style object.
+  return {
+    fontSize: size,
+    textAlign: alignments[align],
+    color: color,
+    fontFamily: weights[weight],
+  }
+}
+
+export const shadows: ViewStyle[] = [
+  {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.4,
+    shadowRadius: 10,
+  },
+  {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.6,
+    shadowRadius: 14,
+  },
+]

@@ -1,7 +1,7 @@
 import { LinearGradient } from 'expo-linear-gradient'
 import React from 'react'
 import tinycolor from 'tinycolor2'
-import { gutterSize } from '../constants'
+import { sp } from '../styles'
 
 interface Props {
   color: string
@@ -19,7 +19,7 @@ export default function Fade(props: Props) {
         position: 'absolute',
         bottom: props.place === 'top' ? undefined : 0,
         top: props.place === 'top' ? 0 : undefined,
-        height: gutterSize / 2,
+        height: sp.md,
         width: '100%',
         // borderWidth: 1,
       }}

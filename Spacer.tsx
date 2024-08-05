@@ -1,19 +1,16 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { View } from 'react-native'
-import { gutterSize } from './constants'
 
 interface Props {
-  units?: number
-  additional?: number
+  s: number
 }
 
-export default function Spacer({ units, additional }: Props) {
-  const [unit] = useState(gutterSize / 4)
+export default function Spacer({ s }: Props) {
   return (
     <View
       style={{
-        width: (additional || 0) + (units || 0) * unit,
-        height: (additional || 0) + (units || 0) * unit,
+        width: s,
+        height: s,
       }}
     />
   )

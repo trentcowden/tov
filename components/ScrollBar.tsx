@@ -27,13 +27,10 @@ import {
   panActivateConfig,
   scrollBarHeight,
   scrollBarWidth,
-  shadows,
-  sizes,
-  typography,
 } from '../constants'
 import { getEdges } from '../functions/utils'
 import useColors from '../hooks/useColors'
-import { sp } from '../styles'
+import { br, shadows, sp, tx, typography } from '../styles'
 
 interface Props {
   verseOffsets: number[] | undefined
@@ -206,13 +203,10 @@ export default function ScrollBar({
           style={[
             {
               position: 'absolute',
-              // right: -scrollBarWidth * 3,
               right: 0,
               top: 0,
               height: height,
               width: scrollBarWidth * 1.5,
-              // alignItems: 'flex-end',
-              // justifyContent: 'center',
               zIndex: 3,
               alignItems: 'flex-end',
             },
@@ -224,9 +218,8 @@ export default function ScrollBar({
             exiting={FadeOut}
             style={[
               {
-                // width: gutterSize,
                 width: scrollBarWidth,
-                borderRadius: 999,
+                borderRadius: br.fu,
                 zIndex: 5,
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -261,7 +254,7 @@ export default function ScrollBar({
           {verseOffsets?.length !== 1 ? (
             <Text
               style={[
-                typography(sizes.tiny, 'uib', 'c', colors.p2),
+                typography(tx.tiny, 'uib', 'c', colors.p2),
                 // { fontFamily: 'iAWriterMonoS-Bold' },
               ]}
             >
@@ -288,7 +281,7 @@ export default function ScrollBar({
               numberOfLines={1}
               adjustsFontSizeToFit
               style={[
-                typography(sizes.massive, 'uib', 'c', colors.p1),
+                typography(tx.massive, 'uib', 'c', colors.p1),
                 { fontFamily: 'iAWriterMonoS-Bold' },
               ]}
             >

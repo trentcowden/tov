@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react'
 import { Text } from 'react-native'
-import { gutterSize, sizes, typography } from '../constants'
 import useColors from '../hooks/useColors'
+import { sp, tx, typography } from '../styles'
 
 interface Props {
   children: ReactNode
@@ -14,10 +14,10 @@ export default function SettingsSection({ children, disableTopMargin }: Props) {
   return (
     <Text
       style={[
-        typography(sizes.caption, 'uil', 'l', colors.fg3),
+        typography(tx.caption, 'uil', 'l', colors.fg3),
         {
-          paddingHorizontal: gutterSize,
-          marginTop: disableTopMargin ? 0 : gutterSize,
+          paddingHorizontal: sp.xl,
+          marginTop: disableTopMargin ? 0 : sp.xl,
         },
       ]}
     >

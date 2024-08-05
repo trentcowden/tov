@@ -15,13 +15,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated'
 import BookmarkFilled from '../assets/icons/solid/bookmark.svg'
-import {
-  defaultOnPressScale,
-  gutterSize,
-  panActivateConfig,
-  sizes,
-  typography,
-} from '../constants'
+import { defaultOnPressScale, panActivateConfig } from '../constants'
 import bibles from '../data/bibles'
 import { Chapters } from '../data/types/chapters'
 import { getBook } from '../functions/bible'
@@ -33,7 +27,7 @@ import {
   toggleFavorite,
 } from '../redux/history'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
-import { br, ic, sp } from '../styles'
+import { br, ic, sp, tx, typography } from '../styles'
 
 interface Props {
   item: HistoryItem
@@ -186,8 +180,8 @@ export default function HistoryListItem({
             paddingVertical: 10,
             alignItems: 'center',
             justifyContent: 'space-between',
-            paddingHorizontal: gutterSize / 2,
-            gap: gutterSize / 2,
+            paddingHorizontal: sp.md,
+            gap: sp.md,
             flexDirection: 'row',
             borderRadius: br.md,
             backgroundColor:
@@ -210,7 +204,7 @@ export default function HistoryListItem({
               adjustsFontSizeToFit
               style={[
                 typography(
-                  sizes.body,
+                  tx.body,
                   item.isFavorite ? 'uib' : 'uir',
                   'l',
                   colors.fg1

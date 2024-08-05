@@ -5,13 +5,12 @@ import { FlatList } from 'react-native-gesture-handler'
 import { FadeIn, FadeOut } from 'react-native-reanimated'
 import Spacer from '../Spacer'
 import ArrowRightSquare from '../assets/icons/duotone/arrow-square-right.svg'
-import { gutterSize, sizes, typography } from '../constants'
 import { Books } from '../data/types/books'
 import { Chapters } from '../data/types/chapters'
 import { getBook, getChapterReference } from '../functions/bible'
 import { JumpToChapter } from '../hooks/useChapterChange'
 import useColors from '../hooks/useColors'
-import { br, ic } from '../styles'
+import { br, ic, sp, tx, typography } from '../styles'
 import Fade from './Fade'
 import { SearchResult } from './Navigator'
 import TovPressable from './TovPressable'
@@ -51,11 +50,10 @@ export default function SearchResults({
         bgColor={highlight ? colors.ph : colors.bg2}
         style={{
           alignItems: 'center',
-          marginHorizontal: gutterSize / 2,
-          borderRadius: br.md,
-          // height: 48,
-          paddingVertical: gutterSize / 3,
-          paddingHorizontal: gutterSize / 2,
+          marginHorizontal: sp.md,
+          borderRadius: br.sm,
+          paddingVertical: sp.sm,
+          paddingHorizontal: sp.md,
           borderBottomWidth: 0,
           marginBottom: 0,
           borderColor: colors.bg3,
@@ -71,7 +69,7 @@ export default function SearchResults({
           closeNavigator()
         }}
       >
-        <Text style={typography(sizes.body, 'uir', 'l', colors.fg1)}>
+        <Text style={typography(tx.body, 'uir', 'l', colors.fg1)}>
           {getChapterReference(item.item.chapterId)}
         </Text>
         {highlight ? <ArrowRightSquare {...ic.lg} color={colors.p1} /> : null}
@@ -86,9 +84,9 @@ export default function SearchResults({
         keyboardShouldPersistTaps="always"
         keyExtractor={(item) => item.item.chapterId}
         renderItem={renderSearchResultItem}
-        ListFooterComponent={<Spacer units={4} />}
-        ListHeaderComponent={<Spacer units={2} />}
-        ItemSeparatorComponent={() => <Spacer units={1} />}
+        ListFooterComponent={<Spacer s={sp.xl} />}
+        ListHeaderComponent={<Spacer s={sp.md} />}
+        ItemSeparatorComponent={() => <Spacer s={sp.sm} />}
         data={searchResults.sort((a, b) =>
           getBook(a.item.chapterId).bookId === activeBook.bookId &&
           getBook(b.item.chapterId).bookId !== activeBook.bookId

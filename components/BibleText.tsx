@@ -10,12 +10,13 @@ import {
 } from 'react-native'
 import ParsedText, { ParsedTextProps } from 'react-native-parsed-text'
 import { SharedValue, withSpring } from 'react-native-reanimated'
-import { panActivateConfig, typography } from '../constants'
+import { panActivateConfig } from '../constants'
 import bibles from '../data/bibles'
 import references from '../data/references.json'
 import { References } from '../data/types/references'
 import useColors from '../hooks/useColors'
 import { useAppSelector } from '../redux/hooks'
+import { typography } from '../styles'
 
 interface Props {
   setReferenceState?: React.Dispatch<React.SetStateAction<string | undefined>>

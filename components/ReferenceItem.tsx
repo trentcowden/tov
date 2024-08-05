@@ -4,13 +4,13 @@ import { Text, View } from 'react-native'
 import { SharedValue, withSpring, withTiming } from 'react-native-reanimated'
 import ArrowLeft from '../assets/icons/duotone/arrow-narrow-left.svg'
 import ArrowRight from '../assets/icons/duotone/arrow-narrow-right.svg'
-import { gutterSize, panActivateConfig, sizes, typography } from '../constants'
+import { panActivateConfig } from '../constants'
 import bibles from '../data/bibles'
 import { getVerseReference, isPassageAfter } from '../functions/bible'
 import { JumpToChapter } from '../hooks/useChapterChange'
 import useColors from '../hooks/useColors'
 import { useAppSelector } from '../redux/hooks'
-import { br, ic } from '../styles'
+import { br, ic, sp, tx, typography } from '../styles'
 import TovPressable from './TovPressable'
 
 interface Props {
@@ -90,65 +90,22 @@ export default function ReferenceItem({
   }
   return verse === '' ? null : (
     <>
-      {/* {index === 0 && !isAfter ? (
-        <Text
-          style={[
-            typography(sizes.caption, 'uil', 'l', colors.fg3),
-            {
-              paddingHorizontal: gutterSize / 2,
-              marginBottom: gutterSize / 2,
-            },
-          ]}
-        >
-          Earlier in the Bible
-        </Text>
-      ) : isAfter && !prevIsAfter ? (
-        <View
-          style={{
-            width: '100%',
-            paddingHorizontal: gutterSize / 2,
-            marginTop: index !== 0 ? gutterSize : 0,
-          }}
-        >
-          {index !== 0 ? (
-            <View
-              style={{
-                width: '100%',
-                height: 1,
-                backgroundColor: colors.bg3,
-              }}
-            />
-          ) : null}
-          <Text
-            style={[
-              typography(sizes.caption, 'uil', 'l', colors.fg3),
-              {
-                marginBottom: gutterSize / 2,
-                marginTop: index !== 0 ? gutterSize : 0,
-                // textAlign: 'right',
-              },
-            ]}
-          >
-            Later in the Bible
-          </Text>
-        </View>
-      ) : null} */}
       {isAfter && !prevIsAfter && index !== 0 ? (
         <View
           style={{
-            width: 6,
-            height: 6,
-            borderRadius: 3,
+            width: sp.sm,
+            height: sp.sm,
+            borderRadius: br.fu,
             alignSelf: 'center',
             backgroundColor: colors.ph,
-            marginVertical: gutterSize,
+            marginVertical: sp.xl,
           }}
         />
       ) : null}
       <TovPressable
         style={{
-          paddingHorizontal: gutterSize / 2,
-          paddingVertical: gutterSize * 0.66,
+          paddingHorizontal: sp.md,
+          paddingVertical: sp.lg,
           borderRadius: br.lg,
           gap: 8,
           // justifyContent: isAfter ? 'flex-end' : 'flex-start',
@@ -176,13 +133,13 @@ export default function ReferenceItem({
           }}
         >
           {isAfter ? null : <ArrowLeft {...ic.md} color={colors.p1} />}
-          <Text style={[typography(sizes.body, 'uir', 'l', colors.fg1)]}>
+          <Text style={[typography(tx.body, 'uir', 'l', colors.fg1)]}>
             {passageString}
           </Text>
           {isAfter ? <ArrowRight {...ic.md} color={colors.p1} /> : null}
         </View>
         <Text
-          style={[typography(sizes.tiny, 'uil', 'l', colors.fg3)]}
+          style={[typography(tx.tiny, 'uil', 'l', colors.fg3)]}
           numberOfLines={2}
         >
           {verse.trim()}

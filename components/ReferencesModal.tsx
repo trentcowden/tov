@@ -9,7 +9,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Spacer from '../Spacer'
 import Help from '../assets/icons/duotone/help-circle.svg'
-import { gutterSize, panActivateConfig, shadows } from '../constants'
+import { panActivateConfig } from '../constants'
 import references from '../data/references.json'
 import { References } from '../data/types/references'
 import { getVerseReference, isPassageAfter } from '../functions/bible'
@@ -17,7 +17,7 @@ import { getEdges, getModalHeight, getModalWidth } from '../functions/utils'
 import { JumpToChapter } from '../hooks/useChapterChange'
 import useColors from '../hooks/useColors'
 import { useAppSelector } from '../redux/hooks'
-import { br, ic } from '../styles'
+import { br, ic, shadows, sp } from '../styles'
 import Fade from './Fade'
 import ListBanner from './ListBanner'
 import ModalScreen from './ModalScreen'
@@ -108,7 +108,7 @@ export default function ReferencesModal({
           height: modalHeight,
           backgroundColor: colors.bg2,
           borderRadius: br.xl,
-          paddingTop: gutterSize / 2,
+          paddingTop: sp.md,
           overflow: 'hidden',
           ...shadows[1],
         }}
@@ -125,7 +125,7 @@ export default function ReferencesModal({
           <FlatList
             ref={referencesRef}
             data={activeReferences}
-            ListFooterComponent={<Spacer units={2} />}
+            ListFooterComponent={<Spacer s={sp.md} />}
             ListHeaderComponent={
               <ListBanner
                 title="What are cross references?"
@@ -138,7 +138,7 @@ export default function ReferencesModal({
               />
             }
             renderItem={renderReference}
-            contentContainerStyle={{ paddingHorizontal: gutterSize / 2 }}
+            contentContainerStyle={{ paddingHorizontal: sp.md }}
           />
           <Fade place="top" color={colors.bg2} />
         </View>

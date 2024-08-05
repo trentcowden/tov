@@ -10,11 +10,11 @@ import Animated, {
 } from 'react-native-reanimated'
 import Spacer from '../Spacer'
 import Close from '../assets/icons/duotone/x-close.svg'
-import { gutterSize, panActivateConfig, sizes, typography } from '../constants'
+import { panActivateConfig } from '../constants'
 import useColors from '../hooks/useColors'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
 import { dismissPopup } from '../redux/popups'
-import { br, ic } from '../styles'
+import { br, ic, sp, tx, typography } from '../styles'
 import TovPressable from './TovPressable'
 
 interface Props {
@@ -48,12 +48,12 @@ export default function ListBanner({ body, icon, title, popup }: Props) {
     <Animated.View
       style={[
         {
-          marginHorizontal: gutterSize / 2,
-          marginTop: gutterSize / 2,
+          marginHorizontal: sp.md,
+          marginTop: sp.md,
           backgroundColor: colors.ph,
-          padding: gutterSize / 2,
+          padding: sp.md,
           borderRadius: br.lg,
-          marginBottom: gutterSize,
+          marginBottom: sp.xl,
         },
         styles,
       ]}
@@ -65,18 +65,16 @@ export default function ListBanner({ body, icon, title, popup }: Props) {
         }}
       >
         {icon}
-        <Spacer units={1} />
+        <Spacer s={sp.sm} />
         <Text
-          style={[typography(sizes.body, 'uib', 'l', colors.fg1), { flex: 1 }]}
+          style={[typography(tx.body, 'uib', 'l', colors.fg1), { flex: 1 }]}
         >
           {title}
         </Text>
-        <Spacer units={0} additional={16 + gutterSize / 2} />
+        <Spacer s={16 + sp.md} />
       </View>
-      <Spacer units={1} />
-      <Text style={typography(sizes.caption, 'uir', 'l', colors.fg1)}>
-        {body}
-      </Text>
+      <Spacer s={sp.sm} />
+      <Text style={typography(tx.caption, 'uir', 'l', colors.fg1)}>{body}</Text>
       <TovPressable
         outerOuterStyle={{
           position: 'absolute',
@@ -84,7 +82,7 @@ export default function ListBanner({ body, icon, title, popup }: Props) {
           top: 0,
         }}
         bgColor={colors.p1 + '00'}
-        style={{ borderRadius: br.lg, padding: gutterSize / 2 }}
+        style={{ borderRadius: br.lg, padding: sp.md }}
         onPressColor={colors.p1}
         onPress={() => (dismiss.value = withSpring(1, panActivateConfig))}
       >
@@ -92,6 +90,6 @@ export default function ListBanner({ body, icon, title, popup }: Props) {
       </TovPressable>
     </Animated.View>
   ) : (
-    <Spacer units={2} />
+    <Spacer s={sp.md} />
   )
 }
