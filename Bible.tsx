@@ -30,6 +30,7 @@ import ChapterChangeFeedback, {
   chapterChangeFeedbackHeight,
 } from './components/ChapterChangeFeedback'
 import ChapterOverlay from './components/ChapterOverlay'
+import Help from './components/Help'
 import History from './components/History'
 import Navigator from './components/Navigator'
 import ReferencesModal from './components/ReferencesModal'
@@ -95,6 +96,8 @@ export default function Bible() {
 
   const openSettings = useSharedValue(0)
   const openSettingsNested = useSharedValue(0)
+
+  const openHelp = useSharedValue(0)
 
   const openReferences = useSharedValue(0)
   const openReferencesNested = useSharedValue(0)
@@ -330,6 +333,7 @@ export default function Bible() {
                   openReferences={openReferences}
                   setReferenceState={setReferenceState}
                   onTextLayout={onTextLayout}
+                  openHelp={openHelp}
                 >
                   {activeChapter.md}
                 </BibleText>
@@ -350,8 +354,6 @@ export default function Bible() {
           openNavigator={openNavigator}
           searchRef={searchRef}
           jumpToChapter={jumpToChapter}
-          overlayOpacity={overlayOpacity}
-          scrollOffset={scrollOffset}
           activeBook={activeBook}
         />
         <History
@@ -366,6 +368,7 @@ export default function Bible() {
           openSettings={openSettings}
           savedTextTranslationX={savedTextTranslateX}
           spaceBeforeTextStarts={spaceBeforeTextStarts}
+          openHelp={openHelp}
         />
         <ScrollBar
           scrollBarActivate={scrollBarActivate}
@@ -380,19 +383,15 @@ export default function Bible() {
           openSettings={openSettings}
           openSettingsNested={openSettingsNested}
           activeChapter={activeChapter}
-          overlayOpacity={overlayOpacity}
-          scrollOffset={scrollOffset}
           textTranslateX={textTranslateX}
           jumpToChapter={jumpToChapter}
-          currentVerseIndex={currentVerseIndex}
         />
+        <Help openHelp={openHelp} />
         <ReferencesModal
           jumpToChapter={jumpToChapter}
           openReferences={openReferences}
           openReferencesNested={openReferencesNested}
           referenceVerse={referenceVerse}
-          overlayOpacity={overlayOpacity}
-          scrollOffset={scrollOffset}
         />
         {activeChapter.chapterId !== 'TUT.1' ? (
           <ChapterOverlay

@@ -42,8 +42,6 @@ interface Props {
   searchResultsRef: RefObject<FlashList<Chapters[number]>>
   openNavigator: SharedValue<number>
   jumpToChapter: JumpToChapter
-  scrollOffset: SharedValue<number>
-  overlayOpacity: SharedValue<number>
   activeBook: Books[number]
 }
 
@@ -60,8 +58,6 @@ export default function Navigator({
   openNavigator,
   searchResultsRef,
   jumpToChapter,
-  overlayOpacity,
-  scrollOffset,
   activeBook,
 }: Props) {
   const colors = useColors()
@@ -165,8 +161,6 @@ export default function Navigator({
       openModal={openNavigator}
       openNested={openNavigatorNested}
       onBack={resetNavigatorBook}
-      overlayOpacity={overlayOpacity}
-      scrollOffset={scrollOffset}
     >
       <KeyboardAvoidingView
         behavior="height"

@@ -29,28 +29,21 @@ import Fade from './Fade'
 import ModalScreen from './ModalScreen'
 import ModalScreenHeader from './ModalScreenHeader'
 import SettingsItem from './SettingsItem'
-import SettingsSection from './SettingsSection'
 
 interface Props {
   openSettings: SharedValue<number>
   openSettingsNested: SharedValue<number>
   textTranslateX: SharedValue<number>
   activeChapter: Chapters[number]
-  scrollOffset: SharedValue<number>
-  overlayOpacity: SharedValue<number>
   jumpToChapter: JumpToChapter
-  currentVerseIndex: SharedValue<number | 'bottom' | 'top'>
 }
 
 export default function Settings({
   openSettings,
   openSettingsNested,
   activeChapter,
-  overlayOpacity,
-  scrollOffset,
   textTranslateX,
   jumpToChapter,
-  currentVerseIndex,
 }: Props) {
   const colors = useColors()
   const history = useAppSelector((state) => state.history)
@@ -76,8 +69,6 @@ export default function Settings({
     <ModalScreen
       openModal={openSettings}
       openNested={openSettingsNested}
-      overlayOpacity={overlayOpacity}
-      scrollOffset={scrollOffset}
       close={() => {
         openSettings.value = withSpring(
           0,
@@ -113,7 +104,15 @@ export default function Settings({
               paddingTop: sp.md,
             }}
           >
-            <SettingsSection disableTopMargin>General</SettingsSection>
+            <Text
+              style={[
+                typography(tx.tiny, 'uim', 'l', colors.p1),
+                { paddingHorizontal: sp.xl },
+              ]}
+            >
+              Tov uses the New English Translation (NET) Bible.
+            </Text>
+            {/* <SettingsSection disableTopMargin>General</SettingsSection> */}
             <SettingsItem
               onPress={() => {
                 Alert.alert(
@@ -139,7 +138,7 @@ export default function Settings({
             >
               Clear History
             </SettingsItem>
-            <SettingsSection>Help</SettingsSection>
+            {/* <SettingsSection>Help</SettingsSection> */}
             <SettingsItem
               onPress={() => {
                 trackEvent('Contact open')
@@ -184,7 +183,7 @@ export default function Settings({
             >
               View Tutorial
             </SettingsItem>
-            <SettingsSection>Contribute</SettingsSection>
+            {/* <SettingsSection>Contribute</SettingsSection> */}
             {canReview ? (
               <SettingsItem
                 onPress={() => {
@@ -234,8 +233,13 @@ export default function Settings({
               </Text>
               's Source Code
             </SettingsItem>
-            <Spacer s={sp.md} />
-            <Text style={typography(tx.tiny, 'uim', 'c', colors.p1)}>
+            {/* <Spacer s={sp.md} /> */}
+            <Text
+              style={[
+                typography(tx.tiny, 'uim', 'l', colors.p1),
+                { paddingHorizontal: sp.xl },
+              ]}
+            >
               {'Made with 🧡 by '}
               <Text
                 style={{ textDecorationLine: 'underline' }}

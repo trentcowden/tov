@@ -13,6 +13,7 @@ import ArrowDown from '../assets/icons/duotone/arrow-narrow-down.svg'
 import Tov from '../assets/icons/tov.svg'
 import { getEdges } from '../functions/utils'
 import useColors from '../hooks/useColors'
+import { useAppSelector } from '../redux/hooks'
 import { br, ic, sp, tx, typography } from '../styles'
 import TovPressable from './TovPressable'
 
@@ -27,6 +28,13 @@ export default function TutorialHeader({ scrollViewRef }: Props) {
   const colors = useColors()
   const fadeIn = useSharedValue(0)
   const [tutorialStart] = useState(Date.now())
+
+  const history = useAppSelector((state) => state.history)
+
+  useEffect(() => {
+    if (history.length > 1)
+      scrollViewRef.current?.scrollTo({ y: height - top - sp.xl })
+  }, [history])
 
   useEffect(() => {
     fadeIn.value = withTiming(1, { duration: 1000 })

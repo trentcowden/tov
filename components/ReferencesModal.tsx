@@ -29,8 +29,6 @@ interface Props {
   openReferences: SharedValue<number>
   openReferencesNested: SharedValue<number>
   jumpToChapter: JumpToChapter
-  scrollOffset: SharedValue<number>
-  overlayOpacity: SharedValue<number>
 }
 
 export default function ReferencesModal({
@@ -38,8 +36,6 @@ export default function ReferencesModal({
   openReferencesNested,
   referenceVerse,
   jumpToChapter,
-  overlayOpacity,
-  scrollOffset,
 }: Props) {
   const colors = useColors()
   const insets = useSafeAreaInsets()
@@ -93,8 +89,6 @@ export default function ReferencesModal({
   return (
     <ModalScreen
       openModal={openReferences}
-      overlayOpacity={overlayOpacity}
-      scrollOffset={scrollOffset}
       close={() => {
         openReferences.value = withSpring(0, panActivateConfig)
       }}

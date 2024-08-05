@@ -26,9 +26,7 @@ interface Props {
   children: ReactNode
   nestedScreen?: ReactNode
   close: () => void
-  onBack: () => void
-  scrollOffset: SharedValue<number>
-  overlayOpacity: SharedValue<number>
+  onBack?: () => void
   nestedHeight?: number
 }
 
@@ -39,8 +37,6 @@ export default function ModalScreen({
   nestedScreen,
   close,
   onBack,
-  scrollOffset,
-  overlayOpacity,
   nestedHeight,
 }: Props) {
   const { height, width } = useWindowDimensions()
@@ -92,7 +88,11 @@ export default function ModalScreen({
         (openNested.value < 0.5 || e.velocityX > horizVelocReq) &&
         e.velocityX > 0
       ) {
-        openNested.value = withSpring(0, panActivateConfig, runOnJS(onBack))
+        openNested.value = withSpring(
+          0,
+          panActivateConfig,
+          runOnJS(onBack ?? (() => {}))
+        )
       } else {
         openNested.value = withSpring(1, panActivateConfig)
       }

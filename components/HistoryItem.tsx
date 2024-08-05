@@ -1,7 +1,7 @@
 import { trackEvent } from '@aptabase/react-native'
 import { ImpactFeedbackStyle, impactAsync } from 'expo-haptics'
 import React, { useEffect, useRef } from 'react'
-import { Pressable } from 'react-native'
+import { Pressable, useWindowDimensions } from 'react-native'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 import Animated, {
   FadeIn,
@@ -9,6 +9,7 @@ import Animated, {
   interpolate,
   runOnJS,
   useAnimatedStyle,
+  useDerivedValue,
   useSharedValue,
   withSequence,
   withSpring,
@@ -19,6 +20,7 @@ import { defaultOnPressScale, panActivateConfig } from '../constants'
 import bibles from '../data/bibles'
 import { Chapters } from '../data/types/chapters'
 import { getBook } from '../functions/bible'
+import { getHorizTransReq } from '../functions/utils'
 import { JumpToChapter } from '../hooks/useChapterChange'
 import useColors from '../hooks/useColors'
 import {
@@ -27,6 +29,7 @@ import {
   toggleFavorite,
 } from '../redux/history'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
+import { dismissPopup } from '../redux/popups'
 import { br, ic, sp, tx, typography } from '../styles'
 
 interface Props {
@@ -36,6 +39,7 @@ interface Props {
   jumpToChapter: JumpToChapter
   activeChapter: Chapters[number]
   showFavorites: boolean
+  textTranslateX: Animated.SharedValue<number>
 }
 
 const swipeReq = 75
@@ -47,17 +51,40 @@ export default function HistoryListItem({
   jumpToChapter,
   activeChapter,
   showFavorites,
+  textTranslateX,
 }: Props) {
   const colors = useColors()
+  const { width } = useWindowDimensions()
   const settings = useAppSelector((state) => state.settings)
   const dispatch = useAppDispatch()
   const itemTranslateX = useSharedValue(0)
-  const textTranslateX = useSharedValue(0)
+  const historyItemTextTranslateX = useSharedValue(0)
   const alreadyHaptic = useRef(false)
   const pressed = useSharedValue(0)
   const chapterIndex = bibles[settings.translation].findIndex(
     (chapter) => chapter.chapterId === item.chapterId
   )
+  const popups = useAppSelector((state) => state.popups)
+  const horizTransReq = getHorizTransReq(width)
+  const disableWiggle = () => dispatch(dismissPopup('wiggle'))
+  const [wiggled, setWiggled] = React.useState(false)
+  useDerivedValue(() => {
+    if (
+      !wiggled &&
+      // !popups.dismissed.includes('wiggle') &&
+      index > 1 &&
+      item.chapterId === 'TUT.1' &&
+      textTranslateX.value > horizTransReq - 25
+    ) {
+      itemTranslateX.value = withSequence(
+        withTiming(sp.xx, { duration: 200 }),
+        withTiming(0, { duration: 200 }),
+        withTiming(sp.xx, { duration: 200 }),
+        // withSpring(0, panActivateConfig, () => runOnJS(disableWiggle)())
+        withSpring(0, panActivateConfig, () => runOnJS(setWiggled)(true))
+      )
+    }
+  })
 
   function removeHistoryItem() {
     setTimeout(() => dispatch(removeFromHistory(item.chapterId)), 100)
@@ -100,8 +127,11 @@ export default function HistoryListItem({
 
   useEffect(() => {
     if (item.isFavorite)
-      textTranslateX.value = withSpring(ic.sm.width + sp.sm, panActivateConfig)
-    else textTranslateX.value = withSpring(0, panActivateConfig)
+      historyItemTextTranslateX.value = withSpring(
+        ic.sm.width + sp.sm,
+        panActivateConfig
+      )
+    else historyItemTextTranslateX.value = withSpring(0, panActivateConfig)
   }, [item.isFavorite])
 
   const historyItemStyles = useAnimatedStyle(() => {
@@ -130,7 +160,7 @@ export default function HistoryListItem({
           : itemTranslateX.value > swipeReq
             ? 'line-through'
             : 'none',
-      transform: [{ translateX: textTranslateX.value }],
+      transform: [{ translateX: historyItemTextTranslateX.value }],
     }
   })
 

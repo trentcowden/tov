@@ -25,6 +25,7 @@ interface Props {
     | ((event: NativeSyntheticEvent<TextLayoutEventData>) => void)
     | undefined
   children: React.ReactNode
+  openHelp: SharedValue<number>
 }
 
 export default function BibleText({
@@ -32,6 +33,7 @@ export default function BibleText({
   setReferenceState,
   openReferences,
   onTextLayout,
+  openHelp,
 }: Props) {
   const { height, width } = useWindowDimensions()
   const colors = useColors()
@@ -89,6 +91,19 @@ export default function BibleText({
     // return ''
   }
 
+  function renderAdvancedFeatures(text: string) {
+    return (
+      <Text
+        style={{ textDecorationLine: 'underline', color: colors.p1 }}
+        onPress={() => {
+          openHelp.value = withSpring(1, panActivateConfig)
+        }}
+      >
+        advanced features
+      </Text>
+    )
+  }
+
   const textStyle: TextStyle = {
     ...typography(settings.fontSize, 'r', 'l', colors.fg1),
     lineHeight: settings.lineHeight,
@@ -114,6 +129,10 @@ export default function BibleText({
     //   },
     //   renderText: renderBold,
     // },
+    {
+      pattern: /advanced features/,
+      renderText: renderAdvancedFeatures,
+    },
     {
       pattern: /\*.+?\*/,
       style: {

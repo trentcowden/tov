@@ -38,6 +38,7 @@ interface Props {
   closeHistory: () => void
   jumpToChapter: JumpToChapter
   openSettings: SharedValue<number>
+  openHelp: SharedValue<number>
   spaceBeforeTextStarts: number
 }
 
@@ -48,6 +49,7 @@ export default function History({
   activeChapter,
   jumpToChapter,
   openSettings,
+  openHelp,
   spaceBeforeTextStarts,
 }: Props) {
   const { height, width } = useWindowDimensions()
@@ -141,6 +143,7 @@ export default function History({
         item={item}
         activeChapter={activeChapter}
         showFavorites={showFavorites}
+        textTranslateX={textTranslationX}
       />
     )
   }
@@ -195,7 +198,27 @@ export default function History({
                 </Text>
               </View>
             }
-            ListHeaderComponent={<Spacer s={spaceBeforeTextStarts} />}
+            ListHeaderComponent={
+              // !popups.dismissed.includes('historyHelp') ? (
+              //   <View
+              //     style={{
+              //       marginTop: top - sp.md,
+              //       paddingRight: ic.md.width + sp.md * 2,
+              //     }}
+              //   >
+              //     <ListBanner
+              //       title="History"
+              //       body={
+              //         '1. Swipe a history item right to remove.\n2. Long press to add a bookmark.'
+              //       }
+              //       icon={<Help {...ic.sm} color={colors.p1} />}
+              //       popup="historyHelp"
+              //     />
+              //   </View>
+              // ) : (
+              <Spacer s={spaceBeforeTextStarts} />
+              // )
+            }
             ListFooterComponent={<Spacer s={bottom + sp.xl * 3} />}
           />
           <View
@@ -206,8 +229,33 @@ export default function History({
               alignItems: 'flex-end',
               justifyContent: 'center',
               paddingHorizontal: sp.md,
+              gap: sp.md,
             }}
           >
+            {/* <TovPressable
+              bgColor={colors.p3}
+              onPressColor={colors.p3}
+              style={{
+                padding: sp.md,
+                borderRadius: br.fu,
+                justifyContent: 'center',
+                alignItems: 'center',
+                ...shadows[0],
+              }}
+              hitSlop={sp.md}
+              onPress={() => {
+                // textTranslationX.value = withSpring(0, panActivateConfig)
+                // openHelp.value = withSpring(1, panActivateConfig)
+                jumpToChapter({
+                  chapterId: 'TUT.1',
+                  comingFrom: 'history',
+                })
+                textTranslationX.value = withSpring(0, panActivateConfig)
+                trackEvent('Back to tutorial')
+              }}
+            >
+              <Help {...ic.md} color={colors.fg3} />
+            </TovPressable> */}
             <TovPressable
               bgColor={colors.p3}
               onPressColor={colors.p3}
@@ -226,9 +274,6 @@ export default function History({
               }}
             >
               <Settings {...ic.md} color={colors.fg3} />
-              {/* <Text style={typography(sizes.caption, 'uis', 'c', colors.fg3)}>
-                Settings
-              </Text> */}
             </TovPressable>
           </View>
           <TovPressable
