@@ -12,7 +12,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { overScrollReq, scrollBarHeight } from '../constants'
 import bibles from '../data/bibles'
-import { getEdges } from '../functions/utils'
+import { getEdges, getScrollBarMargin } from '../functions/utils'
 import { useAppSelector } from '../redux/hooks'
 
 interface Props {
@@ -47,8 +47,8 @@ export default function useScrollUpdate({
   const activeChapterIndex = useAppSelector((state) => state.activeChapterIndex)
   const insets = useSafeAreaInsets()
   const { top, bottom } = getEdges(insets)
+  const scrollBarMargin = getScrollBarMargin(insets)
   const { height } = useWindowDimensions()
-  const usableHeight = height - top * 1 - bottom * 1.5
   const currentVerseReq = height / 3
 
   const scrollBarPosition = useSharedValue(top)
@@ -161,9 +161,10 @@ export default function useScrollUpdate({
     const textHeight = verseOffsets[verseOffsets.length - 1]
     // This shit is crazy. Thanks chat gpt.
     const scrollRatio = offset / (textHeight - height)
-    const maxTopPos = height - bottom * 1.5 - scrollBarHeight
+    const maxTopPos = height - scrollBarMargin.bottom - scrollBarHeight
 
-    scrollBarPosition.value = top * 1 + scrollRatio * (maxTopPos - top * 1)
+    scrollBarPosition.value =
+      scrollBarMargin.top + scrollRatio * (maxTopPos - scrollBarMargin.top)
   }
 
   function handleScrollVersePosition(offset: number) {

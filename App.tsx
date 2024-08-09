@@ -6,7 +6,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { Provider as ReduxProvider } from 'react-redux'
 import { PersistGate as ReduxPersistProvider } from 'redux-persist/lib/integration/react'
-import Bible from './Bible'
+import Bible from './components/Bible'
 import useSessionTracker from './hooks/useSessionTracker'
 import { persistor, store } from './redux/store'
 

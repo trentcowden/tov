@@ -26,7 +26,7 @@ interface Props {
   children: ReactNode
   nestedScreen?: ReactNode
   close: () => void
-  onBack?: () => void
+  onBack: () => void
   nestedHeight?: number
 }
 

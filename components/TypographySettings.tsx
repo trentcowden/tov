@@ -1,0 +1,112 @@
+import { trackEvent } from '@aptabase/react-native'
+import React from 'react'
+import { Text, useWindowDimensions, View } from 'react-native'
+import { SharedValue, withSpring } from 'react-native-reanimated'
+import CheckmarkCircle from '../assets/icons/duotone/check-circle.svg'
+import { panActivateConfig } from '../constants'
+import { getHorizTransReq } from '../functions/utils'
+import useColors from '../hooks/useColors'
+import { useAppDispatch, useAppSelector } from '../redux/hooks'
+import { setTextSize } from '../redux/settings'
+import { fontSizes, ic, sp, typography } from '../styles'
+import BackButton from './BackButton'
+import ModalScreenHeader from './ModalScreenHeader'
+import Spacer from './Spacer'
+import TovPressable from './TovPressable'
+
+interface Props {
+  openSettingsNested: SharedValue<number>
+}
+
+const names = {
+  12: 'Absolutely Tiny',
+  14: 'Pretty Small',
+  16: 'Standard',
+  18: 'Pretty Big',
+  21: 'Huge',
+  25: 'Massive',
+}
+
+export default function TypographySettings({ openSettingsNested }: Props) {
+  const { width } = useWindowDimensions()
+  const horizTransReq = getHorizTransReq(width)
+  const dispatch = useAppDispatch()
+  const settings = useAppSelector((state) => state.settings)
+  const colors = useColors()
+
+  return (
+    <View style={{ flex: 1 }}>
+      <ModalScreenHeader
+        paddingLeft={0}
+        icon={
+          <BackButton
+            onPress={() => {
+              openSettingsNested.value = withSpring(0, panActivateConfig)
+            }}
+          />
+        }
+      >
+        Bible Text Size
+      </ModalScreenHeader>
+      <Spacer s={sp.md} />
+      <View
+        style={{
+          paddingHorizontal: sp.xl,
+          gap: sp.md,
+          flex: 1,
+        }}
+      >
+        {/* <Text style={typography(tx.body, 'uim', 'l', colors.fg2)}>
+          You can also{' '}
+          <Text style={{ fontFamily: 'Figtree-Bold', color: colors.p1 }}>
+            zoom in and out
+          </Text>{' '}
+          while reading to change the{' '}
+          <Text style={{ fontFamily: 'Figtree-Bold', color: colors.p1 }}>
+            Bible text size
+          </Text>
+          .
+        </Text> */}
+        {fontSizes.map((f) => {
+          const isActive = settings.fontSize === f
+
+          return (
+            <TovPressable
+              key={f}
+              onPress={() => {
+                dispatch(setTextSize(f))
+                trackEvent('Change font size', { fontSize: f })
+              }}
+              bgColor={colors.bg3}
+              onPressColor={colors.bg3}
+              outerOuterStyle={{ flex: 1, maxHeight: 60 }}
+              style={{
+                height: '100%',
+                justifyContent: 'center',
+                paddingHorizontal: sp.md,
+                borderRadius: 12,
+                borderWidth: 1,
+                borderColor: isActive ? colors.p1 : 'transparent',
+                alignItems: 'flex-start',
+              }}
+            >
+              <Text
+                numberOfLines={1}
+                adjustsFontSizeToFit
+                style={typography(f, 'uis', 'l', colors.fg2)}
+              >
+                {names[f as keyof typeof names]}
+              </Text>
+              {isActive ? (
+                <View style={{ position: 'absolute', right: sp.md }}>
+                  <CheckmarkCircle {...ic.md} color={colors.p1} />
+                </View>
+              ) : null}
+            </TovPressable>
+          )
+        })}
+      </View>
+      <Spacer s={sp.xl} />
+    </View>
+  )
+}

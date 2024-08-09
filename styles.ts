@@ -75,7 +75,7 @@ export const themes = [
   },
 ]
 
-export const fontSizes = [10, 13, 16, 19, 22, 25]
+export const fontSizes = [12, 14, 16, 18, 21, 25]
 
 export const sp = {
   xs: 3.5,
@@ -153,17 +153,9 @@ export const typography = (
   }
 }
 
-export const shadows: ViewStyle[] = [
-  {
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.4,
-    shadowRadius: 10,
-  },
-  {
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.6,
-    shadowRadius: 14,
-  },
-]
+export const shadow: ViewStyle = {
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 6 },
+  shadowOpacity: 0.4,
+  shadowRadius: 10,
+}

@@ -62,6 +62,11 @@ export const settings = createSlice({
       state.lineHeight = newValue * 2
       state.paragraphSpacing = newValue * 0.6875
     },
+    setTextSize: (state, action: PayloadAction<number>) => {
+      state.fontSize = action.payload
+      state.lineHeight = action.payload * 2
+      state.paragraphSpacing = action.payload * 0.6875
+    },
     setTheme: (state, action: PayloadAction<SettingsState['theme']>) => {
       state.theme = action.payload
     },
@@ -74,6 +79,7 @@ export const {
   setBibleTextSize,
   decreaseTextSize,
   increaseTextSize,
+  setTextSize,
 } = settings.actions
 
 export default settings.reducer

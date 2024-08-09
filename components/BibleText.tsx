@@ -25,7 +25,6 @@ interface Props {
     | ((event: NativeSyntheticEvent<TextLayoutEventData>) => void)
     | undefined
   children: React.ReactNode
-  openHelp: SharedValue<number>
 }
 
 export default function BibleText({
@@ -33,7 +32,6 @@ export default function BibleText({
   setReferenceState,
   openReferences,
   onTextLayout,
-  openHelp,
 }: Props) {
   const { height, width } = useWindowDimensions()
   const colors = useColors()
@@ -81,27 +79,9 @@ export default function BibleText({
     return text.replace(/\*/g, '')
   }
 
-  function renderBold(text: string) {
-    return text
-    return text.replace(/__/g, '')
-  }
-
   function renderSectionHeader(text: string) {
     return text.replace(/## /g, '')
     // return ''
-  }
-
-  function renderAdvancedFeatures(text: string) {
-    return (
-      <Text
-        style={{ textDecorationLine: 'underline', color: colors.p1 }}
-        onPress={() => {
-          openHelp.value = withSpring(1, panActivateConfig)
-        }}
-      >
-        advanced features
-      </Text>
-    )
   }
 
   const textStyle: TextStyle = {
@@ -114,29 +94,17 @@ export default function BibleText({
       pattern: /\[([0-9]{1,3})\] /,
       renderText: renderVerseNumber as any,
     },
-    // {
-    //   pattern: /tov/,
-    //   style: {
-    //     fontFamily: 'UIBold',
-    //     fontSize: sizes.body + 2,
-    //     color: colors.p1,
-    //   },
-    // },
-    // {
-    //   pattern: /__.+?__/,
-    //   style: {
-    //     fontFamily: 'Literata18pt-SemiBold',
-    //   },
-    //   renderText: renderBold,
-    // },
     {
-      pattern: /advanced features/,
-      renderText: renderAdvancedFeatures,
+      pattern: /tov/,
+      style: {
+        fontFamily: 'Bookerly-Bold',
+        color: colors.p1,
+      },
     },
     {
       pattern: /\*.+?\*/,
       style: {
-        fontFamily: 'Bookerly-Italic',
+        fontFamily: 'Bookerly-Bold',
       },
       renderText: renderItalic,
     },
@@ -152,7 +120,6 @@ export default function BibleText({
     {
       pattern: /(?<=\n)\n/,
       style: {
-        // backgroundColor: 1000,
         lineHeight: settings.paragraphSpacing,
       },
     },

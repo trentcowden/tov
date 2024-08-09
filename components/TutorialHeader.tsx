@@ -8,13 +8,13 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import Spacer from '../Spacer'
 import ArrowDown from '../assets/icons/duotone/arrow-narrow-down.svg'
 import Tov from '../assets/icons/tov.svg'
 import { getEdges } from '../functions/utils'
 import useColors from '../hooks/useColors'
 import { useAppSelector } from '../redux/hooks'
 import { br, ic, sp, tx, typography } from '../styles'
+import Spacer from './Spacer'
 import TovPressable from './TovPressable'
 
 interface Props {

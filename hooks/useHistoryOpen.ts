@@ -1,34 +1,64 @@
 import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics'
+import { useEffect, useState } from 'react'
 import { useWindowDimensions } from 'react-native'
 import { Gesture } from 'react-native-gesture-handler'
 import {
   runOnJS,
   SharedValue,
+  useDerivedValue,
   useSharedValue,
+  withSequence,
   withSpring,
+  withTiming,
 } from 'react-native-reanimated'
 import { horizVelocReq, panActivateConfig } from '../constants'
 import { getHorizTransReq } from '../functions/utils'
+import { useAppDispatch, useAppSelector } from '../redux/hooks'
+import { dismissPopup } from '../redux/popups'
+import { sp } from '../styles'
 
 interface Props {
   navigatorTransition: SharedValue<number>
   textFadeOut: SharedValue<number>
-  scrollOffset: SharedValue<number>
-  overlayOpacity: SharedValue<number>
   scale: SharedValue<number>
+  textTranslateY: SharedValue<number>
 }
 
 export default function useHistoryOpen({
   navigatorTransition,
   textFadeOut,
   scale,
-  overlayOpacity,
-  scrollOffset,
+  textTranslateY,
 }: Props) {
   const { width } = useWindowDimensions()
   const horizTransReq = getHorizTransReq(width)
   const textTranslateX = useSharedValue(0)
   const savedTextTranslateX = useSharedValue(0)
+  const dispatch = useAppDispatch()
+  const [wiggleTime, setWiggleTime] = useState(false)
+  const popups = useAppSelector((state) => state.popups)
+  const popup = 'historyWiggle'
+  const history = useAppSelector((state) => state.history)
+
+  useDerivedValue(() => {
+    if (
+      !popups.dismissed.includes(popup) &&
+      history.length === 2 &&
+      textTranslateY.value === 0
+    )
+      runOnJS(setWiggleTime)(true)
+    else runOnJS(setWiggleTime)(false)
+  })
+
+  useEffect(() => {
+    if (wiggleTime) {
+      dispatch(dismissPopup(popup))
+      textTranslateX.value = withSequence(
+        withTiming(sp.xx, { duration: 150 }),
+        withSpring(1, panActivateConfig)
+      )
+    }
+  }, [wiggleTime])
 
   const panGesture = Gesture.Pan()
     .onChange((event) => {

@@ -7,7 +7,6 @@ import {
   withSpring,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import Spacer from '../Spacer'
 import Help from '../assets/icons/duotone/help-circle.svg'
 import { panActivateConfig } from '../constants'
 import references from '../data/references.json'
@@ -17,12 +16,13 @@ import { getEdges, getModalHeight, getModalWidth } from '../functions/utils'
 import { JumpToChapter } from '../hooks/useChapterChange'
 import useColors from '../hooks/useColors'
 import { useAppSelector } from '../redux/hooks'
-import { br, ic, shadows, sp } from '../styles'
+import { br, ic, shadow, sp } from '../styles'
 import Fade from './Fade'
 import ListBanner from './ListBanner'
 import ModalScreen from './ModalScreen'
 import ModalScreenHeader from './ModalScreenHeader'
 import ReferenceItem from './ReferenceItem'
+import Spacer from './Spacer'
 
 interface Props {
   referenceVerse: string | undefined
@@ -104,7 +104,7 @@ export default function ReferencesModal({
           borderRadius: br.xl,
           paddingTop: sp.md,
           overflow: 'hidden',
-          ...shadows[1],
+          ...shadow,
         }}
       >
         <ModalScreenHeader

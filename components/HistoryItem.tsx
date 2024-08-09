@@ -1,6 +1,6 @@
 import { trackEvent } from '@aptabase/react-native'
 import { ImpactFeedbackStyle, impactAsync } from 'expo-haptics'
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Pressable, useWindowDimensions } from 'react-native'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 import Animated, {
@@ -66,25 +66,30 @@ export default function HistoryListItem({
   )
   const popups = useAppSelector((state) => state.popups)
   const horizTransReq = getHorizTransReq(width)
-  const disableWiggle = () => dispatch(dismissPopup('wiggle'))
-  const [wiggled, setWiggled] = React.useState(false)
+
+  const popup = 'historyItemWiggle'
+  const [wiggleTime, setWiggleTime] = useState(false)
+
   useDerivedValue(() => {
     if (
-      !wiggled &&
-      // !popups.dismissed.includes('wiggle') &&
+      !popups.dismissed.includes(popup) &&
       index > 1 &&
       item.chapterId === 'TUT.1' &&
       textTranslateX.value > horizTransReq - 25
-    ) {
+    )
+      runOnJS(setWiggleTime)(true)
+    else runOnJS(setWiggleTime)(false)
+  })
+
+  useEffect(() => {
+    if (wiggleTime) {
+      dispatch(dismissPopup(popup))
       itemTranslateX.value = withSequence(
-        withTiming(sp.xx, { duration: 200 }),
-        withTiming(0, { duration: 200 }),
-        withTiming(sp.xx, { duration: 200 }),
-        // withSpring(0, panActivateConfig, () => runOnJS(disableWiggle)())
-        withSpring(0, panActivateConfig, () => runOnJS(setWiggled)(true))
+        withSpring(sp.xx, panActivateConfig),
+        withSpring(0, panActivateConfig)
       )
     }
-  })
+  }, [wiggleTime])
 
   function removeHistoryItem() {
     setTimeout(() => dispatch(removeFromHistory(item.chapterId)), 100)
@@ -190,7 +195,7 @@ export default function HistoryListItem({
             closeHistory()
           }}
           onLongPress={() => {
-            if (Math.abs(itemTranslateX.value) > 5) return
+            if (Math.abs(itemTranslateX.value) > 0) return
 
             pressed.value = withSequence(
               withTiming(-2, { duration: 75 }),

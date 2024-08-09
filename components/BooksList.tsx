@@ -1,11 +1,11 @@
 import { useMemo } from 'react'
 import { SectionList, Text, useWindowDimensions } from 'react-native'
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated'
-import Spacer from '../Spacer'
 import books from '../data/books.json'
 import { Books } from '../data/types/books'
 import useColors from '../hooks/useColors'
 import { br, sp, tx, typography } from '../styles'
+import Spacer from './Spacer'
 import TovPressable from './TovPressable'
 
 interface Props {

@@ -9,13 +9,13 @@ import { Alert, Text, useWindowDimensions, View } from 'react-native'
 import { ScrollView } from 'react-native-gesture-handler'
 import { SharedValue, withSpring } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import Spacer from '../Spacer'
 import Code from '../assets/icons/duotone/code-browser.svg'
 import Help from '../assets/icons/duotone/help-circle.svg'
 import Mail from '../assets/icons/duotone/mail-01.svg'
 import Money from '../assets/icons/duotone/piggy-bank-01.svg'
 import Star from '../assets/icons/duotone/star-01.svg'
 import Trash from '../assets/icons/duotone/trash-04.svg'
+import ZoomIn from '../assets/icons/duotone/zoom-in.svg'
 import { panActivateConfig } from '../constants'
 import { Chapters } from '../data/types/chapters'
 import { getModalHeight, getModalWidth } from '../functions/utils'
@@ -24,11 +24,13 @@ import useColors from '../hooks/useColors'
 import { clearHistory } from '../redux/history'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
 import { resetPopups } from '../redux/popups'
-import { br, ic, shadows, sp, tx, typography } from '../styles'
+import { br, ic, shadow, sp, tx, typography } from '../styles'
 import Fade from './Fade'
 import ModalScreen from './ModalScreen'
 import ModalScreenHeader from './ModalScreenHeader'
 import SettingsItem from './SettingsItem'
+import Spacer from './Spacer'
+import TypographySettings from './TypographySettings'
 
 interface Props {
   openSettings: SharedValue<number>
@@ -56,6 +58,7 @@ export default function Settings({
   const dispatch = useAppDispatch()
 
   const [canReview, setCanReview] = React.useState(false)
+  const [nestedSetting, setNestedSetting] = React.useState<'typography'>()
 
   useEffect(() => {
     const check = async () => {
@@ -76,6 +79,11 @@ export default function Settings({
           () => (openSettingsNested.value = 0)
         )
       }}
+      nestedScreen={
+        nestedSetting === 'typography' ? (
+          <TypographySettings openSettingsNested={openSettingsNested} />
+        ) : undefined
+      }
       onBack={() => {}}
     >
       <View
@@ -86,7 +94,7 @@ export default function Settings({
           borderRadius: br.xl,
           paddingTop: sp.md,
           overflow: 'hidden',
-          ...shadows[1],
+          ...shadow,
         }}
       >
         <ModalScreenHeader
@@ -103,10 +111,11 @@ export default function Settings({
               gap: sp.md,
               paddingTop: sp.md,
             }}
+            showsVerticalScrollIndicator={false}
           >
             <Text
               style={[
-                typography(tx.tiny, 'uim', 'l', colors.p1),
+                typography(tx.tiny, 'uim', 'c', colors.p1),
                 { paddingHorizontal: sp.xl },
               ]}
             >
@@ -127,7 +136,6 @@ export default function Settings({
                         trackEvent('Clear history', { items: history.length })
                         openSettings.value = withSpring(0, panActivateConfig)
                         dispatch(clearHistory(activeChapter.chapterId))
-                        if (__DEV__) dispatch(resetPopups())
                       },
                     },
                   ]
@@ -137,6 +145,16 @@ export default function Settings({
               description="You can also swipe history items right to remove them individually."
             >
               Clear History
+            </SettingsItem>
+            <SettingsItem
+              onPress={() => {
+                setNestedSetting('typography')
+                openSettingsNested.value = withSpring(1, panActivateConfig)
+              }}
+              rightIcon={<ZoomIn {...ic.md} color={colors.p1} />}
+              description="You can also 'pinch to zoom' while reading to change the Bible text size."
+            >
+              Bible Text Size
             </SettingsItem>
             {/* <SettingsSection>Help</SettingsSection> */}
             <SettingsItem
@@ -236,7 +254,7 @@ export default function Settings({
             {/* <Spacer s={sp.md} /> */}
             <Text
               style={[
-                typography(tx.tiny, 'uim', 'l', colors.p1),
+                typography(tx.tiny, 'uim', 'c', colors.p1),
                 { paddingHorizontal: sp.xl },
               ]}
             >
@@ -246,6 +264,28 @@ export default function Settings({
                 onPress={() => {
                   WebBrowser.openBrowserAsync('https://trentcowden.com')
                   trackEvent('Clicked Trent Cowden')
+                }}
+                onLongPress={() => {
+                  Alert.alert(
+                    'Are you sure you want to reset tov to factory settings?',
+                    'This will clear your history and settings.',
+                    [
+                      { isPreferred: true, style: 'cancel', text: 'Cancel' },
+                      {
+                        text: 'Reset',
+                        style: 'destructive',
+                        onPress: () => {
+                          jumpToChapter({
+                            chapterId: 'TUT.1',
+                            comingFrom: 'history',
+                          })
+                          dispatch(clearHistory('TUT.1'))
+                          dispatch(resetPopups())
+                          openSettings.value = withSpring(0, panActivateConfig)
+                        },
+                      },
+                    ]
+                  )
                 }}
               >
                 Trent Cowden

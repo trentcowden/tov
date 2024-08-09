@@ -8,13 +8,13 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated'
-import Spacer from '../Spacer'
 import Close from '../assets/icons/duotone/x-close.svg'
 import { panActivateConfig } from '../constants'
 import useColors from '../hooks/useColors'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
 import { dismissPopup } from '../redux/popups'
 import { br, ic, sp, tx, typography } from '../styles'
+import Spacer from './Spacer'
 import TovPressable from './TovPressable'
 
 interface Props {

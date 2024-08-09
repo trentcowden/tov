@@ -16,7 +16,7 @@ import { getEdges } from '../functions/utils'
 import { JumpToChapter } from '../hooks/useChapterChange'
 import useColors from '../hooks/useColors'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
-import { br, shadows, sp } from '../styles'
+import { br, shadow, sp } from '../styles'
 
 interface Props {
   verseOffsets: number[] | undefined
@@ -156,7 +156,7 @@ export default function VerseHighlight({
           backgroundColor: colors.p1,
           borderRadius: br.lg,
           zIndex: -10,
-          ...shadows[0],
+          ...shadow,
         },
         verseHighlightStyle,
       ]}

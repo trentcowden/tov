@@ -27,7 +27,7 @@ import { getModalHeight, getModalWidth } from '../functions/utils'
 import { JumpToChapter } from '../hooks/useChapterChange'
 import useColors from '../hooks/useColors'
 import { useAppSelector } from '../redux/hooks'
-import { br, ic, shadows, sp, tx, typography } from '../styles'
+import { br, ic, shadow, sp, tx, typography } from '../styles'
 import BackButton from './BackButton'
 import BooksList from './BooksList'
 import ChapterBoxes from './ChapterBoxes'
@@ -176,7 +176,7 @@ export default function Navigator({
             borderRadius: br.xl,
             flex: 1,
             paddingTop: sp.xl,
-            ...shadows[1],
+            ...shadow,
           }}
         >
           <ModalScreenHeader close={closeNavigator}>

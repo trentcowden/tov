@@ -1,5 +1,5 @@
 import { ImpactFeedbackStyle, impactAsync } from 'expo-haptics'
-import React, { RefObject } from 'react'
+import React, { RefObject, useEffect, useState } from 'react'
 import { Text, View, useWindowDimensions } from 'react-native'
 import {
   Gesture,
@@ -28,9 +28,11 @@ import {
   scrollBarHeight,
   scrollBarWidth,
 } from '../constants'
-import { getEdges } from '../functions/utils'
+import { getEdges, getScrollBarMargin } from '../functions/utils'
 import useColors from '../hooks/useColors'
-import { br, shadows, sp, tx, typography } from '../styles'
+import { useAppDispatch, useAppSelector } from '../redux/hooks'
+import { dismissPopup } from '../redux/popups'
+import { br, shadow, sp, tx, typography } from '../styles'
 
 interface Props {
   verseOffsets: number[] | undefined
@@ -38,8 +40,8 @@ interface Props {
   scrollViewRef: RefObject<ScrollView>
   textTranslateX: SharedValue<number>
   scrollBarPosition: SharedValue<number>
-  currentVerseIndex: SharedValue<number | 'bottom' | 'top'>
   currentVerseIndexNum: SharedValue<number>
+  textTranslateY: SharedValue<number>
 }
 
 export default function ScrollBar({
@@ -48,16 +50,46 @@ export default function ScrollBar({
   scrollViewRef,
   textTranslateX,
   scrollBarPosition,
-  currentVerseIndex,
   currentVerseIndexNum,
+  textTranslateY,
 }: Props) {
   const colors = useColors()
   const insets = useSafeAreaInsets()
+  const activeChapterIndex = useAppSelector((state) => state.activeChapterIndex)
   const { height } = useWindowDimensions()
   const currentVerseReq = height / 3
   const { top, bottom } = getEdges(insets)
+  const scrollBarMargin = getScrollBarMargin(insets)
+  const scale = useSharedValue(1)
+  const popups = useAppSelector((state) => state.popups)
+  const dispatch = useAppDispatch()
+  const history = useAppSelector((state) => state.history)
 
-  const usableHeight = height - top - bottom * 1.5
+  const popup = 'scrollWiggle'
+  const [wiggleTime, setWiggleTime] = useState(false)
+
+  useDerivedValue(() => {
+    if (
+      !popups.dismissed.includes(popup) &&
+      activeChapterIndex.index !== 0 &&
+      history.length === 3 &&
+      textTranslateY.value === 0
+    )
+      runOnJS(setWiggleTime)(true)
+    else runOnJS(setWiggleTime)(false)
+  })
+
+  useEffect(() => {
+    if (wiggleTime) {
+      dispatch(dismissPopup(popup))
+      scale.value = withSequence(
+        withTiming(2, { duration: 400 }),
+        withSpring(1, panActivateConfig)
+      )
+    }
+  }, [wiggleTime])
+
+  const usableHeight = height - scrollBarMargin.top - scrollBarMargin.bottom
   const textHeight = verseOffsets
     ? verseOffsets[verseOffsets.length - 1]
     : height
@@ -84,13 +116,14 @@ export default function ScrollBar({
       scrollBarActivate.value = withTiming(1, { duration: 250 })
       // startingOffset.value = event.y
       // scrollBarPosition.value = event.absoluteY - startingOffset.value
-      if (event.absoluteY - scrollBarHeight / 2 < top)
-        scrollBarPosition.value = top
+      if (event.absoluteY - scrollBarHeight / 2 < scrollBarMargin.top)
+        scrollBarPosition.value = scrollBarMargin.top
       else if (
         event.absoluteY - scrollBarHeight / 2 >
-        height - scrollBarHeight - bottom * 1.5
+        height - scrollBarHeight - scrollBarMargin.bottom
       )
-        scrollBarPosition.value = height - scrollBarHeight - bottom * 1.5
+        scrollBarPosition.value =
+          height - scrollBarHeight - scrollBarMargin.bottom
       else
         scrollBarPosition.value = withTiming(
           event.absoluteY - scrollBarHeight / 2,
@@ -100,13 +133,14 @@ export default function ScrollBar({
     .onChange((event) => {
       if (textHeight < height) return
 
-      if (event.absoluteY - scrollBarHeight / 2 < top)
-        scrollBarPosition.value = top
+      if (event.absoluteY - scrollBarHeight / 2 < scrollBarMargin.top)
+        scrollBarPosition.value = scrollBarMargin.top
       else if (
         event.absoluteY - scrollBarHeight / 2 >
-        height - scrollBarHeight - bottom * 1.5
+        height - scrollBarHeight - scrollBarMargin.bottom
       )
-        scrollBarPosition.value = height - scrollBarHeight - bottom * 1.5
+        scrollBarPosition.value =
+          height - scrollBarHeight - scrollBarMargin.bottom
       else scrollBarPosition.value = event.absoluteY - scrollBarHeight / 2
     })
     .onFinalize((event) => {
@@ -118,7 +152,10 @@ export default function ScrollBar({
           {
             deceleration: 0.98,
             velocity: event.velocityY,
-            clamp: [top, height - scrollBarHeight - bottom * 1.5],
+            clamp: [
+              scrollBarMargin.top,
+              height - scrollBarHeight - scrollBarMargin.bottom,
+            ],
           }
           // () => {
           //   scrollBarActivate.value = withTiming(0, { duration: 250 })
@@ -143,7 +180,8 @@ export default function ScrollBar({
     if (scrollBarActivate.value > 0 && verseOffsets) {
       // This shit is crazy. Thanks chat gpt.
       const normalizedFingerPos =
-        (scrollBarPosition.value - top) / (usableHeight - scrollBarHeight)
+        (scrollBarPosition.value - scrollBarMargin.top) /
+        (usableHeight - scrollBarHeight)
 
       runOnJS(scrollTo)(normalizedFingerPos * (textHeight - height))
     }
@@ -156,15 +194,23 @@ export default function ScrollBar({
     ],
   }))
 
+  const restColor = colors.id === 'dark' ? colors.bg3 : colors.p3
+
   const scrollBarStyles = useAnimatedStyle(() => {
     return {
       height: scrollBarHeight,
-      opacity: interpolate(scrollBarActivate.value, [-1, 0], [0, 1]),
-      backgroundColor: interpolateColor(
-        scrollBarActivate.value,
-        [0, 1],
-        [colors.bg3, colors.p1]
-      ),
+      opacity:
+        activeChapterIndex.index === 0
+          ? 0
+          : interpolate(scrollBarActivate.value, [-1, 0], [0, 1]),
+      backgroundColor:
+        scale.value !== 1
+          ? interpolateColor(scale.value, [1, 2], [restColor, colors.p1])
+          : interpolateColor(
+              scrollBarActivate.value,
+              [0, 1],
+              [restColor, colors.p1]
+            ),
       transform: [
         {
           translateY: interpolate(
@@ -177,6 +223,9 @@ export default function ScrollBar({
             }
           ),
         },
+        {
+          scale: scale.value,
+        },
       ],
     }
   })
@@ -186,15 +235,6 @@ export default function ScrollBar({
       opacity: scrollBarActivate.value,
     }
   })
-
-  const verseNumberStyles = useAnimatedStyle(() => ({
-    opacity: scrollBarActivate.value,
-    transform: [
-      {
-        translateX: interpolate(scrollBarActivate.value, [0, 1], [6, 0]),
-      },
-    ],
-  }))
 
   return (
     <>
@@ -224,7 +264,7 @@ export default function ScrollBar({
                 alignItems: 'center',
                 justifyContent: 'center',
                 display: textHeight < height ? 'none' : 'flex',
-                ...shadows[1],
+                ...shadow,
               },
               scrollBarStyles,
             ]}
@@ -269,14 +309,6 @@ export default function ScrollBar({
               gap: sp.sm,
             }}
           >
-            {/* <View
-              style={{
-                width: sp.xl,
-                height: 2,
-                borderRadius: br.fu,
-                backgroundColor: colors.ph,
-              }}
-            /> */}
             <Text
               numberOfLines={1}
               adjustsFontSizeToFit
@@ -287,14 +319,6 @@ export default function ScrollBar({
             >
               {verseText}
             </Text>
-            {/* <View
-              style={{
-                width: sp.xl,
-                height: 2,
-                borderRadius: br.fu,
-                backgroundColor: colors.ph,
-              }}
-            /> */}
           </View>
         </Animated.View>
       </View>

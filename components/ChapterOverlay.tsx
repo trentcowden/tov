@@ -20,12 +20,12 @@ import BookmarkFilled from '../assets/icons/solid/bookmark.svg'
 import { overlayHeight, overlayWidth, panActivateConfig } from '../constants'
 import { Books } from '../data/types/books'
 import { Chapters } from '../data/types/chapters'
-import { getEdges } from '../functions/utils'
+import { getEdges, getScrollBarMargin } from '../functions/utils'
 import { JumpToChapter } from '../hooks/useChapterChange'
 import useColors from '../hooks/useColors'
 import { toggleFavorite } from '../redux/history'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
-import { br, ic, shadows, sp, tx, typography } from '../styles'
+import { br, ic, shadow, sp, tx, typography } from '../styles'
 
 interface Props {
   activeChapter: Chapters[number]
@@ -60,6 +60,7 @@ export default function ChapterOverlay({
   const colors = useColors()
   const insets = useSafeAreaInsets()
   const { top, bottom } = getEdges(insets)
+  const scrollBarMargin = getScrollBarMargin(insets)
   const { width } = useWindowDimensions()
   const pressed = useSharedValue(0)
   const [text, setText] = React.useState(
@@ -71,6 +72,7 @@ export default function ChapterOverlay({
   const itemTranslateX = useSharedValue(0)
 
   const textOpacity = useSharedValue(1)
+  const color = colors.id === 'dark' ? colors.bg3 : colors.p3
   const overlayAnimatedStyles = useAnimatedStyle(() => {
     return {
       opacity: textOpacity.value,
@@ -79,11 +81,7 @@ export default function ChapterOverlay({
         { translateX: textTranslateX.value },
         { scale: interpolate(pressed.value, [0, 1], [1, 0.95]) },
       ],
-      backgroundColor: interpolateColor(
-        pressed.value,
-        [0, 1],
-        [colors.bg3, colors.bg3]
-      ),
+      backgroundColor: interpolateColor(pressed.value, [0, 1], [color, color]),
     }
   })
 
@@ -122,14 +120,14 @@ export default function ChapterOverlay({
       style={[
         {
           position: 'absolute',
-          bottom: bottom * 1.5,
+          bottom: scrollBarMargin.bottom === 0 ? sp.xl : scrollBarMargin.bottom,
           justifyContent: 'center',
           zIndex: 1,
           alignItems: 'center',
           flexDirection: 'row',
           gap: sp.md,
           borderRadius: br.fu,
-          ...shadows[1],
+          ...shadow,
         },
         overlayAnimatedStyles,
       ]}
