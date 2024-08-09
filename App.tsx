@@ -14,6 +14,7 @@ Aptabase.init('A-US-7955042107')
 
 Sentry.init({
   dsn: 'https://65192e4b4c7121f684f52e0346ca9f23@o1007561.ingest.us.sentry.io/4507512500977664',
+  enabled: __DEV__ ? false : true,
 })
 
 function App() {
