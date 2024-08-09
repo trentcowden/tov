@@ -3,6 +3,7 @@ import * as Linking from 'expo-linking'
 import * as WebBrowser from 'expo-web-browser'
 
 import { trackEvent } from '@aptabase/react-native'
+import * as Application from 'expo-application'
 import * as StoreReview from 'expo-store-review'
 import React, { useEffect } from 'react'
 import { Alert, Text, useWindowDimensions, View } from 'react-native'
@@ -289,6 +290,9 @@ export default function Settings({
               >
                 Trent Cowden
               </Text>
+            </Text>
+            <Text style={typography(tx.tiny, 'uim', 'c', colors.p1)}>
+              Version {Application.nativeApplicationVersion}
             </Text>
             <Spacer s={sp.xl} />
           </ScrollView>
