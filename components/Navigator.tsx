@@ -92,7 +92,7 @@ export default function Navigator({
 
   useEffect(() => {
     searchResultsRef.current?.scrollToOffset({ animated: false, offset: 0 })
-  }, [searchText])
+  }, [searchResultsRef, searchText])
 
   function resetNavigatorBook() {
     setNavigatorBook(undefined)

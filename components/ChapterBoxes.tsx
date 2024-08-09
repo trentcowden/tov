@@ -36,7 +36,7 @@ export default function ChapterBoxes({
             getBook(chapter.chapterId).bookId === navigatorBook?.bookId
         )
         .filter((chapter) => chapter.chapterId !== 'TUT.1'),
-    [navigatorBook]
+    [navigatorBook?.bookId, settings.translation]
   )
 
   function renderChapterBoxItem({

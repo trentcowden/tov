@@ -18,14 +18,14 @@ import { dismissPopup } from '../redux/popups'
 import { sp } from '../styles'
 
 interface Props {
-  navigatorTransition: SharedValue<number>
+  openNavigator: SharedValue<number>
   textFadeOut: SharedValue<number>
   scale: SharedValue<number>
   textTranslateY: SharedValue<number>
 }
 
 export default function useHistoryOpen({
-  navigatorTransition,
+  openNavigator,
   textFadeOut,
   scale,
   textTranslateY,
@@ -58,22 +58,16 @@ export default function useHistoryOpen({
         withSpring(1, panActivateConfig)
       )
     }
-  }, [wiggleTime])
+  }, [dispatch, textTranslateX, wiggleTime])
 
   const panGesture = Gesture.Pan()
     .onChange((event) => {
       if (
-        navigatorTransition.value !== 0 ||
+        openNavigator.value !== 0 ||
         textFadeOut.value !== 0 ||
         scale.value !== 0
       )
         return
-
-      // if (textTranslateX.value > gutterSize) {
-      //   overlayOpacity.value = withTiming(0)
-      // }
-      // // else if (scrollOffset.value > showOverlayOffset)
-      // else overlayOpacity.value = withTiming(1)
 
       const value = savedTextTranslateX.value + event.translationX
       if (value < horizTransReq && value > 0) {
@@ -82,7 +76,7 @@ export default function useHistoryOpen({
     })
     .onFinalize((e) => {
       if (
-        navigatorTransition.value !== 0 ||
+        openNavigator.value !== 0 ||
         textFadeOut.value !== 0 ||
         scale.value !== 0
       )
@@ -101,13 +95,10 @@ export default function useHistoryOpen({
             textTranslateX.value > horizTransReq / 2 ||
             e.velocityX > horizVelocReq
           ) {
-            // overlayOpacity.value = withTiming(0)
             runOnJS(impactAsync)(ImpactFeedbackStyle.Heavy)
             savedTextTranslateX.value = horizTransReq
             textTranslateX.value = withSpring(horizTransReq, panActivateConfig)
           } else {
-            // if (scrollOffset.value > showOverlayOffset)
-            // overlayOpacity.value = withTiming(1)
             savedTextTranslateX.value = 0
             textTranslateX.value = withSpring(0, panActivateConfig)
           }
@@ -130,14 +121,10 @@ export default function useHistoryOpen({
             textTranslateX.value < horizTransReq / 2 ||
             e.velocityX < -horizVelocReq
           ) {
-            // if (scrollOffset.value > showOverlayOffset)
-            // overlayOpacity.value = withTiming(1)
             runOnJS(impactAsync)(ImpactFeedbackStyle.Light)
             savedTextTranslateX.value = 0
             textTranslateX.value = withSpring(0, panActivateConfig)
           } else {
-            // if (scrollOffset.value < showOverlayOffset)
-            // overlayOpacity.value = withTiming(0)
             savedTextTranslateX.value = horizTransReq
             textTranslateX.value = withSpring(horizTransReq, panActivateConfig)
           }

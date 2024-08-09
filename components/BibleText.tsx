@@ -6,7 +6,6 @@ import {
   Text,
   TextLayoutEventData,
   TextStyle,
-  useWindowDimensions,
 } from 'react-native'
 import ParsedText, { ParsedTextProps } from 'react-native-parsed-text'
 import { SharedValue, withSpring } from 'react-native-reanimated'
@@ -33,13 +32,12 @@ export default function BibleText({
   openReferences,
   onTextLayout,
 }: Props) {
-  const { height, width } = useWindowDimensions()
   const colors = useColors()
   const activeChapterIndex = useAppSelector((state) => state.activeChapterIndex)
   const settings = useAppSelector((state) => state.settings)
   const activeChapter = useMemo(() => {
     return bibles[settings.translation][activeChapterIndex.index]
-  }, [activeChapterIndex.index])
+  }, [activeChapterIndex.index, settings.translation])
 
   function renderVerseNumber(text: string) {
     const verseNumber = text.replace('[', '').replace(']', '').trim()
@@ -75,13 +73,7 @@ export default function BibleText({
   }
 
   function renderItalic(text: string) {
-    // return text
     return text.replace(/\*/g, '')
-  }
-
-  function renderSectionHeader(text: string) {
-    return text.replace(/## /g, '')
-    // return ''
   }
 
   const textStyle: TextStyle = {
@@ -95,7 +87,7 @@ export default function BibleText({
       renderText: renderVerseNumber as any,
     },
     {
-      pattern: /tov/,
+      pattern: / tov /,
       style: {
         fontFamily: 'Bookerly-Bold',
         color: colors.p1,
@@ -107,15 +99,6 @@ export default function BibleText({
         fontFamily: 'Bookerly-Bold',
       },
       renderText: renderItalic,
-    },
-    {
-      pattern: /##.*/,
-      style: {
-        fontFamily: 'Figtree-Bold',
-        fontSize: settings.fontSize,
-        color: colors.fg3,
-      },
-      renderText: renderSectionHeader,
     },
     {
       pattern: /(?<=\n)\n/,

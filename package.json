@@ -7,7 +7,8 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "build-preview": "eas build --profile preview --platform ios --local",
-    "build-prod": "eas build --profile production --platform ios --local"
+    "build-prod": "eas build --profile production --platform ios --local",
+    "lint": "eslint ."
   },
   "prettier": {
     "trailingComma": "es5",
@@ -73,6 +74,10 @@
   "devDependencies": {
     "@babel/core": "^7.24.0",
     "@types/react": "~18.2.79",
+    "eslint": "^8.57.0",
+    "eslint-config-expo": "^7.0.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
     "react-native-svg-transformer": "^1.5.0",
     "typescript": "^5.1.3"
   },

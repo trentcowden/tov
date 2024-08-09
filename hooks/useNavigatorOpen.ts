@@ -10,7 +10,6 @@ interface Props {
   textTranslateX: SharedValue<number>
   openReferences: SharedValue<number>
   searchRef: React.RefObject<TextInput>
-  overlayOpacity: SharedValue<number>
   scale: SharedValue<number>
 }
 
@@ -19,7 +18,6 @@ export default function useNavigatorOpen({
   openReferences,
   textTranslateX,
   searchRef,
-  overlayOpacity,
   scale,
 }: Props) {
   function focusSearch() {

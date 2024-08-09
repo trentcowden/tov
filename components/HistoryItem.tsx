@@ -17,7 +17,6 @@ import Animated, {
 } from 'react-native-reanimated'
 import BookmarkFilled from '../assets/icons/solid/bookmark.svg'
 import { defaultOnPressScale, panActivateConfig } from '../constants'
-import bibles from '../data/bibles'
 import { Chapters } from '../data/types/chapters'
 import { getBook } from '../functions/bible'
 import { getHorizTransReq } from '../functions/utils'
@@ -38,7 +37,6 @@ interface Props {
   closeHistory: () => void
   jumpToChapter: JumpToChapter
   activeChapter: Chapters[number]
-  showFavorites: boolean
   textTranslateX: Animated.SharedValue<number>
 }
 
@@ -50,20 +48,15 @@ export default function HistoryListItem({
   item,
   jumpToChapter,
   activeChapter,
-  showFavorites,
   textTranslateX,
 }: Props) {
   const colors = useColors()
   const { width } = useWindowDimensions()
-  const settings = useAppSelector((state) => state.settings)
   const dispatch = useAppDispatch()
   const itemTranslateX = useSharedValue(0)
   const historyItemTextTranslateX = useSharedValue(0)
   const alreadyHaptic = useRef(false)
   const pressed = useSharedValue(0)
-  const chapterIndex = bibles[settings.translation].findIndex(
-    (chapter) => chapter.chapterId === item.chapterId
-  )
   const popups = useAppSelector((state) => state.popups)
   const horizTransReq = getHorizTransReq(width)
 
@@ -89,7 +82,7 @@ export default function HistoryListItem({
         withSpring(0, panActivateConfig)
       )
     }
-  }, [wiggleTime])
+  }, [dispatch, itemTranslateX, wiggleTime])
 
   function removeHistoryItem() {
     setTimeout(() => dispatch(removeFromHistory(item.chapterId)), 100)
@@ -137,7 +130,7 @@ export default function HistoryListItem({
         panActivateConfig
       )
     else historyItemTextTranslateX.value = withSpring(0, panActivateConfig)
-  }, [item.isFavorite])
+  }, [historyItemTextTranslateX, item.isFavorite])
 
   const historyItemStyles = useAnimatedStyle(() => {
     return {

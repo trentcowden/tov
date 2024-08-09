@@ -48,9 +48,7 @@ interface Props {
   scrollBarActivate: SharedValue<number>
   currentVerseIndex: SharedValue<number | 'bottom' | 'top'>
   fingerDown: React.MutableRefObject<boolean>
-  overScrollAmount: SharedValue<number>
   overlayOpacity: SharedValue<number>
-  scrollOffset: SharedValue<number>
   highlightVerseNumber: SharedValue<number>
   setVerseNewlines: Dispatch<SetStateAction<boolean[] | undefined>>
 }
@@ -62,10 +60,8 @@ export default function useChapterChange({
   scrollBarActivate,
   currentVerseIndex,
   fingerDown,
-  overScrollAmount,
   setVerseOffsets,
   overlayOpacity,
-  scrollOffset,
   highlightVerseNumber,
   setVerseNewlines,
 }: Props) {
@@ -76,17 +72,17 @@ export default function useChapterChange({
   const settings = useAppSelector((state) => state.settings)
   const textTranslateY = useSharedValue(0)
   const referenceTree = useAppSelector((state) => state.referenceTree)
+
+  /** Animation value for fading in/out the text. */
   const textFadeOut = useSharedValue(1)
   const releaseToChange = useSharedValue(0)
   const alreadyHaptic = useRef(false)
-  const goPrev = useSharedValue(0)
-  const goNext = useSharedValue(0)
-  const goJump = useSharedValue(0)
-  const chapterIndexA = useSharedValue(0)
-  const verseIndexA = useSharedValue(0)
-  const highlightVerseA = useSharedValue(0)
-  const numVersesToHighlightA = useSharedValue(0)
 
+  /**
+   * This function is called when the user wants to jump to a different chapter. It is
+   * separate from going directly to the next or previous chapter because it fades out
+   * the text instead of sliding it out.
+   */
   const jumpToChapter: JumpToChapter = ({
     chapterId,
     verseNumber,
@@ -101,8 +97,6 @@ export default function useChapterChange({
       else if (verseNumber === 'bottom')
         scrollViewRef.current?.scrollToEnd({ animated: true })
       else {
-        // Determine numVersesToHighlight.
-        // For testing: Psa 137:9 -> Isa 13:1-22 -> Isa 13:1 -> Isa 13:19
         dispatch(
           updateVerseIndex({
             verseIndex: verseNumber,
@@ -153,8 +147,8 @@ export default function useChapterChange({
     // it.
     else if (
       referenceTree.length !== 0 &&
-      referenceTree.indexOf(chapterId) != -1 &&
-      referenceTree.indexOf(chapterId) != referenceTree.length - 1
+      referenceTree.indexOf(chapterId) !== -1 &&
+      referenceTree.indexOf(chapterId) !== referenceTree.length - 1
     ) {
       dispatch(removeAfterInReferenceTree(chapterId))
     }

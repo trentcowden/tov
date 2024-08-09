@@ -1,10 +1,9 @@
 import { trackEvent } from '@aptabase/react-native'
 import React from 'react'
-import { Text, useWindowDimensions, View } from 'react-native'
+import { Text, View } from 'react-native'
 import { SharedValue, withSpring } from 'react-native-reanimated'
 import CheckmarkCircle from '../assets/icons/duotone/check-circle.svg'
 import { panActivateConfig } from '../constants'
-import { getHorizTransReq } from '../functions/utils'
 import useColors from '../hooks/useColors'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
 import { setTextSize } from '../redux/settings'
@@ -28,8 +27,6 @@ const names = {
 }
 
 export default function TypographySettings({ openSettingsNested }: Props) {
-  const { width } = useWindowDimensions()
-  const horizTransReq = getHorizTransReq(width)
   const dispatch = useAppDispatch()
   const settings = useAppSelector((state) => state.settings)
   const colors = useColors()
@@ -56,17 +53,6 @@ export default function TypographySettings({ openSettingsNested }: Props) {
           flex: 1,
         }}
       >
-        {/* <Text style={typography(tx.body, 'uim', 'l', colors.fg2)}>
-          You can also{' '}
-          <Text style={{ fontFamily: 'Figtree-Bold', color: colors.p1 }}>
-            zoom in and out
-          </Text>{' '}
-          while reading to change the{' '}
-          <Text style={{ fontFamily: 'Figtree-Bold', color: colors.p1 }}>
-            Bible text size
-          </Text>
-          .
-        </Text> */}
         {fontSizes.map((f) => {
           const isActive = settings.fontSize === f
 

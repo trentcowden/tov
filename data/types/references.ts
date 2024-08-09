@@ -1,1 +1,1 @@
-export type References = Record<string, Array<[string] | [string, string]>>
+export type References = Record<string, ([string] | [string, string])[]>

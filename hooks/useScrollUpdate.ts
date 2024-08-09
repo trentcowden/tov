@@ -25,7 +25,6 @@ interface Props {
   currentVerseIndex: SharedValue<number | 'top' | 'bottom'>
   currentVerseIndexNum: SharedValue<number>
   overScrollAmount: SharedValue<number>
-  overlayOpacity: SharedValue<number>
   scrollOffset: SharedValue<number>
   openSettings: SharedValue<number>
 }
@@ -40,13 +39,12 @@ export default function useScrollUpdate({
   currentVerseIndexNum,
   overScrollAmount,
   scrollBarActivate,
-  overlayOpacity,
   scrollOffset,
   openSettings,
 }: Props) {
   const activeChapterIndex = useAppSelector((state) => state.activeChapterIndex)
   const insets = useSafeAreaInsets()
-  const { top, bottom } = getEdges(insets)
+  const { top } = getEdges(insets)
   const scrollBarMargin = getScrollBarMargin(insets)
   const { height } = useWindowDimensions()
   const currentVerseReq = height / 3

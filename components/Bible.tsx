@@ -36,7 +36,7 @@ import useHistoryOpen from '../hooks/useHistoryOpen'
 import useNavigatorOpen from '../hooks/useNavigatorOpen'
 import usePinch from '../hooks/usePinch'
 import useScrollUpdate from '../hooks/useScrollUpdate'
-import { useAppDispatch, useAppSelector } from '../redux/hooks'
+import { useAppSelector } from '../redux/hooks'
 import { sp } from '../styles'
 import BibleText from './BibleText'
 import ChapterChangeFeedback, {
@@ -53,9 +53,8 @@ import TutorialHeader from './TutorialHeader'
 import VerseHighlight from './VerseHighlight'
 
 export default function Bible() {
-  const dispatch = useAppDispatch()
   const colors = useColors()
-  const { height, width } = useWindowDimensions()
+  const { width } = useWindowDimensions()
   const horizTransReq = getHorizTransReq(width)
   const activeChapterIndex = useAppSelector((state) => state.activeChapterIndex)
   const settings = useAppSelector((state) => state.settings)
@@ -67,7 +66,7 @@ export default function Bible() {
   const { top, bottom } = getEdges(insets)
   const activeChapter = useMemo(() => {
     return bibles[settings.translation][activeChapterIndex.index]
-  }, [activeChapterIndex.index])
+  }, [activeChapterIndex.index, settings.translation])
 
   const activeBook = useMemo(
     () => getBook(activeChapter.chapterId),
@@ -80,29 +79,59 @@ export default function Bible() {
   const scrollViewRef = useRef<ScrollView>(null)
   const searchListRef = useRef<FlashList<Chapters[number]>>(null)
 
+  /** Used to track how far the user has scrolled past the top or bottom of the view. */
   const overScrollAmount = useSharedValue(0)
-  const [referenceVerse, setReferenceState] = useState<string>()
-  // Animating the main text area.
 
+  /** The currently selected cross references verse. */
+  const [referenceVerse, setReferenceState] = useState<string>()
+
+  /** The offsets for each verse in the current chapter. Used to auto-scroll to a
+   * specific verse. */
   const [verseOffsets, setVerseOffsets] = useState<number[]>()
+
+  /** Used to track if a verse starts on a new line. Used to render the verse highlight
+   * correctly. */
   const [verseNewlines, setVerseNewlines] = useState<boolean[]>()
+
+  /** Used to track if a verse ends a paragraph. Used to render the verse highlight correctly. */
   const [paragraphs, setParagraphs] = useState<boolean[]>()
+
+  /** The space between the top of the screen and where the text starts. */
   const spaceBeforeTextStarts =
     top - sp.xl + chapterChangeFeedbackHeight + sp.lg
+
+  /** The space between the end of the text and the bottom of the screen. */
   const spaceAfterTextEnds = sp.lg + chapterChangeFeedbackHeight + bottom
-  const currentVerseIndex = useSharedValue<number | 'bottom' | 'top'>(0)
-  const currentVerseIndexNum = useSharedValue<number>(0)
+
+  /** The verse that the user is scrolled to. Keeps track of whether it's on the very
+   * top or bottom of the view as well. Tracking top/bottom is useful to is a user
+   * leaves a chapter at the top, when they return, the app doesn't scroll down to verse
+   * 1, it just stays at the top. */
+  const currentVersePosition = useSharedValue<number | 'bottom' | 'top'>(0)
+
+  /** Similar to currentVersePosition but is always a number. Displayed when the user is
+   * dragging the scroll bar. */
+  const currentVerseIndex = useSharedValue<number>(0)
+
+  /** Used to track if the user is scrolling. */
   const fingerDown = useRef(false)
 
+  /** Animation value for opening the navigator. */
   const openNavigator = useSharedValue(0)
 
+  /** Animation value for opening the settings. */
   const openSettings = useSharedValue(0)
+
+  /** Animation value for opening the nested settings screen. */
   const openSettingsNested = useSharedValue(0)
 
+  /** Animation value for opening the references. */
   const openReferences = useSharedValue(0)
-  const openReferencesNested = useSharedValue(0)
 
+  /** Animation value to keep track of the status of the user dragging the scroll bar. */
   const scrollBarActivate = useSharedValue(-1)
+
+  /** The user's current scroll position. */
   const scrollOffset = useSharedValue(0)
 
   const { scale, pinchGesture } = usePinch()
@@ -116,21 +145,19 @@ export default function Bible() {
     jumpToChapter,
   } = useChapterChange({
     activeChapter,
-    currentVerseIndex,
+    currentVerseIndex: currentVersePosition,
     scrollBarActivate,
     scrollViewRef,
     verseOffsets,
     fingerDown,
-    overScrollAmount,
     setVerseOffsets,
     overlayOpacity,
-    scrollOffset,
     highlightVerseNumber,
     setVerseNewlines,
   })
 
   const { onScroll, scrollBarPosition } = useScrollUpdate({
-    currentVerseIndex,
+    currentVerseIndex: currentVersePosition,
     fingerDown,
     overScrollAmount,
     releaseToChange,
@@ -138,14 +165,13 @@ export default function Bible() {
     textTranslateY,
     verseOffsets,
     alreadyHaptic,
-    overlayOpacity,
     scrollOffset,
     openSettings,
-    currentVerseIndexNum,
+    currentVerseIndexNum: currentVerseIndex,
   })
 
   const { panGesture, savedTextTranslateX, textTranslateX } = useHistoryOpen({
-    navigatorTransition: openNavigator,
+    openNavigator,
     textFadeOut,
     scale,
     textTranslateY,
@@ -156,7 +182,6 @@ export default function Bible() {
     textTranslateX,
     openReferences,
     searchRef,
-    overlayOpacity,
     scale,
   })
 
@@ -296,9 +321,7 @@ export default function Bible() {
             })} */}
             <VerseHighlight
               verseOffsets={verseOffsets}
-              activeChapter={activeChapter}
               highlightVerseNumber={highlightVerseNumber}
-              jumpToChapter={jumpToChapter}
               verseNewlines={verseNewlines}
               paragraphs={paragraphs}
               spaceAfterTextEnds={spaceAfterTextEnds}
@@ -369,7 +392,7 @@ export default function Bible() {
           verseOffsets={verseOffsets}
           scrollBarPosition={scrollBarPosition}
           textTranslateX={textTranslateX}
-          currentVerseIndexNum={currentVerseIndexNum}
+          currentVerseIndexNum={currentVerseIndex}
           textTranslateY={textTranslateY}
         />
         <Settings
@@ -382,7 +405,6 @@ export default function Bible() {
         <ReferencesModal
           jumpToChapter={jumpToChapter}
           openReferences={openReferences}
-          openReferencesNested={openReferencesNested}
           referenceVerse={referenceVerse}
         />
         {activeChapter.chapterId !== 'TUT.1' ? (
@@ -394,11 +416,6 @@ export default function Bible() {
             savedTextTranslateX={savedTextTranslateX}
             focusSearch={focusSearch}
             overlayOpacity={overlayOpacity}
-            scrollValue={scrollOffset}
-            setReferenceState={setReferenceState}
-            jumpToChapter={jumpToChapter}
-            openReferences={openReferences}
-            textFadeOut={textFadeOut}
           />
         ) : null}
         {/* <View

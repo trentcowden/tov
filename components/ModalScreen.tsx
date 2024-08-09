@@ -16,7 +16,6 @@ import {
 } from '../constants'
 import { getEdges, getModalHeight, getModalWidth } from '../functions/utils'
 import useColors from '../hooks/useColors'
-import { useAppDispatch } from '../redux/hooks'
 import { br, sp } from '../styles'
 import TovPressable from './TovPressable'
 
@@ -44,8 +43,7 @@ export default function ModalScreen({
   const modalWidth = getModalWidth(width)
   const modalHeight = getModalHeight(height, insets)
   const colors = useColors()
-  const { top, bottom } = getEdges(insets)
-  const dispatch = useAppDispatch()
+  const { top } = getEdges(insets)
 
   const modalStyle = useAnimatedStyle(() => {
     return {

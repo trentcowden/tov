@@ -34,7 +34,7 @@ export default function TutorialHeader({ scrollViewRef }: Props) {
   useEffect(() => {
     if (history.length > 1)
       scrollViewRef.current?.scrollTo({ y: height - top - sp.xl })
-  }, [history])
+  }, [height, history, scrollViewRef, top])
 
   useEffect(() => {
     fadeIn.value = withTiming(1, { duration: 1000 })

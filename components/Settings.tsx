@@ -49,7 +49,6 @@ export default function Settings({
 }: Props) {
   const colors = useColors()
   const history = useAppSelector((state) => state.history)
-  const settings = useAppSelector((state) => state.settings)
   const insets = useSafeAreaInsets()
   const { width, height } = useWindowDimensions()
   const modalWidth = getModalWidth(width)
@@ -150,6 +149,7 @@ export default function Settings({
               onPress={() => {
                 setNestedSetting('typography')
                 openSettingsNested.value = withSpring(1, panActivateConfig)
+                trackEvent('Open typography settings')
               }}
               rightIcon={<ZoomIn {...ic.md} color={colors.p1} />}
               description="You can also 'pinch to zoom' while reading to change the Bible text size."
@@ -206,7 +206,6 @@ export default function Settings({
               <SettingsItem
                 onPress={() => {
                   StoreReview.requestReview()
-                  trackEvent('Clicked rate')
                 }}
                 rightIcon={<Star {...ic.md} color={colors.p1} />}
                 description="If you enjoy using Tov, please consider leaving a review. It helps a lot!"

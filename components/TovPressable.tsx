@@ -11,7 +11,6 @@ import Animated, {
 } from 'react-native-reanimated'
 import tinycolor from 'tinycolor2'
 import { defaultOnPressScale, panActivateConfig } from '../constants'
-import useColors from '../hooks/useColors'
 
 interface Props {
   children?: ReactNode
@@ -40,7 +39,6 @@ export default function TovPressable({
   bgColor,
   hitSlop,
 }: Props) {
-  const colors = useColors()
   const pressed = useSharedValue(0)
 
   const color = onPressColor

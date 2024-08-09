@@ -1,21 +1,15 @@
 import React, { useMemo, useRef } from 'react'
 import { FlatList, useWindowDimensions, View } from 'react-native'
-import {
-  runOnJS,
-  SharedValue,
-  useDerivedValue,
-  withSpring,
-} from 'react-native-reanimated'
+import { SharedValue, withSpring } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Help from '../assets/icons/duotone/help-circle.svg'
 import { panActivateConfig } from '../constants'
 import references from '../data/references.json'
 import { References } from '../data/types/references'
 import { getVerseReference, isPassageAfter } from '../functions/bible'
-import { getEdges, getModalHeight, getModalWidth } from '../functions/utils'
+import { getModalHeight, getModalWidth } from '../functions/utils'
 import { JumpToChapter } from '../hooks/useChapterChange'
 import useColors from '../hooks/useColors'
-import { useAppSelector } from '../redux/hooks'
 import { br, ic, shadow, sp } from '../styles'
 import Fade from './Fade'
 import ListBanner from './ListBanner'
@@ -27,25 +21,20 @@ import Spacer from './Spacer'
 interface Props {
   referenceVerse: string | undefined
   openReferences: SharedValue<number>
-  openReferencesNested: SharedValue<number>
   jumpToChapter: JumpToChapter
 }
 
 export default function ReferencesModal({
   openReferences,
-  openReferencesNested,
   referenceVerse,
   jumpToChapter,
 }: Props) {
   const colors = useColors()
   const insets = useSafeAreaInsets()
-  const { bottom, top } = getEdges(insets)
   const { width, height } = useWindowDimensions()
   const modalWidth = getModalWidth(width)
-  const dismissed = useAppSelector((state) => state.popups.dismissed)
   const referencesRef = useRef<FlatList<References[string][number]>>(null)
   const wordListRef = useRef<FlatList<[string, string, string]>>(null)
-  const [view, setView] = React.useState<'references' | 'hebrew'>('references')
 
   const activeReferences = useMemo(() => {
     if (!referenceVerse || referenceVerse.includes('tutorial')) return []
@@ -74,17 +63,10 @@ export default function ReferencesModal({
         item={item}
         jumpToChapter={jumpToChapter}
         openReferences={openReferences}
-        openReferencesNested={openReferencesNested}
         referenceVerse={referenceVerse}
       />
     )
   }
-
-  const [animate, setAnimate] = React.useState(false)
-  useDerivedValue(() => {
-    if (openReferences.value === 0)
-      runOnJS(setAnimate)(!dismissed.includes('referencesHelp'))
-  })
 
   return (
     <ModalScreen

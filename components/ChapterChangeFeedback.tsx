@@ -46,7 +46,7 @@ export default function ChapterChangeFeedback({
   const translation = useAppSelector((state) => state.settings.translation)
   const radius = useMemo(
     () => (chapterChangeFeedbackHeight - strokeWidth) / 2,
-    [chapterChangeFeedbackHeight, strokeWidth]
+    []
   )
   const circumference = useMemo(() => radius * 2 * Math.PI, [radius])
   const pop = useSharedValue(0)
@@ -57,7 +57,7 @@ export default function ChapterChangeFeedback({
     return getChapterReference(
       bibles[translation][activeChapterIndex.index - 1].chapterId
     )
-  }, [activeChapterIndex.index])
+  }, [activeChapterIndex.index, translation])
 
   const nextChapter = useMemo(() => {
     if (activeChapterIndex.index === bibles[translation].length - 1) return null
@@ -65,7 +65,7 @@ export default function ChapterChangeFeedback({
     return getChapterReference(
       bibles[translation][activeChapterIndex.index + 1].chapterId
     )
-  }, [activeChapterIndex.index])
+  }, [activeChapterIndex.index, translation])
 
   const progressNormalized = useDerivedValue(() =>
     Math.abs(textTranslateY.value) < 50 ? progress.value / overScrollReq : 0
@@ -152,14 +152,6 @@ export default function ChapterChangeFeedback({
       releaseToChange.value,
       [0, 1],
       [colors.bg1, colors.p1]
-    ),
-  }))
-
-  const textStyles = useAnimatedStyle(() => ({
-    color: interpolateColor(
-      releaseToChange.value,
-      [0, 1],
-      [colors.fg3, colors.p1]
     ),
   }))
 

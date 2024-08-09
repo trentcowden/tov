@@ -28,7 +28,7 @@ import {
   scrollBarHeight,
   scrollBarWidth,
 } from '../constants'
-import { getEdges, getScrollBarMargin } from '../functions/utils'
+import { getScrollBarMargin } from '../functions/utils'
 import useColors from '../hooks/useColors'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
 import { dismissPopup } from '../redux/popups'
@@ -58,7 +58,6 @@ export default function ScrollBar({
   const activeChapterIndex = useAppSelector((state) => state.activeChapterIndex)
   const { height } = useWindowDimensions()
   const currentVerseReq = height / 3
-  const { top, bottom } = getEdges(insets)
   const scrollBarMargin = getScrollBarMargin(insets)
   const scale = useSharedValue(1)
   const popups = useAppSelector((state) => state.popups)
@@ -87,7 +86,7 @@ export default function ScrollBar({
         withSpring(1, panActivateConfig)
       )
     }
-  }, [wiggleTime])
+  }, [dispatch, scale, wiggleTime])
 
   const usableHeight = height - scrollBarMargin.top - scrollBarMargin.bottom
   const textHeight = verseOffsets

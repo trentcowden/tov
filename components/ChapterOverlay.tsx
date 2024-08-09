@@ -1,7 +1,7 @@
 import { trackEvent } from '@aptabase/react-native'
 import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics'
-import React, { useEffect, useMemo } from 'react'
-import { Pressable, useWindowDimensions } from 'react-native'
+import React, { useCallback, useEffect, useMemo } from 'react'
+import { Pressable } from 'react-native'
 import Animated, {
   FadeIn,
   FadeOut,
@@ -20,8 +20,7 @@ import BookmarkFilled from '../assets/icons/solid/bookmark.svg'
 import { overlayHeight, overlayWidth, panActivateConfig } from '../constants'
 import { Books } from '../data/types/books'
 import { Chapters } from '../data/types/chapters'
-import { getEdges, getScrollBarMargin } from '../functions/utils'
-import { JumpToChapter } from '../hooks/useChapterChange'
+import { getScrollBarMargin } from '../functions/utils'
 import useColors from '../hooks/useColors'
 import { toggleFavorite } from '../redux/history'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
@@ -35,11 +34,6 @@ interface Props {
   textTranslateX: SharedValue<number>
   savedTextTranslateX: SharedValue<number>
   overlayOpacity: SharedValue<number>
-  scrollValue: SharedValue<number>
-  jumpToChapter: JumpToChapter
-  openReferences: SharedValue<number>
-  setReferenceState: React.Dispatch<React.SetStateAction<string | undefined>>
-  textFadeOut: SharedValue<number>
 }
 
 export default function ChapterOverlay({
@@ -50,18 +44,11 @@ export default function ChapterOverlay({
   textTranslateX,
   savedTextTranslateX,
   overlayOpacity,
-  scrollValue,
-  jumpToChapter,
-  openReferences,
-  setReferenceState,
-  textFadeOut,
 }: Props) {
   const dispatch = useAppDispatch()
   const colors = useColors()
   const insets = useSafeAreaInsets()
-  const { top, bottom } = getEdges(insets)
   const scrollBarMargin = getScrollBarMargin(insets)
-  const { width } = useWindowDimensions()
   const pressed = useSharedValue(0)
   const [text, setText] = React.useState(
     `${activeBook.name.replace(/ /g, '').slice(0, 3)} ${activeChapter.chapterId.split('.')[1]}`
@@ -85,21 +72,21 @@ export default function ChapterOverlay({
     }
   })
 
-  function changeChapter() {
+  const changeChapter = useCallback(() => {
     setText(
       `${activeBook.name.replace(/ /g, '').slice(0, 3)} ${activeChapter.chapterId.split('.')[1]}`
     )
-  }
+  }, [activeBook.name, activeChapter.chapterId])
 
   useEffect(() => {
     textOpacity.value = withTiming(0, { duration: 150 }, () =>
       runOnJS(changeChapter)()
     )
-  }, [activeChapter])
+  }, [activeChapter, changeChapter, textOpacity])
 
   useEffect(() => {
     textOpacity.value = withTiming(1, { duration: 150 })
-  }, [text])
+  }, [text, textOpacity])
 
   const historyItem = useMemo(() => {
     return history.find((item) => item.chapterId === activeChapter.chapterId)
@@ -111,7 +98,7 @@ export default function ChapterOverlay({
     } else {
       itemTranslateX.value = withSpring(0, panActivateConfig)
     }
-  }, [historyItem?.isFavorite])
+  }, [historyItem?.isFavorite, itemTranslateX])
 
   return (
     <Animated.View

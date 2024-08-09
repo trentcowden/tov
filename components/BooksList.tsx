@@ -13,10 +13,10 @@ interface Props {
   goToBook: (book: Books[number]) => void
 }
 
-type Sections = Array<{
+type Sections = {
   sectionName: Books[number]['englishDivision']
   data: Books
-}>
+}[]
 
 export default function BooksList({ navigatorBook, goToBook }: Props) {
   const { width } = useWindowDimensions()

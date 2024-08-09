@@ -25,7 +25,7 @@ import { getEdges, getHorizTransReq } from '../functions/utils'
 import { JumpToChapter } from '../hooks/useChapterChange'
 import useColors from '../hooks/useColors'
 import { HistoryItem } from '../redux/history'
-import { useAppDispatch, useAppSelector } from '../redux/hooks'
+import { useAppSelector } from '../redux/hooks'
 import { br, ic, shadow, sp, tx, typography } from '../styles'
 import HistoryListItem from './HistoryItem'
 import Spacer from './Spacer'
@@ -53,11 +53,9 @@ export default function History({
   const { height, width } = useWindowDimensions()
   const horizTransReq = getHorizTransReq(width)
   const colors = useColors()
-  const popups = useAppSelector((state) => state.popups)
   const history = useAppSelector((state) => state.history)
   const insets = useSafeAreaInsets()
   const { top, bottom } = getEdges(insets)
-  const dispatch = useAppDispatch()
   const [updateHistory, setUpdateHistory] = useState(false)
   const historyAnimatedStyles = useAnimatedStyle(() => {
     return {
@@ -140,7 +138,6 @@ export default function History({
         index={index}
         item={item}
         activeChapter={activeChapter}
-        showFavorites={showFavorites}
         textTranslateX={textTranslationX}
       />
     )

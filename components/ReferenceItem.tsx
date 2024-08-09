@@ -1,7 +1,7 @@
 import { trackEvent } from '@aptabase/react-native'
 import React, { useMemo } from 'react'
 import { Text, View } from 'react-native'
-import { SharedValue, withSpring, withTiming } from 'react-native-reanimated'
+import { SharedValue, withSpring } from 'react-native-reanimated'
 import ArrowLeft from '../assets/icons/duotone/arrow-narrow-left.svg'
 import ArrowRight from '../assets/icons/duotone/arrow-narrow-right.svg'
 import { panActivateConfig } from '../constants'
@@ -19,7 +19,6 @@ interface Props {
   activeReferences: ([string] | [string, string])[]
   referenceVerse: string | undefined
   openReferences: SharedValue<number>
-  openReferencesNested: SharedValue<number>
   jumpToChapter: JumpToChapter
 }
 
@@ -27,14 +26,13 @@ export default function ReferenceItem({
   item,
   index,
   openReferences,
-  openReferencesNested,
+
   referenceVerse,
   jumpToChapter,
   activeReferences,
 }: Props) {
   const colors = useColors()
   const settings = useAppSelector((state) => state.settings)
-  if (!referenceVerse) return <View />
 
   const verse = useMemo(() => {
     const verseId = typeof item === 'string' ? item : item[0]
@@ -54,12 +52,13 @@ export default function ReferenceItem({
     const verse = verses.find((verse) => verse.startsWith(verseNumber))
     if (!verse) {
       console.log('Verse not found:', verseId)
-      // trackEvent('Verse not found', { verseId })
       return ''
     }
     return verse.replace(']', '').replace(verseNumber, '').replace(/\*/g, '')
     // return verses[parseInt(verseNumber)].replace(']', '')
-  }, [item])
+  }, [item, settings.translation])
+
+  if (!referenceVerse) return <View />
 
   const start = typeof item === 'string' ? item : item[0]
   const isAfter = isPassageAfter(referenceVerse, start) < 0
@@ -121,7 +120,6 @@ export default function ReferenceItem({
             numVersesToHighlight:
               endingVerse !== 0 ? endingVerse - startingVerse : undefined,
           })
-          openReferencesNested.value = withTiming(0)
           openReferences.value = withSpring(0, panActivateConfig)
         }}
       >

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Text, useWindowDimensions, View } from 'react-native'
+import { Text, View } from 'react-native'
 import Animated, {
   interpolate,
   runOnJS,
@@ -25,7 +25,6 @@ interface Props {
 }
 
 export default function ListBanner({ body, icon, title, popup }: Props) {
-  const { width } = useWindowDimensions()
   const colors = useColors()
   const dismissed = useAppSelector((state) => state.popups.dismissed)
   const dispatch = useAppDispatch()
