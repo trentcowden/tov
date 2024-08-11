@@ -10,7 +10,7 @@ import { getVerseReference, isPassageAfter } from '../functions/bible'
 import { JumpToChapter } from '../hooks/useChapterChange'
 import useColors from '../hooks/useColors'
 import { useAppSelector } from '../redux/hooks'
-import { br, ic, sp, tx, typography } from '../styles'
+import { br, ic, sans, sp, tx } from '../styles'
 import TovPressable from './TovPressable'
 
 interface Props {
@@ -106,7 +106,7 @@ export default function ReferenceItem({
           paddingHorizontal: sp.md,
           paddingVertical: sp.md,
           borderRadius: br.lg,
-          gap: 8,
+          gap: sp.sm,
           // justifyContent: isAfter ? 'flex-end' : 'flex-start',
         }}
         bgColor={colors.bg2}
@@ -126,20 +126,17 @@ export default function ReferenceItem({
         <View
           style={{
             alignItems: 'center',
-            gap: 8,
+            gap: sp.sm,
             flexDirection: 'row',
           }}
         >
           {isAfter ? null : <ArrowLeft {...ic.md} color={colors.p1} />}
-          <Text style={[typography(tx.body, 'uir', 'l', colors.fg1)]}>
+          <Text style={[sans(tx.body, 'r', 'l', colors.fg1)]}>
             {passageString}
           </Text>
           {isAfter ? <ArrowRight {...ic.md} color={colors.p1} /> : null}
         </View>
-        <Text
-          style={[typography(tx.tiny, 'uil', 'l', colors.fg3)]}
-          numberOfLines={2}
-        >
+        <Text style={[sans(tx.tiny, 'l', 'l', colors.fg3)]} numberOfLines={2}>
           {verse.trim()}
         </Text>
       </TovPressable>

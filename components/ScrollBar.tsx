@@ -32,7 +32,7 @@ import { getScrollBarMargin } from '../functions/utils'
 import useColors from '../hooks/useColors'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
 import { dismissPopup } from '../redux/popups'
-import { br, shadow, sp, tx, typography } from '../styles'
+import { br, sans, shadow, sp, tx } from '../styles'
 
 interface Props {
   verseOffsets: number[] | undefined
@@ -293,7 +293,7 @@ export default function ScrollBar({
           {verseOffsets?.length !== 1 ? (
             <Text
               style={[
-                typography(tx.tiny, 'uib', 'c', colors.p2),
+                sans(tx.tiny, 'b', 'c', colors.p2),
                 // { fontFamily: 'iAWriterMonoS-Bold' },
               ]}
             >
@@ -312,7 +312,7 @@ export default function ScrollBar({
               numberOfLines={1}
               adjustsFontSizeToFit
               style={[
-                typography(tx.massive, 'uib', 'c', colors.p1),
+                sans(tx.massive, 'b', 'c', colors.p1),
                 { fontFamily: 'iAWriterMonoS-Bold' },
               ]}
             >

@@ -25,7 +25,7 @@ import useColors from '../hooks/useColors'
 import { clearHistory } from '../redux/history'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
 import { resetPopups } from '../redux/popups'
-import { br, ic, shadow, sp, tx, typography } from '../styles'
+import { br, ic, sans, shadow, sp, tx } from '../styles'
 import Fade from './Fade'
 import ModalScreen from './ModalScreen'
 import ModalScreenHeader from './ModalScreenHeader'
@@ -120,18 +120,17 @@ export default function Settings({
           >
             <Text
               style={[
-                typography(tx.caption, 'uim', 'l', colors.p1),
+                sans(tx.caption, 'm', 'l', colors.p1),
                 {
                   paddingHorizontal: sp.xl,
-                  marginBottom: sp.md,
-                  lineHeight: tx.caption * 1.6,
+                  marginBottom: sp.sm,
                 },
               ]}
             >
               Tov uses the New English Translation (NET) Bible.{' '}
               <Text
                 style={[
-                  typography(tx.caption, 'uib', 'l', colors.p1),
+                  sans(tx.caption, 'b', 'l', colors.p1),
                   {
                     textDecorationLine: 'underline',
                   },
@@ -279,7 +278,7 @@ export default function Settings({
             {/* <Spacer s={sp.md} /> */}
             <Text
               style={[
-                typography(tx.tiny, 'uim', 'c', colors.p1),
+                sans(tx.tiny, 'm', 'c', colors.p1),
                 { paddingHorizontal: sp.xl },
               ]}
             >
@@ -316,7 +315,7 @@ export default function Settings({
                 Trent Cowden
               </Text>
             </Text>
-            <Text style={typography(tx.tiny, 'uim', 'c', colors.p1)}>
+            <Text style={sans(tx.tiny, 'm', 'c', colors.p1)}>
               Version {Application.nativeApplicationVersion}
             </Text>
             <Spacer s={sp.xl} />

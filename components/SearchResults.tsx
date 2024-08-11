@@ -9,7 +9,7 @@ import { Chapters } from '../data/types/chapters'
 import { getBook, getChapterReference } from '../functions/bible'
 import { JumpToChapter } from '../hooks/useChapterChange'
 import useColors from '../hooks/useColors'
-import { br, ic, sp, tx, typography } from '../styles'
+import { br, ic, sans, sp, tx } from '../styles'
 import Fade from './Fade'
 import { SearchResult } from './Navigator'
 import Spacer from './Spacer'
@@ -69,7 +69,7 @@ export default function SearchResults({
           closeNavigator()
         }}
       >
-        <Text style={typography(tx.body, 'uir', 'l', colors.fg1)}>
+        <Text style={sans(tx.body, 'r', 'l', colors.fg1)}>
           {getChapterReference(item.item.chapterId)}
         </Text>
         {highlight ? <ArrowRightSquare {...ic.lg} color={colors.p1} /> : null}

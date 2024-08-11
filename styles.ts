@@ -115,9 +115,9 @@ export const tx = {
  * used simply to save space in components and simplify things overall. Used within the
  * style prop of a text component.
  */
-export const typography = (
+export const sans = (
   size: number,
-  weight: 'uir' | 'uib' | 'uim' | 'uis' | 'uil',
+  weight: 'r' | 'b' | 'm' | 's' | 'l',
   align: 'l' | 'c',
   color: string
 ): TextStyle => {
@@ -131,14 +131,11 @@ export const typography = (
   }
 
   const weights = {
-    uil: 'Figtree-Light',
-    uir: 'Figtree-Regular',
-    uim: 'Figtree-Medium',
-    uis: 'Figtree-SemiBold',
-    uib: 'Figtree-Bold',
-  }
-  if (weight.includes('ui')) {
-    console.log('weight', weight)
+    l: 'Figtree-Light',
+    r: 'Figtree-Regular',
+    m: 'Figtree-Medium',
+    s: 'Figtree-SemiBold',
+    b: 'Figtree-Bold',
   }
 
   // Return the completed style object.

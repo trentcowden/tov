@@ -7,7 +7,7 @@ import { panActivateConfig } from '../constants'
 import useColors from '../hooks/useColors'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
 import { setTextSize } from '../redux/settings'
-import { fontSizes, ic, sp, typography } from '../styles'
+import { fontSizes, ic, sans, sp } from '../styles'
 import BackButton from './BackButton'
 import ModalScreenHeader from './ModalScreenHeader'
 import Spacer from './Spacer'
@@ -79,7 +79,7 @@ export default function TypographySettings({ openSettingsNested }: Props) {
               <Text
                 numberOfLines={1}
                 adjustsFontSizeToFit
-                style={typography(f, 'uis', 'l', colors.fg2)}
+                style={sans(f, 's', 'l', colors.fg2)}
               >
                 {names[f as keyof typeof names]}
               </Text>

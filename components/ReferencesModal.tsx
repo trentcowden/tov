@@ -93,7 +93,7 @@ export default function ReferencesModal({
           close={() => {
             openReferences.value = withSpring(0, panActivateConfig)
           }}
-          height={72}
+          height={88}
         >
           {`Cross References for ${referenceVerse ? getVerseReference(referenceVerse) : ''}`}
         </ModalScreenHeader>

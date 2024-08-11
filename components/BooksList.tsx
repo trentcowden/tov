@@ -4,7 +4,7 @@ import Animated, { FadeIn, FadeOut } from 'react-native-reanimated'
 import books from '../data/books.json'
 import { Books } from '../data/types/books'
 import useColors from '../hooks/useColors'
-import { br, sp, tx, typography } from '../styles'
+import { br, sans, sp, tx } from '../styles'
 import Spacer from './Spacer'
 import TovPressable from './TovPressable'
 
@@ -62,11 +62,11 @@ export default function BooksList({ navigatorBook, goToBook }: Props) {
         style={{
           marginHorizontal: sp.xl,
           width: width - sp.xl * 4,
-          paddingBottom: sp.sm,
+          paddingBottom: sp.xs,
           backgroundColor: colors.bg2,
         }}
       >
-        <Text style={typography(tx.caption, 'uil', 'l', colors.fg3)}>
+        <Text style={sans(tx.caption, 'l', 'l', colors.fg3)}>
           {sectionNames[section.sectionName]}
         </Text>
       </Animated.View>
@@ -83,7 +83,7 @@ export default function BooksList({ navigatorBook, goToBook }: Props) {
           navigatorBook?.bookId === item.bookId ? colors.bg3 : colors.bg2
         }
         style={{
-          paddingVertical: 6,
+          paddingVertical: sp.xs,
           paddingHorizontal: sp.md,
           alignItems: 'center',
           flexDirection: 'row',
@@ -96,9 +96,7 @@ export default function BooksList({ navigatorBook, goToBook }: Props) {
           goToBook(item)
         }}
       >
-        <Text style={typography(tx.body, 'uir', 'l', colors.fg1)}>
-          {item.name}
-        </Text>
+        <Text style={sans(tx.body, 'r', 'l', colors.fg1)}>{item.name}</Text>
       </TovPressable>
     )
   }

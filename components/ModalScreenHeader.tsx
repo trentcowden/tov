@@ -2,7 +2,7 @@ import { ReactNode } from 'react'
 import { Text, View } from 'react-native'
 import Close from '../assets/icons/duotone/x-close.svg'
 import useColors from '../hooks/useColors'
-import { br, ic, sp, tx, typography } from '../styles'
+import { br, ic, sans, sp, tx } from '../styles'
 import TovPressable from './TovPressable'
 
 interface Props {
@@ -67,7 +67,7 @@ export default function ModalScreenHeader({
           <Text
             adjustsFontSizeToFit
             numberOfLines={2}
-            style={[typography(tx.title, 'uib', 'l', colors.fg2)]}
+            style={[sans(tx.title, 'b', 'l', colors.fg2)]}
           >
             {children}
           </Text>

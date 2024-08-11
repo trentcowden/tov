@@ -24,7 +24,7 @@ import { getScrollBarMargin } from '../functions/utils'
 import useColors from '../hooks/useColors'
 import { toggleFavorite } from '../redux/history'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
-import { br, ic, shadow, sp, tx, typography } from '../styles'
+import { br, ic, sans, shadow, sp, tx } from '../styles'
 
 interface Props {
   activeChapter: Chapters[number]
@@ -165,9 +165,9 @@ export default function ChapterOverlay({
           adjustsFontSizeToFit
           maxFontSizeMultiplier={1}
           style={[
-            typography(
+            sans(
               tx.tiny - 2,
-              'uil',
+              'l',
               'l',
               colors.id === 'light' ? colors.fg3 : colors.fg3
             ),

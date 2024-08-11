@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react'
 import { Text, View } from 'react-native'
 import useColors from '../hooks/useColors'
-import { br, sp, tx, typography } from '../styles'
+import { br, sans, sp, tx } from '../styles'
 import TovPressable from './TovPressable'
 
 interface Props {
@@ -38,7 +38,7 @@ export default function SettingsItem({
         style={{
           paddingVertical: sp.md,
           paddingHorizontal: sp.md,
-          gap: sp.md,
+          gap: sp.sm,
         }}
       >
         <View
@@ -46,28 +46,26 @@ export default function SettingsItem({
             width: '100%',
             alignItems: 'center',
             flexDirection: 'row',
-            gap: 8,
+            gap: sp.sm,
           }}
         >
           {rightIcon}
           <Text
             numberOfLines={1}
             adjustsFontSizeToFit
-            style={[typography(tx.body, 'uim', 'l', colors.fg2)]}
+            style={[sans(tx.body, 'm', 'l', colors.fg2)]}
           >
             {children}
           </Text>
           {rightSection}
           {rightText ? (
-            <Text style={typography(tx.caption, 'uis', 'c', colors.p1)}>
+            <Text style={sans(tx.caption, 's', 'c', colors.p1)}>
               {rightText}
             </Text>
           ) : null}
         </View>
         {description ? (
-          <Text style={typography(tx.tiny, 'uil', 'l', colors.fg3)}>
-            {description}
-          </Text>
+          <Text style={sans(tx.tiny, 'l', 'l', colors.fg3)}>{description}</Text>
         ) : null}
       </View>
     </TovPressable>

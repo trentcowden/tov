@@ -309,7 +309,7 @@ export default function Bible() {
                 >
                   <Text
                     style={[
-                      typography(sizes.tiny, 'uil', 'l', colors.p3),
+                      typography(sizes.tiny, 'l', 'l', colors.p3),
                       { fontFamily: 'iAWriterMonoS-Bold' },
                     ]}
                   >

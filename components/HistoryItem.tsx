@@ -29,7 +29,7 @@ import {
 } from '../redux/history'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
 import { dismissPopup } from '../redux/popups'
-import { br, ic, sp, tx, typography } from '../styles'
+import { br, ic, sans, sp, tx } from '../styles'
 
 interface Props {
   item: HistoryItem
@@ -205,7 +205,7 @@ export default function HistoryListItem({
           }}
           style={{
             borderColor: colors.bg3,
-            paddingVertical: 10,
+            paddingVertical: sp.sm,
             alignItems: 'center',
             justifyContent: 'space-between',
             paddingHorizontal: sp.md,
@@ -231,12 +231,7 @@ export default function HistoryListItem({
               numberOfLines={1}
               adjustsFontSizeToFit
               style={[
-                typography(
-                  tx.body,
-                  item.isFavorite ? 'uib' : 'uir',
-                  'l',
-                  colors.fg1
-                ),
+                sans(tx.body, item.isFavorite ? 'b' : 'r', 'l', colors.fg1),
                 textStyles,
               ]}
             >
@@ -258,7 +253,7 @@ export default function HistoryListItem({
 
           {/* {item.chapterId === activeChapter.chapterId ? (
             <View style={{ flexDirection: 'row' }}>
-              <Text style={typography(sizes.tiny, 'uir', 'l', colors.fg3)}>
+              <Text style={typography(sizes.tiny, 'r', 'l', colors.fg3)}>
                 Current
               </Text>
             </View>

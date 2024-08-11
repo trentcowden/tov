@@ -13,7 +13,7 @@ import Tov from '../assets/icons/tov.svg'
 import { getEdges } from '../functions/utils'
 import useColors from '../hooks/useColors'
 import { useAppSelector } from '../redux/hooks'
-import { br, ic, sp, tx, typography } from '../styles'
+import { br, ic, sans, sp, tx } from '../styles'
 import Spacer from './Spacer'
 import TovPressable from './TovPressable'
 
@@ -87,22 +87,22 @@ export default function TutorialHeader({ scrollViewRef }: Props) {
               justifyContent: 'center',
             }}
           >
-            <Text style={typography(tx.subtitle, 'uir', 'c', colors.fg3)}>
+            <Text style={sans(tx.subtitle, 'r', 'c', colors.fg3)}>
               Welcome to
             </Text>
             <Spacer s={sp.xx} />
             <Tov width={100} height={100} color={colors.p1} />
             <Spacer s={sp.sm} />
-            <Text style={typography(36, 'uis', 'c', colors.p2)}>tov</Text>
+            <Text style={sans(36, 's', 'c', colors.p2)}>tov</Text>
             <Spacer s={sp.xl} />
-            <Text style={typography(tx.tiny, 'uil', 'c', colors.fg3)}>
+            <Text style={sans(tx.tiny, 'l', 'c', colors.fg3)}>
               {'(a '}
               <Text style={{ color: colors.p2, fontFamily: 'Figtree-Medium' }}>
                 good
               </Text>
               {' Bible app)'}
             </Text>
-            {/* <Text style={typography(sizes.caption, 'uib', 'c', colors.fg3)}>
+            {/* <Text style={typography(sizes.caption, 'b', 'c', colors.fg3)}>
               Scroll down
             </Text> */}
           </View>

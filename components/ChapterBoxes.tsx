@@ -10,7 +10,7 @@ import { getBook } from '../functions/bible'
 import { JumpToChapter } from '../hooks/useChapterChange'
 import useColors from '../hooks/useColors'
 import { useAppSelector } from '../redux/hooks'
-import { br, sp, tx, typography } from '../styles'
+import { br, sans, sp, tx } from '../styles'
 import Spacer from './Spacer'
 import TovPressable from './TovPressable'
 
@@ -79,7 +79,7 @@ export default function ChapterBoxes({
             closeNavigator()
           }}
         >
-          <Text style={typography(tx.body, 'uib', 'c', colors.fg1)}>
+          <Text style={sans(tx.body, 'b', 'c', colors.fg1)}>
             {item.chapterId.split('.')[1]}
           </Text>
         </TovPressable>

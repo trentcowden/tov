@@ -27,7 +27,7 @@ import { getModalHeight, getModalWidth } from '../functions/utils'
 import { JumpToChapter } from '../hooks/useChapterChange'
 import useColors from '../hooks/useColors'
 import { useAppSelector } from '../redux/hooks'
-import { br, ic, shadow, sp, tx, typography } from '../styles'
+import { br, ic, sans, shadow, sp, tx } from '../styles'
 import BackButton from './BackButton'
 import BooksList from './BooksList'
 import ChapterBoxes from './ChapterBoxes'
@@ -198,7 +198,8 @@ export default function Navigator({
                   paddingRight: 18 + sp.xl,
                   backgroundColor: colors.bg3,
                   borderRadius: br.lg,
-                  ...typography(tx.body, 'uis', 'l', colors.fg1),
+                  ...sans(tx.body, 's', 'l', colors.fg1),
+                  lineHeight: undefined,
                 }}
                 returnKeyType={'done'}
                 onSubmitEditing={() => {

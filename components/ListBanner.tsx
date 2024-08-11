@@ -13,7 +13,7 @@ import { panActivateConfig } from '../constants'
 import useColors from '../hooks/useColors'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
 import { dismissPopup } from '../redux/popups'
-import { br, ic, sp, tx, typography } from '../styles'
+import { br, ic, sans, sp, tx } from '../styles'
 import Spacer from './Spacer'
 import TovPressable from './TovPressable'
 
@@ -65,15 +65,13 @@ export default function ListBanner({ body, icon, title, popup }: Props) {
       >
         {icon}
         <Spacer s={sp.sm} />
-        <Text
-          style={[typography(tx.body, 'uib', 'l', colors.fg1), { flex: 1 }]}
-        >
+        <Text style={[sans(tx.body, 'b', 'l', colors.fg1), { flex: 1 }]}>
           {title}
         </Text>
         <Spacer s={16 + sp.md} />
       </View>
       <Spacer s={sp.sm} />
-      <Text style={typography(tx.caption, 'uir', 'l', colors.fg1)}>{body}</Text>
+      <Text style={sans(tx.caption, 'r', 'l', colors.fg1)}>{body}</Text>
       <TovPressable
         outerOuterStyle={{
           position: 'absolute',

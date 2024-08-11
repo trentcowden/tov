@@ -26,7 +26,7 @@ import { JumpToChapter } from '../hooks/useChapterChange'
 import useColors from '../hooks/useColors'
 import { HistoryItem } from '../redux/history'
 import { useAppSelector } from '../redux/hooks'
-import { br, ic, shadow, sp, tx, typography } from '../styles'
+import { br, ic, sans, shadow, sp, tx } from '../styles'
 import HistoryListItem from './HistoryItem'
 import Spacer from './Spacer'
 import TovPressable from './TovPressable'
@@ -127,9 +127,7 @@ export default function History({
           backgroundColor: colors.bg2,
         }}
       >
-        <Text style={typography(tx.caption, 'uil', 'l', colors.fg3)}>
-          {item}
-        </Text>
+        <Text style={sans(tx.caption, 'l', 'l', colors.fg3)}>{item}</Text>
       </Animated.View>
     ) : (
       <HistoryListItem
@@ -178,6 +176,7 @@ export default function History({
             keyExtractor={(item) =>
               typeof item === 'string' ? item : item.date.toString()
             }
+            ItemSeparatorComponent={() => <Spacer s={sp.xs} />}
             showsVerticalScrollIndicator={false}
             ListEmptyComponent={
               showFavorites ? (
@@ -187,7 +186,7 @@ export default function History({
                     paddingRight: ic.md.width + sp.md * 4,
                   }}
                 >
-                  <Text style={typography(tx.body, 'uim', 'l', colors.fg2)}>
+                  <Text style={sans(tx.body, 'm', 'l', colors.fg2)}>
                     <Text
                       style={{ fontFamily: 'Figtree-Bold', color: colors.p1 }}
                     >
