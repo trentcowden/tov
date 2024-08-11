@@ -6,7 +6,7 @@ import { br, ic, sp, tx, typography } from '../styles'
 import TovPressable from './TovPressable'
 
 interface Props {
-  children: ReactNode
+  children?: ReactNode
   close?: () => void
   icon?: ReactNode
   paddingLeft?: number

@@ -104,7 +104,7 @@ export default function ReferenceItem({
       <TovPressable
         style={{
           paddingHorizontal: sp.md,
-          paddingVertical: sp.lg,
+          paddingVertical: sp.md,
           borderRadius: br.lg,
           gap: 8,
           // justifyContent: isAfter ? 'flex-end' : 'flex-start',

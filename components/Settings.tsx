@@ -31,6 +31,7 @@ import ModalScreen from './ModalScreen'
 import ModalScreenHeader from './ModalScreenHeader'
 import SettingsItem from './SettingsItem'
 import Spacer from './Spacer'
+import TranslationExplanation from './TranslationExplanation'
 import TypographySettings from './TypographySettings'
 
 interface Props {
@@ -58,7 +59,9 @@ export default function Settings({
   const dispatch = useAppDispatch()
 
   const [canReview, setCanReview] = React.useState(false)
-  const [nestedSetting, setNestedSetting] = React.useState<'typography'>()
+  const [nestedSetting, setNestedSetting] = React.useState<
+    'typography' | 'translation'
+  >()
 
   useEffect(() => {
     const check = async () => {
@@ -82,6 +85,8 @@ export default function Settings({
       nestedScreen={
         nestedSetting === 'typography' ? (
           <TypographySettings openSettingsNested={openSettingsNested} />
+        ) : nestedSetting === 'translation' ? (
+          <TranslationExplanation openSettingsNested={openSettingsNested} />
         ) : undefined
       }
       onBack={() => {}}
@@ -115,12 +120,32 @@ export default function Settings({
           >
             <Text
               style={[
-                typography(tx.tiny, 'uim', 'c', colors.p1),
-                { paddingHorizontal: sp.xl },
+                typography(tx.caption, 'uim', 'l', colors.p1),
+                {
+                  paddingHorizontal: sp.xl,
+                  marginBottom: sp.md,
+                  lineHeight: tx.caption * 1.6,
+                },
               ]}
             >
-              Tov uses the New English Translation (NET) Bible.
+              Tov uses the New English Translation (NET) Bible.{' '}
+              <Text
+                style={[
+                  typography(tx.caption, 'uib', 'l', colors.p1),
+                  {
+                    textDecorationLine: 'underline',
+                  },
+                ]}
+                onPress={() => {
+                  setNestedSetting('translation')
+                  openSettingsNested.value = withSpring(1, panActivateConfig)
+                  trackEvent('Clicked Bible translation why')
+                }}
+              >
+                Why the NET?
+              </Text>
             </Text>
+
             {/* <SettingsSection disableTopMargin>General</SettingsSection> */}
             <SettingsItem
               onPress={() => {

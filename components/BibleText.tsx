@@ -15,7 +15,6 @@ import references from '../data/references.json'
 import { References } from '../data/types/references'
 import useColors from '../hooks/useColors'
 import { useAppSelector } from '../redux/hooks'
-import { typography } from '../styles'
 
 interface Props {
   setReferenceState?: React.Dispatch<React.SetStateAction<string | undefined>>
@@ -49,7 +48,11 @@ export default function BibleText({
           style={{
             textDecorationLine:
               verseId in (references as References) ? 'underline' : 'none',
-            ...typography(settings.fontSize - 4, 'uil', 'l', colors.p2),
+            fontSize: settings.fontSize - 4,
+            fontFamily: 'Figtree-Light',
+            color: colors.p2,
+            textAlign: 'left',
+            lineHeight: settings.lineHeight,
           }}
           onPress={
             verseId in (references as References)
@@ -77,7 +80,10 @@ export default function BibleText({
   }
 
   const textStyle: TextStyle = {
-    ...typography(settings.fontSize, 'r', 'l', colors.fg1),
+    fontSize: settings.fontSize,
+    fontFamily: 'Bookerly-Regular',
+    textAlign: 'left',
+    color: colors.fg1,
     lineHeight: settings.lineHeight,
   }
 

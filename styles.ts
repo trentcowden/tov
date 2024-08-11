@@ -117,7 +117,7 @@ export const tx = {
  */
 export const typography = (
   size: number,
-  weight: 'ri' | 'r' | 'b' | 'uir' | 'uib' | 'uim' | 'uis' | 'uil',
+  weight: 'uir' | 'uib' | 'uim' | 'uis' | 'uil',
   align: 'l' | 'c',
   color: string
 ): TextStyle => {
@@ -131,17 +131,14 @@ export const typography = (
   }
 
   const weights = {
-    // ri: 'Literata18pt-RegularItalic',
-    // r: 'Literata18pt-Regular',
-    // b: 'Literata18pt-Bold',
-    ri: 'Bookerly-Italic',
-    r: 'Bookerly-Regular',
-    b: 'Bookerly-Bold',
     uil: 'Figtree-Light',
     uir: 'Figtree-Regular',
     uim: 'Figtree-Medium',
     uis: 'Figtree-SemiBold',
     uib: 'Figtree-Bold',
+  }
+  if (weight.includes('ui')) {
+    console.log('weight', weight)
   }
 
   // Return the completed style object.
@@ -150,6 +147,7 @@ export const typography = (
     textAlign: alignments[align],
     color: color,
     fontFamily: weights[weight],
+    lineHeight: size * 1.5,
   }
 }
 
