@@ -189,14 +189,14 @@ export default function Settings({
                   {
                     text: 'Open mail app',
                     onPress: () => {
-                      Linking.openURL('mailto:trentcowdenapps@proton.me')
+                      Linking.openURL('mailto:tov@trentcowden.com')
                       trackEvent('Contact: open mail app')
                     },
                   },
                   {
                     text: 'Copy email to clipboard',
                     onPress: () => {
-                      Clipboard.setString('trentcowdenapps@proton.me')
+                      Clipboard.setString('tov@trentcowden.com')
                       trackEvent('Contact: copy email to clipboard')
                     },
                   },
