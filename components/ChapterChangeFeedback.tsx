@@ -78,13 +78,13 @@ export default function ChapterChangeFeedback({
   })
 
   useDerivedValue(() => {
-    if (progress.value < 0) {
+    if (progress.value < 0 && prevChapter) {
       runOnJS(setConfig)({
         // direction: 'column-reverse',
         iconPath: 'M12 20V4m0 0l-6 6m6-6l6 6',
         text: prevChapter,
       })
-    } else if (progress.value > 0) {
+    } else if (progress.value > 0 && nextChapter) {
       runOnJS(setConfig)({
         // direction: 'column',
         iconPath: 'M12 4V20M12 20L18 14M12 20L6 14',
