@@ -179,8 +179,9 @@ export default function Settings({
                       style: 'destructive',
                       onPress: () => {
                         trackEvent('Clear history', {
-                          items: history.filter((item) => !item.isFavorite)
-                            .length,
+                          items:
+                            history.filter((item) => !item.isFavorite).length -
+                            1,
                         })
                         openSettings.value = withSpring(0, panActivateConfig)
                         dispatch(clearHistory(activeChapter.chapterId))
@@ -191,7 +192,7 @@ export default function Settings({
               }}
               rightIcon={<Trash {...ic.md} color={colors.p1} />}
               description="You can also swipe history items right to remove them individually."
-              rightText={`${history.filter((item) => !item.isFavorite).length} items`}
+              rightText={`${history.filter((item) => !item.isFavorite).length - 1} items`}
             >
               Clear History
             </SettingsItem>
