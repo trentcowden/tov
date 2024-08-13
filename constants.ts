@@ -19,3 +19,12 @@ export const zoomOutReq = 0.3
 export const horizVelocReq = 500
 
 export const panActivateConfig = { mass: 0.5, damping: 20, stiffness: 140 }
+
+export const textSizeNames = {
+  12: 'Miniscule',
+  14: 'Small',
+  16: 'Standard',
+  18: 'Pretty Big',
+  21: 'Huge',
+  25: 'Massive',
+}

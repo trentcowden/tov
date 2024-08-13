@@ -4,7 +4,6 @@ import { ScrollView } from 'react-native-gesture-handler'
 import { SharedValue, withSpring } from 'react-native-reanimated'
 import { panActivateConfig } from '../constants'
 import useColors from '../hooks/useColors'
-import { useAppDispatch, useAppSelector } from '../redux/hooks'
 import { sans, sp, tx } from '../styles'
 import BackButton from './BackButton'
 import Fade from './Fade'
@@ -16,8 +15,6 @@ interface Props {
 }
 
 export default function TranslationExplanation({ openSettingsNested }: Props) {
-  const dispatch = useAppDispatch()
-  const settings = useAppSelector((state) => state.settings)
   const colors = useColors()
 
   return (
@@ -42,18 +39,16 @@ export default function TranslationExplanation({ openSettingsNested }: Props) {
         }}
       >
         <ScrollView>
-          {/* <Text style={typography(tx.body, 'b', 'l', colors.p1)}>
-          Freely you have received; freely give.
-        </Text>
-        <Text style={typography(tx.caption, 'm', 'l', colors.p1)}>
-          - Matthew 10:8
-        </Text> */}
+          <Spacer s={sp.md} />
+          <Text style={sans(tx.body, 'm', 'l', colors.fg1)}>
+            Tov uses the New English Translation (NET) of the Bible.
+          </Text>
           <Spacer s={sp.md} />
           <Text style={sans(tx.body, 'm', 'l', colors.fg1)}>
             Unlike many Bible publishers who restrict access to their
             translations (like the NIV and ESV) behind paywalls and legal
             requirements, the NET Bible has an{' '}
-            <Text style={{ fontFamily: 'Figtree-Bold' }}>
+            <Text style={{ fontFamily: 'Figtree-Bold', color: colors.p1 }}>
               open copyright policy
             </Text>
             . This means anyone, like a solo developer with a passion for

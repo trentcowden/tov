@@ -50,18 +50,12 @@ export default function SettingsItem({
           }}
         >
           {rightIcon}
-          <Text
-            numberOfLines={1}
-            adjustsFontSizeToFit
-            style={[sans(tx.body, 'm', 'l', colors.fg2)]}
-          >
+          <Text style={[sans(tx.body, 'm', 'l', colors.fg2), { flex: 1 }]}>
             {children}
           </Text>
           {rightSection}
           {rightText ? (
-            <Text style={sans(tx.caption, 's', 'c', colors.p1)}>
-              {rightText}
-            </Text>
+            <Text style={sans(tx.tiny, 's', 'c', colors.p1)}>{rightText}</Text>
           ) : null}
         </View>
         {description ? (

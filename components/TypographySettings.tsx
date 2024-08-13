@@ -3,7 +3,7 @@ import React from 'react'
 import { Text, View } from 'react-native'
 import { SharedValue, withSpring } from 'react-native-reanimated'
 import CheckmarkCircle from '../assets/icons/duotone/check-circle.svg'
-import { panActivateConfig } from '../constants'
+import { panActivateConfig, textSizeNames } from '../constants'
 import useColors from '../hooks/useColors'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
 import { setTextSize } from '../redux/settings'
@@ -15,15 +15,6 @@ import TovPressable from './TovPressable'
 
 interface Props {
   openSettingsNested: SharedValue<number>
-}
-
-const names = {
-  12: 'Absolutely Tiny',
-  14: 'Pretty Small',
-  16: 'Standard',
-  18: 'Pretty Big',
-  21: 'Huge',
-  25: 'Massive',
 }
 
 export default function TypographySettings({ openSettingsNested }: Props) {
@@ -81,7 +72,7 @@ export default function TypographySettings({ openSettingsNested }: Props) {
                 adjustsFontSizeToFit
                 style={sans(f, 's', 'l', colors.fg2)}
               >
-                {names[f as keyof typeof names]}
+                {textSizeNames[f as keyof typeof textSizeNames]}
               </Text>
               {isActive ? (
                 <View style={{ position: 'absolute', right: sp.md }}>

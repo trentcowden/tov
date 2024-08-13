@@ -10,27 +10,30 @@ import { Alert, Text, useWindowDimensions, View } from 'react-native'
 import { ScrollView } from 'react-native-gesture-handler'
 import { SharedValue, withSpring } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import Book from '../assets/icons/duotone/book-closed.svg'
 import Code from '../assets/icons/duotone/code-browser.svg'
+import Heart from '../assets/icons/duotone/heart-rounded.svg'
 import Help from '../assets/icons/duotone/help-circle.svg'
 import Mail from '../assets/icons/duotone/mail-01.svg'
 import Money from '../assets/icons/duotone/piggy-bank-01.svg'
 import Star from '../assets/icons/duotone/star-01.svg'
 import Trash from '../assets/icons/duotone/trash-04.svg'
 import ZoomIn from '../assets/icons/duotone/zoom-in.svg'
-import { panActivateConfig } from '../constants'
+import { panActivateConfig, textSizeNames } from '../constants'
 import { Chapters } from '../data/types/chapters'
 import { getModalHeight, getModalWidth } from '../functions/utils'
 import { JumpToChapter } from '../hooks/useChapterChange'
 import useColors from '../hooks/useColors'
 import { clearHistory } from '../redux/history'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
-import { resetPopups } from '../redux/popups'
 import { br, ic, sans, shadow, sp, tx } from '../styles'
 import Fade from './Fade'
 import ModalScreen from './ModalScreen'
 import ModalScreenHeader from './ModalScreenHeader'
 import SettingsItem from './SettingsItem'
+import SettingsSection from './SettingsSection'
 import Spacer from './Spacer'
+import TovPressable from './TovPressable'
 import TranslationExplanation from './TranslationExplanation'
 import TypographySettings from './TypographySettings'
 
@@ -52,6 +55,7 @@ export default function Settings({
   const colors = useColors()
   const history = useAppSelector((state) => state.history)
   const insets = useSafeAreaInsets()
+  const settings = useAppSelector((state) => state.settings)
   const { width, height } = useWindowDimensions()
   const modalWidth = getModalWidth(width)
   const modalHeight = getModalHeight(height, insets)
@@ -116,36 +120,53 @@ export default function Settings({
               gap: sp.md,
               paddingTop: sp.md,
             }}
-            showsVerticalScrollIndicator={false}
           >
-            <Text
-              style={[
-                sans(tx.caption, 'm', 'l', colors.p1),
-                {
-                  paddingHorizontal: sp.xl,
-                  marginBottom: sp.sm,
-                },
-              ]}
-            >
-              Tov uses the New English Translation (NET) Bible.{' '}
+            {/* <View>
               <Text
                 style={[
-                  sans(tx.caption, 'b', 'l', colors.p1),
+                  sans(tx.caption, 'm', 'l', colors.p1),
                   {
-                    textDecorationLine: 'underline',
+                    paddingHorizontal: sp.xl,
                   },
                 ]}
+              >
+                Tov uses the New English Translation (NET) Bible.{' '}
+              </Text>
+              <TovPressable
+                bgColor={colors.bg2}
                 onPress={() => {
                   setNestedSetting('translation')
                   openSettingsNested.value = withSpring(1, panActivateConfig)
                   trackEvent('Clicked Bible translation why')
                 }}
               >
-                Why the NET?
-              </Text>
-            </Text>
-
-            {/* <SettingsSection disableTopMargin>General</SettingsSection> */}
+                <Text
+                  style={[
+                    sans(tx.caption, 'b', 'l', colors.p1),
+                    {
+                      textDecorationLine: 'underline',
+                      paddingHorizontal: sp.xl,
+                      marginBottom: sp.sm,
+                    },
+                  ]}
+                >
+                  Why the NET?
+                </Text>
+              </TovPressable>
+            </View> */}
+            <SettingsSection disableTopMargin>General</SettingsSection>
+            <SettingsItem
+              onPress={() => {
+                setNestedSetting('translation')
+                openSettingsNested.value = withSpring(1, panActivateConfig)
+                trackEvent('Clicked Bible translation why')
+              }}
+              rightIcon={<Book {...ic.md} color={colors.p1} />}
+              description="Tov uses the New English Translation (NET) Bible. Why?"
+              rightText="NET"
+            >
+              Bible Translation
+            </SettingsItem>
             <SettingsItem
               onPress={() => {
                 Alert.alert(
@@ -167,6 +188,7 @@ export default function Settings({
               }}
               rightIcon={<Trash {...ic.md} color={colors.p1} />}
               description="You can also swipe history items right to remove them individually."
+              rightText={`${history.length} items`}
             >
               Clear History
             </SettingsItem>
@@ -178,10 +200,13 @@ export default function Settings({
               }}
               rightIcon={<ZoomIn {...ic.md} color={colors.p1} />}
               description="You can also 'pinch to zoom' while reading to change the Bible text size."
+              rightText={
+                textSizeNames[settings.fontSize as keyof typeof textSizeNames]
+              }
             >
               Bible Text Size
             </SettingsItem>
-            {/* <SettingsSection>Help</SettingsSection> */}
+            <SettingsSection>Help</SettingsSection>
             <SettingsItem
               onPress={() => {
                 trackEvent('Contact open')
@@ -226,7 +251,7 @@ export default function Settings({
             >
               View Tutorial
             </SettingsItem>
-            {/* <SettingsSection>Contribute</SettingsSection> */}
+            <SettingsSection>Contribute</SettingsSection>
             {canReview ? (
               <SettingsItem
                 onPress={() => {
@@ -275,49 +300,57 @@ export default function Settings({
               </Text>
               's Source Code
             </SettingsItem>
-            {/* <Spacer s={sp.md} /> */}
-            <Text
-              style={[
-                sans(tx.tiny, 'm', 'c', colors.p1),
-                { paddingHorizontal: sp.xl },
-              ]}
+            <View
+              style={{
+                marginHorizontal: sp.xl,
+                justifyContent: 'center',
+                alignItems: 'center',
+                marginTop: sp.xl,
+                gap: sp.sm,
+              }}
             >
-              {'Made with 🧡 by '}
-              <Text
-                style={{ textDecorationLine: 'underline' }}
-                onPress={() => {
-                  WebBrowser.openBrowserAsync('https://trentcowden.com')
-                  trackEvent('Clicked Trent Cowden')
-                }}
-                onLongPress={() => {
-                  Alert.alert(
-                    'Are you sure you want to reset tov to factory settings?',
-                    'This will clear your history and settings.',
-                    [
-                      { isPreferred: true, style: 'cancel', text: 'Cancel' },
-                      {
-                        text: 'Reset',
-                        style: 'destructive',
-                        onPress: () => {
-                          jumpToChapter({
-                            chapterId: 'TUT.1',
-                            comingFrom: 'history',
-                          })
-                          dispatch(clearHistory('TUT.1'))
-                          dispatch(resetPopups())
-                          openSettings.value = withSpring(0, panActivateConfig)
-                        },
-                      },
-                    ]
-                  )
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  paddingHorizontal: sp.xl,
+                  gap: sp.xs,
                 }}
               >
-                Trent Cowden
+                <Text style={[sans(tx.tiny, 'b', 'c', colors.fg3)]}>
+                  Made with
+                </Text>
+                <Heart {...ic.md} color={colors.p1} />
+                <Text style={[sans(tx.tiny, 'b', 'c', colors.fg3)]}>by</Text>
+                <TovPressable
+                  onPress={() => {
+                    WebBrowser.openBrowserAsync('https://trentcowden.com')
+                    trackEvent('Clicked Trent Cowden')
+                  }}
+                  style={{
+                    paddingVertical: sp.xs,
+                    paddingHorizontal: sp.sm,
+                    borderRadius: br.md,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                  bgColor={colors.bg3}
+                  onPressColor={colors.bg3}
+                >
+                  <Text style={sans(tx.tiny, 'b', 'c', colors.p1)}>
+                    Trent Cowden
+                  </Text>
+                </TovPressable>
+              </View>
+              <Text style={sans(tx.tiny, 'm', 'c', colors.fg3)}>
+                You're using{' '}
+                <Text style={{ color: colors.p1, fontFamily: 'Figtree-Bold' }}>
+                  tov
+                </Text>{' '}
+                version {Application.nativeApplicationVersion}
               </Text>
-            </Text>
-            <Text style={sans(tx.tiny, 'm', 'c', colors.p1)}>
-              Version {Application.nativeApplicationVersion}
-            </Text>
+            </View>
             <Spacer s={sp.xl} />
           </ScrollView>
           <Fade place="top" color={colors.bg2} />

@@ -30,7 +30,7 @@ export function getChapterReference(
 ): string {
   if (chapterId === 'TUT.1') return 'Tutorial'
   const book = getBook(chapterId)
-  const [_, chapterNumber] = chapterId.split('.')
+  const [, chapterNumber] = chapterId.split('.')
   return `${book.name} ${chapterNumber}`
 }
 export function getVerseReference(verseId: string): string {
