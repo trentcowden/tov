@@ -178,7 +178,10 @@ export default function Settings({
                       text: 'Clear',
                       style: 'destructive',
                       onPress: () => {
-                        trackEvent('Clear history', { items: history.length })
+                        trackEvent('Clear history', {
+                          items: history.filter((item) => !item.isFavorite)
+                            .length,
+                        })
                         openSettings.value = withSpring(0, panActivateConfig)
                         dispatch(clearHistory(activeChapter.chapterId))
                       },
@@ -188,7 +191,7 @@ export default function Settings({
               }}
               rightIcon={<Trash {...ic.md} color={colors.p1} />}
               description="You can also swipe history items right to remove them individually."
-              rightText={`${history.length} items`}
+              rightText={`${history.filter((item) => !item.isFavorite).length} items`}
             >
               Clear History
             </SettingsItem>
@@ -331,7 +334,7 @@ export default function Settings({
                   style={{
                     paddingVertical: sp.xs,
                     paddingHorizontal: sp.sm,
-                    borderRadius: br.md,
+                    borderRadius: br.sm,
                     alignItems: 'center',
                     justifyContent: 'center',
                   }}
@@ -344,11 +347,11 @@ export default function Settings({
                 </TovPressable>
               </View>
               <Text style={sans(tx.tiny, 'm', 'c', colors.fg3)}>
-                You're using{' '}
+                {/* You're using{' '}
                 <Text style={{ color: colors.p1, fontFamily: 'Figtree-Bold' }}>
                   tov
-                </Text>{' '}
-                version {Application.nativeApplicationVersion}
+                </Text>{' '} */}
+                Version {Application.nativeApplicationVersion}
               </Text>
             </View>
             <Spacer s={sp.xl} />
