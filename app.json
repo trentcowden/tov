@@ -3,7 +3,7 @@
     "name": "tov: a good Bible app",
     "description": "Inspired by the Hebrew word for \"good,\" tov is a delightfully simple yet powerful Bible app designed to help you enjoy and study Scripture.",
     "slug": "tov",
-    "version": "1.2.0",
+    "version": "1.3.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
