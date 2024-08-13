@@ -79,8 +79,8 @@ export default function Navigator({
   /** Used to store the fuse.js object. */
   const searchResults: SearchResult[] = useFuzzySearchList({
     list: bibles[settings.translation],
-    // If `queryText` is blank, `list` is returned in whole
-    queryText: searchText,
+    // Remove symbols from the search text
+    queryText: searchText.split(':')[0].replace(/[^a-zA-Z0-9 ]/g, ''),
     // optional `getText` or `key`, same as with `createFuzzySearch`
     getText: (item) => [getChapterReference(item.chapterId)],
     // arbitrary mapping function, takes `FuzzyResult<T>` as input
