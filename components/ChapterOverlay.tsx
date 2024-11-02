@@ -166,7 +166,7 @@ export default function ChapterOverlay({
           maxFontSizeMultiplier={1}
           style={[
             sans(
-              tx.tiny - 2,
+              tx.tiny,
               'l',
               'l',
               colors.id === 'light' ? colors.fg3 : colors.fg3
