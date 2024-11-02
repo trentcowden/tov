@@ -58,6 +58,7 @@ export default function Bible() {
   const horizTransReq = getHorizTransReq(width)
   const activeChapterIndex = useAppSelector((state) => state.activeChapterIndex)
   const settings = useAppSelector((state) => state.settings)
+  // const dispatch = useAppDispatch()
   // useEffect(() => {
   //   dispatch(createFakeHistory())
   // }, [])
