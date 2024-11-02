@@ -2,9 +2,9 @@ import { ReactNode } from 'react'
 import { Dimensions, useWindowDimensions } from 'react-native'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 import Animated, {
-  SharedValue,
   interpolate,
   runOnJS,
+  SharedValue,
   useAnimatedStyle,
   withSpring,
 } from 'react-native-reanimated'
