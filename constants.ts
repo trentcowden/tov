@@ -5,9 +5,9 @@ export const headerHeight = 48
 
 export const chapterRow = deviceType === DeviceType.TABLET ? 10 : 5
 export const scrollBarWidth = sp.lg
-export const scrollBarHeight = sp.xl
-export const overlayWidth = sp.xl * 3
-export const overlayHeight = sp.xl
+export const scrollBarHeight = sp.xx
+export const overlayWidth = sp.xx * 3
+export const overlayHeight = sp.xx
 
 export const defaultOnPressScale =
   deviceType === DeviceType.TABLET ? 0.98 : 0.95
