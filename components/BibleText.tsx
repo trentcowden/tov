@@ -101,9 +101,9 @@ export default function BibleText({
     },
     {
       pattern: /\*.+?\*/,
-      style: {
-        fontFamily: 'Bookerly-Bold',
-      },
+      // style: {
+      //   fontFamily: 'Bookerly-Bold',
+      // },
       renderText: renderItalic,
     },
     {
