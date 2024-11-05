@@ -162,7 +162,7 @@ export default function Settings({
                 trackEvent('Clicked Bible translation why')
               }}
               rightIcon={<Book {...ic.md} color={colors.p1} />}
-              description="Tov uses the New English Translation (NET) Bible. Why?"
+              description="Learn why Tov uses the NET Bible translation."
               rightText="NET"
             >
               Bible Translation
@@ -191,7 +191,7 @@ export default function Settings({
                 )
               }}
               rightIcon={<Trash {...ic.md} color={colors.p1} />}
-              description="You can also swipe history items right to remove them individually."
+              description="Swiping chapters in the history right will remove them too!"
               rightText={`${history.filter((item) => !item.isFavorite).length - 1} items`}
             >
               Clear History
@@ -203,7 +203,7 @@ export default function Settings({
                 trackEvent('Open typography settings')
               }}
               rightIcon={<ZoomIn {...ic.md} color={colors.p1} />}
-              description="You can also 'pinch to zoom' while reading to change the Bible text size."
+              description="Try 'pinching to zoom' to change the Bible text size while reading."
               rightText={
                 textSizeNames[settings.fontSize as keyof typeof textSizeNames]
               }
