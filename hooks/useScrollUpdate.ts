@@ -186,15 +186,6 @@ export default function useScrollUpdate({
     const offset = event.nativeEvent.contentOffset.y
     const contentHeight = event.nativeEvent.contentSize.height
     scrollOffset.value = offset
-    if (
-      textTranslateY.value === 0 &&
-      openSettings.value === 0 &&
-      alreadyHaptic.current === false
-    ) {
-      // if (offset > showOverlayOffset && openSettings.value === 0)
-      //   overlayOpacity.value = withTiming(1)
-      // else overlayOpacity.value = withTiming(0)
-    }
 
     handleScrollBarUpdate(offset)
     handleScrollHaptics(offset, contentHeight)

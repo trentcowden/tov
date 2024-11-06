@@ -113,53 +113,40 @@ export default function ScrollBar({
       )
 
       scrollBarActivate.value = withTiming(1, { duration: 250 })
-      // startingOffset.value = event.y
-      // scrollBarPosition.value = event.absoluteY - startingOffset.value
-      if (event.absoluteY - scrollBarHeight / 2 < scrollBarMargin.top)
-        scrollBarPosition.value = scrollBarMargin.top
-      else if (
-        event.absoluteY - scrollBarHeight / 2 >
-        height - scrollBarHeight - scrollBarMargin.bottom
+
+      const position = event.absoluteY - scrollBarHeight / 2
+      scrollBarPosition.value = withTiming(
+        Math.max(
+          scrollBarMargin.top,
+          Math.min(position, height - scrollBarHeight - scrollBarMargin.bottom)
+        ),
+        { duration: 150 }
       )
-        scrollBarPosition.value =
-          height - scrollBarHeight - scrollBarMargin.bottom
-      else
-        scrollBarPosition.value = withTiming(
-          event.absoluteY - scrollBarHeight / 2,
-          { duration: 150 }
-        )
     })
     .onChange((event) => {
       if (textHeight < height) return
+      const position = event.absoluteY - scrollBarHeight / 2
 
-      if (event.absoluteY - scrollBarHeight / 2 < scrollBarMargin.top)
+      if (position < scrollBarMargin.top)
         scrollBarPosition.value = scrollBarMargin.top
-      else if (
-        event.absoluteY - scrollBarHeight / 2 >
-        height - scrollBarHeight - scrollBarMargin.bottom
-      )
+      else if (position > height - scrollBarHeight - scrollBarMargin.bottom)
         scrollBarPosition.value =
           height - scrollBarHeight - scrollBarMargin.bottom
-      else scrollBarPosition.value = event.absoluteY - scrollBarHeight / 2
+      else scrollBarPosition.value = position
     })
     .onFinalize((event) => {
       if (textHeight < height) return
 
       // Fling!
       if (Math.abs(event.velocityY) > 700) {
-        scrollBarPosition.value = withDecay(
-          {
-            deceleration: 0.98,
-            velocity: event.velocityY,
-            clamp: [
-              scrollBarMargin.top,
-              height - scrollBarHeight - scrollBarMargin.bottom,
-            ],
-          }
-          // () => {
-          //   scrollBarActivate.value = withTiming(0, { duration: 250 })
-          // }
-        )
+        scrollBarPosition.value = withDecay({
+          deceleration: 0.98,
+          velocity: event.velocityY,
+          clamp: [
+            scrollBarMargin.top,
+            height - scrollBarHeight - scrollBarMargin.bottom,
+          ],
+        })
         scrollBarActivate.value = withDelay(
           100,
           withTiming(0, { duration: 250 })
@@ -211,17 +198,7 @@ export default function ScrollBar({
               [restColor, colors.p1]
             ),
       transform: [
-        {
-          translateY: interpolate(
-            scrollBarPosition.value,
-            [0, height - scrollBarHeight],
-            [0, height - scrollBarHeight],
-            {
-              extrapolateLeft: 'clamp',
-              extrapolateRight: 'clamp',
-            }
-          ),
-        },
+        { translateY: scrollBarPosition.value },
         {
           scale: scale.value,
         },
