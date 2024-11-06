@@ -1,5 +1,5 @@
 import React, { useMemo, useRef } from 'react'
-import { FlatList, useWindowDimensions, View } from 'react-native'
+import { FlatList, Text, useWindowDimensions, View } from 'react-native'
 import { SharedValue, withSpring } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Help from '../assets/icons/duotone/help-circle.svg'
@@ -10,7 +10,7 @@ import { getVerseReference, isPassageAfter } from '../functions/bible'
 import { getModalHeight, getModalWidth } from '../functions/utils'
 import { JumpToChapter } from '../hooks/useChapterChange'
 import useColors from '../hooks/useColors'
-import { br, ic, shadow, sp } from '../styles'
+import { br, ic, sans, shadow, sp, tx } from '../styles'
 import Fade from './Fade'
 import ListBanner from './ListBanner'
 import ModalScreen from './ModalScreen'
@@ -35,7 +35,6 @@ export default function ReferencesModal({
   const modalWidth = getModalWidth(width)
   const referencesRef = useRef<FlatList<References[string][number]>>(null)
   const wordListRef = useRef<FlatList<[string, string, string]>>(null)
-
   const activeReferences = useMemo(() => {
     if (!referenceVerse || referenceVerse.includes('tutorial')) return []
 
@@ -95,7 +94,12 @@ export default function ReferencesModal({
           }}
           height={88}
         >
-          {`Cross References for ${referenceVerse ? getVerseReference(referenceVerse) : ''}`}
+          <Text style={sans(tx.title, 'b', 'l', colors.fg2)}>
+            {`${referenceVerse ? getVerseReference(referenceVerse) : ''}`}
+          </Text>
+          <Text style={sans(tx.subtitle, 'r', 'l', colors.fg3)}>
+            Cross References
+          </Text>
         </ModalScreenHeader>
         <View style={{ flex: 1 }}>
           <FlatList
