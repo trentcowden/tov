@@ -58,11 +58,6 @@ export default function Bible() {
   const horizTransReq = getHorizTransReq(width)
   const activeChapterIndex = useAppSelector((state) => state.activeChapterIndex)
   const settings = useAppSelector((state) => state.settings)
-  // const dispatch = useAppDispatch()
-  // useEffect(() => {
-  //   dispatch(createFakeHistory())
-  // }, [])
-  console.log(colors.bg1)
   const insets = useSafeAreaInsets()
   const { top, bottom } = getEdges(insets)
   const activeChapter = useMemo(() => {
