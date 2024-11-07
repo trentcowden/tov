@@ -107,7 +107,7 @@ export default function VerseHighlight({
         pressed.value = withSpring(0, panActivateConfig)
       }}
       onPress={() => {
-        highlightVerseNumber.value = withSpring(0, panActivateConfig)
+        highlightVerseNumber.value = withTiming(0, { duration: 125 })
       }}
       style={[
         {
