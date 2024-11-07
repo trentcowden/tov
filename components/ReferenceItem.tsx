@@ -136,8 +136,8 @@ export default function ReferenceItem({
           </Text>
           {isAfter ? <ArrowRight {...ic.md} color={colors.p1} /> : null}
         </View>
-        <Text style={[sans(tx.tiny, 'l', 'l', colors.fg3)]} numberOfLines={2}>
-          {verse.trim()}
+        <Text style={[sans(tx.tiny, 'l', 'l', colors.fg3)]} numberOfLines={3}>
+          {verse.replace(/[\r\n]+/g, ' ').trim()}
         </Text>
       </TovPressable>
     </>

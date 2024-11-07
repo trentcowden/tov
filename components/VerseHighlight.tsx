@@ -1,11 +1,15 @@
 import React, { useMemo } from 'react'
-import { useWindowDimensions } from 'react-native'
+import { Pressable, useWindowDimensions } from 'react-native'
 import Animated, {
   Extrapolation,
   SharedValue,
   interpolate,
   useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
 } from 'react-native-reanimated'
+import { panActivateConfig } from '../constants'
 import useColors from '../hooks/useColors'
 import { useAppSelector } from '../redux/hooks'
 import { br, shadow, sp } from '../styles'
@@ -18,6 +22,8 @@ interface Props {
   spaceAfterTextEnds: number
 }
 
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable)
+
 export default function VerseHighlight({
   verseOffsets,
   highlightVerseNumber,
@@ -29,15 +35,22 @@ export default function VerseHighlight({
   const colors = useColors()
   const activeChapterIndex = useAppSelector((state) => state.activeChapterIndex)
   const settings = useAppSelector((state) => state.settings)
+  const pressed = useSharedValue(0)
 
   const verseHighlightStyle = useAnimatedStyle(() => {
     return {
       opacity: interpolate(
         highlightVerseNumber.value,
         [0, 1],
-        [0, 0.3],
+        [0, 0.2],
         Extrapolation.CLAMP
       ),
+      transform: [
+        {
+          scale: interpolate(pressed.value, [0, 1], [1, 0.985]),
+        },
+      ],
+      zIndex: highlightVerseNumber.value !== 0 ? 10 : -10,
     }
   })
 
@@ -86,7 +99,16 @@ export default function VerseHighlight({
     : 0
 
   return verseOffsets ? (
-    <Animated.View
+    <AnimatedPressable
+      onPressIn={() => {
+        pressed.value = withTiming(1, { duration: 75 })
+      }}
+      onPressOut={() => {
+        pressed.value = withSpring(0, panActivateConfig)
+      }}
+      onPress={() => {
+        highlightVerseNumber.value = withSpring(0, panActivateConfig)
+      }}
       style={[
         {
           position: 'absolute',
@@ -96,7 +118,7 @@ export default function VerseHighlight({
           alignSelf: 'center',
           backgroundColor: colors.p1,
           borderRadius: br.lg,
-          zIndex: -10,
+          zIndex: 10,
           ...shadow,
         },
         verseHighlightStyle,
