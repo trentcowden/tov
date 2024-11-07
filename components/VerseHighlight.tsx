@@ -1,9 +1,10 @@
+import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics'
 import React, { useMemo } from 'react'
 import { Pressable, useWindowDimensions } from 'react-native'
 import Animated, {
   Extrapolation,
-  SharedValue,
   interpolate,
+  SharedValue,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
@@ -107,6 +108,7 @@ export default function VerseHighlight({
         pressed.value = withSpring(0, panActivateConfig)
       }}
       onPress={() => {
+        impactAsync(ImpactFeedbackStyle.Light)
         highlightVerseNumber.value = withTiming(0, { duration: 125 })
       }}
       style={[
