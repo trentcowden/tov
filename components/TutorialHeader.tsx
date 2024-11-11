@@ -8,14 +8,12 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import ArrowDown from '../assets/icons/duotone/arrow-narrow-down.svg'
-import Tov from '../assets/icons/tov.svg'
+import TovFull from '../assets/icons/tov_full.svg'
 import { getEdges } from '../functions/utils'
 import useColors from '../hooks/useColors'
 import { useAppSelector } from '../redux/hooks'
-import { br, ic, sans, sp, tx } from '../styles'
+import { sans, sp, tx } from '../styles'
 import Spacer from './Spacer'
-import TovPressable from './TovPressable'
 
 interface Props {
   scrollViewRef: React.RefObject<ScrollView>
@@ -66,8 +64,8 @@ export default function TutorialHeader({ scrollViewRef }: Props) {
             justifyContent: 'center',
             alignItems: 'center',
             padding: sp.xl,
-            height,
-            paddingTop: top + sp.xl,
+            // height: height * 0.75,
+            paddingTop: top + sp.xl * 3,
             paddingBottom: bottom + sp.xl,
           },
           styles,
@@ -87,27 +85,18 @@ export default function TutorialHeader({ scrollViewRef }: Props) {
               justifyContent: 'center',
             }}
           >
-            <Text style={sans(tx.subtitle, 'r', 'c', colors.fg3)}>
-              Welcome to
-            </Text>
-            <Spacer s={sp.xx} />
-            <Tov width={100} height={100} color={colors.p1} />
-            <Spacer s={sp.sm} />
-            <Text style={sans(36, 's', 'c', colors.p2)}>tov</Text>
+            <Text style={sans(tx.body, 'r', 'c', colors.fg3)}>Welcome to</Text>
             <Spacer s={sp.xl} />
-            <Text style={sans(tx.tiny, 'l', 'c', colors.fg3)}>
-              {'(a '}
-              <Text style={{ color: colors.p2, fontFamily: 'Figtree-Medium' }}>
-                good
-              </Text>
-              {' Bible app)'}
+            <TovFull width={width * 0.5} height={100} color={colors.p1} />
+            {/* <Spacer s={sp.sm} />
+            <Text style={sans(36, 's', 'c', colors.p2)}>tov</Text> */}
+            <Spacer s={sp.md} />
+            <Text style={sans(tx.tiny, 'r', 'c', colors.fg3)}>
+              (a better Bible app)
             </Text>
-            {/* <Text style={typography(sizes.caption, 'b', 'c', colors.fg3)}>
-              Scroll down
-            </Text> */}
           </View>
         </View>
-        <TovPressable
+        {/* <TovPressable
           onPress={() =>
             scrollViewRef.current?.scrollTo({
               y: height - top - sp.xl,
@@ -121,10 +110,13 @@ export default function TutorialHeader({ scrollViewRef }: Props) {
             width: width - sp.xl * 2,
             justifyContent: 'center',
             alignItems: 'center',
+            flexDirection: 'row',
+            gap: sp.sm,
           }}
         >
+          <Text style={sans(tx.body, 'r', 'c', colors.fg3)}>Scroll Down</Text>
           <ArrowDown {...ic.lg} color={colors.fg3} />
-        </TovPressable>
+        </TovPressable> */}
       </Animated.View>
     </View>
   )

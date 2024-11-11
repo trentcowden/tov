@@ -2,14 +2,13 @@ import net from './net_chapters.json'
 import { Chapters } from './types/chapters'
 
 const tutorialText = [
-  'Inspired by the Hebrew word for "good", tov is a delightfully simple yet powerful Bible app designed to help you *enjoy* and *study* Scripture.',
-  "Here's what you need to know:",
-  '[1] Double tap anywhere to *view the books* of the Bible.',
-  '[2] Swipe right to *open your reading history* and bookmarks.',
-  '[3] Tap on an underlined verse number to *view cross references*.',
-  '[4] Keep scrolling downwards to *go to the next chapter*.',
+  'tov is a Bible app that brings focus and depth to your reading experience with its minimalist design and insightful cross-references.',
+  // "Here's what you need to know:",
+  '[1] Tap the current chapter on the bottom of the screen to view the books of the Bible.',
+  '[2] Swipe right to open your reading history and bookmarks.',
+  '[3] Tapping on underlined verse number will bring up its cross references.',
   // '[5] Check out the advanced features!',
-  'Happy reading!',
+  'Keep scrolling down and happy reading!',
 ]
 
 const tutorial: Chapters[number] = {

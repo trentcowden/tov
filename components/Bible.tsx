@@ -63,7 +63,7 @@ export default function Bible() {
   const activeChapter = useMemo(() => {
     return bibles[settings.translation][activeChapterIndex.index]
   }, [activeChapterIndex.index, settings.translation])
-
+  console.log(colors)
   const activeBook = useMemo(
     () => getBook(activeChapter.chapterId),
     [activeChapter]
@@ -405,17 +405,15 @@ export default function Bible() {
           openReferencesNested={openReferencesNested}
           referenceVerse={referenceVerse}
         />
-        {activeChapter.chapterId !== 'TUT.1' ? (
-          <ChapterOverlay
-            activeBook={activeBook}
-            activeChapter={activeChapter}
-            textTranslateX={textTranslateX}
-            openNavigator={openNavigator}
-            savedTextTranslateX={savedTextTranslateX}
-            focusSearch={focusSearch}
-            overlayOpacity={overlayOpacity}
-          />
-        ) : null}
+        <ChapterOverlay
+          activeBook={activeBook}
+          activeChapter={activeChapter}
+          textTranslateX={textTranslateX}
+          openNavigator={openNavigator}
+          savedTextTranslateX={savedTextTranslateX}
+          focusSearch={focusSearch}
+          overlayOpacity={overlayOpacity}
+        />
         {/* <View
           style={{
             position: 'absolute',

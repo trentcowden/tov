@@ -51,7 +51,9 @@ export default function ChapterOverlay({
   const scrollBarMargin = getScrollBarMargin(insets)
   const pressed = useSharedValue(0)
   const [text, setText] = React.useState(
-    `${activeBook.name.replace(/ /g, '').slice(0, 3)} ${activeChapter.chapterId.split('.')[1]}`
+    activeChapter.chapterId === 'TUT.1'
+      ? 'TUTORIAL'
+      : `${activeBook.name.replace(/ /g, '').slice(0, 3)} ${activeChapter.chapterId.split('.')[1]}`
   )
 
   const history = useAppSelector((state) => state.history)
@@ -74,7 +76,9 @@ export default function ChapterOverlay({
 
   const changeChapter = useCallback(() => {
     setText(
-      `${activeBook.name.replace(/ /g, '').slice(0, 3)} ${activeChapter.chapterId.split('.')[1]}`
+      activeChapter.chapterId === 'TUT.1'
+        ? 'TUTORIAL'
+        : `${activeBook.name.replace(/ /g, '').slice(0, 3)} ${activeChapter.chapterId.split('.')[1]}`
     )
   }, [activeBook.name, activeChapter.chapterId])
 
