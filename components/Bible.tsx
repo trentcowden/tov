@@ -123,6 +123,7 @@ export default function Bible() {
 
   /** Animation value for opening the references. */
   const openReferences = useSharedValue(0)
+  const openReferencesNested = useSharedValue(0)
 
   /** Animation value to keep track of the status of the user dragging the scroll bar. */
   const scrollBarActivate = useSharedValue(-1)
@@ -401,6 +402,7 @@ export default function Bible() {
         <ReferencesModal
           jumpToChapter={jumpToChapter}
           openReferences={openReferences}
+          openReferencesNested={openReferencesNested}
           referenceVerse={referenceVerse}
         />
         {activeChapter.chapterId !== 'TUT.1' ? (

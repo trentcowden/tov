@@ -34,9 +34,12 @@ export default function ReferenceItem({
   const colors = useColors()
   const settings = useAppSelector((state) => state.settings)
 
-  const verse = useMemo(() => {
-    const verseId = typeof item === 'string' ? item : item[0]
-    const [bookId, chapterNumber, verseNumber] = verseId.split('.')
+  const referenceText = useMemo(() => {
+    const startVerseId = typeof item === 'string' ? item : item[0]
+    const endVerseId = typeof item === 'string' ? item : item[1] || item[0]
+
+    const [bookId, chapterNumber, startVerseNumber] = startVerseId.split('.')
+    const [, , endVerseNumber] = endVerseId.split('.')
 
     const chapterIndex = bibles[settings.translation].findIndex(
       (chapter) => chapter.chapterId === `${bookId}.${chapterNumber}`
@@ -44,18 +47,30 @@ export default function ReferenceItem({
 
     const chapter = bibles[settings.translation][chapterIndex]
     const verses = chapter.md.split('[')
-    if (parseInt(verseNumber) >= verses.length) {
-      console.log('Verse number out of range:', verseId)
-      trackEvent('Verse number out of range', { verseId })
+    if (parseInt(startVerseNumber) >= verses.length) {
+      console.log('Verse number out of range:', startVerseId)
+      trackEvent('Verse number out of range', { verseId: startVerseId })
       return ''
     }
-    const verse = verses.find((verse) => verse.startsWith(verseNumber))
-    if (!verse) {
-      console.log('Verse not found:', verseId)
+    const startIndex = verses.findIndex((verse) =>
+      verse.startsWith(startVerseNumber)
+    )
+    const endIndex = verses.findIndex((verse) =>
+      verse.startsWith(endVerseNumber)
+    )
+
+    if (startIndex === -1 || endIndex === -1) {
+      console.log('Verse not found:', startVerseId, endVerseId)
       return ''
     }
-    return verse.replace(']', '').replace(verseNumber, '').replace(/\*/g, '')
-    // return verses[parseInt(verseNumber)].replace(']', '')
+
+    const referenceText = '[' + verses.slice(startIndex, endIndex + 1).join('[')
+
+    return referenceText
+      .replace(/\[.*?\]/g, '')
+      .replace(/\*/g, '')
+      .replace(/[\r\n]+/g, ' ')
+      .trim()
   }, [item, settings.translation])
 
   if (!referenceVerse) return <View />
@@ -87,7 +102,7 @@ export default function ReferenceItem({
 
     passageString += endingVerse.toString()
   }
-  return verse === '' ? null : (
+  return referenceText === '' ? null : (
     <>
       {isAfter && !prevIsAfter && index !== 0 ? (
         <View
@@ -136,8 +151,14 @@ export default function ReferenceItem({
           </Text>
           {isAfter ? <ArrowRight {...ic.md} color={colors.p1} /> : null}
         </View>
-        <Text style={[sans(tx.tiny, 'l', 'l', colors.fg3)]} numberOfLines={3}>
-          {verse.replace(/[\r\n]+/g, ' ').trim()}
+        <Text
+          style={[
+            sans(tx.tiny, 'l', 'l', colors.fg3),
+            { fontFamily: 'Bookerly-Regular' },
+          ]}
+          numberOfLines={3}
+        >
+          {referenceText}
         </Text>
       </TovPressable>
     </>

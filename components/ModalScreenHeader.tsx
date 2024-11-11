@@ -61,6 +61,7 @@ export default function ModalScreenHeader({
           flex: 1,
           height: '100%',
           justifyContent: 'center',
+          paddingEnd: !closeButton ? sp.xl : 0,
         }}
       >
         {typeof children === 'string' ? (
