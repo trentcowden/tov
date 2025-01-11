@@ -27,30 +27,27 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { panActivateConfig } from '../constants'
 import bibles from '../data/bibles'
 import { Chapters } from '../data/types/chapters'
-import { getBook } from '../functions/bible'
+import { getBook, verseToRegular } from '../functions/bible'
 import { getEdges, getHorizTransReq } from '../functions/utils'
 import useChapterChange from '../hooks/useChapterChange'
 import useColors from '../hooks/useColors'
 import useHighlightVerse from '../hooks/useHighlightVerse'
 import useHistoryOpen from '../hooks/useHistoryOpen'
-import useNavigatorOpen from '../hooks/useNavigatorOpen'
 import usePinch from '../hooks/usePinch'
 import useScrollUpdate from '../hooks/useScrollUpdate'
 import { useAppSelector } from '../redux/hooks'
 import { sp } from '../styles'
-import BibleText from './BibleText'
 import ChapterChangeFeedback, {
   chapterChangeFeedbackHeight,
 } from './ChapterChangeFeedback'
 import ChapterOverlay from './ChapterOverlay'
+import ChapterText from './ChapterText'
 import History from './History'
 import Navigator from './Navigator'
 import ReferencesModal from './ReferencesModal'
 import ScrollBar from './ScrollBar'
-import Settings from './Settings'
 import Spacer from './Spacer'
 import TutorialHeader from './TutorialHeader'
-import VerseHighlight from './VerseHighlight'
 
 export default function Bible() {
   const colors = useColors()
@@ -79,18 +76,14 @@ export default function Bible() {
   const overScrollAmount = useSharedValue(0)
 
   /** The currently selected cross references verse. */
-  const [referenceVerse, setReferenceState] = useState<string>()
+  const [referenceVerse, setReferenceState] = useState<{
+    verseId: string
+    text: string
+  }>()
 
   /** The offsets for each verse in the current chapter. Used to auto-scroll to a
    * specific verse. */
   const [verseOffsets, setVerseOffsets] = useState<number[]>()
-
-  /** Used to track if a verse starts on a new line. Used to render the verse highlight
-   * correctly. */
-  const [verseNewlines, setVerseNewlines] = useState<boolean[]>()
-
-  /** Used to track if a verse ends a paragraph. Used to render the verse highlight correctly. */
-  const [paragraphs, setParagraphs] = useState<boolean[]>()
 
   /** The space between the top of the screen and where the text starts. */
   const spaceBeforeTextStarts =
@@ -150,7 +143,6 @@ export default function Bible() {
     setVerseOffsets,
     overlayOpacity,
     highlightVerseNumber,
-    setVerseNewlines,
   })
 
   const { onScroll, scrollBarPosition } = useScrollUpdate({
@@ -174,21 +166,9 @@ export default function Bible() {
     textTranslateY,
   })
 
-  const { tapGesture, focusSearch } = useNavigatorOpen({
-    openNavigator,
-    textTranslateX,
-    openReferences,
-    searchRef,
-    scale,
-  })
-
   useHighlightVerse({ verseOffsets, highlightVerseNumber })
 
-  const composedGestures = Gesture.Simultaneous(
-    panGesture,
-    tapGesture,
-    pinchGesture
-  )
+  const composedGestures = Gesture.Simultaneous(panGesture, pinchGesture)
 
   const textStyles = useAnimatedStyle(() => {
     return {
@@ -219,25 +199,19 @@ export default function Bible() {
    */
   function onTextLayout(event: NativeSyntheticEvent<TextLayoutEventData>) {
     const localVerseOffsets: number[] = []
-    const localVerseNewlines: boolean[] = []
-    const localParagraphs: boolean[] = []
 
     if (event.nativeEvent.lines.length === 0) return
 
-    event.nativeEvent.lines.forEach((line, index) => {
-      const matches = line.text.match(/[0-9]{1,3} /g)
+    event.nativeEvent.lines.forEach((line) => {
+      // Find all the verse numbers in the line.
+      const matches = line.text.match(/[⁰¹²³⁴⁵⁶⁷⁸⁹]{1,3} /g)
 
-      matches?.forEach(() => {
-        if (index === 0) localVerseNewlines.push(true)
-        else if (event.nativeEvent.lines[index - 1].text.endsWith('\n'))
-          localVerseNewlines.push(true)
-        else localVerseNewlines.push(false)
+      matches?.forEach((match) => {
+        const verseNumber = verseToRegular(match.trim())
 
-        if (index === 0) localParagraphs.push(true)
-        else if (event.nativeEvent.lines[index - 1].text === '\n')
-          localParagraphs.push(true)
-        else localParagraphs.push(false)
-
+        if (localVerseOffsets.length !== verseNumber - 1) {
+          localVerseOffsets.push(spaceBeforeTextStarts + line.y)
+        }
         localVerseOffsets.push(spaceBeforeTextStarts + line.y)
       })
     })
@@ -250,8 +224,6 @@ export default function Bible() {
     )
     if (!verseOffsets || !arraysEqual(localVerseOffsets, verseOffsets)) {
       setVerseOffsets(localVerseOffsets)
-      setVerseNewlines(localVerseNewlines)
-      setParagraphs(localParagraphs)
     }
   }
 
@@ -316,13 +288,13 @@ export default function Bible() {
                 </View>
               )
             })} */}
-            <VerseHighlight
+            {/* <VerseHighlight
               verseOffsets={verseOffsets}
               highlightVerseNumber={highlightVerseNumber}
               verseNewlines={verseNewlines}
               paragraphs={paragraphs}
               spaceAfterTextEnds={spaceAfterTextEnds}
-            />
+            /> */}
             <View style={{ width: '100%' }}>
               {activeChapter.chapterId === 'TUT.1' ? null : (
                 <Spacer s={top - sp.xl} />
@@ -344,13 +316,19 @@ export default function Bible() {
             </View>
             <View style={{ paddingHorizontal: sp.xx }}>
               <Text onTextLayout={onTextLayout}>
-                <BibleText
+                {/* <BibleText
                   openReferences={openReferences}
                   setReferenceState={setReferenceState}
                   onTextLayout={onTextLayout}
                 >
                   {activeChapter.md}
-                </BibleText>
+                </BibleText> */}
+                <ChapterText
+                  openReferences={openReferences}
+                  setReferenceState={setReferenceState}
+                  onTextLayout={onTextLayout}
+                  verses={activeChapter.verses}
+                />
               </Text>
             </View>
             <Spacer s={sp.lg} />
@@ -392,13 +370,13 @@ export default function Bible() {
           currentVerseIndexNum={currentVerseIndex}
           textTranslateY={textTranslateY}
         />
-        <Settings
+        {/* <Settings
           openSettings={openSettings}
           openSettingsNested={openSettingsNested}
           activeChapter={activeChapter}
           textTranslateX={textTranslateX}
           jumpToChapter={jumpToChapter}
-        />
+        /> */}
         <ReferencesModal
           jumpToChapter={jumpToChapter}
           openReferences={openReferences}
@@ -411,7 +389,7 @@ export default function Bible() {
           textTranslateX={textTranslateX}
           openNavigator={openNavigator}
           savedTextTranslateX={savedTextTranslateX}
-          focusSearch={focusSearch}
+          focusSearch={() => searchRef.current?.focus()}
           overlayOpacity={overlayOpacity}
         />
         {/* <View

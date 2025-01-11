@@ -1,5 +1,3 @@
-import { trackEvent } from '@aptabase/react-native'
-import { ImpactFeedbackStyle, impactAsync } from 'expo-haptics'
 import React, { useMemo } from 'react'
 import {
   NativeSyntheticEvent,
@@ -8,8 +6,7 @@ import {
   TextStyle,
 } from 'react-native'
 import ParsedText, { ParsedTextProps } from 'react-native-parsed-text'
-import { SharedValue, withSpring } from 'react-native-reanimated'
-import { panActivateConfig } from '../constants'
+import { SharedValue } from 'react-native-reanimated'
 import bibles from '../data/bibles'
 import references from '../data/references.json'
 import { References } from '../data/types/references'
@@ -45,28 +42,32 @@ export default function BibleText({
     return (
       <Text>
         <Text
+          suppressHighlighting
           style={{
             textDecorationLine:
               verseId in (references as References) ? 'underline' : 'none',
-            fontSize: settings.fontSize - 4,
-            fontFamily: 'Figtree-Light',
-            color: colors.p2,
-            textAlign: 'left',
+            // fontSize: settings.fontSize - 4,
+            // fontFamily: 'Figtree-Light',
+            // color: colors.p2,
+            // textAlign: 'left',
             lineHeight: settings.lineHeight,
           }}
           onPress={
-            verseId in (references as References)
-              ? () => {
-                  impactAsync(ImpactFeedbackStyle.Heavy)
-                  if (setReferenceState) setReferenceState(verseId)
-                  if (openReferences !== undefined)
-                    openReferences.value = withSpring(1, panActivateConfig)
-                  trackEvent('Open cross references', { verseId })
-                }
-              : undefined
+            // verseId in (references as References)
+            //   ? () => {
+            //       impactAsync(ImpactFeedbackStyle.Heavy)
+            //       if (setReferenceState) setReferenceState(verseId)
+            //       if (openReferences !== undefined)
+            //         openReferences.value = withSpring(1, panActivateConfig)
+            //       trackEvent('Open cross references', { verseId })
+            //     }
+            //   : undefined
+            () => {
+              console.log(text)
+            }
           }
         >
-          {verseId in references ? ' ' : ''}
+          {/* {verseId in references ? ' ' : ''} */}
           {verseNumber + ' '}
           {/* {verseNumber + ' '} */}
         </Text>
@@ -89,29 +90,30 @@ export default function BibleText({
 
   const parse: ParsedTextProps['parse'] = [
     {
-      pattern: /\[([0-9]{1,3})\] /,
+      // pattern: /\[([0-9]{1,3})\] /,
+      pattern: /([0-9]{1,3})\].*?\[/,
       renderText: renderVerseNumber as any,
     },
-    {
-      pattern: / tov /,
-      style: {
-        fontFamily: 'Bookerly-Bold',
-        color: colors.p1,
-      },
-    },
-    {
-      pattern: /\*.+?\*/,
-      // style: {
-      //   fontFamily: 'Bookerly-Bold',
-      // },
-      renderText: renderItalic,
-    },
-    {
-      pattern: /(?<=\n)\n/,
-      style: {
-        lineHeight: settings.paragraphSpacing,
-      },
-    },
+    // {
+    //   pattern: / tov /,
+    //   style: {
+    //     fontFamily: 'Bookerly-Bold',
+    //     color: colors.p1,
+    //   },
+    // },
+    // {
+    //   pattern: /\*.+?\*/,
+    //   // style: {
+    //   //   fontFamily: 'Bookerly-Bold',
+    //   // },
+    //   renderText: renderItalic,
+    // },
+    // {
+    //   pattern: /(?<=\n)\n/,
+    //   style: {
+    //     lineHeight: settings.paragraphSpacing,
+    //   },
+    // },
   ]
 
   return (

@@ -139,8 +139,8 @@ chapters = []
 for index, item in enumerate(book.items):
     if not isinstance(item, epub.EpubHtml):
         continue
-    # if index != 508:
-    #     continue
+    if index != 200:
+        continue
 
     html = item.get_content().decode()
     soup = BeautifulSoup(html, features="html.parser")
@@ -162,6 +162,7 @@ for index, item in enumerate(book.items):
     chapter_num = full.split(" ")[-1]
 
     file_name = f"{book_id}.{chapter_num}.md"
+    print(file_name)
 
     # if "otpoetry" in html:
     #     print("otpoerty", file_name)
@@ -188,6 +189,39 @@ for index, item in enumerate(book.items):
         text = text.replace("]]", "")
         text = text.replace("[[", "")
         text = text.strip()
+
+        pattern = r"\[([0-9]+)\]"
+
+        verses = []
+        last_end = 0
+
+        for match in re.finditer(pattern, text):
+            # Add the text before the match, combined with the matched delimiter
+            start, end = match.span()
+
+            verses.append(match.group(1) + text[last_end:start])
+            last_end = end
+
+        # Add any remaining part of the string after the last match
+        if last_end < len(text):
+            verses.append(text[last_end:])
+
+        # verses = [
+        #     verse.strip() if not verse.endswith("\n\n") else verse.strip() + "\n\n"
+        #     for verse in re.split(r"\[([0-9]+)\]", text)
+        #     if verse
+        # ]
+        print(verses)
+
+        # verses_with_breaks = []
+        # for verse in verses:
+        #     if verse.endswith("\n\n"):
+        #         verses_with_breaks.append(verse.strip())
+        #         verses_with_breaks.append("\n\n")
+        #     else:
+        #         verses_with_breaks.append(verse.strip())
+
+        # print(verses_with_breaks)
 
         first_verse = re.findall(r"\[[0-9]+\]", text)[0]
 

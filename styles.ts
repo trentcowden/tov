@@ -34,6 +34,7 @@ export const themes = [
     ph: tinycolor(pDark).setAlpha(0.3).toHslString(),
     bd: '#00000055',
     p3: tinycolor(pDark).desaturate(25).darken(40).toHexString(),
+    v: tinycolor(pDark).desaturate(20).darken(25).toHexString(),
   },
   {
     id: 'light',

@@ -63,3 +63,44 @@ export function isPassageAfter(p1: string, p2: string) {
     return p1Book.order - p2Book.order
   }
 }
+
+export function verseToRegular(str: string) {
+  const superscriptObj = {
+    '⁰': '0',
+    '¹': '1',
+    '²': '2',
+    '³': '3',
+    '⁴': '4',
+    '⁵': '5',
+    '⁶': '6',
+    '⁷': '7',
+    '⁸': '8',
+    '⁹': '9',
+  }
+  return parseInt(
+    str
+      .split('')
+      .map((char) => superscriptObj[char] || char)
+      .join('')
+  )
+}
+
+export function verseToSuperscript(num: number) {
+  const superscriptObj = {
+    0: '⁰',
+    1: '¹',
+    2: '²',
+    3: '³',
+    4: '⁴',
+    5: '⁵',
+    6: '⁶',
+    7: '⁷',
+    8: '⁸',
+    9: '⁹',
+  }
+  return num
+    .toString()
+    .split('')
+    .map((digit) => superscriptObj[digit] || digit)
+    .join('')
+}

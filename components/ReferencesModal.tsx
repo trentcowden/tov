@@ -3,13 +3,17 @@ import React, { useMemo, useRef } from 'react'
 import {
   FlatList,
   ScrollView,
+  Share,
   Text,
   useWindowDimensions,
   View,
 } from 'react-native'
-import { SharedValue, withSpring } from 'react-native-reanimated'
+import Animated, {
+  LinearTransition,
+  SharedValue,
+  withSpring,
+} from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import Help from '../assets/icons/duotone/help-circle.svg'
 import { panActivateConfig } from '../constants'
 import references from '../data/references.json'
 import { References } from '../data/types/references'
@@ -17,7 +21,7 @@ import { getVerseReference, isPassageAfter } from '../functions/bible'
 import { getModalHeight, getModalWidth } from '../functions/utils'
 import { JumpToChapter } from '../hooks/useChapterChange'
 import useColors from '../hooks/useColors'
-import { br, ic, sans, shadow, sp, tx } from '../styles'
+import { br, sans, shadow, sp, tx } from '../styles'
 import BackButton from './BackButton'
 import Fade from './Fade'
 import ModalScreen from './ModalScreen'
@@ -27,7 +31,12 @@ import Spacer from './Spacer'
 import TovPressable from './TovPressable'
 
 interface Props {
-  referenceVerse: string | undefined
+  referenceVerse:
+    | {
+        verseId: string
+        text: string
+      }
+    | undefined
   openReferences: SharedValue<number>
   openReferencesNested: SharedValue<number>
   jumpToChapter: JumpToChapter
@@ -46,12 +55,12 @@ export default function ReferencesModal({
   const referencesRef = useRef<FlatList<References[string][number]>>(null)
   const wordListRef = useRef<FlatList<[string, string, string]>>(null)
   const activeReferences = useMemo(() => {
-    if (!referenceVerse || referenceVerse.includes('tutorial')) return []
+    if (!referenceVerse || !(referenceVerse.verseId in references)) return []
 
     // if (referenceVerse.includes('tutorial')) return ['tutorial.1']
 
     referencesRef.current?.scrollToOffset({ animated: false, offset: 0 })
-    const activeReferences = (references as References)[referenceVerse]
+    const activeReferences = (references as References)[referenceVerse.verseId]
 
     return activeReferences.sort((r1, r2) => isPassageAfter(r1[0], r2[0]))
   }, [referenceVerse])
@@ -62,7 +71,7 @@ export default function ReferencesModal({
     item,
     index,
   }: {
-    item: string | [string] | [string, string]
+    item: [string] | [string, string]
     index: number
   }) {
     return (
@@ -170,12 +179,12 @@ export default function ReferencesModal({
           close={() => {
             openReferences.value = withSpring(0, panActivateConfig)
           }}
-          height={64}
+          // height={64}
         >
           <Text style={sans(tx.subtitle, 'b', 'l', colors.fg2)}>
-            {`${referenceVerse ? getVerseReference(referenceVerse) : ''}`}
+            {`${referenceVerse ? getVerseReference(referenceVerse.verseId) : ''}`}
           </Text>
-          <TovPressable
+          {/* <TovPressable
             onPress={() => {
               openReferencesNested.value = withSpring(1, panActivateConfig)
             }}
@@ -186,13 +195,99 @@ export default function ReferencesModal({
               Cross References
             </Text>
             <Help {...ic.md} color={colors.p1} />
-          </TovPressable>
+          </TovPressable> */}
         </ModalScreenHeader>
-        <View style={{ flex: 1 }}>
-          <FlatList
+        {referenceVerse ? (
+          <View
+            style={{
+              width: '100%',
+              paddingHorizontal: sp.xl,
+            }}
+          >
+            <Text
+              style={[
+                sans(tx.tiny, 'l', 'l', colors.fg3),
+                { fontFamily: 'Bookerly-Regular' },
+              ]}
+            >
+              {referenceVerse.text
+                .replace(/\*/g, '')
+                .replace(/[\r\n]+/g, ' ')
+                .trim()}
+            </Text>
+            <TovPressable
+              onPress={() => {
+                const text =
+                  referenceVerse.text
+                    .replace(/\*/g, '')
+                    .replace(/[\r\n]+/g, ' ')
+                    .trim() +
+                  '\n\n' +
+                  getVerseReference(referenceVerse.verseId)
+                Share.share({ message: text })
+              }}
+              style={{
+                flexDirection: 'row',
+                alignSelf: 'flex-start',
+                alignItems: 'center',
+                gap: sp.xs,
+                borderRadius: br.lg,
+                paddingHorizontal: sp.md,
+                paddingVertical: sp.xs,
+                marginTop: sp.sm,
+              }}
+              bgColor={colors.bg3}
+            >
+              <Text
+                style={[
+                  sans(tx.tiny, 'b', 'l', colors.p1),
+                  // { textDecorationLine: 'underline' },
+                ]}
+              >
+                Share text
+              </Text>
+              {/* <ArrowRight {...ic.sm} color={colors.p1} /> */}
+            </TovPressable>
+          </View>
+        ) : null}
+        <View
+          style={{
+            flex: 1,
+            borderTopWidth: 1,
+            marginTop: sp.md,
+            borderColor: colors.bg3,
+          }}
+        >
+          <Animated.FlatList
+            itemLayoutAnimation={LinearTransition.springify()
+              .damping(20)
+              .mass(0.5)
+              .stiffness(140)
+              .restDisplacementThreshold(0)}
             ref={referencesRef}
             data={activeReferences}
             ListFooterComponent={<Spacer s={sp.md} />}
+            ListHeaderComponent={
+              <TovPressable
+                onPress={() => {
+                  openReferencesNested.value = withSpring(1, panActivateConfig)
+                }}
+                bgColor={colors.bg2}
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  paddingHorizontal: sp.md,
+                  marginTop: sp.md,
+                  marginBottom: sp.sm,
+                  gap: sp.xs,
+                }}
+              >
+                <Text style={sans(tx.subtitle, 'b', 'l', colors.fg3)}>
+                  Cross References
+                </Text>
+                {/* <Help {...ic.md} color={colors.p1} /> */}
+              </TovPressable>
+            }
             renderItem={renderReference}
             contentContainerStyle={{ paddingHorizontal: sp.md }}
           />

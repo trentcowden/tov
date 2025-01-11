@@ -1,9 +1,12 @@
 import os.path
 import re
 import subprocess
+from typing import Any
 
 import pandoc
+from bs4 import BeautifulSoup
 from ebooklib import epub
+from pandoc.types import *
 
 # This is just a basic example which can easily break in real world.
 
@@ -82,13 +85,55 @@ book = epub.read_epub("/Users/trentcowden/Downloads/net.epub")
 # get base filename from the epub
 # base_name = os.path.basename(os.path.splitext(sys.argv[1])[0])
 
+
+def parse_bible_chapter(html_content: Any):
+    # Parse the HTML
+    soup = BeautifulSoup(html_content, "html.parser")
+
+    # Create a list to store verse and line break data
+    chapter_content = []
+
+    # Iterate through all paragraph and line break elements
+    for element in soup.find_all(["p", "br"]):
+        if element.name == "br":
+            # Add empty string for line breaks
+            chapter_content.append("")
+        elif element.find("span", class_="verse"):
+            # Find the verse span
+            verse_span = element.find("span", class_="verse")
+
+            # Extract verse number from the span's text
+            verse_number = int(verse_span.text.split(":")[1])
+
+            # Extract text, removing the verse number
+            verse_text = element.get_text().replace(verse_span.text, "").strip()
+
+            # Create verse dictionary
+            verse = {"number": verse_number, "text": verse_text}
+
+            chapter_content.append(verse)
+
+    return chapter_content
+
+
 for index, item in enumerate(book.items):
     if not isinstance(item, epub.EpubHtml):
         continue
     if index != 100:
         continue
 
-    html = item.get_content()
+    html = item.get_content().decode()
+    verses = parse_bible_chapter(html)
+    print(verses)
+    # pandoc.write(
+    #     chapter_doc,
+    #     file="/Users/trentcowden/Downloads/net/TEST.md",
+    #     format="markdown",
+    # )
+    # for element in pandoc.iter(chapter_doc):
+    # print(element)
+
+    continue
 
     proc = subprocess.Popen(
         ["pandoc", "-f", "html", "-t", "markdown", "-"],
@@ -96,6 +141,8 @@ for index, item in enumerate(book.items):
         stdout=subprocess.PIPE,
     )
     content, error = proc.communicate(item.content)
+
+    print(content.decode())
 
     # if "Psalm" in md:
     #     print(md)

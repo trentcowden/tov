@@ -46,10 +46,7 @@ interface Props {
 }
 
 export interface SearchResult {
-  item: {
-    chapterId: string
-    md: string
-  }
+  item: Chapters[number]
   highlightRanges: HighlightRanges | null
 }
 

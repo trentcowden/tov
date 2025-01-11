@@ -38,10 +38,7 @@ import {
 } from '../redux/referenceTree'
 
 interface Props {
-  activeChapter: {
-    chapterId: string
-    md: string
-  }
+  activeChapter: Chapters[number]
   scrollViewRef: React.RefObject<ScrollView>
   verseOffsets: number[] | undefined
   setVerseOffsets: Dispatch<SetStateAction<number[] | undefined>>
@@ -50,7 +47,6 @@ interface Props {
   fingerDown: React.MutableRefObject<boolean>
   overlayOpacity: SharedValue<number>
   highlightVerseNumber: SharedValue<number>
-  setVerseNewlines: Dispatch<SetStateAction<boolean[] | undefined>>
 }
 
 export default function useChapterChange({
@@ -63,7 +59,6 @@ export default function useChapterChange({
   setVerseOffsets,
   overlayOpacity,
   highlightVerseNumber,
-  setVerseNewlines,
 }: Props) {
   const dispatch = useAppDispatch()
   const { height } = useWindowDimensions()
@@ -119,7 +114,6 @@ export default function useChapterChange({
 
     // Reset verse offsets.
     setVerseOffsets(undefined)
-    setVerseNewlines(undefined)
     highlightVerseNumber.value = withTiming(0)
     // overlayOpacity.value = withTiming(0)
 
@@ -240,7 +234,6 @@ export default function useChapterChange({
 
       // Reset verse offsets.
       setVerseOffsets(undefined)
-      setVerseNewlines(undefined)
 
       if (releaseToChange.value === 0) impactAsync(ImpactFeedbackStyle.Heavy)
 

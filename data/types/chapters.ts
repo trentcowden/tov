@@ -6,6 +6,6 @@
  */
 
 export type Chapters = {
-  chapterId: string;
-  md: string;
-}[];
+  chapterId: string
+  verses: Array<{ verseId: string; text: string }>
+}[]
